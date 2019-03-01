@@ -1,0 +1,40 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 1
+\BOOKMARK [0][-]{chapter.2}{Computational Idioms}{}% 2
+\BOOKMARK [1][-]{section.2.1}{Literature Survey}{chapter.2}% 3
+\BOOKMARK [2][-]{subsection.2.1.1}{Algorithmic Skeletons}{section.2.1}% 4
+\BOOKMARK [2][-]{subsection.2.1.2}{Berkeley Parallel Dwarves}{section.2.1}% 5
+\BOOKMARK [2][-]{subsection.2.1.3}{Computational Patterns}{section.2.1}% 6
+\BOOKMARK [1][-]{section.2.2}{Idiom Specific Optimizations}{chapter.2}% 7
+\BOOKMARK [2][-]{subsection.2.2.1}{Important Approaches}{section.2.2}% 8
+\BOOKMARK [2][-]{subsection.2.2.2}{Ways of Encapsulating Expertise}{section.2.2}% 9
+\BOOKMARK [0][-]{chapter.3}{Contraint Programming on Single Static Assignment Representation}{}% 10
+\BOOKMARK [1][-]{section.3.1}{Introduction}{chapter.3}% 11
+\BOOKMARK [1][-]{section.3.2}{Static Single Assignment Form}{chapter.3}% 12
+\BOOKMARK [1][-]{section.3.3}{Deriving a Mathematical Model}{chapter.3}% 13
+\BOOKMARK [2][-]{subsection.3.3.1}{Important Graph Properties}{section.3.3}% 14
+\BOOKMARK [2][-]{subsection.3.3.2}{Control Dependence Example}{section.3.3}% 15
+\BOOKMARK [2][-]{subsection.3.3.3}{Phi Dependence Graph}{section.3.3}% 16
+\BOOKMARK [2][-]{subsection.3.3.4}{Program Dependence Graph}{section.3.3}% 17
+\BOOKMARK [2][-]{subsection.3.3.5}{Interface Example}{section.3.3}% 18
+\BOOKMARK [1][-]{section.3.4}{Formulating Constraint Problems}{chapter.3}% 19
+\BOOKMARK [0][-]{chapter.4}{CAnDL: A Constraint Programming Language for SSA Code}{}% 20
+\BOOKMARK [1][-]{section.4.1}{Introduction}{chapter.4}% 21
+\BOOKMARK [1][-]{section.4.2}{Example}{chapter.4}% 22
+\BOOKMARK [1][-]{section.4.3}{Language Specification}{chapter.4}% 23
+\BOOKMARK [2][-]{subsection.4.3.1}{High Level Structure of CAnDL Programs}{section.4.3}% 24
+\BOOKMARK [2][-]{subsection.4.3.2}{Atomic Constraints}{section.4.3}% 25
+\BOOKMARK [2][-]{subsection.4.3.3}{Range Constraints}{section.4.3}% 26
+\BOOKMARK [2][-]{subsection.4.3.4}{Expressing Larger Structures}{section.4.3}% 27
+\BOOKMARK [1][-]{section.4.4}{Implementation}{chapter.4}% 28
+\BOOKMARK [2][-]{subsection.4.4.1}{The CAnDL Compiler}{section.4.4}% 29
+\BOOKMARK [2][-]{subsection.4.4.2}{The Solver}{section.4.4}% 30
+\BOOKMARK [2][-]{subsection.4.4.3}{Developer Tools}{section.4.4}% 31
+\BOOKMARK [2][-]{subsection.4.4.4}{Simple Optimizations}{section.4.4}% 32
+\BOOKMARK [2][-]{subsection.4.4.5}{Graphics Shader Optimizations}{section.4.4}% 33
+\BOOKMARK [2][-]{subsection.4.4.6}{Polyhedral SCoPs}{section.4.4}% 34
+\BOOKMARK [0][-]{chapter.5}{Formalizing Idioms with CAnDL}{}% 35
+\BOOKMARK [0][-]{chapter.6}{Building a Fully integrated Idiom Specific Optimization Pipeline}{}% 36
+\BOOKMARK [1][-]{section.6.1}{Harnesses}{chapter.6}% 37
+\BOOKMARK [1][-]{section.6.2}{Setup}{chapter.6}% 38
+\BOOKMARK [1][-]{section.6.3}{Results}{chapter.6}% 39
+\BOOKMARK [0][-]{chapter.7}{Conclusion}{}% 40
