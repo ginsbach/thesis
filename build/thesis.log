@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  1 MAR 2019 16:58
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  5 MAR 2019 21:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -384,13 +384,333 @@ Package: fontenc 2017/04/05 v2.0i Standard LaTeX package
 File: t1enc.def 2017/04/05 v2.0i Standard LaTeX file
 LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
 ))
+(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2015/03/17 v1.2c Input encoding file
+\inpenc@prehook=\toks28
+\inpenc@posthook=\toks29
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def
+File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
+Now handling font encoding OML ...
+... no UTF-8 mapping file for font encoding OML
+Now handling font encoding T1 ...
+... processing UTF-8 mapping file for font encoding T1
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1enc.dfu
+File: t1enc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
+   defining Unicode char U+00A0 (decimal 160)
+   defining Unicode char U+00A1 (decimal 161)
+   defining Unicode char U+00A3 (decimal 163)
+   defining Unicode char U+00AB (decimal 171)
+   defining Unicode char U+00AD (decimal 173)
+   defining Unicode char U+00BB (decimal 187)
+   defining Unicode char U+00BF (decimal 191)
+   defining Unicode char U+00C0 (decimal 192)
+   defining Unicode char U+00C1 (decimal 193)
+   defining Unicode char U+00C2 (decimal 194)
+   defining Unicode char U+00C3 (decimal 195)
+   defining Unicode char U+00C4 (decimal 196)
+   defining Unicode char U+00C5 (decimal 197)
+   defining Unicode char U+00C6 (decimal 198)
+   defining Unicode char U+00C7 (decimal 199)
+   defining Unicode char U+00C8 (decimal 200)
+   defining Unicode char U+00C9 (decimal 201)
+   defining Unicode char U+00CA (decimal 202)
+   defining Unicode char U+00CB (decimal 203)
+   defining Unicode char U+00CC (decimal 204)
+   defining Unicode char U+00CD (decimal 205)
+   defining Unicode char U+00CE (decimal 206)
+   defining Unicode char U+00CF (decimal 207)
+   defining Unicode char U+00D0 (decimal 208)
+   defining Unicode char U+00D1 (decimal 209)
+   defining Unicode char U+00D2 (decimal 210)
+   defining Unicode char U+00D3 (decimal 211)
+   defining Unicode char U+00D4 (decimal 212)
+   defining Unicode char U+00D5 (decimal 213)
+   defining Unicode char U+00D6 (decimal 214)
+   defining Unicode char U+00D8 (decimal 216)
+   defining Unicode char U+00D9 (decimal 217)
+   defining Unicode char U+00DA (decimal 218)
+   defining Unicode char U+00DB (decimal 219)
+   defining Unicode char U+00DC (decimal 220)
+   defining Unicode char U+00DD (decimal 221)
+   defining Unicode char U+00DE (decimal 222)
+   defining Unicode char U+00DF (decimal 223)
+   defining Unicode char U+00E0 (decimal 224)
+   defining Unicode char U+00E1 (decimal 225)
+   defining Unicode char U+00E2 (decimal 226)
+   defining Unicode char U+00E3 (decimal 227)
+   defining Unicode char U+00E4 (decimal 228)
+   defining Unicode char U+00E5 (decimal 229)
+   defining Unicode char U+00E6 (decimal 230)
+   defining Unicode char U+00E7 (decimal 231)
+   defining Unicode char U+00E8 (decimal 232)
+   defining Unicode char U+00E9 (decimal 233)
+   defining Unicode char U+00EA (decimal 234)
+   defining Unicode char U+00EB (decimal 235)
+   defining Unicode char U+00EC (decimal 236)
+   defining Unicode char U+00ED (decimal 237)
+   defining Unicode char U+00EE (decimal 238)
+   defining Unicode char U+00EF (decimal 239)
+   defining Unicode char U+00F0 (decimal 240)
+   defining Unicode char U+00F1 (decimal 241)
+   defining Unicode char U+00F2 (decimal 242)
+   defining Unicode char U+00F3 (decimal 243)
+   defining Unicode char U+00F4 (decimal 244)
+   defining Unicode char U+00F5 (decimal 245)
+   defining Unicode char U+00F6 (decimal 246)
+   defining Unicode char U+00F8 (decimal 248)
+   defining Unicode char U+00F9 (decimal 249)
+   defining Unicode char U+00FA (decimal 250)
+   defining Unicode char U+00FB (decimal 251)
+   defining Unicode char U+00FC (decimal 252)
+   defining Unicode char U+00FD (decimal 253)
+   defining Unicode char U+00FE (decimal 254)
+   defining Unicode char U+00FF (decimal 255)
+   defining Unicode char U+0100 (decimal 256)
+   defining Unicode char U+0101 (decimal 257)
+   defining Unicode char U+0102 (decimal 258)
+   defining Unicode char U+0103 (decimal 259)
+   defining Unicode char U+0104 (decimal 260)
+   defining Unicode char U+0105 (decimal 261)
+   defining Unicode char U+0106 (decimal 262)
+   defining Unicode char U+0107 (decimal 263)
+   defining Unicode char U+0108 (decimal 264)
+   defining Unicode char U+0109 (decimal 265)
+   defining Unicode char U+010A (decimal 266)
+   defining Unicode char U+010B (decimal 267)
+   defining Unicode char U+010C (decimal 268)
+   defining Unicode char U+010D (decimal 269)
+   defining Unicode char U+010E (decimal 270)
+   defining Unicode char U+010F (decimal 271)
+   defining Unicode char U+0110 (decimal 272)
+   defining Unicode char U+0111 (decimal 273)
+   defining Unicode char U+0112 (decimal 274)
+   defining Unicode char U+0113 (decimal 275)
+   defining Unicode char U+0114 (decimal 276)
+   defining Unicode char U+0115 (decimal 277)
+   defining Unicode char U+0116 (decimal 278)
+   defining Unicode char U+0117 (decimal 279)
+   defining Unicode char U+0118 (decimal 280)
+   defining Unicode char U+0119 (decimal 281)
+   defining Unicode char U+011A (decimal 282)
+   defining Unicode char U+011B (decimal 283)
+   defining Unicode char U+011C (decimal 284)
+   defining Unicode char U+011D (decimal 285)
+   defining Unicode char U+011E (decimal 286)
+   defining Unicode char U+011F (decimal 287)
+   defining Unicode char U+0120 (decimal 288)
+   defining Unicode char U+0121 (decimal 289)
+   defining Unicode char U+0122 (decimal 290)
+   defining Unicode char U+0123 (decimal 291)
+   defining Unicode char U+0124 (decimal 292)
+   defining Unicode char U+0125 (decimal 293)
+   defining Unicode char U+0128 (decimal 296)
+   defining Unicode char U+0129 (decimal 297)
+   defining Unicode char U+012A (decimal 298)
+   defining Unicode char U+012B (decimal 299)
+   defining Unicode char U+012C (decimal 300)
+   defining Unicode char U+012D (decimal 301)
+   defining Unicode char U+012E (decimal 302)
+   defining Unicode char U+012F (decimal 303)
+   defining Unicode char U+0130 (decimal 304)
+   defining Unicode char U+0131 (decimal 305)
+   defining Unicode char U+0132 (decimal 306)
+   defining Unicode char U+0133 (decimal 307)
+   defining Unicode char U+0134 (decimal 308)
+   defining Unicode char U+0135 (decimal 309)
+   defining Unicode char U+0136 (decimal 310)
+   defining Unicode char U+0137 (decimal 311)
+   defining Unicode char U+0139 (decimal 313)
+   defining Unicode char U+013A (decimal 314)
+   defining Unicode char U+013B (decimal 315)
+   defining Unicode char U+013C (decimal 316)
+   defining Unicode char U+013D (decimal 317)
+   defining Unicode char U+013E (decimal 318)
+   defining Unicode char U+0141 (decimal 321)
+   defining Unicode char U+0142 (decimal 322)
+   defining Unicode char U+0143 (decimal 323)
+   defining Unicode char U+0144 (decimal 324)
+   defining Unicode char U+0145 (decimal 325)
+   defining Unicode char U+0146 (decimal 326)
+   defining Unicode char U+0147 (decimal 327)
+   defining Unicode char U+0148 (decimal 328)
+   defining Unicode char U+014A (decimal 330)
+   defining Unicode char U+014B (decimal 331)
+   defining Unicode char U+014C (decimal 332)
+   defining Unicode char U+014D (decimal 333)
+   defining Unicode char U+014E (decimal 334)
+   defining Unicode char U+014F (decimal 335)
+   defining Unicode char U+0150 (decimal 336)
+   defining Unicode char U+0151 (decimal 337)
+   defining Unicode char U+0152 (decimal 338)
+   defining Unicode char U+0153 (decimal 339)
+   defining Unicode char U+0154 (decimal 340)
+   defining Unicode char U+0155 (decimal 341)
+   defining Unicode char U+0156 (decimal 342)
+   defining Unicode char U+0157 (decimal 343)
+   defining Unicode char U+0158 (decimal 344)
+   defining Unicode char U+0159 (decimal 345)
+   defining Unicode char U+015A (decimal 346)
+   defining Unicode char U+015B (decimal 347)
+   defining Unicode char U+015C (decimal 348)
+   defining Unicode char U+015D (decimal 349)
+   defining Unicode char U+015E (decimal 350)
+   defining Unicode char U+015F (decimal 351)
+   defining Unicode char U+0160 (decimal 352)
+   defining Unicode char U+0161 (decimal 353)
+   defining Unicode char U+0162 (decimal 354)
+   defining Unicode char U+0163 (decimal 355)
+   defining Unicode char U+0164 (decimal 356)
+   defining Unicode char U+0165 (decimal 357)
+   defining Unicode char U+0168 (decimal 360)
+   defining Unicode char U+0169 (decimal 361)
+   defining Unicode char U+016A (decimal 362)
+   defining Unicode char U+016B (decimal 363)
+   defining Unicode char U+016C (decimal 364)
+   defining Unicode char U+016D (decimal 365)
+   defining Unicode char U+016E (decimal 366)
+   defining Unicode char U+016F (decimal 367)
+   defining Unicode char U+0170 (decimal 368)
+   defining Unicode char U+0171 (decimal 369)
+   defining Unicode char U+0172 (decimal 370)
+   defining Unicode char U+0173 (decimal 371)
+   defining Unicode char U+0174 (decimal 372)
+   defining Unicode char U+0175 (decimal 373)
+   defining Unicode char U+0176 (decimal 374)
+   defining Unicode char U+0177 (decimal 375)
+   defining Unicode char U+0178 (decimal 376)
+   defining Unicode char U+0179 (decimal 377)
+   defining Unicode char U+017A (decimal 378)
+   defining Unicode char U+017B (decimal 379)
+   defining Unicode char U+017C (decimal 380)
+   defining Unicode char U+017D (decimal 381)
+   defining Unicode char U+017E (decimal 382)
+   defining Unicode char U+01CD (decimal 461)
+   defining Unicode char U+01CE (decimal 462)
+   defining Unicode char U+01CF (decimal 463)
+   defining Unicode char U+01D0 (decimal 464)
+   defining Unicode char U+01D1 (decimal 465)
+   defining Unicode char U+01D2 (decimal 466)
+   defining Unicode char U+01D3 (decimal 467)
+   defining Unicode char U+01D4 (decimal 468)
+   defining Unicode char U+01E2 (decimal 482)
+   defining Unicode char U+01E3 (decimal 483)
+   defining Unicode char U+01E6 (decimal 486)
+   defining Unicode char U+01E7 (decimal 487)
+   defining Unicode char U+01E8 (decimal 488)
+   defining Unicode char U+01E9 (decimal 489)
+   defining Unicode char U+01EA (decimal 490)
+   defining Unicode char U+01EB (decimal 491)
+   defining Unicode char U+01F0 (decimal 496)
+   defining Unicode char U+01F4 (decimal 500)
+   defining Unicode char U+01F5 (decimal 501)
+   defining Unicode char U+0218 (decimal 536)
+   defining Unicode char U+0219 (decimal 537)
+   defining Unicode char U+021A (decimal 538)
+   defining Unicode char U+021B (decimal 539)
+   defining Unicode char U+0232 (decimal 562)
+   defining Unicode char U+0233 (decimal 563)
+   defining Unicode char U+1E02 (decimal 7682)
+   defining Unicode char U+1E03 (decimal 7683)
+   defining Unicode char U+200C (decimal 8204)
+   defining Unicode char U+2010 (decimal 8208)
+   defining Unicode char U+2011 (decimal 8209)
+   defining Unicode char U+2012 (decimal 8210)
+   defining Unicode char U+2013 (decimal 8211)
+   defining Unicode char U+2014 (decimal 8212)
+   defining Unicode char U+2015 (decimal 8213)
+   defining Unicode char U+2018 (decimal 8216)
+   defining Unicode char U+2019 (decimal 8217)
+   defining Unicode char U+201A (decimal 8218)
+   defining Unicode char U+201C (decimal 8220)
+   defining Unicode char U+201D (decimal 8221)
+   defining Unicode char U+201E (decimal 8222)
+   defining Unicode char U+2030 (decimal 8240)
+   defining Unicode char U+2031 (decimal 8241)
+   defining Unicode char U+2039 (decimal 8249)
+   defining Unicode char U+203A (decimal 8250)
+   defining Unicode char U+2423 (decimal 9251)
+   defining Unicode char U+1E20 (decimal 7712)
+   defining Unicode char U+1E21 (decimal 7713)
+)
+Now handling font encoding OT1 ...
+... processing UTF-8 mapping file for font encoding OT1
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/ot1enc.dfu
+File: ot1enc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
+   defining Unicode char U+00A0 (decimal 160)
+   defining Unicode char U+00A1 (decimal 161)
+   defining Unicode char U+00A3 (decimal 163)
+   defining Unicode char U+00AD (decimal 173)
+   defining Unicode char U+00B8 (decimal 184)
+   defining Unicode char U+00BF (decimal 191)
+   defining Unicode char U+00C5 (decimal 197)
+   defining Unicode char U+00C6 (decimal 198)
+   defining Unicode char U+00D8 (decimal 216)
+   defining Unicode char U+00DF (decimal 223)
+   defining Unicode char U+00E6 (decimal 230)
+   defining Unicode char U+00EC (decimal 236)
+   defining Unicode char U+00ED (decimal 237)
+   defining Unicode char U+00EE (decimal 238)
+   defining Unicode char U+00EF (decimal 239)
+   defining Unicode char U+00F8 (decimal 248)
+   defining Unicode char U+0131 (decimal 305)
+   defining Unicode char U+0141 (decimal 321)
+   defining Unicode char U+0142 (decimal 322)
+   defining Unicode char U+0152 (decimal 338)
+   defining Unicode char U+0153 (decimal 339)
+   defining Unicode char U+0174 (decimal 372)
+   defining Unicode char U+0175 (decimal 373)
+   defining Unicode char U+0176 (decimal 374)
+   defining Unicode char U+0177 (decimal 375)
+   defining Unicode char U+0218 (decimal 536)
+   defining Unicode char U+0219 (decimal 537)
+   defining Unicode char U+021A (decimal 538)
+   defining Unicode char U+021B (decimal 539)
+   defining Unicode char U+2013 (decimal 8211)
+   defining Unicode char U+2014 (decimal 8212)
+   defining Unicode char U+2018 (decimal 8216)
+   defining Unicode char U+2019 (decimal 8217)
+   defining Unicode char U+201C (decimal 8220)
+   defining Unicode char U+201D (decimal 8221)
+)
+Now handling font encoding OMS ...
+... processing UTF-8 mapping file for font encoding OMS
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/omsenc.dfu
+File: omsenc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
+   defining Unicode char U+00A7 (decimal 167)
+   defining Unicode char U+00B6 (decimal 182)
+   defining Unicode char U+00B7 (decimal 183)
+   defining Unicode char U+2020 (decimal 8224)
+   defining Unicode char U+2021 (decimal 8225)
+   defining Unicode char U+2022 (decimal 8226)
+)
+Now handling font encoding OMX ...
+... no UTF-8 mapping file for font encoding OMX
+Now handling font encoding U ...
+... no UTF-8 mapping file for font encoding U
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+   defining Unicode char U+00A9 (decimal 169)
+   defining Unicode char U+00AA (decimal 170)
+   defining Unicode char U+00AE (decimal 174)
+   defining Unicode char U+00BA (decimal 186)
+   defining Unicode char U+02C6 (decimal 710)
+   defining Unicode char U+02DC (decimal 732)
+   defining Unicode char U+200C (decimal 8204)
+   defining Unicode char U+2026 (decimal 8230)
+   defining Unicode char U+2122 (decimal 8482)
+   defining Unicode char U+2423 (decimal 9251)
+))
 (/usr/share/texlive/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty
 Package: tcolorbox 2018/01/12 version 4.12 text color boxes
 
 (/usr/share/texlive/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
 (/usr/share/texlive/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.tex
-\pgfutil@everybye=\toks28
+\pgfutil@everybye=\toks30
 \pgfutil@tempdima=\dimen137
 \pgfutil@tempdimb=\dimen138
 
@@ -411,12 +731,12 @@ Package: pgf 2015/08/07 v3.0.1a (rcs-revision 1.15)
 Package: pgfsys 2014/07/09 v3.0.1a (rcs-revision 1.48)
 
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
-\pgfkeys@pathtoks=\toks29
-\pgfkeys@temptoks=\toks30
+\pgfkeys@pathtoks=\toks31
+\pgfkeys@temptoks=\toks32
 
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.code.t
 ex
-\pgfkeys@tmptoks=\toks31
+\pgfkeys@tmptoks=\toks33
 ))
 \pgf@x=\dimen139
 \pgf@y=\dimen140
@@ -432,9 +752,9 @@ ex
 \c@pgf@countb=\count124
 \c@pgf@countc=\count125
 \c@pgf@countd=\count126
-\t@pgf@toka=\toks32
-\t@pgf@tokb=\toks33
-\t@pgf@tokc=\toks34
+\t@pgf@toka=\toks34
+\t@pgf@tokb=\toks35
+\t@pgf@tokc=\toks36
  (/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg
 File: pgf.cfg 2008/05/14  (rcs-revision 1.7)
 )
@@ -467,9 +787,9 @@ Package: pgfcore 2010/04/11 v3.0.1a (rcs-revision 1.7)
 \pgfmath@dimen=\dimen147
 \pgfmath@count=\count129
 \pgfmath@box=\box31
-\pgfmath@toks=\toks35
-\pgfmath@stack@operand=\toks36
-\pgfmath@stack@operation=\toks37
+\pgfmath@toks=\toks37
+\pgfmath@stack@operand=\toks38
+\pgfmath@stack@operation=\toks39
 )
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.tex
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic.code
@@ -599,8 +919,8 @@ Package: pgfcomp-version-0-65 2007/07/03 v3.0.1a (rcs-revision 1.7)
 Package: pgfcomp-version-1-18 2007/07/23 v3.0.1a (rcs-revision 1.1)
 )) (/usr/share/texlive/texmf-dist/tex/latex/tools/verbatim.sty
 Package: verbatim 2014/10/28 v1.5q LaTeX2e package for verbatim enhancements
-\every@verbatim=\toks38
-\verbatim@line=\toks39
+\every@verbatim=\toks40
+\verbatim@line=\toks41
 \verbatim@in@stream=\read2
 )
 (/usr/share/texlive/texmf-dist/tex/latex/environ/environ.sty
@@ -692,25 +1012,25 @@ LaTeX Warning: Label `fig:firstexample' multiply defined.
 )
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 69.
-LaTeX Font Info:    ... okay on input line 69.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 69.
-LaTeX Font Info:    ... okay on input line 69.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 69.
-LaTeX Font Info:    ... okay on input line 69.
-LaTeX Font Info:    Checking defaults for OMS/pzccm/m/n on input line 69.
-LaTeX Font Info:    Try loading font information for OMS+pzccm on input line 69
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OMS/pzccm/m/n on input line 70.
+LaTeX Font Info:    Try loading font information for OMS+pzccm on input line 70
 .
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omspzccm.fd
 File: omspzccm.fd 2000/01/03 Fontinst v1.801 font definitions for OMS/pzccm.
 )
-LaTeX Font Info:    ... okay on input line 69.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 69.
-LaTeX Font Info:    ... okay on input line 69.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 69.
-LaTeX Font Info:    ... okay on input line 69.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 69.
-LaTeX Font Info:    ... okay on input line 69.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -753,12 +1073,12 @@ LaTeX Font Info:    ... okay on input line 69.
 \scratchbox=\box45
 \nofMPsegments=\count139
 \nofMParguments=\count140
-\everyMPshowfont=\toks40
+\everyMPshowfont=\toks42
 \MPscratchCnt=\count141
 \MPscratchDim=\dimen175
 \MPnumerator=\count142
 \makeMPintoPDFobject=\count143
-\everyMPtoPDFconversion=\toks41
+\everyMPtoPDFconversion=\toks43
 ) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
 
@@ -782,7 +1102,7 @@ Package caption Info: listings package is loaded.
 Package caption Info: End \AtBeginDocument code.
 \c@lstlisting=\count144
 \AtBeginShipoutBox=\box46
-Package hyperref Info: Link coloring OFF on input line 69.
+Package hyperref Info: Link coloring OFF on input line 70.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -792,9 +1112,9 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count145
 )
-LaTeX Info: Redefining \ref on input line 69.
-LaTeX Info: Redefining \pageref on input line 69.
-LaTeX Info: Redefining \nameref on input line 69.
+LaTeX Info: Redefining \ref on input line 70.
+LaTeX Info: Redefining \pageref on input line 70.
+LaTeX Info: Redefining \nameref on input line 70.
 
 (build/thesis.out) (build/thesis.out)
 \@outlinefile=\write6
@@ -802,15 +1122,15 @@ LaTeX Info: Redefining \nameref on input line 69.
 
  ABD: EveryShipout initializing macros
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <17.28> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 72.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 72.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 73.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 15.55188pt on input line 72.
+(Font)              scaled to size 15.55188pt on input line 73.
 <figures/eushield-normal.pdf, id=167, 369.38pt x 373.395pt>
 File: figures/eushield-normal.pdf Graphic file (type pdf)
 <use figures/eushield-normal.pdf>
-Package pdftex.def Info: figures/eushield-normal.pdf  used on input line 72.
+Package pdftex.def Info: figures/eushield-normal.pdf  used on input line 73.
 (pdftex.def)             Requested size: 369.37909pt x 373.39409pt.
 
 [1
@@ -820,18 +1140,18 @@ pdf>] [2
 
 ]
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
-(Font)              scaled to size 9.85492pt on input line 72.
+(Font)              scaled to size 9.85492pt on input line 73.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 72.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 73.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 9.85492pt on input line 72.
+(Font)              scaled to size 9.85492pt on input line 73.
  [3] [4]
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/pzccm/m/n' tried instead on input line 83.
+(Font)              Font shape `OMS/pzccm/m/n' tried instead on input line 84.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 84.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 85.
 
-Overfull \hbox (2.41502pt too wide) in paragraph at lines 92--99
+Overfull \hbox (2.41502pt too wide) in paragraph at lines 93--100
 \T1/ptm/m/it/10.95 on Ar-chi-tec-tural Sup-port for Pro-gram-ming Lan-guages an
 d Op-er-at-ing Sys-tems (AS-P-LOS),
  []
@@ -840,11 +1160,11 @@ d Op-er-at-ing Sys-tems (AS-P-LOS),
 
 ]
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 106.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 107.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <24.88> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 106.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 107.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 22.39185pt on input line 106.
+(Font)              scaled to size 22.39185pt on input line 107.
  (build/thesis.toc
 LaTeX Font Info:    Try loading font information for OT1+ztmcm on input line 3.
 
@@ -883,13 +1203,13 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
  [8]
 Chapter 1.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <20.74> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 109.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 110.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <20.74> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 109.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 110.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 18.66588pt on input line 109.
+(Font)              scaled to size 18.66588pt on input line 110.
 
-Overfull \hbox (9.0879pt too wide) in paragraph at lines 115--117
+Overfull \hbox (9.0879pt too wide) in paragraph at lines 116--118
 []\T1/ptm/m/n/10.95 However, with het-ero-ge-neous hard-ware be-com-ing an es-s
 en-tial core of com-put-ing ca-pa-bil-i-ties,
  []
@@ -902,77 +1222,95 @@ en-tial core of com-put-ing ca-pa-bil-i-ties,
 ]
 Chapter 2.
 
-Overfull \hbox (16.62585pt too wide) in paragraph at lines 150--155
+Overfull \hbox (16.62585pt too wide) in paragraph at lines 151--156
 \T1/ptm/m/n/10.95 in-stead, they tend to be struc-tured among cer-tain de-sign 
 prin-ci-ples. The same is true al-go-rith-mi-cally
  []
 
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 156.
-LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 156.
-LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 12.9599pt on input line 156.
-LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 157.
-LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
 (Font)              Font shape `T1/phv/b/n' tried instead on input line 157.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 10.79993pt on input line 157.
+(Font)              scaled to size 12.9599pt on input line 157.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 158.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 158.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 10.79993pt on input line 158.
 [3] [4
 
 ]
 Chapter 3.
 
-Overfull \hbox (14.50679pt too wide) in paragraph at lines 191--200
-[]\T1/ptm/m/n/10.95 The pre-cise in-struc-tion set, syn-tax and type sys-tems o
-f sin-gle static as-sign-ment for in-ter-me-di-ate
+Overfull \hbox (28.0681pt too wide) in paragraph at lines 173--183
+\T1/ptm/m/n/10.95 (SSA) form has emerged as a suit-able rep-re-sen-ta-tion for 
+ap-ply-ing com-plex op-ti-miz-ing trans-for-ma-tions
  []
 
 
-Overfull \hbox (4.7017pt too wide) in paragraph at lines 191--200
-\T1/ptm/m/n/10.95 on vir-tual reg-is-ters. These vir-tual reg-is-ters can be as
--signed only once and the place of as-sign-ment
+Overfull \hbox (1.98514pt too wide) in paragraph at lines 210--224
+\T1/ptm/m/n/10.95 Static sin-gle as-signemnt form is a prop-erty that ap-plies 
+to com-piler in-ter-me-di-ate rep-re-sen-ta-tions.
  []
 
-[5]
-Overfull \hbox (19.24266pt too wide) in paragraph at lines 213--221
-\T1/ptm/m/n/10.95 be-tween the in-struc-tions be-come ex-plicit and reg-is-ters
- can be iden-ti-fied di-rectly with the in-struc-tions
- []
 
+Underfull \vbox (badness 3118) has occurred while \output is active []
+
+ [5]
 <figures/schaubild.pdf, id=274, 1479.51488pt x 1984.55122pt>
 File: figures/schaubild.pdf Graphic file (type pdf)
 <use figures/schaubild.pdf>
-Package pdftex.def Info: figures/schaubild.pdf  used on input line 230.
+Package pdftex.def Info: figures/schaubild.pdf  used on input line 245.
 (pdftex.def)             Requested size: 412.56497pt x 553.36914pt.
 
-LaTeX Warning: Reference `derivemaths' on page 6 undefined on input line 244.
+Overfull \hbox (0.43106pt too wide) in paragraph at lines 253--263
+\T1/ptm/m/n/10.95 form. This will give us a sound ba-sis and math-e-mat-i-cal n
+o-ta-tion for com-piler anal-y-sis prob-lems.
+ []
+
+
+LaTeX Warning: Reference `derivemaths' on page 6 undefined on input line 267.
+
+
+LaTeX Warning: Reference `derivemaths' on page 6 undefined on input line 274.
 
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10.95> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 275.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 284.
 LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
-(Font)              scaled to size 9.85492pt on input line 275.
+(Font)              scaled to size 9.85492pt on input line 284.
 [6] [7 <./figures/schaubild.pdf>]
-<figures/schaubild2.pdf, id=310, 1169.37978pt x 1510.81284pt>
-File: figures/schaubild2.pdf Graphic file (type pdf)
-<use figures/schaubild2.pdf>
-Package pdftex.def Info: figures/schaubild2.pdf  used on input line 337.
-(pdftex.def)             Requested size: 412.56497pt x 533.01114pt.
 
+LaTeX Warning: Reference `derivemaths' on page 8 undefined on input line 285.
 
-LaTeX Warning: Reference `def:cdg' on page 8 undefined on input line 345.
+[8]
+Overfull \hbox (1.77809pt too wide) in paragraph at lines 320--326
+\T1/ptm/m/n/10.95 this more for-mal lan-guage. Most of these prop-er-ties are b
+ased on graph the-o-retic con-sid-er-a-tions,
+ []
 
-[8] [9 <./figures/schaubild2.pdf>]
-Underfull \vbox (badness 4621) has occurred while \output is active []
-
- [10]
-LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <8> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 435.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [11]
+ [9]
+<figures/schaubild2.pdf, id=322, 1169.37978pt x 1510.81284pt>
+File: figures/schaubild2.pdf Graphic file (type pdf)
+<use figures/schaubild2.pdf>
+Package pdftex.def Info: figures/schaubild2.pdf  used on input line 386.
+(pdftex.def)             Requested size: 412.56497pt x 533.01114pt.
+
+
+LaTeX Warning: Reference `def:cdg' on page 10 undefined on input line 394.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [10]
+[11 <./figures/schaubild2.pdf>] [12]
+LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <8> not available
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 482.
+ [13]
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2015/06/04 1.6 listings language file
 )
@@ -983,177 +1321,122 @@ File: lstlang2.sty 2015/06/04 1.6 listings language file
 File: lstlang3.sty 2015/06/04 1.6 listings language file
 )
 LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <8> not available
-(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 456.
+(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 511.
 
-Overfull \hbox (2.86224pt too wide) in paragraph at lines 491--493
+Overfull \hbox (2.86224pt too wide) in paragraph at lines 546--548
 \T1/ptm/m/n/10.95 We will now use these math-e-mat-i-cal back-ground de-lib-er-
 a-tions to de-rive con-straint pro-gram-ming
  []
 
-[12] [13] [14
+
+Underfull \vbox (badness 1253) has occurred while \output is active []
+
+ [14]
+[15] [16
 
 ]
 Chapter 4.
 
-Overfull \hbox (1.8386pt too wide) in paragraph at lines 559--564
+Overfull \hbox (18.64122pt too wide) in paragraph at lines 585--595
+\T1/ptm/m/n/10.95 do-main spe-cific lan-guage for com-piler anal-y-sis. Based o
+n the con-straint pro-gram-ming method-ol-ogy
+ []
+
+
+Overfull \hbox (1.8386pt too wide) in paragraph at lines 614--619
 []\T1/ptm/m/n/10.95 This com-plex-ity is an im-ped-i-ment to the im-ple-men-ta-
 tion of new com-piler passes, pre-vent-ing
  []
 
 
-Overfull \hbox (17.60095pt too wide) in paragraph at lines 559--564
+Overfull \hbox (17.60095pt too wide) in paragraph at lines 614--619
 \T1/ptm/m/n/10.95 anal-y-sis that re-duces boiler-plate code and opens the way 
 for new com-piler op-ti-miza-tion in-no-va-tion. 
  []
 
-[15]
+[17]
 
-Package natbib Warning: Citation `Lopes:2015:PCP:2737924.2737965' on page 16 un
-defined on input line 581.
+Package natbib Warning: Citation `Lopes:2015:PCP:2737924.2737965' on page 18 un
+defined on input line 636.
 
 
-Overfull \hbox (3.6401pt too wide) in paragraph at lines 584--588
+Overfull \hbox (3.6401pt too wide) in paragraph at lines 639--643
 \T1/ptm/m/n/10.95 graph-ics shader pro-grams and the de-tec-tion of static cont
 rol-flow re-gions for poly-he-dral pro-gram
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 591--593
+Underfull \hbox (badness 10000) in paragraph at lines 646--648
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 593--594
+Underfull \hbox (badness 10000) in paragraph at lines 648--649
 
  []
 
 (./candlexample.tex
-Overfull \hbox (15.67834pt too wide) in paragraph at lines 9--10
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
-][][][][][][][][][][][][][][][][][][][][][]  
- []
-
-
-Overfull \hbox (1.2782pt too wide) in paragraph at lines 10--11
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
-][][]  
- []
-
-
-Overfull \hbox (10.8783pt too wide) in paragraph at lines 11--12
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
-][][][][][][][][][][][][][][][][][][][][][]  
- []
-
-
-Overfull \hbox (29.42302pt too wide) in paragraph at lines 25--26
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
-][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
-][]  
- []
-
-
-Overfull \hbox (9.45479pt too wide) in paragraph at lines 36--37
+Overfull \hbox (9.45479pt too wide) in paragraph at lines 35--36
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  
  []
 
 
-Overfull \hbox (9.45479pt too wide) in paragraph at lines 38--39
+Overfull \hbox (9.45479pt too wide) in paragraph at lines 37--38
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  
  []
 
 
-Overfull \hbox (14.25484pt too wide) in paragraph at lines 41--42
+Overfull \hbox (14.25484pt too wide) in paragraph at lines 40--41
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]  
- []
-
-
-Overfull \hbox (1.78893pt too wide) in paragraph at lines 58--59
-[][][][][][][][][][][][][][][][][][]  
- []
-
-
-Overfull \hbox (1.78893pt too wide) in paragraph at lines 75--76
-[][][][][][][][][][][][][][][][][][]  
- []
-
-
-Overfull \hbox (85.35825pt too wide) in paragraph at lines 1--80
-[][] 
- []
-
-
-Overfull \hbox (26.78784pt too wide) in paragraph at lines 87--88
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
-][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]  
- []
-
-
-Overfull \hbox (19.08197pt too wide) in paragraph at lines 99--100
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
-][][][][][][][][][][][][][][][][][]  
- []
-
-
-Overfull \hbox (85.35825pt too wide) in paragraph at lines 81--128
-[][]
  []
 
 )
 
-Package natbib Warning: Citation `Yang:2011:FUB:1993316.1993532' on page 16 und
-efined on input line 625.
+Package natbib Warning: Citation `Yang:2011:FUB:1993316.1993532' on page 18 und
+efined on input line 680.
 
 
-Package natbib Warning: Citation `Menendez:2017:ADP:3062341.3062372' on page 16
- undefined on input line 625.
+Package natbib Warning: Citation `Menendez:2017:ADP:3062341.3062372' on page 18
+ undefined on input line 680.
 
-[16] [17]
-Overfull \hbox (25.14473pt too wide) in paragraph at lines 692--699
+[18]
+Underfull \vbox (badness 6608) has occurred while \output is active []
+
+ [19]
+Overfull \hbox (25.14473pt too wide) in paragraph at lines 747--754
 \T1/ptm/m/n/10.95 The Com-piler Anal-y-sis De-scrip-tion Lan-guage (CAnDL) is a
  do-main spe-cific con-straint pro-gram-ming
  []
 
 
-Overfull \hbox (10.76198pt too wide) in paragraph at lines 700--704
+Overfull \hbox (10.76198pt too wide) in paragraph at lines 755--759
 []\T1/ptm/m/n/10.95 Structures can scale from sim-ple in-struc-tion pat-terns t
 hat are suited for peep-hole op-ti-miza-tions
  []
 
-
-Overfull \hbox (3.44211pt too wide) in paragraph at lines 714--718
+[20]
+Overfull \hbox (3.44211pt too wide) in paragraph at lines 769--773
 \T1/ptm/m/n/10.95 An in-di-vid-ual CAnDL pro-gram con-tains a set of con-strain
 t for-mu-las that are bound to iden-ti-fiers.
  []
 
-[18] [19] [20]
-Overfull \hbox (7.85608pt too wide) in paragraph at lines 928--938
+[21] [22] [23]
+Overfull \hbox (7.85608pt too wide) in paragraph at lines 983--993
 \T1/ptm/m/n/10.95 In []Fig-ure 4.4[][], the vari-ables \T1/pcr/m/n/10.95 arg[0]
 ,...,arg[N-1] \T1/ptm/m/n/10.95 are con-straint to con-tain all data de-pen-den
 ces
  []
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-Overfull \hbox (17.07523pt too wide) in paragraph at lines 951--957
+[24]
+Overfull \hbox (17.07523pt too wide) in paragraph at lines 1006--1012
 \T1/ptm/m/n/10.95 Con-sider that we want to de-tect in-struc-tions with only fl
 oat-ing point data de-pen-dences. For-mu-lat-ing
  []
 
-[21]
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-Overfull \hbox (22.46196pt too wide) in paragraph at lines 1038--1048
+[25]
+Overfull \hbox (22.46196pt too wide) in paragraph at lines 1093--1103
 \T1/ptm/m/n/10.95 pointer com-pu-ta-tions, which means that CAnDL only has to c
 on-cern it-self with pointer com-pu-ta-tions
  []
@@ -1161,139 +1444,143 @@ on-cern it-self with pointer com-pu-ta-tions
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[22]
-<figures/compilerFlow2.pdf, id=472, 267.42744pt x 421.07233pt>
+[26]
+<figures/compilerFlow2.pdf, id=600, 267.42744pt x 421.07233pt>
 File: figures/compilerFlow2.pdf Graphic file (type pdf)
 <use figures/compilerFlow2.pdf>
-Package pdftex.def Info: figures/compilerFlow2.pdf  used on input line 1121.
+Package pdftex.def Info: figures/compilerFlow2.pdf  used on input line 1176.
 (pdftex.def)             Requested size: 119.64107pt x 188.37569pt.
-<figures/compilerFlow.pdf, id=473, 238.9747pt x 307.26129pt>
+<figures/compilerFlow.pdf, id=601, 238.9747pt x 307.26129pt>
 File: figures/compilerFlow.pdf Graphic file (type pdf)
 <use figures/compilerFlow.pdf>
-Package pdftex.def Info: figures/compilerFlow.pdf  used on input line 1130.
+Package pdftex.def Info: figures/compilerFlow.pdf  used on input line 1185.
 (pdftex.def)             Requested size: 119.64107pt x 153.82716pt.
 
-Overfull \hbox (12.411pt too wide) in paragraph at lines 1135--1150
+Overfull \hbox (12.411pt too wide) in paragraph at lines 1190--1205
 \T1/ptm/m/n/10.95 Also, \T1/pcr/m/n/10.95 foreach \T1/ptm/m/n/10.95 and \T1/pcr
 /m/n/10.95 forany \T1/ptm/m/n/10.95 state-ments are low-ered to con-junc-tions 
 and dis-junc-tions by du-pli-cat-ing
  []
 
-[23]
-Overfull \hbox (16.84082pt too wide) in paragraph at lines 1171--1181
+[27] [28 <./figures/compilerFlow2.pdf> <./figures/compilerFlow.pdf>]
+Overfull \hbox (16.84082pt too wide) in paragraph at lines 1226--1236
 []\T1/ptm/m/n/10.95 The com-piler then gen-er-ates sim-i-lar ob-jects for the m
 ore com-plex \T1/pcr/m/n/10.95 conjunction\T1/ptm/m/n/10.95 , \T1/pcr/m/n/10.95
  disjunction
  []
 
-[24]
-Overfull \hbox (32.24115pt too wide) in paragraph at lines 1291--1296
+[29]
+Overfull \hbox (32.24115pt too wide) in paragraph at lines 1346--1351
 \T1/ptm/m/n/10.95 LLVM struc-ture and the cor-re-spond-ing atomic con-straints,
  but also of the \T1/pcr/m/n/10.95 conjunction\T1/ptm/m/n/10.95 , \T1/pcr/m/n/1
 0.95 disjunction
  []
 
-<figures/visual_gui2.png, id=496, 1927.2pt x 1084.05pt>
+<figures/visual_gui2.png, id=692, 1927.2pt x 1084.05pt>
 File: figures/visual_gui2.png Graphic file (type png)
 <use figures/visual_gui2.png>
-Package pdftex.def Info: figures/visual_gui2.png  used on input line 1342.
+Package pdftex.def Info: figures/visual_gui2.png  used on input line 1397.
 (pdftex.def)             Requested size: 371.30595pt x 208.84982pt.
 
-LaTeX Warning: Reference `sec:casestudies' on page 25 undefined on input line 1
-364.
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [30]
+
+LaTeX Warning: Reference `sec:casestudies' on page 31 undefined on input line 1
+419.
 
 
-Overfull \hbox (0.20169pt too wide) in paragraph at lines 1373--1382
+Overfull \hbox (0.20169pt too wide) in paragraph at lines 1428--1437
 \T1/ptm/m/n/10.95 ev-ery vari-able. The cor-re-spond-ing C code en-ti-ties can 
 be re-cov-ered us-ing the de-bug in-for-ma-tion
  []
 
-[25]
-Overfull \hbox (52.90292pt too wide) in paragraph at lines 1439--1446
+[31]
+Overfull \hbox (52.90292pt too wide) in paragraph at lines 1494--1501
 \T1/ptm/m/n/10.95 LLVM \T1/pcr/m/n/10.95 instcombine \T1/ptm/m/n/10.95 pass suc
 h that it re-ports ev-ery time that it suc-cess-fully ap-plies the \T1/pcr/m/n/
 10.95 tryFactorization
  []
 
-
-Overfull \hbox (8.51251pt too wide) in paragraph at lines 1450--1455
+[32 <./figures/visual_gui2.png>]
+Overfull \hbox (8.51251pt too wide) in paragraph at lines 1505--1510
 \T1/ptm/m/n/10.95 con-sist of 94915 lines of code in to-tal. For each bench-mar
 k suite, we summed up all fac-tor-iza-tions
  []
 
 
+Overfull \hbox (5.84644pt too wide) in paragraph at lines 1539--1545
+[]\T1/ptm/m/n/10.95 The re-sults are shown in []Fig-ure 4.16[][]. In gen-eral, 
+the im-pact of sim-ple peep-hole op-ti-miza-tions
+ []
+
+[33]
+
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[26]
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[27]
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<figures/qualcomm_plot.pdf, id=528, 361.35pt x 180.675pt>
+[34]
+<figures/qualcomm_plot.pdf, id=792, 361.35pt x 180.675pt>
 File: figures/qualcomm_plot.pdf Graphic file (type pdf)
 <use figures/qualcomm_plot.pdf>
-Package pdftex.def Info: figures/qualcomm_plot.pdf  used on input line 1590.
+Package pdftex.def Info: figures/qualcomm_plot.pdf  used on input line 1645.
 (pdftex.def)             Requested size: 412.56497pt x 206.28314pt.
 
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-Overfull \hbox (6.04784pt too wide) in paragraph at lines 1597--1604
+Overfull \hbox (6.04784pt too wide) in paragraph at lines 1652--1659
 \T1/ptm/m/n/10.95 par-al-lelism op-por-tu-ni-ties in se-quen-tial code and to i
 m-ple-ment so-phis-ti-cated code trans-for-ma-tions
  []
 
 
-Overfull \hbox (24.22536pt too wide) in paragraph at lines 1597--1604
+Overfull \hbox (24.22536pt too wide) in paragraph at lines 1652--1659
 \T1/ptm/m/n/10.95 with affine data de-pen-den-cies. De-tect-ing SCoPs is fun-da
 -men-tal for any later poly-he-dral op-ti-miza-tion. 
  []
 
 
-Package natbib Warning: Citation `Lengauer2012Polly' on page 28 undefined on in
-put line 1609.
+Underfull \vbox (badness 2376) has occurred while \output is active []
+
+ [35 <./figures/qualcomm_plot.pdf>]
+
+Package natbib Warning: Citation `Lengauer2012Polly' on page 36 undefined on in
+put line 1664.
 
 
-Overfull \hbox (6.47672pt too wide) in paragraph at lines 1613--1623
+Overfull \hbox (6.47672pt too wide) in paragraph at lines 1668--1678
 \T1/ptm/m/n/10.95 demon-strated in []Fig-ure 4.5[][]. We use \T1/pcr/m/n/10.95 
 collect \T1/ptm/m/n/10.95 with CAnDL pro-grams \T1/pcr/m/n/10.95 ForLoop \T1/pt
 m/m/n/10.95 and \T1/pcr/m/n/10.95 Conditional
  []
 
 
-Overfull \hbox (6.12602pt too wide) in paragraph at lines 1648--1652
+Overfull \hbox (6.12602pt too wide) in paragraph at lines 1703--1707
 \T1/ptm/m/n/10.95 method as well as for Polly, we counted how many of the com-p
 u-ta-tional ker-nels in the bench-mark
  []
 
-[28]
-Overfull \hbox (2.1068pt too wide) in paragraph at lines 1655--1666
+
+Overfull \hbox (2.1068pt too wide) in paragraph at lines 1710--1721
 \T1/ptm/m/n/10.95 con-sec-u-tive outer level loops into SCoPs of max-i-mum size
 . To com-pare the re-sults, we ex-tracted
  []
 
 
-Overfull \hbox (36.02576pt too wide) in paragraph at lines 1667--1677
+Underfull \vbox (badness 2351) has occurred while \output is active []
+
+ [36]
+Overfull \hbox (36.02576pt too wide) in paragraph at lines 1722--1732
 []\T1/ptm/m/n/10.95 For lines of code, we com-pared our ver-sion with the amoun
 t of code in Polly's \T1/pcr/m/n/10.95 ScopDetection.cpp
  []
 
+[37] [38
 
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[29] [30] [31] [32 <./figures/compilerFlow2.pdf>] [33 <./figures/compilerFlow.p
-df>] [34] [35 <./figures/visual_gui2.png>] [36 <./figures/qualcomm_plot.pdf>]
+]
 Chapter 5.
-[37
-
-] [38
+[39] [40
 
 ]
 Chapter 6.
-[39] [40
+[41] [42
 
 ]
 Chapter 7.
@@ -1301,12 +1588,12 @@ Chapter 7.
 
 Package natbib Warning: There were undefined citations.
 
-[41]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1718.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1718.
+[43]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1773.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1773.
  (build/thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1718.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1718.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1773.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1773.
 
 Package rerunfilecheck Info: File `thesis.out' has not changed.
 (rerunfilecheck)             Checksum: <no file>.
@@ -1317,16 +1604,16 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1718.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1773.
  ) 
 Here is how much of TeX's memory you used:
- 20430 strings out of 494847
- 364197 string characters out of 6179079
- 1035882 words of memory out of 5000000
- 22974 multiletter control sequences out of 15000+600000
- 90628 words of font info for 115 fonts, out of 8000000 for 9000
+ 21146 strings out of 494847
+ 370075 string characters out of 6179079
+ 565611 words of memory out of 5000000
+ 23670 multiletter control sequences out of 15000+600000
+ 91300 words of font info for 119 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
- 54i,16n,75p,949b,1371s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 54i,16n,75p,949b,1441s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/
@@ -1342,10 +1629,10 @@ e1/urw/helvetic/uhvro8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/symb
 ol/usyr.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></u
 sr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on build/thesis.pdf (49 pages, 839318 bytes).
+Output written on build/thesis.pdf (51 pages, 844036 bytes).
 PDF statistics:
- 995 PDF objects out of 1000 (max. 8388607)
- 892 compressed objects within 9 object streams
- 401 named destinations out of 1000 (max. 500000)
+ 1005 PDF objects out of 1200 (max. 8388607)
+ 900 compressed objects within 9 object streams
+ 404 named destinations out of 1000 (max. 500000)
  368 words of extra memory for PDF output out of 10000 (max. 10000000)
 

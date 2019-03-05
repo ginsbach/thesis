@@ -10,6 +10,7 @@
 \usepackage{amsfonts}
 \usepackage{calligra}
 \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage{tcolorbox}
 \tcbuselibrary{theorems}
 \usepackage{mathptmx}
@@ -26,7 +27,7 @@
 \lstset{
 float=[*],
 language=C,
-basicstyle=\scriptsize\ttfamily,
+basicstyle=\linespread{1}\scriptsize\ttfamily,
 stringstyle=\color{sh_string},
 keywordstyle = \color{sh_keyword}\bfseries,
 commentstyle=\color{sh_comment}\itshape,
@@ -48,7 +49,7 @@ breaklines=true,
 breakatwhitespace=false,
 tabsize=2,
 captionpos=b,
-escapeinside={@@}{@@},
+escapeinside={([}{])},
 language=C++
 }
 
@@ -165,34 +166,36 @@ First and foremost I want to thank Mike for his ...
 \subsection{Ways of Encapsulating Expertise}
 
 
-\chapter{Contraint Programming on Single Static Assignment Representation}
+\chapter{Contraint Programming on Static Single Assignment Representation}
 
 \section{Introduction}
 
-    Many modern optimizing compilers for languages such as C/C++, Fortran and
-    JavaScript use internal intermediate code representations that are in
-    {\em static single assigment form}.
-    They are used in the mid-end in order to perform the majority of optimizing
-    transformations.
-    A non-exhaustive list is this:
-    \begin{itemize}
-    \item clang/clang++: LLVM IR
-    \item gcc: GIMPLE
-    \item v8 Crankshaft: Hydrogen
-    \item SpiderMonkey: IonMonkey/MIR
-    \end{itemize}
+    In this chapter we want to lay out a basic methodology to formally describe
+    and recognise algorithmic structures in programs during compilation.
+    During the different compilation stages, modern optimizing compilers for
+    proceedural languages such as C/C++, Fortran or JavaScript typically use
+    a range of different representations of the user program.
+    Static single assignment (SSA) form has emerged as a suitable representation
+    for applying complex optimizing transformations in the mid end.
+    It respresentation abstracts away the complexities of both the source
+    language and the target architecture, enabling reliable analysis and
+    platform independent reasoning.
 
-    Static single assignment form is a suitable optimization platform, as it
-    abstracts away the complexities of both the source langauge and the target
-    hardware architecture.
-    It is therefore a complexity bottleneck, the lease complex representation of
-    the program during compilation an therefore easiest to analyse.
+    Prominent examples of compilers that utilize static single assignement
+    representations for the bulk of their optimisation passes are
+    {\bf clang/clang++} (LLVM IR), {\bf gcc} (GIMPLE), {\bf v8 Crankshaft}
+    (Hydrogen) and {\bf SpiderMonkey} (IonMonkey/MIR).
 
-    The precise instruction set, syntax and type systems of single static
-    assignment for intermediate representations differ significantly, however
-    they share many core characteristics: The program is represented as a
-    sequence of instructions that are grouped into basic blocks and that operate
-    on virtual registers.
+    The precise instruction set, syntax and type systems of the different static
+    single assignment form intermediate representations vary depending on the
+    requirements of the source languages (static or dynamic) and the operating
+    constraints (JIT or AOF).
+    However, they share the same fundamental paradigmes and we can mostly
+    abstract away the differences as implementation specific details in this
+    chapter.
+    Fundamentally, a program in single static assignment form is made up of
+    functions that are represented as sequences of instructions that are grouped
+    into basic blocks and that operate on virtual registers.
     These virtual registers can be assigned only once and the place of
     assignment can be statically determined.
     In order to support control flow divergence, SSA form utilized PHI nodes
@@ -202,25 +205,37 @@ First and foremost I want to thank Mike for his ...
     SSA code via constraint programming.
     For this to work, we need to develop a mathematical model of it.
 
-\section{Static Single Assignment Form}
+\subsection{Static Single Assignment Form}
 
-    Static single assignemnt is a property that applies to intermediate
-    representations that are conceptualized as assebly languages of an abstract
-    machine.
-    A program consists of a sequence of instructions that operate on registers,
-    with control flow expressed via jump instructions.
+    Static single assignemnt form is a property that applies to compiler
+    intermediate representations.
+    Functions in SSA form are represented as sequences of instructions that
+    operate on an abstract machine and that are grouped into basic blocks.
+    The abstract machine provides an unlimited number of registers and a well
+    defined instruction set.
+    Each instruction has a finite amount of input arguments and an opcode that
+    refers to a specific operation to be performed.
+    instruction arguments can be registers or constants and instructions can
+    write their result into a single output register.
+    Control flow is expressed as branch instructions that can redirect control
+    conditionally or unconditionally to the start of other basic blocks.
+    Branch instructions signify the end of a basic block.
+    Instructions and registers may be statically typed.
+
 
     The static single assignemnt property stipulates that within a function,
-    each register is only written to by one instruction.
-    The advantage of this property is that the data dependencies between the
-    instructions become explicit and registers can be identified directly with
-    the instructions that write to them.
-    The registers themselves can actually be considered completely implicit,
-    with only the data flow between instructions required to completely recover
-    them.
+    each register is only written at a single static location.
+    This implies that the data dependencies between the instructions are
+    explicit and registers can be identified directly with the instructions that
+    write to them.
+    The registers themselves can therefore be considered implicit, with only the
+    data flow between instructions required to recover them.
 
-    With control flow divergence, this property cannot always be expressed
-    cleanly, and so phi nodes are rquired to make this explicit.
+    In the presence of dynamic control flow behaviour in the program, most
+    simply in the case of a conditional branch, the static single assignment
+    property can only be maintained using phi instructions.
+    These are particular pseudo-instructions that encapsulate assignments that
+    can only dynamically be determined.
 
 \section{Deriving a Mathematical Model}
 
@@ -235,11 +250,37 @@ First and foremost I want to thank Mike for his ...
 \end{figure}
 
 
-    In order to lay this chapter out as clearly as possible, we first want to
-    introduce a model for SSA intermediate representation.
-    It is not our aim to introduce a formal semantics, instead we simply
-    describe in clear notation the commonalities of existing SSA intermediate
-    representations.
+    In this section, we will derive a mathematical model of programs in single
+    static assignemnt form.
+    This will give us a sound basis and mathematical notation for compiler
+    analysis problems.
+    We will then in later chapters use this to define computational idioms
+    formally, and in order to implement automatic compiler tools.
+    It is not our aim to introduce a formal operational semantics, or more
+    generally to derive a model for the execution of SSA programs.
+    Instead, we will describe their static structure, focusing on clear notation
+    of the commonalities of existing SSA intermediate representations.
+
+    We discussed in the previous section how SSA representations can be disected
+    into different components, including control flow, data flow and instruction
+    specifications.
+    In \autoref{derivemaths}, we can see how this can be taken further in order
+    to extract a more mathematical approach.
+    At the top of the figure, we can see different textual representations of a
+    simple vector dot product.
+    The version of the top right is in an SSA intermediate representation: LLVM
+    IR as generated by the clang compiler.
+
+    In the middle column of \autoref{derivemaths}, the information that is
+    contained in the SSA representation is split into three components:
+    Firstly, the we need a set of per-instruction properties, such as
+    instruction opcodes, types and the values of constants that are used.
+    Secondly, we capture the control flow graph.
+    Thirdly, we capture the detailed data flow graph of the program.
+    This data structure contains information about how the results of previous
+    instructions are used as arguments to successive instructions.
+    As we discussed in the previous section, the SSA property ensures that this
+    is enough information to make the concrete register usage implicit.
 
     We can see this \autoref{derivemaths}.
     The single static assignment property implies that it is statically knows
@@ -276,8 +317,12 @@ First and foremost I want to thank Mike for his ...
 
 \subsection{Important Graph Properties}
 
-    We now define compiler analysis problems entirely on top of our mathematical
-    model of single static assignment representation.
+    With our established notation, we can now transfer standard compiler
+    analysis problems into this more formal language.
+    Most of these properties are based on graph theoretic considerations, so we
+    will firstly need to recapitulate some graph theory basics.
+    Firstly, there is the notion of {\em cuts} of graphs, that we will introduce
+    here in a hybrid version of edge based and vertex based modelling.
 
     \begin{definition}{Connections and Cuts}{def:cuts}
         Consider an adjacency set $E\subset\mathbb{N}\times\mathbb{N}$ of a
@@ -299,8 +344,12 @@ First and foremost I want to thank Mike for his ...
         \end{align*}
     \end{definition}
 
-    The definition of {\em cuts} that we just introduced is very powerful and we
-    can use it to identify crucial properties of data and control flow graphs.
+    These notions are quite intuitive, two vertices in a graph have a connection
+    if one can reach the other via the available edges and by ``cutting'' these
+    edges, they are no longer connected.
+
+    These definitions are very useful in order to identify crucial properties of
+    data and control flow graphs.
     Most standard is the the definition of a dominator in the control flow
     graph: An instruction $d$ is said to dominate another instruction $n$ if
     every path from the entry node to $n$ through the control flow graph must
@@ -420,6 +469,7 @@ First and foremost I want to thank Mike for his ...
     \end{definition}
 
 
+\newpage
 \subsection{Interface Example}
 
     We will now consider a non-trivial example.
@@ -427,25 +477,30 @@ First and foremost I want to thank Mike for his ...
     simple square root approximation on each element in an array of double
     precision floating point values.
 
-    Coneptually, we should be able to disentangle the square root function from
-    the control flow of the outer loop.
-    This is possible with the preceeding definition of {\em interfaces}.
-
+\begin{figure}[h]
 \begin{lstlisting}[language=C]
 void map_sqrt(size_t length, double* array)
 {
     for(int i = 0; i < length; i++)
     {
-      double root = 1.0;
-      for(int i = 0; i < 10; i++)
-        root = 0.5*(root+array[i]/root);
+        double root = 1.0;
+        for(int i = 0; i < 10; i++)
+            root = 0.5*(root+array[i]/root);
 
-      array[i] = root;
+        array[i] = root;
     }
 }
 \end{lstlisting}
+\caption{{\bf map$\circ$sqrt}: Apply an appriximate sqare root function to each
+         element in a vector.}
+\end{figure}
 
-\pagebreak
+    Coneptually, we should be able to disentangle the square root function from
+    the control flow of the outer loop.
+    This is possible with the preceeding definition of {\em interfaces}.
+
+
+\newpage
 In single static assignment form, this code looks as follows:
 
 \begin{lstlisting}[language=LLVM]
@@ -527,22 +582,22 @@ define void @map_sqrt(i64, double*) {
     It is a barrier to the rapid prototyping and evaluation of new
     optimizations.
 
-    In this paper we present the Compiler Analysis Description Language (CAnDL),
-    a domain specific language for compiler analysis.
-    CAnDL is a constraint based language that operates over LLVM's intermediate
-    representation.
-    The compiler developer writes a CAnDL program, which is then compiled by the
-    CAnDL compiler into a C++ LLVM pass.
-    It provides a uniform manner in which to describe compiler analysis and can
-    be applied to a range of compiler analysis problems, reducing code length
-    and complexity.
+    In this chapter, we develop the Compiler Analysis Description Language
+    (CAnDL), a domain specific language for compiler analysis.
+    Based on the constraint programming methodology that we established
+    previously, CAnDL provides a convenient mechanism for programmers to 
+    analyse LLVM's intermediate representation.
+    It enables a workflow, where the compiler developer writes CAnDL programs,
+    which is then compiled by the CAnDL compiler into a C++ LLVM pass.
+    This provides a uniform manner in which to describe compiler analysis and
+    can be applied to a range of compiler analysis problems, reducing code
+    length and complexity.
 
     We implemented and evaluated CAnDL on a number of real world use cases:
     eliminating redundant operations; graphics code optimization; identifying
     static control flow regions.
     In all cases were we able to express the analysis more briefly than
     competing approaches.
-
 
 \section{Introduction}
 
@@ -562,7 +617,7 @@ define void @map_sqrt(i64, double*) {
     reduces boiler-plate code and opens the way for new compiler optimization
     innovation.
 
-    In  this paper we present CAnDL, a domain specific language for compiler
+    In this chapter we present CAnDL, a domain specific language for compiler
     analysis.
     It is a constraint programming language that operates on LLVM’s SSA-based
     IR.
@@ -784,7 +839,7 @@ define void @map_sqrt(i64, double*) {
     The value is an origin of control (function entry) or data (function argument, {\tt load} instruction, inpure function call).
     \begin{align*}
         \text{\it variable}\text{\bf.arg[}\left<\text{\bf n}\right>{\bf]}\ &\text{\bf =}\ \text{\it variable}\\
-        \text{\it variable}\ &\text{\bf ∈}\ \text{\it variable}\text{\bf .args}
+        \text{\it variable}\ &\text{\bf $\in$}\ \text{\it variable}\text{\bf .args}
     \end{align*}
     There data flow from one value to the next.
     \begin{align*}
@@ -833,15 +888,15 @@ define void @map_sqrt(i64, double*) {
 \begin{figure}[ht]
 \begin{lstlisting}[language=CAnDL]
 Constraint ValueChain
- {element[i] @∈@ {element[i+1]}.args foreach i=0..4
+ {element[i] ([$\tt \in$]) {element[i+1]}.args foreach i=0..4
 End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL]
 Constraint ValueChain
-( {element[0]} @∈@ {element[1]}.args
-@∧@ {element[1]} @∈@ {element[2]}.args
-@∧@ {element[2]} @∈@ {element[3]}.args
-@∧@ {element[3]} @∈@ {element[4]}.args)
+( {element[0]} ([$\tt \in$]) {element[1]}.args
+([$\tt \land$]) {element[1]} ([$\tt \in$]) {element[2]}.args
+([$\tt \land$]) {element[2]} ([$\tt \in$]) {element[3]}.args
+([$\tt \land$]) {element[3]} ([$\tt \in$]) {element[4]}.args)
 End
 \end{lstlisting}
 \vspace{-0.3cm}
@@ -884,29 +939,29 @@ End
     takes the results of the previous two as input.
 
 \begin{figure}[ht]
-\begin{lstlisting}[language=CAnDL,escapeinside={*}{*}]
+\begin{lstlisting}[language=CAnDL]
 Constraint Sum
 ( opcode{out} = add
-*∧* {out}.args[0] = {in1}
-*∧* {out}.args[1] = {in2})
+([$\tt \land$]) {out}.args[0] = {in1}
+([$\tt \land$]) {out}.args[1] = {in2})
 End
 Constraint SumOfSums
-( include Sum*@*{sum1}
-*∧* include Sum*@*{sum2}
-*∧* include Sum({sum1.out}->{in1},{sum2.out}->{in2}))
+( include Sum@{sum1}
+([$\tt \land$]) include Sum@{sum2}
+([$\tt \land$]) include Sum({sum1.out}->{in1},{sum2.out}->{in2}))
 End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL]
 Constraint SumOfSums
-( opcode{sum1.out} = add @∧@
-@∧@ {sum1.out}.args[0] = {sum1.in1}
-@∧@ {sum1.out}.args[1] = {sum1.in2}
-@∧@ opcode{sum2.out} = add
-@∧@ {sum2.out}.args[0] = {sum2.in1}
-@∧@ {sum2.out}.args[1] = {sum2.in2}
-@∧@ opcode{out} = add
-@∧@ {out}.args[0] = {sum1.out}
-@∧@ {out}.args[1] = {sum2.out})
+( opcode{sum1.out} = add
+([$\tt \land$]) {sum1.out}.args[0] = {sum1.in1}
+([$\tt \land$]) {sum1.out}.args[1] = {sum1.in2}
+([$\tt \land$]) opcode{sum2.out} = add
+([$\tt \land$]) {sum2.out}.args[0] = {sum2.in1}
+([$\tt \land$]) {sum2.out}.args[1] = {sum2.in2}
+([$\tt \land$]) opcode{out} = add
+([$\tt \land$]) {out}.args[0] = {sum1.out}
+([$\tt \land$]) {out}.args[1] = {sum2.out})
 End
 \end{lstlisting}
 \vspace{-0.3cm}
@@ -940,7 +995,7 @@ End
 \begin{lstlisting}[language=CAnDL]
 Constraint CollectArguments
 ( ir_type{ins} = instruction
-@∧@ collect i N ({arg[i]} @∈@ {ins}.args))
+([$\tt \land$]) collect i N ({arg[i]} ([$\tt \in$]) {ins}.args))
 End
 \end{lstlisting}
 \vspace{-0.3cm}
@@ -985,9 +1040,9 @@ End
 \begin{lstlisting}[language=CAnDL]
 Constraint FloatingPointInstruction
 ( ir_type{ins} = instruction
-@∧@ collect i N ( {ins} @∈@ {arg[i]}.args)
-@∧@ collect i N ( {ins} @∈@ {arg[i]}.args
-              @∧@ data_type{arg[i]} = float))
+([$\tt \land$]) collect i N ( {ins} ([$\tt \in$]) {arg[i]}.args)
+([$\tt \land$]) collect i N ( {ins} ([$\tt \in$]) {arg[i]}.args
+              ([$\tt \land$]) data_type{arg[i]} = float))
 End
 \end{lstlisting}
 \vspace{-0.3cm}
@@ -1026,8 +1081,8 @@ End
 \begin{lstlisting}[language=CAnDL]
 Constraint LocalConst
 ( ir_type{value} = literal
-@∨@ ir_type{value} = argument
-@∨@ strict_domination({value}, {begin}))
+([$\tt \lor$]) ir_type{value} = argument
+([$\tt \lor$]) strict_domination({value}, {begin}))
 End
 \end{lstlisting}
 \vspace{-0.3cm}
@@ -1054,18 +1109,18 @@ End
     shown in \autoref{fig:kernel}.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=CAnDL,escapeinside={*}{*}]
+\begin{lstlisting}[language=CAnDL]
 Constraint KernelFunction
 ( collect i N
-*∧* ( include LocalConst({outer}->{begin}*@*{closure[i]}
-  *∧* ir_type{closure[i].value} != literal
-  *∧* {closure[i].use} *∈* {closure[i].value}.args
-  *∧* domination({inner}, {closure[i].use}))
-*∧* collect i N data_origin{tainted1[i]}
-*∧* collect i N
-*∧* ( domination({outer}, {tainted2[i]})
-  *∧* strict_domination({tainted2[i]}, {inner}))
-*∧* calculated_from(
+([$\tt \land$]) ( include LocalConst({outer}->{begin}*@*{closure[i]}
+  ([$\tt \land$]) ir_type{closure[i].value} != literal
+  ([$\tt \land$]) {closure[i].use} ([$\tt \in$]) {closure[i].value}.args
+  ([$\tt \land$]) domination({inner}, {closure[i].use}))
+([$\tt \land$]) collect i N data_origin{tainted1[i]}
+([$\tt \land$]) collect i N
+([$\tt \land$]) ( domination({outer}, {tainted2[i]})
+  ([$\tt \land$]) strict_domination({tainted2[i]}, {inner}))
+([$\tt \land$]) calculated_from(
    {tainted1[0..N],tainted2[0..N]},
    {origin[0..N],closure[0..N].value,input[0..N]},
    {output}))
@@ -1188,8 +1243,8 @@ End
 \begin{lstlisting}[language=CAnDL]
 Constraint SimpleAddition
 ( opcode{addition} = add
-@∧@ {addition}.args[0] = {left}
-@∧@ {addition}.args[1] = {right})
+([$\tt \land$]) {addition}.args[0] = {left}
+([$\tt \land$]) {addition}.args[1] = {right})
 End
 \end{lstlisting}
 \begin{lstlisting}[language=C++]
@@ -1420,15 +1475,15 @@ Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show t
 \begin{lstlisting}[language=CAnDL]
 Constraint ComplexFactorization
 ( opcode{value} = add
-@∧@ {value}.args[0] = {sum1.value}
-@∧@ {value}.args[1] = {sum2.value}
-@∧@ include SumChain at {sum1}
-@∧@ {mul1.value} = {sum1.last_factor}
-@∧@ include MulChain at {mul1}
-@∧@ {mul1.last_factor} = {mul2.last_factor}
-@∧@ include SumChain at {sum2}
-@∧@ {mul2.value} = {sum2.last_factor}
-@∧@ include MulChain at {mul2})
+([$\tt \land$]) {value}.args[0] = {sum1.value}
+([$\tt \land$]) {value}.args[1] = {sum2.value}
+([$\tt \land$]) include SumChain at {sum1}
+([$\tt \land$]) {mul1.value} = {sum1.last_factor}
+([$\tt \land$]) include MulChain at {mul1}
+([$\tt \land$]) {mul1.last_factor} = {mul2.last_factor}
+([$\tt \land$]) include SumChain at {sum2}
+([$\tt \land$]) {mul2.value} = {sum2.last_factor}
+([$\tt \land$]) include MulChain at {mul2})
 End
 \end{lstlisting}
 \vspace{-0.3cm}
@@ -1537,16 +1592,16 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\ \hline
     \texttt{nonhoisted}.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=CAnDL,escapeinside={*}{*}]
+\begin{lstlisting}[language=CAnDL]
 Constraint FloatingPointAssociativeReorder
 ( include VectorMulChain and
-*∧* collect j N
-*∧* ( {hoisted[k]} = {factors[i]} forsome i=0..N
-  *∧* include ScalarHoist({hoisted[j]}->{out},
+([$\tt \land$]) collect j N
+([$\tt \land$]) ( {hoisted[k]} = {factors[i]} forsome i=0..N
+  ([$\tt \land$]) include ScalarHoist({hoisted[j]}->{out},
                        {scalar[j]}->{in})@{hoist[j]})
-*∧* collect j N
+([$\tt \land$]) collect j N
   ( {nonhoisted[j]}  = {factors[i]} forsome i=0..N
-  *∧* {nonhoisted[j]} != {hoisted[i]} forall  i=0..N))
+  ([$\tt \land$]) {nonhoisted[j]} != {hoisted[i]} forall  i=0..N))
 End
 \end{lstlisting}
 \vspace{-0.3cm}

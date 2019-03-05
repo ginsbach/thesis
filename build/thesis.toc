@@ -7,43 +7,43 @@
 \contentsline {section}{\numberline {2.2}Idiom Specific Optimizations}{3}{section.2.2}
 \contentsline {subsection}{\numberline {2.2.1}Important Approaches}{3}{subsection.2.2.1}
 \contentsline {subsection}{\numberline {2.2.2}Ways of Encapsulating Expertise}{3}{subsection.2.2.2}
-\contentsline {chapter}{\numberline {3}Contraint Programming on Single Static Assignment Representation}{5}{chapter.3}
+\contentsline {chapter}{\numberline {3}Contraint Programming on Static Single Assignment Representation}{5}{chapter.3}
 \contentsline {section}{\numberline {3.1}Introduction}{5}{section.3.1}
-\contentsline {section}{\numberline {3.2}Static Single Assignment Form}{6}{section.3.2}
-\contentsline {section}{\numberline {3.3}Deriving a Mathematical Model}{6}{section.3.3}
-\contentsline {subsection}{\numberline {3.3.1}Important Graph Properties}{8}{subsection.3.3.1}
-\contentsline {subsection}{\numberline {3.3.2}Control Dependence Example}{10}{subsection.3.3.2}
-\contentsline {subsection}{\numberline {3.3.3}Phi Dependence Graph}{10}{subsection.3.3.3}
-\contentsline {subsection}{\numberline {3.3.4}Program Dependence Graph}{10}{subsection.3.3.4}
-\contentsline {subsection}{\numberline {3.3.5}Interface Example}{11}{subsection.3.3.5}
-\contentsline {section}{\numberline {3.4}Formulating Constraint Problems}{12}{section.3.4}
-\contentsline {chapter}{\numberline {4}CAnDL: A Constraint Programming Language for SSA Code}{15}{chapter.4}
-\contentsline {section}{\numberline {4.1}Introduction}{15}{section.4.1}
-\contentsline {section}{\numberline {4.2}Example}{16}{section.4.2}
-\contentsline {section}{\numberline {4.3}Language Specification}{18}{section.4.3}
-\contentsline {subsection}{\numberline {4.3.1}High Level Structure of CAnDL Programs}{18}{subsection.4.3.1}
-\contentsline {subsection}{\numberline {4.3.2}Atomic Constraints}{19}{subsection.4.3.2}
-\contentsline {subsection}{\numberline {4.3.3}Range Constraints}{20}{subsection.4.3.3}
-\contentsline {subsubsection}{\numberline {4.3.3.1}Modularity}{20}{subsubsection.4.3.3.1}
-\contentsline {subsubsection}{\numberline {4.3.3.2}Collect}{21}{subsubsection.4.3.3.2}
-\contentsline {subsection}{\numberline {4.3.4}Expressing Larger Structures}{22}{subsection.4.3.4}
-\contentsline {section}{\numberline {4.4}Implementation}{23}{section.4.4}
-\contentsline {subsection}{\numberline {4.4.1}The CAnDL Compiler}{23}{subsection.4.4.1}
-\contentsline {subsubsection}{\numberline {4.4.1.1}C++ Code Generation}{24}{subsubsection.4.4.1.1}
-\contentsline {subsection}{\numberline {4.4.2}The Solver}{24}{subsection.4.4.2}
-\contentsline {subsection}{\numberline {4.4.3}Developer Tools}{25}{subsection.4.4.3}
-\contentsline {subsection}{\numberline {4.4.4}Simple Optimizations}{26}{subsection.4.4.4}
-\contentsline {subsubsection}{\numberline {4.4.4.1}Results}{26}{subsubsection.4.4.4.1}
-\contentsline {subsection}{\numberline {4.4.5}Graphics Shader Optimizations}{27}{subsection.4.4.5}
-\contentsline {subsubsection}{\numberline {4.4.5.1}Results}{27}{subsubsection.4.4.5.1}
-\contentsline {subsection}{\numberline {4.4.6}Polyhedral SCoPs}{28}{subsection.4.4.6}
-\contentsline {paragraph}{\numberline {4.4.6.0.1}Structured Control Flow}{28}{paragraph.4.4.6.0.1}
-\contentsline {paragraph}{\numberline {4.4.6.0.2}Affine Memory Access}{28}{paragraph.4.4.6.0.2}
-\contentsline {paragraph}{\numberline {4.4.6.0.3}}{29}{paragraph.4.4.6.0.3}
-\contentsline {subsubsection}{\numberline {4.4.6.1}Results}{29}{subsubsection.4.4.6.1}
-\contentsline {chapter}{\numberline {5}Formalizing Idioms with CAnDL}{37}{chapter.5}
-\contentsline {chapter}{\numberline {6}Building a Fully integrated Idiom Specific Optimization Pipeline}{39}{chapter.6}
-\contentsline {section}{\numberline {6.1}Harnesses}{39}{section.6.1}
-\contentsline {section}{\numberline {6.2}Setup}{39}{section.6.2}
-\contentsline {section}{\numberline {6.3}Results}{39}{section.6.3}
-\contentsline {chapter}{\numberline {7}Conclusion}{41}{chapter.7}
+\contentsline {subsection}{\numberline {3.1.1}Static Single Assignment Form}{6}{subsection.3.1.1}
+\contentsline {section}{\numberline {3.2}Deriving a Mathematical Model}{6}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Important Graph Properties}{9}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}Control Dependence Example}{10}{subsection.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}Phi Dependence Graph}{10}{subsection.3.2.3}
+\contentsline {subsection}{\numberline {3.2.4}Program Dependence Graph}{12}{subsection.3.2.4}
+\contentsline {subsection}{\numberline {3.2.5}Interface Example}{13}{subsection.3.2.5}
+\contentsline {section}{\numberline {3.3}Formulating Constraint Problems}{14}{section.3.3}
+\contentsline {chapter}{\numberline {4}CAnDL: A Constraint Programming Language for SSA Code}{17}{chapter.4}
+\contentsline {section}{\numberline {4.1}Introduction}{17}{section.4.1}
+\contentsline {section}{\numberline {4.2}Example}{18}{section.4.2}
+\contentsline {section}{\numberline {4.3}Language Specification}{20}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}High Level Structure of CAnDL Programs}{21}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Atomic Constraints}{21}{subsection.4.3.2}
+\contentsline {subsection}{\numberline {4.3.3}Range Constraints}{23}{subsection.4.3.3}
+\contentsline {subsubsection}{\numberline {4.3.3.1}Modularity}{23}{subsubsection.4.3.3.1}
+\contentsline {subsubsection}{\numberline {4.3.3.2}Collect}{24}{subsubsection.4.3.3.2}
+\contentsline {subsection}{\numberline {4.3.4}Expressing Larger Structures}{26}{subsection.4.3.4}
+\contentsline {section}{\numberline {4.4}Implementation}{27}{section.4.4}
+\contentsline {subsection}{\numberline {4.4.1}The CAnDL Compiler}{27}{subsection.4.4.1}
+\contentsline {subsubsection}{\numberline {4.4.1.1}C++ Code Generation}{28}{subsubsection.4.4.1.1}
+\contentsline {subsection}{\numberline {4.4.2}The Solver}{29}{subsection.4.4.2}
+\contentsline {subsection}{\numberline {4.4.3}Developer Tools}{31}{subsection.4.4.3}
+\contentsline {subsection}{\numberline {4.4.4}Simple Optimizations}{32}{subsection.4.4.4}
+\contentsline {subsubsection}{\numberline {4.4.4.1}Results}{33}{subsubsection.4.4.4.1}
+\contentsline {subsection}{\numberline {4.4.5}Graphics Shader Optimizations}{34}{subsection.4.4.5}
+\contentsline {subsubsection}{\numberline {4.4.5.1}Results}{35}{subsubsection.4.4.5.1}
+\contentsline {subsection}{\numberline {4.4.6}Polyhedral SCoPs}{36}{subsection.4.4.6}
+\contentsline {paragraph}{\numberline {4.4.6.0.1}Structured Control Flow}{36}{paragraph.4.4.6.0.1}
+\contentsline {paragraph}{\numberline {4.4.6.0.2}Affine Memory Access}{36}{paragraph.4.4.6.0.2}
+\contentsline {paragraph}{\numberline {4.4.6.0.3}}{36}{paragraph.4.4.6.0.3}
+\contentsline {subsubsection}{\numberline {4.4.6.1}Results}{37}{subsubsection.4.4.6.1}
+\contentsline {chapter}{\numberline {5}Formalizing Idioms with CAnDL}{39}{chapter.5}
+\contentsline {chapter}{\numberline {6}Building a Fully integrated Idiom Specific Optimization Pipeline}{41}{chapter.6}
+\contentsline {section}{\numberline {6.1}Harnesses}{41}{section.6.1}
+\contentsline {section}{\numberline {6.2}Setup}{41}{section.6.2}
+\contentsline {section}{\numberline {6.3}Results}{41}{section.6.3}
+\contentsline {chapter}{\numberline {7}Conclusion}{43}{chapter.7}
