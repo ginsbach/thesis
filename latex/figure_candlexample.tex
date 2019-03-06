@@ -18,11 +18,14 @@ End
 \vspace{1em}
 \begin{minipage}[t]{\textwidth}
 \centering
+\begin{minipage}[t]{\textwidth}
+\centering
 {\bf(b)} C program code:
-\begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=C]
-double example(double a, double b){return sqrt(a*a)+sqrt(b*b);}
+\begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=C,basicstyle=\small\ttfamily]
+ double example(double a, double b) {return sqrt(a*a) + sqrt(b*b); }
 \end{lstlisting}
-\begin{minipage}[t]{7.0cm}
+\end{minipage}
+\begin{minipage}[t]{7.1cm}
 \centering
 {\bf(c)} Resulting LLVM IR:
 \begin{lstlisting}[language={LLVM}]

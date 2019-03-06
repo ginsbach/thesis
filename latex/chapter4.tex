@@ -68,17 +68,8 @@
     static control-flow regions that are used in polyhedral program
     transformation.
 
-    The core contributions of this papers are:
-    \begin{itemize}
-    \item The specification of a domain specific language for writing compiler
-          analysis.\\[-0.9em]
-    \item The implementation of the language inside of LLVM.\\[-0.9em]
-    \item The evaluation of the approach on different compiler analysis case
-          studies.
-    \end{itemize}
-
 \begin{figure*}[p]
-    \input{latex/figure01_candlexample}
+    \input{latex/figure_candlexample}
     \label{fig:firstexample}
 \end{figure*}
 
@@ -193,7 +184,7 @@
 
 \subsection{High Level Structure of CAnDL Programs}
 
-    An individual CAnDL program contains a set of constraint formulas that are
+    An individual CAnDL program contains constraint formulas that are
     bound to identifiers.
     As we already saw in \autoref{fig:firstexample} (a), the syntax for this is
     as follows:
@@ -311,6 +302,10 @@
     flow from each element to the next.
     We can see how the \texttt{foreach} loop can be expanded similar to loop
     unrolling.
+
+    UNDERFUL VBOX.
+
+    UNDERFUL VBOX.
 
 \begin{figure}[ht]
 \begin{lstlisting}[language=CAnDL]
@@ -581,6 +576,12 @@ End
     no impure functions are used in computing \texttt{output} and the entire
     computation is performed after \texttt{inner} (ruling out e.g.\ loop carried
     variabls from outer loops).
+
+    UNDERFUL VBOX.
+
+    UNDERFUL VBOX.
+
+    UNDERFUL VBOX.
 
 \section{Implementation}
 
@@ -1094,6 +1095,9 @@ Detected in GFX 4.0 & - & 19 \\ \hline
     the Polly implementation in LLVM.
     We rely on the definition of Semantic SCoPs in \cite{Lengauer2012Polly}.
     The constraints for SCoPs can be broken into several components:
+
+    UNDERFUL VBOX.
+
 
     \paragraph{Structured Control Flow}
     SCoPs require well structured control flow.

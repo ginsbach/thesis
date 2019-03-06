@@ -36,6 +36,8 @@
     SSA code via constraint programming.
     For this to work, we need to develop a mathematical model of it.
 
+    UNDERFUL VBOX.
+
 \subsection{Static Single Assignment Form}
 
     Static single assignemnt is a property that applies to compiler intermediate
@@ -69,10 +71,11 @@
 
 \section{Deriving a Mathematical Model}
 
-
 \begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth]{figures/schaubild.pdf}
+\includegraphics[width=\textwidth,height=1.5\textwidth]{figures/schaubild.pdf}
+
+\vspace{9.31595pt}
 \caption{Mathematical descriptions of example source code are derived via graph
          structures of compiler intermediate representation in single static
          assignment form.}
@@ -196,7 +199,15 @@
     Instructions that are executed only in some control flow paths are control
     dependent on the conditional branches that preceed them.
 
-    \begin{definition}{Control Dependence}{def:cdg}
+    UNDERFUL VBOX.
+
+    UNDERFUL VBOX.
+
+    UNDERFUL VBOX.
+
+    UNDERFUL VBOX.
+
+    \begin{definition}{Control Dependence}{cdg}
         Consider instructions $a,b$.
         We say that an $b$ is control dependent on $a$ if a instructions
         $c,c'$ exist such that $(a,c),(a,c')\in CFG_\mathcal{F}^*$ and
@@ -212,10 +223,13 @@
 
 \begin{figure}[p]
     \centering
-    \includegraphics[width=\linewidth]{figures/schaubild2.pdf}
+    \includegraphics[width=\textwidth,height=1.5\textwidth]{figures/schaubild2.pdf}
+
+    \vspace{27.38136pt}
     \caption{Computation of the control dependence graph.}
     \label{fig:pdg}
 \end{figure}
+
 
 \subsection{Control Dependence Example}
 
@@ -246,6 +260,14 @@
     Eveything within the body of the conditional is control dependent on $2$.
     Everythig within the loop as well as everything afterwards is control
     dependent on $16$.
+
+
+    UNDERFUL VBOX.
+
+    UNDERFUL VBOX.
+
+    UNDERFUL VBOX.
+
 
 \subsection{Phi Dependence Graph}
 
@@ -374,6 +396,12 @@ define void @map_sqrt(i64, double*) {
 
     We now use these mathematical background deliberations to derive
     constraint programming on top of LLVM code.
+
+    UNDERFUL VBOX.
+
+    UNDERFUL VBOX.
+
+    UNDERFUL VBOX.
 
     Consider the following definitions of simple binary predicates:
 

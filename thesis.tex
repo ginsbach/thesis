@@ -1,10 +1,8 @@
 \documentclass[phd,icsa,twoside,logo,11pt]{infthesis}
 
-\usepackage{natbib}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{xcolor}
-\usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amsfonts}
@@ -15,11 +13,21 @@
 \tcbuselibrary{theorems}
 \usepackage{mathptmx}
 \usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{cleveref}
 
 \hyphenpenalty=100000
 
-\newtcbtheorem[number within=section]{definition}{Definition}%
-{colback=green!5,colframe=green!35!black,fonttitle=\bfseries}{th}
+\makeatletter
+\newcommand{\tcb@cnt@definitionautorefname}{Definition}
+\makeatother
+
+\newtcbtheorem[auto counter,number within=chapter]{definition}{Definition}{
+label type=definition,
+colback=white,
+colframe=black,
+fonttitle=\bfseries,
+title={Definition \thetcbcounter}}{def}
 
 \definecolor{sh_comment}{rgb}{0.65, 0.00, 0.00 }
 \definecolor{sh_keyword}{rgb}{0.15, 0.25, 0.25}
