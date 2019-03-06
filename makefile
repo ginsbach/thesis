@@ -1,4 +1,4 @@
 thesis.pdf: thesis.tex
-	pdflatex --output-directory=build thesis.tex
-	cd build && bibtex thesis
-	pdflatex --output-directory=build thesis.tex
+	max_print_line=1000 pdflatex --interaction=nonstopmode thesis.tex
+	bibtex thesis
+	max_print_line=1000 pdflatex --interaction=nonstopmode thesis.tex

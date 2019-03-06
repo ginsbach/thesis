@@ -1,0 +1,28 @@
+    The end of Moores Law and the end of Dennard Scaling require new approaches
+    in hardware.
+
+    Heterogeneous computing platforms are the natural reaction to this.
+
+    However, with heterogeneous hardware becoming an essential component of
+    computing capabilities, thinking of it as library accelerators becomes
+    wrong.
+
+    We need a new hardware software contract instead and heterogeneous hardware
+    should become a responsibility of the compiler.
+
+    While compilers have lagged behind the developments in the hardware domain,
+    we can profit from experience with multi-core processors.
+
+    Auto-parallelizing compilers have failed to solve the problems and have only
+    had major success for specific kernels and using auto-tuning.
+
+    Heterogeneous computing is a superset of parallel computing and so an
+    approach to fully automatically optimize code is unlikely.
+
+    At the same time, a library and DSL based approach has been successful,
+    however fails to become mainstream due to adoption cost.
+
+    What is promising therefore is a combination of hand-optimized and
+    -parallelized libraries together with compiler automatisms.
+
+    This is what we consider an idiomatic approach.

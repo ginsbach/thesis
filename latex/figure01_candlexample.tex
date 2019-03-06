@@ -15,19 +15,17 @@ End
 \end{lstlisting}
 \end{minipage}
 
-\begin{minipage}[t]{\textwidth}
-\centering
+\vspace{1em}
 \begin{minipage}[t]{\textwidth}
 \centering
 {\bf(b)} C program code:
-\begin{lstlisting}
-double example(double a, double b) { return sqrt(a*a) + sqrt(b*b); }
+\begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=C]
+double example(double a, double b){return sqrt(a*a)+sqrt(b*b);}
 \end{lstlisting}
-\end{minipage}
-\begin{minipage}[t]{4.785cm}
+\begin{minipage}[t]{7.0cm}
 \centering
 {\bf(c)} Resulting LLVM IR:
-\begin{lstlisting}[escapeinside={(*}{*)},language={LLVM}]
+\begin{lstlisting}[language={LLVM}]
 define double @example(    
  double %0,                
  double %1) {              
@@ -41,10 +39,10 @@ declare double @sqrt(double)
 \end{lstlisting}
 \end{minipage}
 \hfill
-\begin{minipage}[t]{4.03cm}
+\begin{minipage}[t]{3.5cm}
 \centering
 {\bf(d)} First solution:
-\begin{lstlisting}[escapeinside={(*}{*)},language={LLVM},numbers=none]
+\begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=LLVM]
 
 a = %0
 
@@ -58,10 +56,10 @@ sqrt_fn = @sqrt
 \end{lstlisting}
 \end{minipage}
 \hfill
-\begin{minipage}[t]{4.03cm}
+\begin{minipage}[t]{3.5cm}
 \centering
 {\bf(e)} Second solution:
-\begin{lstlisting}[escapeinside={(*}{*)},language={LLVM},numbers=none]
+\begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=LLVM]
 
 
 a = %1
@@ -76,6 +74,8 @@ sqrt_fn = @sqrt
 \end{minipage}
 \end{minipage}
 
+
+\vspace{1em}
 \begin{minipage}[t]{\textwidth}
 \centering
 {\bf(f)} C++ transformation code:
@@ -88,6 +88,7 @@ void transform(map<string,Value*> solution, Function* abs) {
 \end{lstlisting}
 \end{minipage}
 
+\vspace{1em}
 \begin{minipage}[t]{\textwidth}
 \centering
 {\bf(g)} Transformed LLVM IR after DCE:
@@ -99,6 +100,10 @@ define double @example(double %0, double %1) {
  ret double %5 }
 \end{lstlisting}
 \end{minipage}
-\vspace{-0.3cm}
-\caption{Demonstration of a simple CAnDL program}
-\label{fig:firstexample}
+
+\caption{Demonstration of a simple CAnDL specification ({\bf a}) on an example C
+         program ({\bf b}):
+         In the generated LLVM intermediate code ({\bf c}), two instances
+         ({\bf d},{\bf e}) of {\tt SqrtOfSquare} are detected.
+         Applying an optimization using these results is trivial ({\bf g}) and
+         results in efficient code ({\bf e}).}
