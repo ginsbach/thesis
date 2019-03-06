@@ -1,0 +1,19 @@
+\begin{align*}
+harness  ::=\ &\textbf{HARNESS} \left<name\right> \textbf{IMPLEMENTS} \left<name\right>\\[-0.3em]
+              &\left<C++\right>\\[-0.3em]
+           [\ &\left<marshalling\right>\ ]\ [\ \left<persistence\right> ]\\[-0.3em]
+           [\ &\textbf{CppHeaderFiles}\ \{\ \left<name\right>\ \}\ ]\\
+persistence ::=\ &\textbf{PersistentVariables}\ \{\ \left<name\right> \left<name\right>\ \}\\[-0.3em]
+              [\ &\textbf{BeforeFirstExecution} \left<C++\right>\ ]\\[-0.3em]
+              [\ &\textbf{AfterLastExecution} \left<C++\right>\ ]\\[-1em]
+\cline{1-2}\\[-2em]
+marshalling ::=\ &\textbf{Marshalling}\\[-0.3em]
+          \{\ &\left<type\right> \left<name\right> \textbf{=} \left<name\right> \textbf{of}\\[-0.3em]
+              &\left<name\right>\ \textbf{[}\ \textbf{0}\ \textbf{..} \left<exp\right> \textbf{]}\ \}\\
+input   ::=\ &\textbf{INPUT} \left<name\right> \left<C++\right>\\[-0.3em]
+             [\ &\textbf{BeforeFirstExecution} \left<C++\right>\ ]\\[-0.3em]
+             [\ &\textbf{AfterLastExecution} \left<C++\right>\ ]\\
+output  ::=\ &\textbf{OUTPUT} \left<name\right> \left<C++\right>\\[-0.3em]
+             [\ &\textbf{BeforeFirstExecution} \left<C++\right>\ ]\\[-0.3em]
+             [\ &\textbf{AfterLastExecution} \left<C++\right>\ ]
+\end{align*}

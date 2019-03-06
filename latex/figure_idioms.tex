@@ -1,0 +1,169 @@
+
+\begin{figure}[p]
+\begin{lstlisting}[language={constraints},numbers=none,xleftmargin=0cm,framexleftmargin=0em,basicstyle=\linespread{1.133}\scriptsize\ttfamily]
+Constraint SESE
+( {precursor} is branch instruction and
+  {precursor} has control flow to {begin} and
+  {end} is branch instruction and
+  {end} has control flow to {successor} and
+  {begin} control flow dominates {end} and
+  {end} control flow post dominates {begin} and
+  {precursor} strictly control flow dominates
+      {begin} and
+  {successor} strictly control flow post dominates
+      {end} and
+  all control flow from {begin} to {precursor}
+      passes through {end} and
+  all control flow from {successor} to {end}
+      passes through {begin})
+End
+\end{lstlisting}
+\vspace{-.3cm}
+\caption{IDL specification of SESE region\vspace{-.3em}}
+\label{fig:sese}
+\end{figure}
+
+\begin{figure}[p]
+\vspace{.512cm}
+\begin{lstlisting}[language={constraints},numbers=none,xleftmargin=0cm,framexleftmargin=0em,basicstyle=\linespread{1.133}\scriptsize\ttfamily]
+Constraint GEMM
+( inherits ForNest(N=3) and
+  inherits MatrixStore
+      with {iterator[0]} as {col}
+       and {iterator[1]} as {row}
+       and {begin} as {begin} at {output} and
+  inherits MatrixRead
+      with {iterator[0]} as {col}
+       and {iterator[2]} as {row}
+       and {begin} as {begin} at {input1} and
+  inherits MatrixRead
+      with {iterator[1]} as {col}
+       and {iterator[2]} as {row}
+       and {begin} as {begin} at {input2} and
+  inherits DotProductLoop
+      with {loop[2]}        as {loop}
+       and {input1.value}   as {src1}
+       and {input2.value}   as {src2}
+       and {output.address} as {update_address})
+End
+\end{lstlisting}
+\vspace{-.3cm}
+\caption{IDL specification of GEMM}
+\label{fig:gemm}
+\vspace{.512cm}
+\end{figure}
+
+\begin{figure}[p]
+\begin{lstlisting}[language={constraints},numbers=none,xleftmargin=0cm,framexleftmargin=0em,basicstyle=\linespread{1.133}\scriptsize\ttfamily]
+Constraint Histogram
+( inherits For and
+  inherits ConditionalReadModifyWrite
+      with {indexkernel.output} as {address}
+       and {kernel.output} as {value} and
+  collect i
+  ( inherits VectorRead
+        with {read_value[i]} as {value}
+         and {iterator} as {idx}
+         and {begin} as {begin} at {read[i]}) and
+  inherits Concat
+      with {read_value}   as {in1}
+       and {old_value}    as {in2}
+       and {kernel.input} as {out} and
+  inherits KernelFunction
+      with {begin} as {outer}
+       and {body.begin} as {inner} at {kernel} and
+  inherits KernelFunction
+      with {read_value} as {input}
+       and {begin} as {outer}
+       and {body.begin} as {inner} at {indexkernel})
+End
+\end{lstlisting}
+\vspace{-.3cm}
+\caption{IDL specification of generalized histogram}
+\label{fig:histogram}
+\end{figure}
+
+\begin{figure}[p]
+\begin{lstlisting}[language={constraints},numbers=none,xleftmargin=0cm,framexleftmargin=0em,basicstyle=\linespread{1.133}\scriptsize\ttfamily]
+Constraint SPMV
+( inherits For and
+  inherits VectorStore
+      with {iterator} as {idx}
+       and {begin} as {begin} at {output} and
+  inherits ReadRange
+      with {iterator} as {idx} 
+       and {inner.iter_begin} as {range_begin} 
+       and {inner.iter_end}   as {range_end} and
+  inherits For at {inner} and
+  inherits VectorRead
+      with {inner.iterator} as {idx}
+       and {begin} as {begin} at {idx_read} and
+  inherits VectorRead
+      with {idx_read.value} as {idx}
+       and {begin} as {begin} at {indir_read} and
+  inherits VectorRead
+      with {inner.iterator} as {idx}
+       and {begin} as {begin} at {seq_read} and
+  inherits DotProductLoop
+      with {inner}            as {loop}
+       and {indir_read.value} as {src1}
+       and {seq_read.value}   as {src2}
+       and {output.address}   as {update_address})
+End
+\end{lstlisting}
+\vspace{-.3cm}
+\caption{IDL specification of SPMV}
+\label{fig:spmv}
+\vspace{.3cm}
+\end{figure}
+
+\begin{figure}[p]
+\begin{lstlisting}[language={constraints},numbers=none,xleftmargin=0cm,framexleftmargin=0em,basicstyle=\linespread{1.133}\scriptsize\ttfamily]
+Constraint Stencil
+( inherits ForNest and
+  inherits PermMultidStore
+      with {iterator} as {input} 
+       and {begin} as {begin} at {write} and
+  collect i
+  ( inherits StencilRead
+      with {write.input_index} as {input}
+       and {kernel.input[i]} as {value}
+       and {begin} as {begin} at {reads[i]}) and
+  {kernel.output} is first argument of {write.store} and
+  inherits KernelFunction
+      with {begin}      as {outer}
+       and {body.begin} as {inner} at {kernel})
+End
+\end{lstlisting}
+\vspace{-.3cm}
+\caption{IDL specification of simple stencil}
+\label{fig:stencilcompute}
+\vspace{.3cm}
+\end{figure}
+
+\begin{figure}[p]
+\begin{lstlisting}[language={constraints},numbers=none,xleftmargin=0cm,framexleftmargin=0em,basicstyle=\linespread{1.133}\scriptsize\ttfamily]
+Constraint Reduction
+( inherits For and
+  collect i
+  ( inherits VectorRead
+        with {iterator}         as {idx}
+         and {read_value[i]}    as {value}
+         and {begin} as {begin} at {read[i]}) and
+  inherits InductionVar
+       with {old_value}       as {old_ind}
+        and {kernel.output}   as {new_ind} and
+  {old_value} is not the same as {iterator} and
+  inherits Concat
+      with {read_value}   as {in1}
+       and {old_value}    as {in2}
+       and {kernel.input} as {out} and
+  inherits KernelFunction
+      with {begin}      as {outer}
+       and {body.begin} as {inner} at {kernel})
+End
+\end{lstlisting}
+\vspace{-.3cm}
+\caption{IDL specification of scalar reductions}
+\label{fig:scalarreduction}
+\end{figure}

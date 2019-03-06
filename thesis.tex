@@ -1,11 +1,15 @@
 \documentclass[phd,icsa,twoside,logo,11pt]{infthesis}
 
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage[numbers]{natbib}
+\bibliographystyle{plainnat}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{xcolor}
-\usepackage{amsmath}
-\usepackage{amsthm}
-\usepackage{amsfonts}
 \usepackage{calligra}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -13,8 +17,13 @@
 \tcbuselibrary{theorems}
 \usepackage{mathptmx}
 \usepackage{enumitem}
-\usepackage{hyperref}
-\usepackage{cleveref}
+\usepackage{pgfplots}
+\usepackage{tabularx}
+\usepackage{courier}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 
 \hyphenpenalty=100000
 
@@ -67,6 +76,24 @@ language=C++
 morekeywords = {Constraint, with, opcode, collect, include, function\_name, data\_type, ir\_type, domination, strict\_domination, calculated\_from, control\_origin, data\_origin, End },
 morecomment  = [s]{\{}{\}}
 }
+
+\lstdefinelanguage{constraints}
+{
+morekeywords = { Constraint, with, and, or, at, as, End },
+morecomment  = [s]{\{}{\}}
+}
+
+\lstdefinelanguage{LiLAC}
+{
+morekeywords = { HARNESS, IMPLEMENTS, Marshalling, PersistentVariables,
+                 BeforeFirstExecution, AfterLastExecution, CppHeaderFiles,
+                 INPUT, OUTPUT, COMPUTATION},
+morekeywords = [2]{CudaRead, CudaWrite, spmv_csr, Maximum, cuda, mkl,
+                   dotproduct},
+morekeywords = [3]{out, in, size},
+morecomment  = [s]{"}{"}
+}
+
 
 \title{Idiomatic Code Acceleration for Heterogeneous Systems}
 \author{Philip Ginsbach}
@@ -139,6 +166,5 @@ First and foremost I want to thank Mike for his ...
 
 \chapter{Conclusion}
 
-\bibliographystyle{acm}
 \bibliography{references}
 \end{document}
