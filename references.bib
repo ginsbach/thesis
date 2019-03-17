@@ -97,7 +97,7 @@
  keywords = {automatic translation, compiler optimization, cuda, gpu, openmp},
 }
 
-@misc{clBlas-1,
+@misc{clblas,
   year={2013},
   author = {AMD},
   title={{clBLAS}},
@@ -826,14 +826,15 @@ year = 2013
  keywords = {OWL, architecture description languages, architecture representation, ontology, software architecture},
 }
 
-@manual{mkl-1,
+@manual{mkl,
   title = {{Math Kernel Library}},
   organization = {Intel},
   version = {11.1},
+  year = {2003},
   url = {https://software.intel.com/en-us/intel-mkl}
 }
 
-@manual{cuBLAS-1,
+@manual{cublas,
   title = {{cuBLAS}},
   organization = {Nvidia},
   url = {http://developer.nvidia.com/cuBLAS},
@@ -1018,7 +1019,6 @@ In this paper, we discuss the language, compiler, and runtime features that enab
   author={Fisher, Allan L and Ghuloum, Anwar M},
   booktitle={ACM SIGPLAN Notices},
   volume={29},
-  number={6},
   pages={135--146},
   year={1994},
   organization={ACM}
@@ -1172,11 +1172,14 @@ In this paper, we discuss the language, compiler, and runtime features that enab
 
 @misc{cusparse,
   title={{NVIDIA CUDA Sparse Matrix library (cuSPARSE)}},
+  author={{NVIDIA}},
   howpublished = {\url{https://developer.nvidia.com/cusparse}}
 }
 
 @misc{clsparse,
   title={{clMathLibraries clSPARSE}},
+  author={{AMD}},
+  year={2015},
   howpublished = {\url{https://github.com/clMathLibraries/clSPARSE}}
 }
 
@@ -1516,6 +1519,7 @@ month={Oct}
 }
 
 @article{2002:USB:567806.567807,
+ author = {Blackford, L. Susan and Demmel, James and Dongarra, Jack and Duff, Iain and Hammarling, Sven and Henry, Greg and Heroux, Michael and Kaufman, Linda and Lumsdaine, Andrew and Petitet, Antoine and Pozo, Roland and Remington, Karin and Whaley, R. Clint},
  title = {An Updated Set of Basic Linear Algebra Subprograms (BLAS)},
  journal = {ACM Trans. Math. Softw.},
  issue_date = {June 2002},
@@ -1619,4 +1623,23 @@ booktitle = {International Journal of Parallel Programming}
  publisher = {ACM},
  address = {New York, NY, USA},
  keywords = {automatic translation, compiler optimization, cuda, gpu, openmp},
+}
+
+@article{sparsex,
+  title = {{{SparseX}}: {{A Library}} for {{High}}-{{Performance Sparse Matrix}}-{{Vector Multiplication}} on {{Multicore Platforms}}},
+  volume = {44},
+  issn = {0098-3500},
+  shorttitle = {{{SparseX}}},
+  doi = {10.1145/3134442},
+  abstract = {The Sparse Matrix-Vector Multiplication (SpMV) kernel ranks among the most important and thoroughly studied linear algebra operations, as it lies at the heart of many iterative methods for the solution of sparse linear systems, and often constitutes a severe performance bottleneck. Its optimization, which is intimately associated with the data structures used to store the sparse matrix, has always been of particular interest to the applied mathematics and computer science communities and has attracted further attention since the advent of multicore architectures. In this article, we present SparseX, an open source software package for SpMV targeting multicore platforms, that employs the state-of-the-art Compressed Sparse eXtended (CSX) sparse matrix storage format to deliver high efficiency through a highly usable ``BLAS-like'' interface that requires limited or no tuning. Performance results indicate that our library achieves superior performance over competitive libraries on large-scale problems.},
+  number = {3},
+  urldate = {2018-06-05},
+  journal = {ACM Trans. Math. Softw.},
+  url = {http://doi.acm.org/10.1145/3134442},
+  author = {Elafrou, Athena and Karakasis, Vasileios and Gkountouvas, Theodoros and Kourtis, Kornilios and Goumas, Georgios and Koziris, Nectarios},
+  month = jan,
+  year = {2018},
+  keywords = {high-performance computing,HPC,sparse matrix-vector multiplication,CSX,data compression,multicore,scientific applications,SpMV,SpMV library},
+  pages = {26:1--26:32},
+  file = {/home/bruce/Zotero/storage/E7FB22HG/Elafrou et al. - 2018 - SparseX A Library for High-Performance Sparse Mat.pdf}
 }
