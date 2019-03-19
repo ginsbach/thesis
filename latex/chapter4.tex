@@ -59,7 +59,7 @@
 
     We focus on programmer productivity and do not investigate formal methods
     for proving the correctness of optimization passes in this paper.
-    However, previous work such as \cite{Lopes:2015:PCP:2737924.2737965}
+    However, previous work by \citet{Lopes:2015:PCP:2737924.2737965}
     suggests that CAnDL would also be also suitable for automatic verification.
 
     We demonstrate the usefulness and generality of CAnDL via a number of use
@@ -95,7 +95,7 @@
     C++ code.
     This code makes heavy use of raw pointers and dynamic type casts.
     This is an impediment to compiler development and as previous work has shown
-    \cite{Yang:2011:FUB:1993316.1993532,Menendez:2017:ADP:3062341.3062372}, it
+    \citet{Yang:2011:FUB:1993316.1993532,Menendez:2017:ADP:3062341.3062372}, it
     inevitably leads to buggy code.
 
     \autoref{fig:candlexample} shows how this optimization can be implemented
@@ -1067,7 +1067,7 @@ Detected in GFX 4.0 & - & 19 \\ \hline
     definition of SCoPs.
     We implemented SCoP detection functionality in CAnDL and compared against
     the Polly implementation in LLVM.
-    We rely on the definition of Semantic SCoPs in \cite{Lengauer2012Polly}.
+    We rely on the definition of Semantic SCoPs in \citet{Lengauer2012Polly}.
     The constraints for SCoPs can be broken into several components:
 
     UNDERFUL VBOX.
@@ -1154,11 +1154,11 @@ Detected in GFX 4.0 & - & 19 \\ \hline
     There is a large body of work that uses constraints for program analysis.
     Constraint systems have long been used in program analysis for classical
     purposes such as dataflow analysis and type inference
-    \cite{Aiken:1999:ISC:339853.339897}.
-    In \cite{Gulwani:2008:PAC:1375581.1375616} they show how constraints can be
+    \citep{Aiken:1999:ISC:339853.339897}.
+    \citet{Gulwani:2008:PAC:1375581.1375616} showed how constraints can be
     used to for some  existing analysis problems.
     It can also be used to assist generation of programs from specifications
-    \cite{Srivastava:2010:PVP:1707801.1706337}.
+    \citep{Srivastava:2010:PVP:1707801.1706337}.
 
     There is considerable work on formally verifying existing compiler
     transformations using SMT solvers and theorem provers that operate on IR
@@ -1171,78 +1171,98 @@ Detected in GFX 4.0 & - & 19 \\ \hline
 
     Further approaches to generating compiler optimizations that focus on formal
     verification instead of programmer productivity include Rhodium
-    \cite{Lerner:2005:ASP:1040305.1040335}, PEC
-    \cite{Kundu:2009:POC:1543135.1542513} and Gospel
-    \cite{Whitfield:1997:AEC:267959.267960}.
-    CompCert \cite{Mullen:2016:VPO:2908080.2908109} verifies peephole
+    \citep{Lerner:2005:ASP:1040305.1040335}, PEC
+    \citep{Kundu:2009:POC:1543135.1542513} and Gospel
+    \citep{Whitfield:1997:AEC:267959.267960}.
+    The CompCert tool by \citet{Mullen:2016:VPO:2908080.2908109} verifies peephole
     optimizations directly on x86 assembly code and LifeJacket
     \cite{Notzli:2016:LVP:2931021.2931024} proves the correctness of floating
     point optimizations in LLVM, as does Alive-FP \cite{Menendez2016}, which
     also generates C++ code.
     The authors of \cite{Tate:2010:GCO:1706299.1706345} investigate the
     automatic generation of optimization transformations from examples.
-    None of these approaches however, tackle the issue of efficiently writing
+    None of the approaches however, tackle the issue of efficiently writing
     arbitrary compiler analysis passes.
 
-In \cite{Martin1998}, the authors present a specification language for
-program analysis functionality called PAG that is based on abstract interpretation.
-Domain specific languages for the conception of optimization passes
-have also been studied before using tree rewrites among them
-\cite{Olmos:2005:CSD:2136624.2136643}.  In \cite{Lipps1989}, the
-authors propose the domain specific language OPTRAN for matching
-patterns in attributed abstract syntax trees of Pascal programs.
-These patterns can then be automatically replaced by semantically
-equivalent, more efficient implementations. 
-Generic programming
-concepts can also be used to generate optimization passes, as
-demonstrated by \cite{Willcock:2009:RGP:1621607.1621611}.  These
-schemes however are not able to work at the IR level essential for
-compiler implementation and do not scale beyond simple functions.
+    \citet{Martin1998} present a specification language for program analysis
+    functionality called PAG that is based on abstract interpretation.
+    Domain specific languages for the conception of optimization passes have
+    also been studied before using tree rewrites, among them
+    \citet{Olmos:2005:CSD:2136624.2136643}.
+    \citet{Lipps1989} propose the domain specific language OPTRAN for matching
+    patterns in attributed abstract syntax trees of Pascal programs.
+    These patterns can then be automatically replaced by semantically
+    equivalent, more efficient implementations. 
+    Generic programming
+    concepts can also be used to generate optimization passes, as
+    demonstrated by \cite{Willcock:2009:RGP:1621607.1621611}.  These
+    schemes however are not able to work at the IR level essential for
+    compiler implementation and do not scale beyond simple functions.
 
-As opposed to code transformation techniques based on the LLVM ASTMatcher and LibTooling \cite{be0fa11ddb194bde86a9dab8589b779c}, we work on compiler intermediate representation and are independent from the compiler frontend.
-This makes us integrate well with the existing optimization infrastructure. allows us to be language independent and makes our approach robust to shallow syntactic changes.
+    As opposed to code transformation techniques based on the LLVM ASTMatcher
+    library and LibTooling \citep{be0fa11ddb194bde86a9dab8589b779c}, we work on
+    compiler intermediate representation and are independent from the compiler
+    frontend.
+    This makes us integrate well with the existing optimization infrastructure,
+    allows us to be language independent and makes our approach robust to
+    shallow syntactic changes.
 
-Another language for implementing optimizations that emphasizes
-programmer productivity is OPTIMIX \cite{Assmann1996,Assmann98optimix},
-based on graph rewrite rules.  OPTIMIX programs are compiled into C
-code that performs the specified transformation.  A domain specific
-language for the generation of optimization transformations was also
-used in the CoSy compiler \cite{Alt1994}. These are simple rewrite
-engines and have no knowledge of global program constraints.
+    Another language for implementing optimizations that emphasizes developer
+    productivity is OPTIMIX \citep{Assmann1996,Assmann98optimix}, based on graph
+    rewrite rules.
+    OPTIMIX programs are compiled into C code that performs the specified
+    transformation.
+    A domain specific language for the generation of optimization
+    transformations was also used in the CoSy compiler \citep{Alt1994}.
+    These are simple rewrite engines and have no knowledge of global program
+    constraints.
 
-Other work has investigated the use of constraint solvers for
-detecting structure in LLMV IR.  The authors of
-\cite{ginsbach2017discovery} use a solver to detect histograms and
-scalar reductions in order to automatically parallelize code.  A
-different important approach to detecting structure in intermediate
-code is the polyhedral model.  Compilers using this model, such as
-\cite{Lengauer2012Polly}, \cite{Baskaran:2010:ACC:2175462.2175482} and
-\cite{Verdoolaege:2013:PPC:2400682.2400713}, capture well behaved
-loops with affine array accesses and are able to perform advanced loop
-optimizations.
-Recent work has investigated performant reduction computations on GPUs with the polyhedral model \cite{Reddy2016Reduction}.
-However this approach is not easily extensible to other program
-structures and captures only a very specific class of well behaved
-programs.
+    Other work has investigated the use of constraint solvers for
+    detecting structure in LLMV IR.
+    \citet{ginsbach2017discovery} use a solver to detect histograms and
+    scalar reductions in order to automatically parallelize code.
+    A different important approach to detecting structure in intermediate
+    code is the polyhedral model.
+    Compilers using this model, such as
+    \citet{Lengauer2012Polly}, \citet{Baskaran:2010:ACC:2175462.2175482} and
+    \citet{Verdoolaege:2013:PPC:2400682.2400713}, capture well behaved
+    loops with affine array accesses and are able to perform advanced loop
+    optimizations.
+    Recent work has investigated performant reduction computations on GPUs with
+    the polyhedral model \citep{Reddy2016Reduction}.
+    However this approach is not easily extensible to other program structures
+    and captures only a very specific class of well behaved programs.
 
-In \cite{Yuan:2017:TOS:3101282.3101287}, the authors propose the
-use of the Web Ontology Language (WOL) for the description of software
-architectures.
-This representation enables automatic reasoning and analysis about
-the interoperability of software architectures.
+    In \cite{Yuan:2017:TOS:3101282.3101287}, the authors propose the use of the
+    Web Ontology Language (WOL) for the description of software architectures.
+    This representation enables automatic reasoning and analysis about the
+    interoperability of software architectures.
 
 \section{Conclusion}
 
-Optimizing compilers require sophisticated program analysis in order to generate performant code.
-The current way of implementing this functionality manually in programming languages such as C++ is not satisfactory.
+    Optimizing compilers require sophisticated program analysis in order to
+    generate performant code.
+    The current way of implementing this functionality manually in programming
+    languages such as C++ is not satisfactory.
 
-The domain specific Compiler Analysis Description Language (CAnDL) provides a more efficient approach.
-CAnDL programs can be used to automatically generate compiler analysis passes.
-They are easier to write and reduce the code size and complexity when comparing against manual C++ implementations.
+    The domain specific Compiler Analysis Description Language (CAnDL) provides
+    a more efficient approach.
+    CAnDL programs can be used to automatically generate compiler analysis
+    passes.
+    They are easier to write and reduce the code size and complexity when
+    comparing against manual C++ implementations.
 
-Although CAnDL is based on a constraint programming paradigm and uses a backtracking solver to analyze LLVM IR code, the use of CAnDL results in only moderate compile time increases.
-Many compiler analysis tasks are suitable for CAnDL programs, from small peephole optimizations to sophisticated program analysis with the polyhedral model.
+    Although CAnDL is based on a constraint programming paradigm and uses a
+    backtracking solver to analyze LLVM IR code, the use of CAnDL results in
+    only moderate compile time increases.
+    Many compiler analysis tasks are suitable for CAnDL, from
+    peephole optimizations to sophisticated program analysis with the polyhedral
+    model.
 
-Future work will investigate how methods from formal verification can be applied to CAnDL in order to guarantee the correctness of compiler optimizations.
-Also, there is some overlap between what can be formulated in CAnDL and what is provided by LLVM in the form of the ScalarEvolution pass.
-We are interested as to whether we could use this existing functionality to speed up solving times.
+    Future work will investigate how formal verification methods can be
+    applied to CAnDL in order to guarantee the correctness of compiler
+    optimizations.
+    Also, there is some overlap between what can be formulated in CAnDL and what
+    is provided by LLVM in the form of the ScalarEvolution pass.
+    We are interested as to whether we could use this existing functionality to
+    speed up solving times.
