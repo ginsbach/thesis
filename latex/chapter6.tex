@@ -1,25 +1,23 @@
  
-    Sparse linear algebra is central to many scientific codes,
-    yet compilers fail to optimize it well.
-    Instead, programmers rely on library implementations
-    that are hand optimized and can utilize accelerator hardware.
+    Sparse linear algebra is central to many scientific codes, yet compilers
+    fail to optimize it well.
+    Instead, programmers rely on library implementations that are hand optimized
+    and can utilize accelerator hardware.
     This comes at a cost, however, as it ties programs into vendor specific
     software ecosystems and results in non-portable code.
 
-    In this paper, we develop a new approach based on our {\em
-    specification Language for implementers of Linear Algebra
-    Computations} (LiLAC).
-    Rather than requiring application developers to (re)write every
-    program for a given library, the burden is shifted to a
-    {\em one-off} description for the library implementer.
-    The LiLAC-enabled compiler then uses this to
-    incorporate library routines automatically.
+    This chapter develops an approach based on the {\em specification
+    Language for implementers of Linear Algebra Computations} (LiLAC).
+    Rather than requiring application developers to (re)write every program for
+    a given library, the burden is shifted to a {\em one-off} description for
+    the library implementer.
+    The LiLAC-enabled compiler then uses this to incorporate library routines
+    automatically.
 
-    LiLAC provides automatic data marshaling, seamlessly maintaining
-    state between calls as needed and minimizing data transfers.
+    LiLAC provides automatic data marshaling, seamlessly maintaining state
+    between calls as needed and minimizing data transfers.
     Appropriate places for library replacement are detected at the compiler
-     intermediate representation level, making  our approach
-    language independent.
+    intermediate representation level, making our approach language independent.
 
     We evaluate on legacy large-scale scientific applications written in FORTRAN;
     standard benchmarks written in C/C++ and FORTRAN; and C++ graph analytics kernels.
@@ -29,12 +27,12 @@
 
 \section{Introduction}
 
-Linear algebra is an important component of many compute intensive
-applications.  While there are many compiler papers examining
-automatic optimization of dense linear algebra, sparse codes
-have received less attention.  Sparse algorithms are, however,
-increasingly important as the basis for graph algorithms and data
-analytics \cite{Kepner2015GraphsMA}.
+    Linear algebra is an important component of many compute intensive
+    applications.
+    While there are many compiler papers examining automatic optimization of
+    dense linear algebra, sparse codes have received less attention. 
+    Sparse algorithms are, however, increasingly important as the basis for
+    graph algorithms and data analytics \cite{Kepner2015GraphsMA}.
 
 Ideally, we would like compilers to automatically map dense and sparse-based
 codes to heterogeneous compute platforms efficiently and with no user
@@ -44,17 +42,17 @@ Instead, we see the wide-scale provision of fast libraries
 \cite{cusparse,clsparse,mkl}, often provided by hardware vendors themselves.
 They provide excellent performance, but place the burden of code rewriting on
 the application developer and are rarely portable across platforms.
-Rewriting legacy applications can involve considerable effort, especially when
+Rewriting legacy applications involves considerable effort, especially when
 using hardware accelerators that require careful data marshaling.
 In fact, the difficulty of efficient integration is a key impediment to the
 wider use of accelerator libraries.
-Furthermore, such source code modifications reduce the portability of the
+Furthermore, source code modifications reduce the portability of the
 program and require a commitment to specific hardware vendors, resulting in legacy
 code bases that quickly become obsolete.
 
-In this paper, we reexamine the way that compilers and libraries are used
-to tackle the challenge of achieving full performance without any application
-programmer effort.
+In this chapter, we reexamine the way that compilers and libraries are used
+to tackle the challenge of achieving full performance without requiring any
+application programmer effort.
 Highly tuned and platform specific libraries are invariably the fastest
 implementations available, therefore we use them as our building blocks.
 We then develop a new specification language for implementers of such
@@ -66,16 +64,16 @@ Using LiLAC, library implementers specify with a few lines of code,
 then determines where the library specification matches the user's
 code and automatically rewrites the code to utilize library calls.
 
-\noindent
-{\bf LiLAC-What} is a high level language to describe sparse and dense linear
-algebra computations.
+\paragraph*{LiLAC-What}
+is a high level language to describe sparse and dense linear
+algebra programs.
 The LiLAC compiler uses it to detect such functionality
-in user applications at compiler intermediate representation level.
-It is powerful enough to formulate linear algebra routines, yet remains
+in user applications at the level of compiler intermediate representation.
+It is powerful enough to formulate linear algebra, yet remains
 independent of compiler internals and is easy to understand and program.
-\linebreak
-\noindent
-{\bf LiLAC-How} is a language to specify how parts of the LiLAC-What description
+
+\paragraph*{LiLAC-How}
+is a language to specify how parts of the LiLAC-What description
 can be used for library invocations and how state can be retained in between
 calls.
 Our compiler uses this to automatically generate library call {\em harnesses} that
@@ -86,9 +84,10 @@ Our approach is broadly applicable. To demonstrate its applicability
 to legacy FORTRAN codes, we improved and extended the flang frontend
 to LLVM and evaluated on a large-scale scientific application.
 It also works on standard C/C++ and FORTRAN benchmark programs and C++ graph
-\mbox{analytics} kernels. The LiLAC system achieves significant performance
+\mbox{analytics} kernels. The presented LiLAC system achieves significant performance
 improvement across heterogeneous platforms, from 1.1x to over 10x, without any
 user intervention.
+
 \begin{figure*}[t]
 \includegraphics[width=\textwidth]{figures/lilac_overview.pdf}
 \caption{LiLAC applied to NPB Conjugate Gradient:
@@ -271,25 +270,27 @@ in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
 
 \subsection{LiLAC-How}
 \label{sec:lilachow}
-Where LiLAC-What specifies the computations implemented by a library, LiLAC-How
-describes how precisely library calls can be used to perform them.
 
-The language was designed in order to support important existing libraries
-such as cuSPARSE, clBLAS and Intel MKL.
-The idiosyncrasies of these libraries require LiLAC-How specifications to be
-built around boilerplate C++ code that manages the
-construction of parameter structures, calling conventions etc.
-However, we also wanted to make it as high-level as possible,
-without sacrificing any performance.
-In particular, LiLAC-How abstracts away memory transfers.
+    Where LiLAC-What specifies the computations that are implemented by a
+    library, LiLAC-How describes how precisely library calls are to be be used
+    for performing them.
+    The langauge was designed with important existing libraries such as 
+    cuSPARSE, clBLAS and Intel MKL in mind.
+    In order to support the idiosyncrasies of these libraries, the
+    specifications need to be built around boilerplate C++ code that manages the
+    construction of parameter structures, calling conventions etc.
+    However, it is also crucial for the specification language to be as
+    high-level as as possible without sacrificing any performance, and the fine
+    balance between these requirements drove the design of the language.
+    In particular, LiLAC-How abstracts away memory transfers.
 
-The result is a language that can be further divided into two interacting
-components.
-Firstly, it describes boilerplate code that is required for individual library
-call invocations in a {\em harness}.
-Secondly, it is used for data {\em marshaling} between the core program and the
-library, which is particularly crucial for heterogeneous compute environments.
-\autoref{lilacbnf2} shows the grammar specification of LiLAC-How.
+    The result is a language that can be further divided into two interacting
+    components.
+    Firstly, it describes boilerplate code that is required for individual library
+    call invocations in a {\em harness}.
+    Secondly, it is used for data {\em marshaling} between the core program and the
+    library, which is particularly crucial for heterogeneous compute environments.
+    \autoref{lilacbnf2} shows the grammar specification of LiLAC-How.
 
 \subsubsection{Individual Library Invocations}
 We need to encapsulate the boilerplate code that any given library requires,
@@ -409,25 +410,27 @@ library specific boilerplate C++ code.
 
 \section{Implementation}
 \label{sec:implementation}
-The LiLAC system, as shown in \autoref{motivationflow} is entirely integrated
-into the LLVM build system.
-When LLVM is compiled, the LiLAC specification is parsed using a Python
-program.
-Based on the LiLAC-What and LiLAC-How sections, C++ code is generated that is
-automatically incorporated into LLVM in further stages of the build process.
 
-The result is an LLVM optimization pass that is available when linking LLVM
-with the clang C/C++ compiler.
-This pass performs the discovery of linear algebra code and the insertion of
-harness calls.
-Furthermore, the harness libraries themselves are built at compile time of LLVM,
-using C++ code emitted from the LiLAC-How sections.
+    The LiLAC system, as shown in \autoref{motivationflow} is entirely
+    integrated into the LLVM build system.
+    When LLVM is compiled, the LiLAC specification is parsed using a Python
+    program.
+    Based on the LiLAC-What and LiLAC-How sections, C++ code is generated that
+    is automatically incorporated into LLVM in further stages of the build
+    process.
 
-The two crucial implementation details are therefore the following:
-Firstly, how automatic detection functionality in C++ is generated from the
-LiLAC-What specifications.\linebreak
-Secondly, how the LiLAC-How sections are used to generate fast C++
-implementations of the specified library harnesses.
+    The result is an LLVM optimization pass that is available when linking LLVM
+    with the clang C/C++ compiler.
+    This performs the discovery of linear algebra code and the insertion of
+    harness calls.
+    Furthermore, the harness libraries themselves are built at compile time of
+    LLVM, using C++ code emitted from the LiLAC-How sections.
+
+    The two crucial implementation details are therefore:
+    Firstly, how automatic detection functionality in C++ can be generated from
+    the abstract LiLAC-What specifications and \linebreak
+    secondly, how the LiLAC-How sections are used to generate fast C++
+    implementations of the specified library harnesses.
 
 \subsection{LiLAC-What}
 Once the LiLAC-What sections have been parsed, they are turned into C++
@@ -467,30 +470,33 @@ segment. The top-level $\left<exp\right>$ expressions that are used as limits or
 iterators in $\left<range\right>$ expressions are easily connected with the
 corresponding loop boundaries in the matched control flow structures.
 
-The remaining expressions are successively assigned by backtracking.
-Consider the example in \autoref{llvmexample}, which shows a candidate loop from
-the LLVM IR generated from the C++ dot product code in \autoref{robustness}.
-The iteration space is determined by loop analysis and this immediately allows us
-to assign the LiLAC-What iterator and range in \autoref{backtrack}.
-The LLVM IR instructions that correspond to \texttt{left[i]}, \texttt{left},
-\texttt{right[i]}, \texttt{right} and \texttt{result} are then searched for one
-by one.
-When a partial solution fails, such as at the point when \texttt{right} is
-assigned the same value as \texttt{left}, we backtrack.
-If we cannot determine a solution this way, we discard the control flow
-candidate.
+    The remaining expressions are then successively assigned by backtracking.
+    Consider the example in \autoref{llvmexample}, which shows a candidate loop
+    from the LLVM IR generated from the C++ dot product code in
+    \autoref{robustness}.
+    The iteration space is determined by loop analysis and this immediately
+    allows us to assign the LiLAC-What iterator and range in
+    \autoref{backtrack}.
+    The LLVM IR instructions that correspond to \texttt{left[i]}, \texttt{left},
+    \texttt{right[i]}, \texttt{right} and \texttt{result} are then searched for
+    one by one.
+    When a partial solution fails, such as at the point when \texttt{right} is
+    assigned the same value as \texttt{left}, we backtrack.
+    If we cannot determine a solution this way, we discard the control flow
+    candidate.
 
 \subsubsection{Code Replacement}
-For each identified loop nest that matches a LiLAC-What specification, the code
-is replaced with a harness call.
-To minimize the invasiveness of our pass, this is performed as follows:
-Firstly, a harness call is inserted directly before the loop.
-The function call arguments are selected from the backtracking result and passed
-to the harness.
-Secondly, the LLVM instruction that stores the result of the computation or
-passes it out of the loop as a phi node is removed.
-The remainder of the loop nest is be removed automatically by dead code
-elimination.
+
+    For each identified loop nest that matches a LiLAC-What specification, the
+    code is replaced with a harness call.
+    To minimize the invasiveness of our pass, this is performed as follows:
+    Firstly, a harness call is inserted directly before the loop.
+    The function call arguments are then selected from the backtracking result
+    and passed to the harness.
+    Secondly, the LLVM instruction that stores the result of the computation or
+    passes it out of the loop as a phi node is removed.
+    The remainder of the loop nest is be removed automatically by dead code
+    elimination.
 
 \begin{figure}[p]
 \begin{lstlisting}[language=LiLAC,numbers=none]
@@ -589,24 +595,22 @@ generic functions, and template parameter deduction inserts concrete types later
 
 Consider \autoref{templatecode}, generated from LiLAC-How code in
 \autoref{cudaread}.
-We see the correspondence between generated C++ and
-LiLAC-How code in the three functions that contain the source
-code specified in LiLAC-How.
+The correspondence between generated C++ and LiLAC-How code is clearly visible
+in the three functions that contain the source code specified in LiLAC-How.
 These functions are used to specialize the {\em ReadObject} class template.
 It guarantees the following properties using hardware memory protection:
-\linebreak
-\noindent
-{\bf {\em construct}} is called before the first invocation and when
-\texttt{in} or \texttt{size} change for consecutive harness invocations.
-\linebreak
-\noindent
-{\bf {\em update}} is called after {\em construct}
-and if any of the data in the array is changed between
-consecutive harness invocations.
-\linebreak
-\noindent
-{\bf {\em destruct}} is called in between consecutive {\em construct}
-calls and before the program terminates.
+
+    \noindent
+    {\bf {\em construct}} is called before the first invocation and when
+    \texttt{in} or \texttt{size} change for consecutive harness invocations.
+
+    \noindent
+    {\bf {\em update}} is called after {\em construct} and whenever any of the
+    data in the array changes between consecutive harness invocations.
+
+    \noindent
+    {\bf {\em destruct}} is called in between consecutive {\em construct}
+    calls and before the program terminates.
 
 % \paragraph{Multi-version profitability analysis}
 % For most platforms there will be multiple libraries available
@@ -625,26 +629,26 @@ calls and before the program terminates.
 % this in the results section.
 
 \subsection{FORTRAN}
-Compatibility with FORTRAN was a key implementation hurdle. 
+Compatibility with Fortran was a key implementation hurdle. 
 The LLVM frontend under active development, flang, is in an unfinished state and
 produces unconventional LLVM IR code by default.
 Significant additional work was required to normalize the IR code.
 We developed normalization passes in LLVM to overcome the specific
-shortcomings, enabling FORTRAN programs to be managed as easily as C/C++.
+shortcomings, enabling Fortran programs to be managed as easily as C/C++.
 
 % flang utilizes the codebase from the PGI Fortran compiler.
 % In effect, the PGI compiler parses the source code and generates intermediate
 % representation code.
 % This is then parsed and translated into LLVM IR code.
-The problems that we encountered included: differing
-indexing conventions requiring offsetting pointer variables 
-on a byte granularity with untyped pointers;
-incompatible intermediate representation types
-where all parameters are passed in as \texttt{i64} pointers,
-frequently necessitating a pointer type conversion followed
-by a load from memory; obfuscated loops with additional induction variable that
-counts down instead of up such that the standard LLVM \textbf{indvars} pass is
-unable to merge the loop iterators.
+    The problems that we encountered included: the differing indexing
+    conventions required offsetting pointer variables on a byte granularity with
+    untyped pointers;
+    Pointer arguments are passed untyped, obfuscating the intermediate
+    representation types to \texttt{i64} pointers, frequently necessitating a
+    pointer type conversion followed by a load from memory;
+    obfuscated loops with additional induction variable that counts down instead
+    of up such that the standard LLVM \textbf{indvars} pass is unable to merge
+    the loop iterators.
 
 
 %\paragraph{Implementation Status} 
@@ -656,31 +660,31 @@ unable to merge the loop iterators.
 
 \section{Experimental Setup}
 \label{sec:experimentalsetup}
-We wrote short  LiLAC  programs for a collection of
-linear algebra libraries 
-and applied our approach  to a chemical
-simulation application, two graph analytics applications and a collection of
-standard benchmark suites.
+
+    We wrote short LiLAC programs for a collection of linear algebra libraries.
+    The approach was then applied to a chemical simulation application, two
+    graph analytics applications and a collection of standard benchmark suites.
 
 \vspace{0.25em}
 \noindent
 {\bf\em Libraries\ }
-We selected four different libraries for sparse linear algebra
-functions. These were: Intel MKL \cite{mkl}, Nvidia cuSPARSE \cite{cusparse},
-clSPARSE \cite{clsparse} and SparseX \cite{sparsex}. MKL is a general-purpose
-mathematical library designed to provide easy-to-integrate performance
-primitives, while clSPARSE and cuSPARSE are OpenCL and CUDA implementations of
-sparse linear algebra designed to be executed on the GPU and SparseX uses an
-auto-tuning model and code generation to optimize sparse operations on
-particular matrices.
+    We selected four different libraries for sparse linear algebra functions.
+    These were: Intel MKL \cite{mkl}, Nvidia cuSPARSE \cite{cusparse}, clSPARSE
+    \cite{clsparse} and SparseX \cite{sparsex}.
+    MKL is a general-purpose mathematical library designed to provide
+    easy-to-integrate performance primitives, while clSPARSE and cuSPARSE are
+    OpenCL and CUDA implementations of sparse linear algebra designed to be
+    executed on the GPU and SparseX uses an auto-tuning model and code
+    generation to optimize sparse operations on particular matrices.
 
 \vspace{0.25em}
 \noindent
 {\bf\em Applications\ }
-To evaluate the impact of LiLAC in a real world context, we used the
-\textsc{pathsample} physical chemistry simulation suite, a large FORTRAN legacy
-application \cite{doi:10.1080/00268970210162691} consisting of over 40,000 lines
-of code.
+To evaluate the impact of LiLAC in a real world context, the
+\textsc{pathsample} physical chemistry simulation suite was used.
+This is a large
+FORTRAN legacy application \citep{doi:10.1080/00268970210162691} consisting of
+over 40,000 lines of code.
 Recent work shows that applications in this area are amenable to acceleration
 using sparse linear algebra techniques \cite{SUTHERLANDCASH2017288}, and
 \textsc{pathsample} provides a useful example of this.
@@ -690,7 +694,7 @@ We also evaluated two modern C++ graph analytics kernels (BFS and PageRank
 pruning, in each case using a system of 38 atoms \cite{doi:10.1063/1.478595}
 commonly used to evaluate applications in this domain.
 The graph kernels were run against 10 matrices from the University of Florida's
-sparse matrix collection \cite{Davis:2011:UFS:2049662.2049663}, with sizes
+sparse matrix collection from \citet{Davis:2011:UFS:2049662.2049663}, with sizes
 between 300K and 80M non-zero elements.
 
 \vspace{0.25em}
@@ -775,15 +779,15 @@ given in \autoref{tab:hardware}.
 We show that across a variety of hardware and software platforms, LiLAC can
 speed up real-world applications.
 We present raw performance impact first, then we analyze two intermediate
-metrics: reliability of linear algebra discovery and effectiveness of memory
-transfer optimizations.
+metrics: the reliability of linear algebra discovery and the effectiveness of
+memory transfer optimizations.
 
 \subsection{Performance}
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=2.1\columnwidth,height=0.5\columnwidth]{figures/baseline.pdf}
-  \includegraphics[width=2.1\columnwidth,height=0.5\columnwidth]{figures/baseline_bench.pdf}
+  \includegraphics[width=\linewidth]{figures/baseline.pdf}
+  \includegraphics[width=\linewidth]{figures/baseline_bench.pdf}
 \\[-0.75em]
   \caption{Evaluation on real-world application code and well-known benchmark
           suites:
@@ -820,18 +824,17 @@ of the Netlib benchmark demonstrate.
 LiLAC is able to achieve consistent, useful speedups across a variety of
 hardware configurations.
 
-
-\autoref{fig:performance-distribution} demonstrates that achieving good
-performance independent of hardware platform is no small feat.
-It shows the distribution of speedups on the NPB-CG benchmark across different
-machines, problem sizes and linear algebra implementation.
-Additional performance data is in \autoref{tab:perf_data}.
-The best-performing implementation varies considerably, depending on
-characteristics of the problem in question.
-No accelerator library performs well reliably, each harness outperforms
-any other harness on some combination of data set and platform.
-clSPARSE on the iGPU of AMD is the only harness that is consistently
-outperformed.
+    \autoref{fig:performance-distribution} demonstrates that achieving good
+    performance independent of the hardware platform is no small feat.
+    It shows the distribution of speedups on the NPB-CG benchmark across
+    different machines, problem sizes and linear algebra implementation.
+    More detailed performance data is in \autoref{tab:perf_data}.
+    The best-performing implementation varies considerably, depending on
+    characteristics of the problem in question.
+    No accelerator library performs well reliably, each harness outperforms
+    any other harness on some combination of data set and platform.
+    clSPARSE on the AMD iGPU is the only harness that is consistently
+    outperformed.
 
 \begin{table*}[t]
   \centering
@@ -889,8 +892,7 @@ We verify that LiLAC can reach near-optimal performance, despite using general
 and portable harnesses, by comparing the achieved speedups with the performance
 of reference implementations.
 This was possible on the NPB and Parboil benchmarks, where expert hand
-crafted version are available that achieve close to peak performance on
-heterogeneous accelerators.
+crafted version are available that achieve close to peak performance.
 
 
 \autoref{tab:lilac-linesofcode} shows our results from these experiments.
@@ -988,69 +990,58 @@ Netlib Fortran & CSR & - & parallel dependence \\
 \end{table}
 
 \subsection{Reliability of Discovery}
-To achieve performance impact, LiLAC needs to first reliably detect linear
-algebra computations, independent of coding style and source programming
-language.
-Previous results already demonstrated that this works reliably and
-\autoref{compareiccpolly} \mbox{reiterates} this.
-Established approaches, like the polyhedral model, are unable to model sparse
-linear algebra. We verified with the Polly compiler.
-Similarly, the Intel icc and ifort compilers fail to auto-parallelize, as they
-cannot reason about sparsity and have to assume additional dependencies where
-sparse accesses occur.
 
-
-
-% \subsection{Portability}
-
-% \emph{Should we make the point here that we make the performance of these
-%   applications more portable - shared library "performance" component rather
-% than hand-coded platform-specific code? Show that on some platforms one version
-% is the best / different on others - no one size fits all solution so show that
-% we can transfer performance much more easily - e.g. MKL might be fastest on
-% Intel with 24 cores but it won't even run on AMD where CUDA is fastest}
-
+    To achieve performance impact, LiLAC needs to reliably detect linear algebra
+    computations, independent of coding style and source programming language.
+    The results so far demonstrated that this works reliably and the data in
+    \autoref{compareiccpolly} reiterates this.
+    Established approaches, like the polyhedral model, on the otehr hand, are
+    unable to model sparse linear algebra.
+    We verified this with the Polly compiler and found that no SCoPs captured
+    sparse linear algebra.
+    This is unsurprising, as the basic assumptions of affine memory access are
+    contradicted by the indirection that is inherent in sparsity.
+    Similarly, the Intel icc and ifort compilers fail to auto-parallelize, as
+    they cannot reason about sparsity and have to assume additional dependencies
+    where sparse accesses occur.
 
 \section{Related Work}
 \label{sec:relatedwork}
-\paragraph{Compiler centric linear algebra optimization} Compiler
-management of indirect memory accesses was first examined using an
-inspector-executor model for distributed-memory machines
-\cite{Baxter:1989:RPS:72935.72967}. Here the location of read data was
-discovered at runtime and appropriate communication inserted.  Later
-work was focused on efficient runtime dependence analysis and the
-parallelization of more general
-programs\cite{pottenger1995idiom,fisher1994parallelizing,
-rauchwerger1999lrpd,suganuma1996detection}.  However, the performance
-achieved by these approaches is modest due to runtime 
-overhead and falls well short of library performance.
 
-%\paragraph{Polyhedral compiler approaches}
-The polyhedral model is a well  established compiler  approach  for modeling data dependencies.
-\cite{redon1994scheduling, jouvelot1989unified,
-chi1997optimizing, gupta2006simplifying, stock2014framework}.
-Such an approach has been implemented in optimizing compilers, such as the Polly extensions to LLVM
-\cite{Doerfert2015Polly}. %, but these struggle to scale with code complexity.
-% The difficulty in automatically detecting reductions has led to language or
-% annotation based approaches where it is the user's responsibility to mark
-% reductions in the program \cite{deitz2002high}.
-% Another such annotation based approach is described in
-% \cite{Reddy2016Reduction}, based on the Platform-Neutral Compute Intermediate
-% Language (\cite{baghdadi2015PENCIL}).
-% Our approach requires no such anotation effort by application programmers.
-Recent work has extended the polyhedral model beyond affine programs to some forms of sparsity with the
-PENCIL extensions \cite{7429301}.
-These can be used to model important features of sparse linear algebra, such as
-counted loops \cite{Zhao:2018:PCF:3178372.3179509}, meaning loops with dynamic,
-memory dependent bounds but statically known strides.
-Such loops are central to sparse linear algebra.
-It uses the PPCG compiler \cite{Verdoolaege:2013:PPC:2400682.2400713} to
-automatically detect relevant code regions, but it relies on well behaved C code
-with all arrays declared in variable-length C99 array syntax.
-Unfortunately such restrictions prevent application to real world programs;
-none of our benchmarks or data sets have this structure.
+\paragraph*{Compiler centric linear algebra optimization}
+    Compiler management of indirect memory accesses was first studied using an
+    inspector-executor model for distributed-memory machines in
+    \citet{Baxter:1989:RPS:72935.72967}.
+    Here the location of read data was discovered at runtime and appropriate
+    communication automatically inserted.
+    Later work by \citet{pottenger1995idiom,fisher1994parallelizing,
+    rauchwerger1999lrpd,suganuma1996detection} was focused on efficient runtime
+    dependence analysis and the parallelization of more general programs.
+    However, the performance achieved by these approaches is modest due to
+    runtime overhead and falls well short of library performance.
 
-\paragraph{Compiler detection} There has been previous work on
+\paragraph*{Polyhedral compiler approaches}
+    The polyhedral model is a well established approach for modeling data
+    dependencies in compilers, with relevant publications by
+    \citet{redon1994scheduling, jouvelot1989unified,
+    chi1997optimizing, gupta2006simplifying, stock2014framework}.
+    Polyhedral optimizers have been implemented in mainstream C/C++ compilers,
+    notably are the Polly extensions to LLVM described in
+    \cite{Doerfert2015Polly}.
+    Recent work by \citet{7429301} has extended the polyhedral model beyond
+    affine programs to some forms of sparsity with the PENCIL extensions.
+    These can be used to model important features of sparse linear algebra, such
+    as counted loops \citep{Zhao:2018:PCF:3178372.3179509}, meaning loops with
+    dynamic, memory dependent bounds but statically known strides.
+    Such loops are central to sparse linear algebra.
+    It uses the PPCG compiler \citep{Verdoolaege:2013:PPC:2400682.2400713} to
+    automatically detect relevant code regions, but it relies on well behaved C
+    code with all arrays declared in variable-length C99 array syntax.
+    Unfortunately such restrictions prevent application to real world programs;
+    none of our benchmarks or data sets have this structure.
+
+\paragraph*{Compiler detection}
+There has been previous work on
 detecting code structures in compilers using constraint programming.
 Early work was based on abstract computation graphs
 \cite{pinter1994program}, but more recent approaches have used real
@@ -1085,7 +1076,7 @@ model sparse linear algebra.
 
 
 % Domain specific languages
-\paragraph{Domain Specific Languages}
+\paragraph*{Domain Specific Languages}
 There have been multiple domain specific libraries proposed to formulate linear
 algebra computations.
 % targeted at application programmers rather than library implementors
@@ -1125,23 +1116,23 @@ However, the approach is unable to utilize
 the much greater potential of heterogeneous compute and requires detailed
 programmer intervention.
 
-\paragraph{Libraries}
-The most established way of encapsulating fast linear algebra routines is via
-numeric libraries, generally based on the BLAS interface
-\cite{2002:USB:567806.567807}.
-These are generally very fast on specific hardware platforms, but require
-application programmer effort and offer little performance portability.
-Implementations of dense linear algebra are available for most suitable hardware
-platforms, such as cuBLAS \cite{cublas} for NVIDIA GPUs, clBLAS \cite{clblas}
-for AMD GPUs and the Intel MKL library \cite{mkl} for Intel CPUs and
-accelerators.
+\paragraph*{Libraries}
+    The most established way of encapsulating fast linear algebra is via
+    dedicated library implementations, generally based on the BLAS interface
+    specification \cite{2002:USB:567806.567807}.
+    These are generally very fast on specific hardware platforms, but require
+    application programmer effort and offer little performance portability.
+    Implementations of dense linear algebra are available for most suitable
+    hardware platforms, such as cuBLAS \cite{cublas} for NVIDIA GPUs, clBLAS
+    \cite{clblas} for AMD GPUs and the Intel MKL library \cite{mkl} for Intel
+    CPUs and accelerators.
 
-Fast implementations of sparse linear algebra are fewer, but they exist for the
-most important platforms, including cuSPARSE \cite{cusparse} and clSPARSE
-\cite{clsparse}.
-There have been several BLAS implementations that attempt platform independent
-acceleration and heterogeneous compute \cite{Wang:2016:BHP:2925426.2926256,
-10.1007/978-3-319-64203-1_33, Diego2017Multi}. 
+    There are fewer implementations of sparse linear algebra, but they exist for
+    the most important platforms, including cuSPARSE \cite{cusparse} for NVIDIA
+    GPUs and clSPARSE \cite{clsparse} built on top of OpenCL.
+    Several BLAS implementations attempt platform independent acceleration and
+    heterogeneous compute, among them \citet{Wang:2016:BHP:2925426.2926256,
+    10.1007/978-3-319-64203-1_33, Diego2017Multi}. 
 
 
 %\paragraph{Graphs as sparse linear algebra}
@@ -1153,15 +1144,16 @@ acceleration and heterogeneous compute \cite{Wang:2016:BHP:2925426.2926256,
 %GraphBLAS attempts to define a standard set of building blocks for graph
 %algorithms that use the language of linear algebra.
 
-\paragraph{CPU-GPU data transfer optimizations}
-Data transfers between CPU and GPU have been studied extensively as an important
-bottleneck for parallelization efforts.
-Previous work \cite{Jablin:2011:ACC:1993316.1993516} established a system for
-automatic management of CPU-GPU communication.
-The authors of \cite{Lee:2009:OGC:1594835.1504194} implemented a system to
-move OpenMP code to GPUs, optimizing data transfers using data flow analysis.
-However, this approach performs a direct translation, not optimizing the code
-for the specific performance characteristics of GPUs.
+\paragraph*{CPU-GPU data transfer optimizations}
+    Data transfers between CPU and GPU have been studied extensively as an
+    important
+    bottleneck for parallelization efforts.
+    Previous work \cite{Jablin:2011:ACC:1993316.1993516} established a system for
+    automatic management of CPU-GPU communication.
+    The authors of \cite{Lee:2009:OGC:1594835.1504194} implemented a system to
+    move OpenMP code to GPUs, optimizing data transfers using data flow analysis.
+    However, this approach performs a direct translation, not optimizing the code
+    for the specific performance characteristics of GPUs.
 
 
 %% EArly scalar detection sc
@@ -1298,7 +1290,7 @@ Instead, the library implementer provides a few lines of specification, which
 LiLAC uses to  automatically and efficiently matches  user code to
 underlying high performance libraries.
 
-We demonstrated this approach on  C, C++ and FORTRAN benchmarks and
+We demonstrated this approach on  C, C++ and FORTRAN benchmarks as well as
 legacy applications and shown significant performance improvement across
 platforms and data sets.
 Many language features of the LiLAC language could be repurposed for libraries

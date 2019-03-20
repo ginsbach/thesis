@@ -49,7 +49,7 @@
     Ideally, we would like a mechanism that automatically maps existing code to
     heterogeneous hardware using the appropriate APIs without user effort.
 
-    Our approach is based on detecting specific structures or {\em idioms} in
+    The approach is based on detecting specific {\em idioms} in
     user code that correspond to the functionality of existing APIs for
     heterogeneous acceleration.
     We focus on idioms that are well supported by existing libraries and DSLs.
@@ -87,9 +87,9 @@
     We present a novel approach that:
     \begin{itemize}
     \item Defines a programming language for specifying code idioms, the Idiom
-          Description Language (IDL)\\[-.9em]
-    \item Implements common idioms in IDL to automatically discover
-          opportunities for accelerator exploitation\\[-.9em]
+          Description Language (IDL)
+    \item Implements common idioms in IDL in order to automatically discover
+          opportunities for accelerator exploitation
     \item Efficiently translates and maps the detected idioms to APIs for
           heterogeneous systems
     \end{itemize}
@@ -177,7 +177,7 @@
     to the transformation phase of our system.
     The sections of code corresponding to computational idioms are extracted
     and reformulated for the appropriate heterogeneous APIs.
-    For library  APIs this means replacing
+    For libraries this means replacing
     the code covered by the idiom with a library call. 
     For domain specific language interfaces,
     things are a little more involved. As before, we first extract the code
@@ -618,7 +618,7 @@ for(int i = 0; i < 1000; i++)
     contain a kernel function or reduction operator that has to be represented
     for the DSL.
 
-    For each individual combination of idiom and DSL there is a parameterized
+    For each combination of idiom and DSL there is a parameterized
     skeleton program.
     This skeleton is then specialized for the appropriate data types and numeric
     parameters as well as the kernel function or reduction operator.
@@ -679,7 +679,7 @@ Finally, we again replace the idiom code in the user's code with a call to the c
 
 \section{Experimental Setup}
 
-    \paragraph{Benchmarks}
+    \paragraph*{Benchmarks}
     We applied our approach to all of the sequential C/C++ versions of the NAS
     Parallel Benchmarks.
     We use the SNU NPB implementation by the Seoul National University,
@@ -688,13 +688,13 @@ Finally, we again replace the idiom code in the user's code with a call to the c
     We also evaluated our approach on all Parboil benchmarks, giving 21 programs
     in total. 
 
-    \paragraph{Platform and Evaluation}
+    \paragraph*{Platform and Evaluation}
     We use an AMD A10-7850K APU with a multi-core CPU and an integrated Radeon
     R7 GPU on the same die using driver version 1912.5, as well as an Nvidia GTX
     Titan X as an external GPU using driver version 375.66.
     We report the median runtime of 10 executions for each program.
 
-    \paragraph{Alternative detection approaches}
+    \paragraph*{Alternative detection approaches}
     \hspace{0.2cm}There are no easily available compilers to compare against
     that perform idiom detection.
     Instead, we consider two parallelizing compilers and examine
@@ -772,8 +772,9 @@ Finally, we again replace the idiom code in the user's code with a call to the c
     tools.
 
 \begin{table}[t]
+\centering
   \footnotesize
-  \begin{tabular}{lP{1.16cm}P{1.16cm}P{1.16cm}P{1.163cm}P{1.163cm}}
+  \begin{tabular}{lP{2.16cm}P{2.16cm}P{2.16cm}P{2.163cm}P{2.163cm}}
   \toprule
   & Scalar\newline{}Reduction & Histogram\newline{}Reduction & Stencil & Matrix~Op. & Sparse\newline{}Matrix~Op.\\
   \midrule
@@ -855,7 +856,7 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 \end{table}
 \addtolength{\tabcolsep}{+.3em}
 
-\paragraph{Speedup vs. Sequential}
+\paragraph*{Speedup vs. Sequential}
 \autoref{fig:speedup-figure} shows the end-to-end speedup obtained by accelerating idioms with heterogeneous APIs on a CPU, an integrated GPU, and an external GPU.
 All results include data transfer overhead to and from the GPUs.
 Here the best performing API is shown;
@@ -881,16 +882,16 @@ Here the best performing API is shown;
 \newcommand{\ms}[1]{\settowidth{\txtwd}{#1}{\scriptsize\ttfamily \hfill\tiny #1}}
 
 \addtolength{\tabcolsep}{-.25em}
-\begin{table*}
+\begin{sidewaysfigure*}[p]
   \centering
   \scriptsize
   \begin{tabular}{l
                   P{0.146cm}
-                  P{0.886cm} P{0.760cm} P{0.886cm} P{0.886cm} P{0.760cm} P{1.013cm}
+                  P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm}
                   P{0.146cm}
-                  P{1.0cm} P{1.0cm} P{0.7cm} P{0.7cm} P{1.013cm}
+                  P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm}
                   P{0.146cm}
-                  P{1.0cm} P{1.0cm} P{0.6cm} P{1.013cm}}
+                  P{1.3cm} P{1.2cm} P{1.2cm} P{1.1cm}}
   \toprule
   & & \multicolumn{6}{c}{\bfseries\small CPU} & & \multicolumn{5}{c}{\bfseries\small iGPU} & & \multicolumn{4}{c}{\bfseries\small GPU} \\[0.5em]
   & & MKL & libSPMV & Halide & clBLAS & CLBlast & Lift & & clSPARSE & libSPMV & clBLAS & CLBlast & Lift & & cuSPARSE & libSPMV & cuBLAS & Lift \\
@@ -912,17 +913,25 @@ Here the best performing API is shown;
 \caption{Detailed performance results for each heterogeneous API used in milliseconds.
          Fastest implementations for each benchmark and target hardware are highlighted in bold.}
 \label{tab:detailed-results}
-\end{table*}
+\end{sidewaysfigure*}
 \addtolength{\tabcolsep}{+.25em}
 
-For five benchmarks we obtain moderate speedups from 1.26$\times$ for \emph{histo} up to 4.5$\times$ for \emph{IS}.
-All of these benchmarks (besides \emph{MG}) have a scalar or histogram reduction as their performance bottleneck and are, therefore, not computationally expensive.
-Interestingly, we can see that different hardware is beneficial for different benchmarks:
-for \emph{tpcaf}  the CPU is the best platform, beating the GPU  for which the data transfer time dominates;
-for \emph{MG} and \emph{histo} the integrated GPU strikes the right balance between computational power while avoiding the movement of data to the external GPU;
-and, finally, for \emph{EP} and \emph{IS} the data transfer to the GPU pays off exploiting the high GPU internal memory bandwidth.
-These results emphasize the significance of heterogeneous code generation
-flexibility.
+    For five benchmarks we obtain moderate speedups from 1.26$\times$ for
+    \emph{histo} up to 4.5$\times$ for \emph{IS}.
+    All of these benchmarks besides \emph{MG} have a scalar or histogram
+    reduction as their performance bottleneck and are, therefore, not
+    computationally expensive.
+    Interestingly, we can see that for different benchmarks, different hardware
+    is beneficial:
+    for \emph{tpcaf}  the CPU is the best platform, beating the GPU  for which
+    the data transfer time dominates;
+    for \emph{MG} and \emph{histo} the integrated GPU strikes the right balance
+    between computational power while avoiding the movement of data to the
+    external GPU;
+    and, finally, for \emph{EP} and \emph{IS} the data transfer to the GPU pays
+    off exploiting the high GPU internal memory bandwidth.
+    These results emphasize the significance of heterogeneous code generation
+    flexibility.
 
 For five of the benchmarks we achieve significantly higher performance gains, from 17$\times$ for \emph{CG} and up to over 275$\times$ for \emph{sgemm}.
 These benchmarks are computationally expensive and the external GPU is always the fastest architecture by a considerable margin.
@@ -933,8 +942,8 @@ All of these benchmarks execute computations inside a for loop and do not requir
 We manually applied a straightforward lazy copying technique by flagging memory objects to avoid redundant transfers, similar to~\cite{jablin11automatic}.
 As can be seen this runtime optimization is crucial for achieving high performance for these benchmarks.
 
-\paragraph{API performance comparison}
-\autoref{tab:detailed-results} provides a breakdown of the performance of each API on each program and platform.
+\paragraph*{API performance comparison}
+\autoref{tab:detailed-results} shows a breakdown of the performance of each API on each program and platform.
 Not all APIs
 target all platforms, {\emph{e.g.} cuSPARSE only targets NVIDIA GPUs and in the
 case of Halide, the current version that we have access to failed to generate
@@ -949,7 +958,7 @@ In the programs where scalar reductions dominate, Lift performs well.
 On the iGPU, clBLAS provides a better matrix-multiplication implementation than either CLBlast or Lift.
 On the external GPUs, the libraries provide better linear algebra implementations, while Lift performs well on stencils and reductions.
 
-\paragraph{Speedup vs. Parallel Handwritten Implementations}
+\paragraph*{Speedup vs. Handwritten Parallel Implementations}
 \autoref{fig:speedup-figure-2} shows the performance of our approach compared to hand-written reference OpenMP and OpenCL implementations.
 For some of the benchmarks, the parallel versions are significantly modified using different algorithms beyond the domain of automation.
 We can see that for benchmarks where the handwritten implementation does not make algorithmic changes (\emph{CG}, \emph{histo}, \emph{lbm}, \emph{sgemm}, \emph{spmv}, \emph{stencil}), we achieve comparable -- or better -- performance.
@@ -958,125 +967,131 @@ For four benchmarks (\emph{EP}, \emph{IS}, \emph{MG}, and \emph{tpacf}) it is be
 For the \emph{sgemm} and \emph{stencil} benchmarks we improved the baseline implementation provided by the benchmarks as these had extremely poor performance.
 A simple interchange of two loops improved performance by almost 20 times.
 
-\paragraph{Summary}
-We detect 60 idioms across the benchmark suites and are able to achieve significant performance improvements for those benchmarks where idioms dominate execution time by targeting different heterogeneous APIs.
+\paragraph*{Summary}
+
+    60 idioms were detected across the benchmark suites and significant
+    performance improvements were achieved by targeting different heterogeneous
+    APIs for those benchmarks where idioms dominate execution time.
 
 \section{Related and Future Work}
 
-\paragraph{Domain specific Languages}
-DSLs have received much attention in recent years, ranging from SPIRAL \cite{ofenbeck13spiral},
-a DSL for Fast Fourier Transforms, over Lift \cite{steuwer15rewrite, SteuwerRD17,HagedornSSGD18} to
-UFL \cite{Alnaes:2014:UFL:2594412.2566630}, a DSL for partial
-differential equations.  Stencils in particular have received much
-attention \cite{Mullapudi:2015:PAO:2694344.2694364,HagedornSSGD18}, the best known of which is Halide
-\cite{Ragan-Kelley2013Halide}. DSLs to exploit complex reductions are
-less studied. In \cite{Reddy2016Reduction} they introduce a type of DSL via 
- annotations
-that allow expression of complex reductions based on the
-Platform-Neutral Compute Intermediate Language
-\cite{baghdadi2015PENCIL}. In the case of matrix multiplication,
-this is a well specified idiom supported by specific libraries
-\cite{clblas,mkl,cublas}.
+\paragraph*{Domain specific Languages}
+    Domain specific languages have received much attention in recent years,
+    ranging from SPIRAL \citep{ofenbeck13spiral}, a DSL for Fast Fourier
+    Transforms, over Lift \citep{steuwer15rewrite, SteuwerRD17,HagedornSSGD18}
+    to UFL \citep{Alnaes:2014:UFL:2594412.2566630}, a DSL for partial
+    differential equations.
+    Stencils in particular have received much attention
+    \citep{Mullapudi:2015:PAO:2694344.2694364,HagedornSSGD18}, the best known of
+    which is Halide \citep{Ragan-Kelley2013Halide}.
+    DSLs to exploit complex reductions are less studied.
+    \citet{Reddy2016Reduction} introduce a type of DSL via annotations
+    that allow expression of complex reductions.
+    This was based on the  Platform-Neutral Compute Intermediate Language by
+    \citet{baghdadi2015PENCIL}.
+    The Matrix multiplication idimos is well supported by
+    specific libraries \citep{clblas,mkl,cublas}.
 
-\paragraph{Generation of Performance Portable Code for Heterogeneous Hardware}
-Recent research has highlighted the challenges of generating code that performs well on different heterogeneous hardware architectures.
-PetaBricks~\cite{PhothilimthanaARA13} is one of the first languages to address this performance portability challenge by encoding algorithmic choices which are then empirically evaluated and automatically taken by the compiler.
-Similarly \cite{MuralidharanRHG16} explores automatic selection of code variants using machine learning.
-In a similar spirit, Lift~\cite{steuwer15rewrite} uses rewrite rules to explore optimization choices automatically.
+\paragraph*{Generation of Performance Portable Code for Heterogeneous Hardware}
+    Recent research has highlighted the challenges of generating code that
+    performs well on different heterogeneous hardware architectures.
+    PetaBricks~\cite{PhothilimthanaARA13} is one of the first languages to
+    address this performance portability challenge by encoding algorithmic
+    choices which are then empirically evaluated and automatically taken by the
+    compiler.
+    Similarly \cite{MuralidharanRHG16} explores automatic selection of code
+    variants using machine learning.
+    In a similar spirit, Lift~\cite{steuwer15rewrite} uses rewrite rules to
+    explore optimization choices automatically.
 
-\paragraph{Functional Code Generation Approaches}
-There exist multiple functional approaches for generating code for heterogeneous hardware.
-Accelerate is a Haskell embedded domain specific language aimed at generating efficient GPU code~\cite{chakravarty11accelerating,mcdonell13optimising}.
-%Bergstrom and Reppy~\cite{BergstromR12} compile \textsc{Nesl}, which is a first-order dialect of ML supporting nested data-parallelism, to GPU code.
-Recently, Nvidia introduced NOVA~\cite{collins14nova}, a new functional language targeted at code generation for GPUs, and Copperhead~\cite{catanzaro11copperhead}, a data parallel language embedded in Python.
-%HiDP~\cite{zhang13hidp} is a hierarchical data parallel language which maps computations to OpenCL.
-%All of these projects require programs to be rewritten in their functional language and rely on code analysis or hand-tuned versions of high-level algorithmic patterns to achieve high performance.
-% 
-%Halide~\cite{Ragan-Kelley2013Halide} is a domain specific approach that targets image processing pipelines.
-%It separates the algorithmic description from optimization decisions.
-% Our work is domain agnostic and takes a different approach.
-% We systematically describe hardware paradigms as functional patterns instead of encoding specific optimizations which might not apply to future hardware generations.
-% 
-Delite~\cite{brown11heterogeneous,chafi11domain} is  a system that enables the creation of domain-specific languages using functional parallel patterns  and targets multi-core CPUs or GPUs.
-% Alas, none of these approaches currently provides full performance portability, as they assume a fixed platform and the optimizations and implementations are targeted at a specific device.
-%Spiral~\cite{pueschel05spiral} uses rewrite rules to optimize signal processing programs and was more recently adapted to linear algebra~\cite{Spampinato13LGen}.
- In contrast, to these approaches,
-% we use rewrite rules and low-level hardware patterns to produce high-performan%ce code in a portable way and
-we  require no rewriting of legacy programs.
+\paragraph*{Functional Code Generation Approaches}
+    There exist multiple functional approaches for generating code for
+    heterogeneous hardware.
+    \citet{chakravarty11accelerating,mcdonell13optimising} propose Accelerate,
+    a domain specific language embedded in Haskell that generates efficient GPU
+    code.
+    Recently, \citet{collins14nova} introduced NOVA, a new functional language
+    targeted at code generation for GPUs, and Copperhead
+    \cite{catanzaro11copperhead}, a data parallel language embedded in Python.
+    Delite~\cite{brown11heterogeneous,chafi11domain} is a system that enables
+    the creation of domain-specific languages using functional parallel patterns
+    and targets multi-core CPUs or GPUs.
+    In contrast to these approaches, we require no rewriting of legacy programs.
 
-\paragraph{Idiom Detection}
-Idiom based optimization \cite{Pinter:1994:POP:177492.177494} has
-fallen out of fashion, with more systematic approaches
-based on SSA \cite{lattner2004llvm} and polyhedral representations
-\cite{benabderrahmane2010polyhedral}.
-They were largely based on syntactic pattern matching and not robust in the presence of complex control and dataflow.
-More recently, \cite{Andion2015Compilation} describes a compiler based
-parallelization approach for heterogeneous computing, based on
-an idiomatic intermediate representation called KIR.  
- It is not clear how such an approach would work on general
-C/C++ programs.
+\paragraph*{Idiom Detection}
+    Idiom based optimization based on AST manipulation, as described by
+    \citet{Pinter:1994:POP:177492.177494}, has fallen out of fashion.
+    More systematic approaches based on static single assignment representation
+    \cite{lattner2004llvm} and polyhedral representations
+    \cite{benabderrahmane2010polyhedral} however were more recently
+    investigated.
+    They were largely based on syntactic pattern matching and not robust in the
+    presence of complex control and dataflow.
+    More recently, work by \citet{Andion2015Compilation} describes a compiler
+    based parallelization approach for heterogeneous computing, based on an
+    diomatic intermediate representation called KIR.  
+    It is not clear how such an approach would work on general C/C++ programs.
 
-\paragraph{Stencils}
-Stencil detection has been driven by the introduction of DSLs such as
-Halide.  Helium \cite{Mendis2015Helium} tackles the challenging task
-of detecting stencils in binary code. It relies
-on dynamic analysis and cannot easily be extended to
-other idioms.
-Another closely related paper is \cite{Kamil2016Verified}, which detects stencils in FORTRAN by the
-verified lifting of code segments to a representation that can be
-mapped to Halide DSL.  It uses syntax guided synthesis to verify
-translation with added constrains to ensure that it can be mapped to
-Halide.
-It however requires nested loops  without conditionals in well behaved FORTRAN
-and in some cases requires user annotations.
+\paragraph*{Stencils}
+    Stencil detection has been driven by the introduction of DSLs such as
+    Halide.  Helium \cite{Mendis2015Helium} tackles the challenging task
+    of detecting stencils in binary code. It relies
+    on dynamic analysis and cannot easily be extended to
+    other idioms.
+    Another closely related paper is \cite{Kamil2016Verified}, which detects stencils in FORTRAN by the
+    verified lifting of code segments to a representation that can be
+    mapped to Halide DSL.  It uses syntax guided synthesis to verify
+    translation with added constrains to ensure that it can be mapped to
+    Halide.
+    It however requires nested loops  without conditionals in well behaved FORTRAN
+    and in some cases requires user annotations.
 
-\paragraph{Reductions}
-Discovering and exploiting scalar reductions in programs has been
-studied for many years based on dependence analysis and idiom detection
- \cite{fisher1994parallelizing,pottenger1995idiom,suganuma1996detection}.
-Alongside this data dependence based approach, there has also been a
- large body of work exploring mapping of reductions in a
- polyhedral setting \cite{jouvelot1989unified,redon1994scheduling}
- The treatment of
-more general reduction operations has received  less attention.
-Work has focused on exploitation rather than discovery
-\cite{Gutierrez:2000,gutierrez2003optimization,gutierrez2008analytical}, examining trade-offs in implementation \cite{yu2006adaptive}
- or exploitation of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
-Recent work \cite{ginsbach2017discovery} shows that more complex reductions can be 
-detected, but this is tied to  an  ad~hoc non-portable code generation phase. 
+\paragraph*{Reductions}
+    Discovering and exploiting scalar reductions in programs has been
+    studied for many years based on dependence analysis and idiom detection
+     \cite{fisher1994parallelizing,pottenger1995idiom,suganuma1996detection}.
+    Alongside this data dependence based approach, there has also been a
+     large body of work exploring mapping of reductions in a
+     polyhedral setting \cite{jouvelot1989unified,redon1994scheduling}
+     The treatment of
+    more general reduction operations has received  less attention.
+    Work has focused on exploitation rather than discovery
+    \cite{Gutierrez:2000,gutierrez2003optimization,gutierrez2008analytical}, examining trade-offs in implementation \cite{yu2006adaptive}
+     or exploitation of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
+    Recent work \cite{ginsbach2017discovery} shows that more complex reductions can be 
+    detected, but this is tied to  an  ad~hoc non-portable code generation phase. 
 
-\paragraph{Polyhedral Approaches}
-Polyhedral compilers \cite{Baskaran:2010:ACC:2175462.2175482,Verdoolaege:2013:PPC:2400682.2400713} perform advanced loop optimizations and have been used for the generation of fast GPU kernels.
-More recently, extensions to the polyhedral framework have been proposed, allowing it to capture reduction computations \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
-Such efforts are described in \cite{Doerfert2015Polly}, but they are fragile in the presence of non static control flow.
+\paragraph*{Polyhedral Approaches}
+    Polyhedral compilers \cite{Baskaran:2010:ACC:2175462.2175482,Verdoolaege:2013:PPC:2400682.2400713} perform advanced loop optimizations and have been used for the generation of fast GPU kernels.
+    More recently, extensions to the polyhedral framework have been proposed, allowing it to capture reduction computations \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
+    Such efforts are described in \cite{Doerfert2015Polly}, but they are fragile in the presence of non static control flow.
 
-\paragraph{Future Work}
-Although idioms can be described concisely with IDL, we currently
-have to implement a separate translation scheme for each API. While
-much of the translation code is common, it would be preferable to have
-an API description language similar to IDL that allows automatic
-generation of API translators. This would allow rapid evaluation of
-different APIs for the same idiom.
+\paragraph*{Future Work}
+    Although idioms can be described concisely with IDL, we currently
+    have to implement a separate translation scheme for each API. While
+    much of the translation code is common, it would be preferable to have
+    an API description language similar to IDL that allows automatic
+    generation of API translators. This would allow rapid evaluation of
+    different APIs for the same idiom.
 
-As the number of APIs and idioms grows, a profitability heuristic
-will be needed to determine the best API to use for each
-program and platform.  Machine learning approaches are an obvious
-starting point as they easily adapt to changing targets.
+    With a growing number of APIs and idioms, profitability heuristics
+    will become necessary to determine the best API to use for each
+    program and platform.  Machine learning approaches are an obvious
+    starting point as they easily adapt to changing targets.
 
-This paper restricts its attention to five common idioms. Other idioms
-such as graph processing can also be described. Given that IDL works on
-the compiler IR, loop and function parallelism can also be
-described as idioms.
-In those cases where user codes do not quite match the platform API
-and associated idioms, we can apply
-program transformations to refactor or rejuvenate code to fit.
+    This paper restricts its attention to five common idioms. Other idioms
+    such as graph processing can also be described. Given that IDL works on
+    the compiler IR, loop and function parallelism can also be
+    described as idioms.
+    In those cases where user codes do not quite match the platform API
+    and associated idioms, we can apply
+    program transformations to refactor or rejuvenate code to fit.
 
-To be a robust approach to heterogeneous programming, we need to ensure correctness.
-Syntax guided synthesis is a promising means of verifying the idiom translation.
+    To be a robust approach to heterogeneous programming, we need to ensure correctness.
+    Syntax guided synthesis is a promising means of verifying the idiom translation.
 
-It would be interesting  to see to whether our approach  could be used for binary optimization or  applied to 
-heavily optimized and  complex code bases.
-Another  research direction  is investigating explicitly parallel legacy codes.
+    It would be interesting  to see to whether our approach  could be used for binary optimization or  applied to 
+    heavily optimized and  complex code bases.
 
 \section{Conclusion}
 
@@ -1088,7 +1103,7 @@ Another  research direction  is investigating explicitly parallel legacy codes.
     detected, the idioms are mechanically translated into API calls to
     external libraries or code generated by DSL compilers.
 
-    This approach is robust and was evaluated on C/C++ versions of two well
+    The approach is robust and was evaluated on C/C++ versions of two well
     known benchmark suites: NAS and Parboil. We detected more stencils,
     sparse matrix operations and generalized reductions and histograms than
     existing approaches and generated fast code.
