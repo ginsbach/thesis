@@ -1,91 +1,146 @@
 
-    Optimizing compilers require sophisticated program analysis and
-    transformations to exploit modern hardware.
-    Implementing the appropriate analysis for a compiler optimization is a time
-    consuming activity.
-    For example, in LLVM, tens of thousands of lines of code are required to
-    detect appropriate places to apply peephole optimizations.
-    It is a barrier to the rapid prototyping and evaluation of new
+    In the preceding chapter, a mathematical theory for contraint programming on
+    static single assignment compiler intermediate representation was derived.
+    This chapter will now build on top of this theoretical framework, developing
+    a domain specific contraint programming language and presenting an
+    implementation of this language in the production quality LLVM compiler
+    infrastructure.
+
+    The Compiler Analysis Description Language (CAnDL) makes it possible to
+    automatically generate compiler analysis functions that would otherwise
+    have to be implemented manually.
+    Such a programming language fits an important niche in compiler development:
+    Optimizing compilers use sophisticated program transformations to exploit
+    increasingly complex hardware, and implementing the appropriate analysis
+    functionality for such optimizations to be safely applied is a time
+    consuming and error prone activity.
+    For example, tens of thousands of lines of code are required in the LLVM
+    code base to detect the appropriate places to apply peephole optimizations
+    and bugs in this functionality can result in corrupted user programs.
+    This is a barrier to the rapid prototyping and evaluation of new
     optimizations.
 
-    In this chapter, we develop the Compiler Analysis Description Language
-    (CAnDL), a domain specific language for compiler analysis.
-    Based on constraint programming approach that we established previously,
-    CAnDL provides a convenient mechanism for programmers to analyse LLVM's
-    intermediate representation.
-    It enables a workflow, where the compiler developer writes CAnDL programs,
-    which is then compiled by the CAnDL compiler into a C++ LLVM pass.
-    This provides a uniform manner in which to describe compiler analysis and
-    can be applied to a range of compiler analysis problems, reducing code
-    length and complexity.
+    CAnDL enables a workflow that is much more amenable to efficient compiler
+    development:
+    The compiler implementer only has to write CAnDL programs, which are then
+    compiled by the CAnDL compiler fully automatically into C++ LLVM passes.
+    These passes automatically spot code sections that adhere the specified
+    structure, leaving only the transformation functionality to be implemented
+    by hand.
+    This provides a uniform manner in which to describe compiler analysis,
+    reducing code length and complexity.
 
-    We implemented and evaluated CAnDL on a number of real world use cases:
-    eliminating redundant operations; graphics code optimization; identifying
+    The approach crucially scales to a wide range of compiler analysis tasks,
+    ranging from the detection of small scale local optimization opportunities
+    over domain specific graphics optimizations to fully capturing polyhedral
     static control flow regions.
-    In all cases were we able to express the analysis more briefly than
-    competing approaches.
+    In all cases, these tasks can be  expressed more briefly than with competing
+    approaches.
 
 \section{Introduction}
 
-    Compilers are complex pieces of software responsible for the generation of
-    efficient code. 
-    This requires the careful application of a variety of optimizations. 
-    Most optimizations can be split in two parts: analysis and transformation.
-    The analysis is required to check for applicability and legality and often
-    contains most of the complexity.
+    Compilers are complex pieces of software responsible that proces source code
+    in several stages to produce an efficient binary program.
+    In order to generate fast programs, compilers rely on a complex mid end, in
+    which program optimisations are applied to the user program after parsing
+    and before code genreation.
+    In this mid end, user code is typically represented in a static single
+    assignment intermediate representation and is optimised by successively
+    applying a wide range of optimization passes.
+    There is generally obvious upper bound to the complexity of optimisations
+    that are considered, instead compilers are limited by their increasing code
+    complexity and by the necessity to reason at each stage about the soundness
+    of the performed operations.
+    It is crucial that optimisations retain the semantics of the original
+    program, as otherwise the resulting binary might be compromised.
+    
+
+    Implementations of compiler optimizations generally require two components:
+    analysis and transformation.
+    Analysis routines find candidate sections in user programs that could profit
+    from specific transformations and verify that all conditions are satisfied
+    in order to legally apply them.
+    Transformations are then applied to the analysis results, often after
+    consulting heuristic cost models to gauge the effect on runtime, code size
+    and other metrics.
+
+    The analysis often contains much of the code complexity.
     For example, simple peephole optimizations in the LLVM {\tt instcombine}
     pass contain approximately 30000 lines of complex C++ code, despite the
     transformations being simple.
-
-    This complexity impedes the implementation of new compiler
-    passes, preventing the rapid prototyping of new ideas.
+    This impedes the implementation of new compiler passes, preventing the rapid
+    prototyping of new ideas.
+    Furthermore, this is an important source of bugs and bugs in this stage of
+    the compiler are particularly pernicious, as they tamper with the user
+    programs.
     Ideally, we would like a simpler way of describing such analysis that
     reduces boiler-plate code and opens the way for new compiler optimization
-    innovation.
+    innovation in a controlled fashion.
 
-    In this chapter we present CAnDL, a domain specific language for compiler
+    This chapter presents CAnDL, a domain specific language for compiler
     analysis.
-    It is a constraint programming language that operates on LLVM’s SSA-based
-    IR.
-    Instead of writing compiler analysis  code inside the main codebase of the
+    It is a constraint programming language that operates on the static single
+    assignment intermediate representation of the LLVM compiler infrastructure
+    (LLVM IR).
+    Instead of writing compiler analysis code inside the main codebase of the
     compiler infrastructure, it enables compiler writers to specify optimization
-    functionality external to LLVM.
-    The CAnDL compiler generates a C++ function that is linked in and acts as an
-    LLVM pass.
+    functionality external to the main C++ code base.
+    The CAnDL compiler then generates C++ functions that are linked together
+    with the clang compiler binary and that implement LLVM passs.
     The formulation of optimizing transformations in CAnDL is faster, simpler
     and less error prone than writing them in C++.
     It has a strong emphasis on modularity, which enables debugging and the
     formulation of highly readable code.
 
-    We focus on programmer productivity and do not investigate formal methods
-    for proving the correctness of optimization passes in this paper.
-    However, previous work by \citet{Lopes:2015:PCP:2737924.2737965}
-    suggests that CAnDL would also be also suitable for automatic verification.
-
-    We demonstrate the usefulness and generality of CAnDL via a number of use
-    cases from different domains, including: standard LLVM optimization passes,
-    custom optimizations for graphics shader programs and the detection of
-    static control-flow regions that are used in polyhedral program
-    transformation.
-
-\begin{figure*}[p]
-    \input{latex/figure_candlexample}
-    \label{fig:candlexample}
-\end{figure*}
+    The implementation of CAnDL is based on the constraint programming
+    methodology that was introduced in \autoref{chapter:theory}, using a solver
+    that is integrated directly into the LLVM code base.
+    On top of this solver, a complete working system is provided, including a
+    full parser and code generator for CAnDL as a full-fledged programming
+    langauge.
 
 \section{Example}
 
-    As a motivating example, assume that we want to use the algebraic property
-    of the square root in \autoref{fig:root} to perform a floating point
-    optimization (assuming the fast-math flag).
+\begin{figure}[b]
+\centering
+\caption{Declarative CAnDL Specificaiton}
+\label{fig:candlspec}
+\begin{minipage}[t]{0.67\textwidth}
+\begin{lstlisting}[language=CAnDL]
+Constraint SqrtOfSquare
+( opcode{sqrt_call} = call
+([$\tt \land$]) {sqrt_call}.args[0] = {sqrt_fn}
+([$\tt \land$]) function_name{sqrt_fn} = sqrt
+([$\tt \land$]) {sqrt_call}.args[1]  = {square}
+([$\tt \land$]) opcode{square} = fmul
+([$\tt \land$]) {square}.args[0] = {a}
+([$\tt \land$]) {square}.args[1] = {a})
+End
+\end{lstlisting}
+\end{minipage}
+\end{figure}
+
+
+    To give an example of the CAnDL workflow, consider the algebraic equation
+    in \autoref{fig:root}, based on the mathemtical definition of the square
+    root.
+    Assuming an environment without the particularities of floating point
+    arithmetic (i.e. assuming the \texttt{-ffast-math} flag is set), the
+    compiler could use this equality to eliminate some square root invocations
+    in user code.
+    This is desirable, as the square root function has to be approximated with
+    relatively expensive numerical methods.
     \begin{align}
     \label{fig:root}
     \forall a\in \mathbb{R}\colon\ \sqrt{a*a}=|a|
     \end{align}
 
-    In order to apply this transformation, the compiler must detect occurrences
-    of $\sqrt{a*a}$ in the IR code and replace them with a call to the
-    \texttt{abs} function.
+    More specifically, the compiler should use the equation left to right:
+    It should analyse the user code in order to find the left side of the
+    equation and then transform all those occurences into the right side of
+    the equation.
+    The compiler must detect occurrences of $\sqrt{a*a}$ in the LLVM IR code and
+    replace them with a call to the \texttt{abs} function.
     The generation of the new function call is trivial, but the detection of
     even a simple pattern like $\sqrt{a*a}$ requires some care when implementing
     it manually in a complex code base such as LLVM.
@@ -98,14 +153,16 @@
     \citet{Yang:2011:FUB:1993316.1993532,Menendez:2017:ADP:3062341.3062372}, it
     inevitably leads to buggy code.
 
-    \autoref{fig:candlexample} shows how this optimization can be implemented
-    with CAnDL.
-    In (a), we can see the CAnDL program for the analysis. 
+    Instead, CAnDL allows a declarative description of the analysis problem,
+    which is then automatically turned into C++ code implementing the required
+    functionality.
+    The specific CAnDL code is shown in \autoref{fig:candlspec}.
     It states that a section of LLVM code is eligible for optimization if seven
     individual constraints simultaneously hold on the values
     \texttt{sqrt\_call}, \texttt{sqrt\_func}, \texttt{square}, \texttt{a}.
     The lines 2-8 each stipulate one of these constrains and they are joined
     together with the logical conjunction operator. 
+
 
     This CAnDL program can be compiled with our CAnDL compiler into LLVM
     analysis functionality and (b)-(f) show the results of running it on an
@@ -116,6 +173,12 @@
     I involves two \texttt{fmul} instructions to generate the squares via a
     floating point multiplication and two calls to the \texttt{sqrt} function
     with the respective result. 
+
+
+\begin{figure*}[p]
+    \input{latex/figure_candlexample}
+    \label{fig:candlexample}
+\end{figure*}
 
     Note that for each application of the \texttt{sqrt} function there is a call
     instruction {\it e.g.} {\tt \%4 = call \dots} and the actual \texttt{sqrt}

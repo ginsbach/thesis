@@ -1,12 +1,17 @@
 
-    Heterogeneous accelerators often disappoint.
-    They provide the prospect of great performance, but only deliver it when
-    using vendor specific optimized libraries or domain specific languages.
-    This requires considerable legacy code modifications, hindering the adoption
-    of heterogeneous computing.
+    In the previous chapter, the CAnDL language was introduced, which can be
+    used to automatically generate compiler analysis functionality.
+    This chapter takes a broader view of what compiler analysis funcionality
+    can entail.
+    Being freed from having to implement complex optimisation passes by hand, it
+    explores the complexity to which CAnDL can be driven.
 
-    This paper develops a novel approach to automatically detect opportunities
-    for accelerator exploitation.
+    The goal of this chapter is to take broad algorithmic concepts --
+    computational idioms -- and to formalize them as CAnDL specifications,
+    enabling automatic detetion in optimising compilers.
+    This will in the last chapter enable complex new optimisations based on the
+    automatic utilisation of heterogeneous hardware.
+
     We focus on calculations that are well supported by established APIs: sparse
     and dense linear algebra, stencil codes and generalized reductions and
     histograms.
@@ -244,7 +249,7 @@ End
     The incoming C code is translated to optimized LLVM IR.
     The solver then finds a single solution to the constraint problem.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 Original C code:
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 int example(int a, int b, int c) {
@@ -275,13 +280,25 @@ Detected factorization opportunities:
 \label{fig:firstexample}
 \end{figure}
 
-In this case, the variable {\tt sum} is matched to the value {\tt \%3}, an add instruction, while the variables {\tt left\_addend} and {\tt right\_addend} match the left and right operands {\tt \%1} and {\tt \%2} of this instruction. 
+    In this case, the variable {\tt sum} is matched to the value {\tt \%3}, an
+    add instruction, while the variables {\tt left\_addend} and
+    {\tt right\_addend} match the left and right operands {\tt \%1} and
+    {\tt \%2} of this instruction. 
 
-Lines \autoref{line:factorFirstLeft} and \autoref{line:factorSecondLeft} of \autoref{fig:IDLfactorization} say that {\tt factor} can either be the first argument OR the second argument of {\tt left\_addend}.
-As the {\tt left\_addend} is {\tt \%1}, then {\tt factor} can be either {\tt \%a} or {\tt \%b}.
-Similarly lines \autoref{line:factorFirstRight} and \autoref{line:factorSecondRight} of \autoref{fig:IDLfactorization} say that {\tt factor} can be be the first argument OR the second argument of the {\tt right\_addend}.
-As the {\tt right\_addend} is {\tt \%1}, then {\tt factor} can be either {\tt \%c} or {\tt \%a}.
-The two disjunctions in Lines 7-10 are connected by AND, so they must both hold.
+    Lines \ref{line:factorFirstLeft} and \ref{line:factorSecondLeft} of
+    \autoref{fig:IDLfactorization} say that {\tt factor} can either be the first
+    argument OR the second argument of {\tt left\_addend}.
+    As the {\tt left\_addend} is {\tt \%1}, then {\tt factor} can be either
+    {\tt \%a} or {\tt \%b}.
+    Similarly lines \ref{line:factorFirstRight} and
+    \ref{line:factorSecondRight} of \autoref{fig:IDLfactorization} say that
+    {\tt factor} can be be the first argument OR the second argument of the
+    {\tt right\_addend}.
+    As the {\tt right\_addend} is {\tt \%1}, then {\tt factor} can be either
+    {\tt \%c} or {\tt \%a}.
+    The two disjunctions in Lines 7-10 are connected by AND, so they must both
+    hold.
+
 \begin{equation}
 \begin{split}
 ((factor = a) \lor & (factor = b)) \\\land ((factor = c) \lor & (factor = a)) \\
@@ -339,6 +356,7 @@ Therefore, the solution at the bottom of \autoref{fig:firstexample} is the only 
     acceleration by heterogeneous hardware.
 
 \section{Idiom Description Language}
+\label{sec:idl}
 
 \begin{figure*}[t]
     \input{latex/figure_idlbnf}
@@ -420,34 +438,45 @@ Therefore, the solution at the bottom of \autoref{fig:firstexample} is the only 
     For example, it can be used to collect all affine array accesses in a loop.
 
 \section{Specification of Idioms in IDL}
+\label{sec:idioms}
 
-With the definition of IDL, we can now specify idioms.
-The complete set of idioms used in this paper comprises of $\approx$500 lines of code.
-Due to space restrictions, we first show a simple constraint that we rely on --
-single entry, single exit regions -- and then describe the top level
-constraints for each idiom.
+    With the definition of IDL, we can now specify idioms.
+    The complete set of idioms used in this paper comprises of $\approx$500
+    lines of code.
+    Due to space restrictions, we first show a simple constraint that we rely
+    on -- single entry, single exit regions -- and then describe the top level
+    constraints for each idiom.
 
 \subsection{Building Blocks}
-Before any algorithmic idiom can be specified, we need some basic
-control flow constructs.  The most fundamental is the single entry
-single exit region (SESE) \cite{johnson1994program}
- which is used amongst other things to determine loop bodies.
-A SESE region is a part of code spanned by two instructions $A$ and $B$ such that $A$ dominates $B$, $B$
-postdominates $A$ and every cycle containing either $A$ or $B$ also contains the other. It is defined in \autoref{fig:sese}.
 
-Using simple building blocks such as SESE, we can define more complex control structures such as loops and important memory access patterns such as matrix reads.
-From this we build powerful idiom definitions that capture complex computational patterns that can include arbitrary control flow.
+    Before any algorithmic idiom can be specified, we need some basic control
+    flow constructs.
+    The most fundamental is the single entry single exit region (SESE)
+    \cite{johnson1994program} which is used amongst other things to determine
+    loop bodies.
+    A SESE region is a part of code spanned by two instructions $A$ and $B$ such
+    that $A$ dominates $B$, $B$ postdominates $A$ and every cycle containing
+    either $A$ or $B$ also contains the other.
+    It is defined in \autoref{fig:sese}.
+
+    Using simple building blocks such as SESE, we can define more complex
+    control structures such as loops and important memory access patterns such
+    as matrix reads.
+    From this we build powerful idiom definitions that capture complex
+    computational patterns that can include arbitrary control flow.
 
 \subsection{Full Idiom Definition}
-The generalized matrix multiplication idiom is described in \autoref{fig:gemm}.
-The control flow is captured by three nested for loops.
-Inside these loops, the memory access is characterized by three matrix accesses, each with a different subset of the
-loop iterators.
-The corresponding \texttt{MatrixRead} and \texttt{MatrixWrite} idioms model generic access to matrices allowing
-strides, transposed matrices etc.
-The actual computation is encapsulated by the \texttt{DotProductLoop} idiom.
-This also contains the linear combination with factors \texttt{alpha} and \texttt{beta} that is part of the generalized
-matrix multiplication.
+
+    The generalized matrix multiplication idiom is described in
+    \autoref{fig:gemm}.
+    The control flow is captured by three nested for loops.
+    Inside these loops, the memory access is characterized by three matrix
+    accesses, each with a different subset of the loop iterators.
+    The corresponding \texttt{MatrixRead} and \texttt{MatrixWrite} idioms model
+    generic access to matrices allowing strides, transposed matrices etc.
+    The actual computation is encapsulated by the \texttt{DotProductLoop} idiom.
+    This also contains the linear combination with factors \texttt{alpha} and
+    \texttt{beta} that is part of the generalized matrix multiplication.
 
 \autoref{fig:histogram} shows the generalized histogram idiom.
 It is contained in a for loop and the basic memory access pattern is a read-modify-write to a bin array.
@@ -660,7 +689,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
 \paragraph{}
 After code for the DSLs is generated, it is passed to the DSL code generator.
 \autoref{fig:liftmxm} shows an example of the Lift code generated for GEMM (\texttt{gemm\_in\_lift}).
-It performs a dot product (expressed in line~\autoref{line:dot} using the Lift skeletons \texttt{zip}, \texttt{map}, and \texttt{reduce}) for each row of matrix A (\texttt{a\_row}) and column of matrix B (\texttt{b\_col}).
+It performs a dot product (expressed in line~\ref{line:dot} using the Lift skeletons \texttt{zip}, \texttt{map}, and \texttt{reduce}) for each row of matrix A (\texttt{a\_row}) and column of matrix B (\texttt{b\_col}).
 This code is compiled by Lift into optimized OpenCL code.
 
 Finally, we again replace the idiom code in the user's code with a call to the code generated by the DSL and continue once again with LLVM code generation.
