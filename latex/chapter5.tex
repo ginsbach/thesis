@@ -12,22 +12,29 @@
     previously explored outside the context of compiler analysis --
     computational idioms -- and to formalize them as CAnDL specifications,
     enabling automatic detetion in optimising compilers.
-    This will in the last chapter enable complex new optimisations based on the
-    automatic utilisation of heterogeneous hardware.
 
-    We focus on calculations that are well supported by established APIs: sparse
-    and dense linear algebra, stencil codes and generalized reductions and
-    histograms.
-    We call them {\em idioms} and use a custom constraint-based Idiom
-    Description Language (IDL) to discover them within user code.
-    Detected idioms are then mapped to BLAS libraries, cuSPARSE and clSPARSE and
-    two DSLs: Halide and Lift.
+    Heterogeneous acceleration will serve as the motivation for this effort.
+    As many scientific codes are often structured around idiomatic performance
+    bottlenecks, parallelisation efforts on heterogeneous hardware that focus
+    entirely on computational idioms can achieve significant runtime
+    improvements.
+    In cooperation with existing numeric libraries and domain specific code
+    generators, this chapter will present an idiom centric heterogeneous
+    auto-parallelising compiler.
+    The focus is thus on calculations that are well supported by established
+    APIs: sparse and dense linear algebra, stencil codes and generalized
+    reductions and histograms.
+    Idioms are then mapped to BLAS libraries, cuSPARSE and clSPARSE and two
+    DSLs: Halide and Lift.
 
-    We implemented the approach in LLVM and evaluated it on the NAS and Parboil
-    sequential C/C++ benchmarks, where we detect 60 idiom instances.
+    Built on top of the CAnDL implementation in LLVM, the implemented
+    funcionality is directly accessible in the widely used clang C/C++
+    compilers.
+    The evaluation can therefore be performed on the well established benchmark
+    suites NAS and Parboil, where 60 idiom instances are detected.
     In those cases where idioms are a significant part of the sequential
-    execution time, we generate code that achieves 1.26$\times$ to over
-    20$\times$ speedup on integrated and external GPUs.
+    execution time, the generated heterogeneous code achieves 1.26$\times$ to
+    over 20$\times$ speedup on integrated and external GPUs.
 
 \section{Introduction}
 
