@@ -1,33 +1,16 @@
 \centering
-\begin{minipage}[t]{0.67\textwidth}
-\centering
-{\bf(a)} CAnDL program:
-\begin{lstlisting}[language=CAnDL]
-Constraint SqrtOfSquare
-( opcode{sqrt_call} = call
-([$\tt \land$]) {sqrt_call}.args[0] = {sqrt_fn}
-([$\tt \land$]) function_name{sqrt_fn} = sqrt
-([$\tt \land$]) {sqrt_call}.args[1]  = {square}
-([$\tt \land$]) opcode{square} = fmul
-([$\tt \land$]) {square}.args[0] = {a}
-([$\tt \land$]) {square}.args[1] = {a})
-End
-\end{lstlisting}
-\end{minipage}
-
-\vspace{1em}
 \begin{minipage}[t]{\textwidth}
 \centering
 \begin{minipage}[t]{\textwidth}
 \centering
-{\bf(b)} C program code:
+{\bf(a)} C program code:
 \begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=C,basicstyle=\small\ttfamily]
  double example(double a, double b) {return sqrt(a*a) + sqrt(b*b); }
 \end{lstlisting}
 \end{minipage}
 \begin{minipage}[t]{7.1cm}
 \centering
-{\bf(c)} Resulting LLVM IR:
+{\bf(b)} Resulting LLVM IR:
 \begin{lstlisting}[language={LLVM}]
 define double @example(    
  double %0,                
@@ -44,7 +27,7 @@ declare double @sqrt(double)
 \hfill
 \begin{minipage}[t]{3.5cm}
 \centering
-{\bf(d)} First solution:
+{\bf(c)} First solution:
 \begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=LLVM]
 
 a = %0
@@ -61,7 +44,7 @@ sqrt_fn = @sqrt
 \hfill
 \begin{minipage}[t]{3.5cm}
 \centering
-{\bf(e)} Second solution:
+{\bf(d)} Second solution:
 \begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=LLVM]
 
 
@@ -77,12 +60,44 @@ sqrt_fn = @sqrt
 \end{minipage}
 \end{minipage}
 
+\vspace{1em}
+\begin{minipage}[t]{\textwidth}
+\begin{minipage}[t]{0.493\textwidth}
+\centering
+{\bf(e)} Verification of first solution:
+\begin{lstlisting}[language=CAnDL,numbers=none,framexleftmargin=0pt,xleftmargin=0pt]
+( opcode{%4} = call
+([$\tt \land$]) {%4}.args[0] = {@sqrt}
+([$\tt \land$]) function_name{@sqrt} = sqrt
+([$\tt \land$]) {%4}.args[1]  = {%3}
+([$\tt \land$]) opcode{%3} = fmul
+([$\tt \land$]) {%3}.args[0] = {%0}
+([$\tt \land$]) {%3}.args[1] = {%0})
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.493\textwidth}
+\centering
+{\bf(f)} Verification of second solution:
+\begin{lstlisting}[language=CAnDL,numbers=none,framexleftmargin=0pt,xleftmargin=0pt]
+( opcode{%6} = call
+([$\tt \land$]) {%6}.args[0] = {@sqrt}
+([$\tt \land$]) function_name{@sqrt} = sqrt
+([$\tt \land$]) {%4}.args[1]  = {%5}
+([$\tt \land$]) opcode{%5} = fmul
+([$\tt \land$]) {%5}.args[0] = {%1}
+([$\tt \land$]) {%5}.args[1] = {%1})
+\end{lstlisting}
+\end{minipage}
+\end{minipage}
 
 \vspace{1em}
 \begin{minipage}[t]{\textwidth}
 \centering
-{\bf(f)} C++ transformation code:
+{\bf(g)} C++ transformation code:
 \begin{lstlisting}
+using namespace std;
+using namespace llvm;
 void transform(map<string,Value*> solution, Function* abs) {
     ReplaceInstWithInst(
        dyn_cast<Instruction>(solution["sqrt_call"]),
@@ -94,7 +109,7 @@ void transform(map<string,Value*> solution, Function* abs) {
 \vspace{1em}
 \begin{minipage}[t]{\textwidth}
 \centering
-{\bf(g)} Transformed LLVM IR after DCE:
+{\bf(h)} Transformed LLVM IR after dead code elimination:
 \begin{lstlisting}[escapeinside={(*}{*)},language={LLVM}]
 define double @example(double %0, double %1) {              
  %3 = call double @abs(double %0) 
@@ -104,9 +119,10 @@ define double @example(double %0, double %1) {
 \end{lstlisting}
 \end{minipage}
 
-\caption{Demonstration of a simple CAnDL specification ({\bf a}) on an example C
-         program ({\bf b}):
-         In the generated LLVM intermediate code ({\bf c}), two instances
-         ({\bf d},{\bf e}) of {\tt SqrtOfSquare} are detected.
-         Applying an optimization using these results is trivial ({\bf g}) and
-         results in efficient code ({\bf e}).}
+\caption{Demonstration of CAnDL specification in \autoref{fig:candlspec}
+         on an example C program ({\bf a}):
+         In the generated LLVM IR code ({\bf b}), two instances
+         ({\bf c},{\bf d}) of {\tt SqrtOfSquare} are detected that fulfill all
+         the constraints ({\bf e}, {\bf f}).
+         Applying a transformation is simple ({\bf g}) and results in efficient
+         code ({\bf h}).}

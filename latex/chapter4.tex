@@ -10,7 +10,7 @@
     automatically generate compiler analysis functions that would otherwise
     have to be implemented manually.
     Such a programming language fits an important niche in compiler development:
-    Optimizing compilers use sophisticated program transformations to exploit
+    Optimizing compilers utilise elaborate program transformations to exploit
     increasingly complex hardware, and implementing the appropriate analysis
     functionality for such optimizations to be safely applied is a time
     consuming and error prone activity.
@@ -103,7 +103,7 @@
 
 \begin{figure}[b]
 \centering
-\caption{Declarative CAnDL Specificaiton}
+\caption{Simple Declarative CAnDL Specificaiton}
 \label{fig:candlspec}
 \begin{minipage}[t]{0.67\textwidth}
 \begin{lstlisting}[language=CAnDL]
@@ -120,108 +120,114 @@ End
 \end{minipage}
 \end{figure}
 
-
-    To give an example of the CAnDL workflow, consider the algebraic equation
-    in \autoref{fig:root}, based on the mathemtical definition of the square
-    root.
+    As an example of the CAnDL workflow, consider  \autoref{fig:root}.
+    This basic algebraic equation can be interpreted as a recipe for a compiler
+    optimisation:
     Assuming an environment without the particularities of floating point
-    arithmetic (i.e. assuming the \texttt{-ffast-math} flag is set), the
+    arithmetic (i.e.\ assuming the \texttt{-ffast-math} flag is active), the
     compiler could use this equality to eliminate some square root invocations
     in user code.
-    This is desirable, as the square root function has to be approximated with
-    relatively expensive numerical methods.
+    This is desirable, as the square root has to be approximated with relatively
+    expensive numerical methods, whereas computing the absolute value is
+    computationally cheap.
     \begin{align}
     \label{fig:root}
     \forall a\in \mathbb{R}\colon\ \sqrt{a*a}=|a|
     \end{align}
 
-    More specifically, the compiler should use the equation left to right:
-    It should analyse the user code in order to find the left side of the
-    equation and then transform all those occurences into the right side of
-    the equation.
-    The compiler must detect occurrences of $\sqrt{a*a}$ in the LLVM IR code and
-    replace them with a call to the \texttt{abs} function.
+    The compiler should use the equation left to right:
+    It should analyse the user code in order to find representations of  the
+    left side of the equation and then transform all those occurences analogous
+    to the right side of the equation.
+    The compiler therefor must detect occurrences of $\sqrt{a*a}$ in the LLVM IR
+    code and replace them with a call to the \texttt{abs} function.
     The generation of the new function call is trivial, but the detection of
     even a simple pattern like $\sqrt{a*a}$ requires some care when implementing
     it manually in a complex code base such as LLVM.
 
-    The current approach would be to implement it as part of the
-    \texttt{instcombine} pass, which already extends to almost 30000 lines of
-    C++ code.
-    This code makes heavy use of raw pointers and dynamic type casts.
-    This is an impediment to compiler development and as previous work has shown
-    \citet{Yang:2011:FUB:1993316.1993532,Menendez:2017:ADP:3062341.3062372}, it
-    inevitably leads to buggy code.
+    The established approach would be to implement it as part of the
+    \texttt{instcombine} pass, which applies a collection of such peephole
+    optimisations and already extends to almost 30000 lines of C++ code.
+    This code makes heavy use of raw pointers and dynamic type casts and has
+    been identified as a frequent source of bugs by
+    \citet{Yang:2011:FUB:1993316.1993532, Menendez:2017:ADP:3062341.3062372}.
+    This is impractical and an impediment to compiler development.
 
     Instead, CAnDL allows a declarative description of the analysis problem,
-    which is then automatically turned into C++ code implementing the required
-    functionality.
-    The specific CAnDL code is shown in \autoref{fig:candlspec}.
-    It states that a section of LLVM code is eligible for optimization if seven
-    individual constraints simultaneously hold on the values
-    \texttt{sqrt\_call}, \texttt{sqrt\_func}, \texttt{square}, \texttt{a}.
-    The lines 2-8 each stipulate one of these constrains and they are joined
-    together with the logical conjunction operator. 
+    which is easier to follow, has no interaction with other optimisations and
+    is much less verbose.
+    This is shown in \autoref{fig:candlspec}.
+    The specification is given the identifier \texttt{SqrtOfSquare} in the
+    first line of the program and then defined by the interaction of seven
+    atomic constraint statements that have to hold simultaneously hold on the
+    values of \texttt{sqrt\_call}, \texttt{sqrt\_fn}, \texttt{square} and
+    \texttt{a}.
+    The lines 2-8 each stipulate one of these constraints and they are joined
+    together with the logical conjunction operator ``$\land$''.
 
+    The CAnDL compiler translates this declarative program into a C++ analysis
+    function that is used as an LLVM optimisation pass.
+    This is demonstrated in \autoref{fig:candlexample}, which shows the analysis
+    function generated from the CAnDL specification in \autoref{fig:candlspec}
+    applied to a user program ({\bf a}-{\bf d}).
+    The input program ({\bf a}) is a simple C program that calls the
+    \texttt{sqrt} function twice with squares of floating point values.
+    It is translated using the clang compiler into LLVM IR code ({\bf b}),
+    applying standard optimisation passes during the process.
+    This results in the expressions from the user program being sequentialised,
+    with the two occurences of the \texttt{SqrtOfSquare} idiom clearly visible:
+    The two \texttt{fmul} instructions compute squares via a floating point
+    multiplication and these are then used as arguments to \texttt{sqrt}
+    function invocations. 
 
-    This CAnDL program can be compiled with our CAnDL compiler into LLVM
-    analysis functionality and (b)-(f) show the results of running it on an
-    example program.
-    In (b), we can see a simple C program that calls the \texttt{sqrt} function
-    twice with squares of floating point values. 
-    Below this, in (c), we see LLVM IR that is generated from the C code.
-    I involves two \texttt{fmul} instructions to generate the squares via a
-    floating point multiplication and two calls to the \texttt{sqrt} function
-    with the respective result. 
+    The analysis function detects two opportunities to apply the transformation,
+    shown as first solution ({\bf d}) and second solution ({\bf e}).
+    Each of the two solutions assigns values from within the LLVM IR code to
+    each of the variables in the CAnDL program such that all the specified
+    constraints are fulfilled.
+    The validity of these solutions is demonstrated in the middle row of the
+    figure ({\bf e}-{\bf f}).
+    Subsituting the variables in the CAnDL programs with the concrete
+    instantiations from the solutions, we can verify the individual atomic
+    constraints one by one:
+    \begin{itemize}
+    \item \texttt{\%4} and \texttt{\%6} are function calls and their first
+          argument (the function to be called) is \texttt{@sqrt}.
+    \item \texttt{@sqrt} is the square root function.
+          Note that we have no choice but to identify it by name.
+    \item The second argument of the function call instruction (and hence the
+          first actual function argument) are \texttt{\%3} and \texttt{\%5}
+          respectively.
+    \item \texttt{\%3} and \texttt{\%5} are square values, i.e.\ a floating
+          point multiplication of a value with itself.
+    \end{itemize}
 
+    With the solutions identified by the CAnDL system, performing the
+    transformation is now simple.
+    The result of the analysis for each solution is provided in the form of a
+    C++ dictionary \texttt{std::map<std::string,llvm::Value*>}, which contains
+    the information required to apply appropriate code transformations
+    ({\bf g}).
+    A new function call to \texttt{abs} is generated, with \texttt{a} as the
+    only argument.
+    This instruction then replaces the original call instruction that was
+    captured in \texttt{sqrt\_call}.
+    After post processing with standard dead code elimination, this results in
+    the optimized code shown at the bottom of the figure ({\bf h}).
+
+    Although this is only a small example, it illustrates the main steps of the
+    CAnDL scheme.
+    In practice, the strength of the system is to scale to complex
+    specifications, culminating in a full polyhedral analysis, which will be
+    demonstrated towards the end of the chapter.
+    The next sections give a specification of the CAnDL language and outline how
+    it is implemented on top of the constraint programming methodology devised
+    in \autoref{chapter:theory}.
 
 \begin{figure*}[p]
     \input{latex/figure_candlexample}
     \label{fig:candlexample}
 \end{figure*}
-
-    Note that for each application of the \texttt{sqrt} function there is a call
-    instruction {\it e.g.} {\tt \%4 = call \dots} and the actual \texttt{sqrt}
-    function is the first argument of these call instructions.
-
-    The CAnDL program detects two opportunities to apply the transformation,
-    shown in (d) and (e).
-    Each of the two solutions assigns values from within the IR code to each of
-    the variables in the CAnDL program such that all constraints are fulfilled.
-    Let us look in detail at the first solution.
-    \begin{itemize}
-    \item \texttt{\%4} is assigned to \texttt{sqrt\_call}. It is a function call
-          (Line 2 of CAnDL program) to the \texttt{sqrt} function (Lines 3 and 4
-          of CAnDL program).
-    \item \texttt{@sqrt} is assigned to \texttt{sqrt\_func}. It is the standard
-          library function \texttt{sqrt} (Line 4 of CAnDL program). 
-    \item \texttt{\%3} is assigned to \texttt{square}. It is the second argument
-          of \texttt{\%4} (\texttt{sqrt\_call}) and it is an \texttt{fmul}
-          instruction (Lines 5 and 6 of CAnDL program).
-    \item \texttt{\%0} is assigned to \texttt{a}. It is the first and second
-          argument of \texttt{\%3} (\texttt{square}) (lines 7-8 of CAnDL
-          program).
-    \end{itemize}
-
-    With the analysis functionality provided by CAnDL, the transformation is now
-    simple.
-    In \autoref{fig:firstexample} (f) we can see how the result of the analysis
-    in the form of a C++ dictionary {\it std::map<std::string,llvm::Value*>}
-    contains all the required information.
-    A new function call to {\tt abs} is generated with the solution for {\tt a}
-    as the only argument.
-    This instruction then replaces the original call instruction that was
-    captured in {\tt sqrt\_call}.
-    After standard dead code elimination this results in the optimized code
-    shown in (g).
-
-
-    Although this is a small example, it illustrates the main steps in our
-    scheme.
-    In practice, however, we wish to detect more complex code using constraints
-    on control and data flow structure.
-    In the next section we introduce a powerful description language that is
-    capable of defining a wide class of analysis.
 
 \section{Language Specification}
 
@@ -230,7 +236,7 @@ End
     passes. 
     Individual CAnDL programs define computational structures to be exploited by
     optimizing code transformations.
-    These structures are specified as constraints on single static assignment
+    These structures are specified as constraints on static static assignment
     (SSA) form representations of programs.
 
     The expressed structures can scale from simple instruction patterns that are
