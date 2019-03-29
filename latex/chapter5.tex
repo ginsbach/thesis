@@ -6,12 +6,14 @@
     entail with such a powerful tool at hand.
     Being freed from having to implement complex optimisation passes manually,
     the chapter explores the complexity to which CAnDL can be driven, capturing
-    more complex computational concepts than what was demonstrated previously.
+    broader computational concepts than what was demonstrated previously.
 
-    The goal of this chapter is to take broad algorithmic concepts that were
+    The goal of this chapter is to take abstract algorithmic concepts that were
     previously explored outside the context of compiler analysis --
     computational idioms -- and to formalize them as CAnDL specifications,
     enabling automatic detetion in optimising compilers.
+    The main source of inspiration will be the high performance and scientific
+    computing community.
 
     Heterogeneous acceleration will serve as the motivation for this effort.
     As many scientific codes are often structured around idiomatic performance
@@ -38,113 +40,71 @@
 
 \section{Introduction}
 
-    Heterogeneous accelerators provide the potential for great performance.
-    However, achieving that potential is difficult.
+    Heterogeneous accelerators provide the potential for great performance, but
+    achieving that potential is difficult and requires significant effort.
+    In order to target heterogeneous systems, programms need to be partially
+    rewritten, making use of a diverse range of broad and narrow interfaces that 
+    are quickly evolving.
     General purpose languages such as OpenCL \cite{nvidia11guide} provide
-    portability, but the achieved performance often disappoints
-    \cite{lee09openmp}.
-    This shortfall has led vendors to deliver specialized libraries to bridge
-    the gap \cite{clblas}.  Alternatively, domain specific languages (DSLs)
-    \cite{Franchetti09OL,Rompf:2012:LMS:2184319.2184345} have been proposed,
-    attempting to deliver  both portability and performance
-    \cite{Ragan-Kelley2013Halide}.
+    some portability across heterogeneous devices, but the achieved performance
+    often disappoints \cite{lee09openmp}, effectively requiring rewrites despite
+    the functional portability.
+    Optimised numerical libraries provide more reliable performance, but they
+    are more specialised and often provided by hardware vendors without
+    portability in mind \cite{clblas,cublas,cusparse,clsparse}.
+    More narrow domain specific languages (DSLs) \cite{Franchetti09OL,
+    Rompf:2012:LMS:2184319.2184345} have been proposed, attempting to deliver
+    both portability and performance \cite{Ragan-Kelley2013Halide}.
+    However this class is quickly evolving and most of them are academic
+    projects with unclear long term support.
 
     Hardware becomes increasingly heterogeneous, ({\it e.g.} TPU
     \cite{jouppi2017datacenter}).
     This means library or DSL based programming is likely to become far more
-    common and future programmers are expected to target those APIs.
-
-    However, there are problems with this trend.
-    Firstly, users have to learn multiple specialized DSLs and vendor-specific
-    libraries.
-    Secondly, users have to rewrite their applications to use them.
-    Having to learn and understand several new APIs and then rewrite existing
-    applications is a severe impediment to the wide-spread efficient
+    common.
+    The problems with this trend that arise due to the aforementioned tradeoffs
+    are clear:
+    Firstly, application developers have to learn multiple specialized DSLs and
+    vendor-specific libraries if they want good performance.
+    Secondly, they will have to rewrite their existing applications to use them.
+    Thirdly, this ties their code into an ecosystem with unclear future support
+    that might deprecate quickly.
+    This situation is a severe impediment to the wide-spread efficient
     exploitation of heterogeneous hardware.
-    Ideally, we would like a mechanism that automatically maps existing code to
-    heterogeneous hardware using the appropriate APIs without user effort.
 
-    The approach is based on detecting specific {\em idioms} in
-    user code that correspond to the functionality of existing APIs for
+    Ideally, we would like a compiler that automatically maps existing code to
+    heterogeneous hardware, with full performance and requiring no directions
+    from the application programmer.
+    While this is unrealistic in general, the system that is presented in this
+    chapter achieves a good approximation of such a general purpose system by
+    utilising the knowhow that is already available, encapsulated in the
+    existing interfaces as an intermediary.
+    Instead of implementing code generation for several heterogeneous
+    accelerators, it maps user code to heterogeneous hardware using the
+    existing libraries and domain specific languages, effectively outsorcing the
+    code genration to hardware specialists.
+
+    The approach is based on detecting specific {\em computational idioms} in
+    application code that correspond to the functionality of existing APIs for
     heterogeneous acceleration.
-    We focus on idioms that are well supported by existing libraries and DSLs.
-    These are likely to be both relevant to existing code bases and have
-    efficient heterogeneous implementations.
-    We consider sparse and dense linear algebra, stencils and generalized
-    reductions and histograms.
-
-    At the heart of our approach is the ability to describe each idiom in a
-    concise Idiom Description Language (IDL).
-    After the user's C/C++ program has been compiled down to LLVM IR, our tool
-    reads in an IDL program and translates into a set of constraints.
-    These are passed to a fast solver to search the user's program, detecting
-    all idiom instances.
+    The covered idioms are largely a reflection of the existing libraries and
+    DSLs, with a focus on sparse and dense linear algebra, stencils and
+    generalized reductions and histograms.
+    The idioms are formulated using CAnDL from \autoref{chapter:candl}, which
+    allows the concise formulation and fast detection in optimised LLVM IR code.
 
     Once detected, the idioms are mechanically translated into the appropriate
     DSL or replaced with a library call.
     This optimized code is then linked into the original program.
-    We currently target the libraries cuSparse, clSparse, cuBLAS, clBLAS for
+    As backends, the libraries cuSparse, clSparse, cuBLAS, clBLAS for
     sparse and dense linear algebra and target the DSL Halide
-    \cite{Ragan-Kelley2013Halide} for stencil computations.
-    We also target Lift \cite{SteuwerRD17} - a data parallel language that
-    supports generalized reductions as well as stencils and linear algebra.
+    \cite{Ragan-Kelley2013Halide} for stencil computations are used in the
+    evaluation.
+    In addition to this, the Lift language \cite{SteuwerRD17} is used - a data
+    parallel language that supports generalized reductions as well as stencils
+    and linear algebra.
     This allows the freedom to target many APIs for the same idiom and pick the
-    implementation that best suits the target platform. 
-
-    New idioms can be easily added thanks to the flexibility of IDL.
-    This provides a powerful means of determining whether a new heterogeneous
-    API can be used by existing code without modifying the core compiler.
-    The idioms addressed in this paper can be expressed in less than 500 lines
-    of IDL code.
-    Our approach is also highly robust, it has been applied to the entire NAS
-    and Parboil benchmark suites and is evaluated on three platforms.
-
-    We present a novel approach that:
-    \begin{itemize}
-    \item Defines a programming language for specifying code idioms, the Idiom
-          Description Language (IDL)
-    \item Implements common idioms in IDL in order to automatically discover
-          opportunities for accelerator exploitation
-    \item Efficiently translates and maps the detected idioms to APIs for
-          heterogeneous systems
-    \end{itemize}
-
-    While there has been much research in
-    using constraints for program analysis~\cite{nielson2015principles},
-    there is little prior work in its use for idiom
-    detection. In \cite{ginsbach2017discovery}, constraints are used for
-    detecting reductions, but this is tightly coupled to a specialized code
-    generation phase for small-scale multi-core systems.
-
-    The work most similar in approach concerns discovery of stencil computation
-    and mapping to the Halide DSL.
-    Helium \cite{Mendis2015Helium} recovers stencils from image-processing
-    binaries.
-    This requires large scale dynamic analysis of binary traces and replacing
-    them with Halide calls. 
-    This is significantly extended in~\cite{Kamil2016Verified} which detects
-    stencils in FORTRAN.
-    In this work the focus is on inferring post invariants based on syntax
-    guided synthesis in translation to Halide.
-    However, it uses a narrow approach to selecting code snippets and relies on
-    well structured FORTRAN with occasional user annotations.
-    Our approach is distinct in that we use an external  programming language to
-    describe the idioms we are interested in.
-    This allows an unbounded set of idioms  to be considered across arbitrary
-    programs and is not restricted to stencils. 
-
-    To summarize, this paper presents an automatic approach that discovers
-    idioms in legacy code and maps them to heterogeneous platforms via
-    libraries and DSLs.
-    We apply it to 21 C/C++ programs from the NAS and Parboil benchmark suites
-    and demonstrate that it detects more reductions, stencils, matrix
-    multiplications and sparse matrix-vector computations than existing schemes.
-    For the idioms that dominate execution time, we generate code and evaluate
-    on 3 platforms: a multi-core CPU, an integrated and an external GPU. Overall
-    we detect 60 idioms.
-    In 10 programs these dominate sequential execution time and are worth
-    exploiting.
-    This results in speedups ranging from 1.26$\times$ to over 20$\times$.
+    implementation that best suits the target platform.
 
 \section{Overview}
 
