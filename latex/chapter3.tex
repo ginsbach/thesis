@@ -1,8 +1,38 @@
 
-\section{Introduction}
-
     This chapter lays out a basic methodology to formally describe and recognise
     algorithmic structures in programs during compilation.
+    Based on a mathematical model of static single assignment form, concepts
+    that are typically used at syntax or abstract syntax tree level are
+    transferred onto more semtantically simple compiler internal
+    representaitons.
+
+    Traditional pattern matching approaches here turn into more subtle
+    constraint problems.
+    This requires careful consideration to handle search space explosion but at
+    the same time powers much more powerful detection capabilities based on
+    higher level algorithmic structures that are impossible to express
+    syntactically.
+    Later chapters will evaluate these claims in details by building a complete
+    constraint programming language on top of the theory derived in this chapter
+    and by then using it to express real compiler analysis problems.
+
+    After defining a mathematical foundation of SSA form and giving basic
+    definitions of constraint problems and solutions, several standard
+    definitions from compiler theory are then reformulated in the the framework.
+    This includes common graph properties and the domination concepts as well
+    as control flow structues such as single entry single exit blocks.
+    All of this lies the foundations for the succeeding chapter.
+
+    As a last part, a practical application of constraint programming to compiler
+    intermediate representation requires efficient solver techniques and a
+    section in the chapter will discuss strategies for limiting compile time
+    explosions and explore analogies of the described model to standard
+    Satisfiability Modulo Theory (SMT) problems.
+    This will give further insights into performance improvements and put the
+    work into a wider context.
+
+\section{Introduction}
+
     During the different compilation stages, modern optimizing compilers for
     proceedural languages such as C/C++, Fortran or JavaScript typically use
     a range of different representations of the user program.

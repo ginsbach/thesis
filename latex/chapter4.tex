@@ -232,12 +232,12 @@ End
 \section{Language Specification}
 
     The Compiler Analysis Description Language (CAnDL) is a domain specific
-    programming language for the specification of compiler analysis
-    passes. 
-    Individual CAnDL programs define computational structures to be exploited by
-    optimizing code transformations.
-    These structures are specified as constraints on static static assignment
-    (SSA) form representations of programs.
+    programming language for the specification of compiler analysis problems. 
+    Individual CAnDL programs define computational structures that can be
+    exploited by code transformations in optimising compilers.
+    These structures are specified as constraint programs on static single
+    assignment (SSA) form representation of user code, the most common
+    intermediate representation in modern compilers.
 
     The expressed structures can scale from simple instruction patterns that are
     suited for peephole optimizations over basic control flow structures such as
@@ -250,6 +250,13 @@ End
     On top of these low level constraints, CAnDL employs powerful mechanisms for
     modularity and encapsulation that allow the construction of complex
     programs.
+
+    Like most constraint programming languages, CAnDL programs have two
+    fundamental features: \textbf{variables} and \textbf{constraints}.
+    These are composed with several higher level language features and, with a
+    system of modularity and extensability on top.
+    This section will introduce the language features from the top down,
+    starting from the high level program structure.
 
 \subsection{High Level Structure of CAnDL Programs}
 
