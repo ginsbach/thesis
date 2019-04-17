@@ -4,7 +4,6 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage[numbers]{natbib}
-\bibliographystyle{plainnat}
 \usepackage[hidelinks]{hyperref}
 \usepackage{cleveref}
 \usepackage{graphicx}
@@ -44,37 +43,25 @@ title={Definition \thetcbcounter}}{def}
 \definecolor{sh_string}{rgb}{0.08, 0.69, 0.08}
 
 \lstset{
-float=[*],
-language=C,
-basicstyle=\linespread{1}\ttfamily,
-stringstyle=\color{sh_string},
-keywordstyle = \color{sh_keyword}\bfseries,
-commentstyle=\color{sh_comment}\itshape,
-numbers=left,
-numberstyle=\scriptsize,
-stepnumber=1,
-numbersep=10pt,
-backgroundcolor=\color{white},
-showspaces=false,
-showstringspaces=false,
-showtabs=false,
-xleftmargin=1.5em,
-frame=lines,
-framexleftmargin=1.5em,
-framexbottommargin=0em,
-prebreak=\space,
-postbreak=\mbox{{\color{blue}\scriptsize$\hookrightarrow$}},
-breaklines=true,
-breakatwhitespace=false,
-tabsize=2,
-captionpos=b,
-escapeinside={([}{])},
-language=C++
+basicstyle         = \linespread{1}\ttfamily,
+stringstyle        = \color{sh_string},
+keywordstyle       = \color{sh_keyword}\bfseries,
+commentstyle       = \color{sh_comment}\itshape,
+numbers            = left,
+numberstyle        = \scriptsize,
+numbersep          = 10pt,
+xleftmargin        = 1.5em,
+frame              = lines,
+framexleftmargin   = 1.5em,
+framexbottommargin = 0em,
+escapeinside       = {([}{])}
 }
 
 \lstdefinelanguage{CAnDL}
 {
-morekeywords = {Constraint, with, opcode, collect, include, function\_name, data\_type, ir\_type, domination, strict\_domination, calculated\_from, control\_origin, data\_origin, End },
+morekeywords = { Constraint, with, opcode, collect, include, function\_name,
+                 data\_type, ir\_type, domination, strict\_domination,
+                 calculated\_from, control\_origin, data\_origin, End },
 morecomment  = [s]{\{}{\}}
 }
 
@@ -89,9 +76,9 @@ morecomment  = [s]{\{}{\}}
 morekeywords = { HARNESS, IMPLEMENTS, Marshalling, PersistentVariables,
                  BeforeFirstExecution, AfterLastExecution, CppHeaderFiles,
                  INPUT, OUTPUT, COMPUTATION},
-morekeywords = [2]{CudaRead, CudaWrite, spmv_csr, Maximum, cuda, mkl,
-                   dotproduct},
-morekeywords = [3]{out, in, size},
+morekeywords = [2]{ CudaRead, CudaWrite, spmv_csr, Maximum, cuda, mkl,
+                    dotproduct},
+morekeywords = [3]{ out, in, size },
 morecomment  = [s]{"}{"}
 }
 
@@ -163,7 +150,7 @@ First and foremost I want to thank Mike for his ...
     \label{chapter:candl}
     \input{latex/chapter4}
 
-\chapter{Formalizing Computational Idioms to Fuel Heterogeneous Acceleration}
+\chapter{Formalizing Computational Idioms for Heterogeneous Acceleration}
     \label{chapter:idioms}
     \input{latex/chapter5}
 
@@ -172,5 +159,6 @@ First and foremost I want to thank Mike for his ...
 
 \chapter{Conclusion}
 
+\bibliographystyle{plainnat}
 \bibliography{references}
 \end{document}

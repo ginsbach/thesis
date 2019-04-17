@@ -1,0 +1,1003 @@
+\begin{thebibliography}{108}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Aiken(1999)]{Aiken:1999:ISC:339853.339897}
+Alexander Aiken.
+\newblock Introduction to set constraint-based program analysis.
+\newblock \emph{Sci. Comput. Program.}, 35\penalty0 (2-3):\penalty0 79--111,
+  November 1999.
+\newblock \doi{10.1016/S0167-6423(99)00007-6}.
+\newblock URL \url{http://dx.doi.org/10.1016/S0167-6423(99)00007-6}.
+
+\bibitem[Aln{\ae}s et~al.(2014)Aln{\ae}s, Logg, Olgaard, Rognes, and
+  Wells]{Alnaes:2014:UFL:2594412.2566630}
+Martin~S. Aln{\ae}s, Anders Logg, Kristian~B. Olgaard, Marie~E. Rognes, and
+  Garth~N. Wells.
+\newblock Unified form language: A domain-specific language for weak
+  formulations of partial differential equations.
+\newblock \emph{ACM Trans. Math. Softw.}, 40\penalty0 (2):\penalty0 9:1--9:37,
+  March 2014.
+\newblock ISSN 0098-3500.
+\newblock \doi{10.1145/2566630}.
+\newblock URL \url{http://doi.acm.org/10.1145/2566630}.
+
+\bibitem[Alt et~al.(1994)Alt, A{\ss}mann, and van Someren]{Alt1994}
+Martin Alt, Uwe A{\ss}mann, and Hans van Someren.
+\newblock \emph{Cosy compiler phase embedding with the CoSy compiler model},
+  pages 278--293.
+\newblock Springer Berlin Heidelberg, Berlin, Heidelberg, 1994.
+\newblock ISBN 978-3-540-48371-7.
+\newblock \doi{10.1007/3-540-57877-3_19}.
+\newblock URL \url{https://doi.org/10.1007/3-540-57877-3_19}.
+
+\bibitem[AMD(2013)]{clblas}
+AMD.
+\newblock {clBLAS}.
+\newblock \url{https://github.com/clMathLibraries/clBLAS}, 2013.
+
+\bibitem[{AMD}(2015)]{clsparse}
+{AMD}.
+\newblock {clSPARSE}.
+\newblock \url{https://github.com/clMathLibraries/clSPARSE}, 2015.
+
+\bibitem[Andión(2015)]{Andion2015Compilation}
+José~M. Andión.
+\newblock \emph{Compilation Techniques for Automatic Extraction of Parallelism
+  and Locality in Heterogeneous Architectures}.
+\newblock PhD thesis, University of A Coruña, 2015.
+
+\bibitem[A{\ss}mann(1996)]{Assmann1996}
+Uwe A{\ss}mann.
+\newblock \emph{How to uniformly specify program analysis and transformation
+  with graph rewrite systems}, pages 121--135.
+\newblock Springer Berlin Heidelberg, Berlin, Heidelberg, 1996.
+\newblock ISBN 978-3-540-49939-8.
+\newblock \doi{10.1007/3-540-61053-7_57}.
+\newblock URL \url{https://doi.org/10.1007/3-540-61053-7_57}.
+
+\bibitem[Assmann(1998)]{Assmann98optimix}
+Uwe Assmann.
+\newblock Optimix - a tool for rewriting and optimizing programs.
+\newblock In \emph{Handbook of Graph Grammars and Computing by Graph
+  Transformation. Volume 2: Applications, Languages and Tools}, pages 307--318.
+  World Scientific, 1998.
+
+\bibitem[Baghdadi et~al.(2015{\natexlab{a}})Baghdadi, Beaugnon, Cohen, Grosser,
+  Kruse, Reddy, Verdoolaege, Betts, Donaldson, Ketema, Absar, Haastregt,
+  Kravets, Lokhmotov, David, and Hajiyev]{7429301}
+Riyadh Baghdadi, Ulysse Beaugnon, Albert Cohen, Tobias Grosser, Michael Kruse,
+  Chandan Reddy, Sven Verdoolaege, Adam Betts, Alastair~F. Donaldson, Jeroen
+  Ketema, Javed Absar, Sven~van Haastregt, Alexey Kravets, Anton Lokhmotov,
+  Robert David, and Elnar Hajiyev.
+\newblock Pencil: A platform-neutral compute intermediate language for
+  accelerator programming.
+\newblock In \emph{2015 International Conference on Parallel Architecture and
+  Compilation (PACT)}, pages 138--149, Oct 2015{\natexlab{a}}.
+\newblock \doi{10.1109/PACT.2015.17}.
+
+\bibitem[Baghdadi et~al.(2015{\natexlab{b}})Baghdadi, Cohen, Grosser,
+  Verdoolaege, Lokhmotov, Absar, Van~Haastregt, Kravets, and
+  Donaldson]{baghdadi2015PENCIL}
+Riyadh Baghdadi, Albert Cohen, Tobias Grosser, Sven Verdoolaege, Anton
+  Lokhmotov, Javed Absar, Sven Van~Haastregt, Alexey Kravets, and Alastair
+  Donaldson.
+\newblock {PENCIL Language Specification}.
+\newblock Research Report RR-8706, {INRIA}, May 2015{\natexlab{b}}.
+\newblock URL \url{https://hal.inria.fr/hal-01154812}.
+
+\bibitem[Bailey et~al.(1991)Bailey, Barszcz, Barton, Browning, Carter, Dagum,
+  Fatoohi, Frederickson, Lasinski, Schreiber, Simon, Venkatakrishnan, and
+  Weeratunga]{Bailey1991NPB}
+D.~H. Bailey, E.~Barszcz, J.~T. Barton, D.~S. Browning, R.~L. Carter, L.~Dagum,
+  R.~A. Fatoohi, P.~O. Frederickson, T.~A. Lasinski, R.~S. Schreiber, H.~D.
+  Simon, V.~Venkatakrishnan, and S.~K. Weeratunga.
+\newblock The {NAS} parallel benchmarks.
+\newblock In \emph{Proceedings of the 1991 ACM/IEEE Conference on
+  Supercomputing}, Supercomputing '91, pages 158--165, New York, NY, USA, 1991.
+  ACM.
+\newblock ISBN 0-89791-459-7.
+\newblock \doi{10.1145/125826.125925}.
+\newblock URL \url{http://doi.acm.org/10.1145/125826.125925}.
+
+\bibitem[Baskaran et~al.(2010)Baskaran, Ramanujam, and
+  Sadayappan]{Baskaran:2010:ACC:2175462.2175482}
+Muthu~Manikandan Baskaran, J.~Ramanujam, and P.~Sadayappan.
+\newblock Automatic {C-to-CUDA} code generation for affine programs.
+\newblock In \emph{Proceedings of the 19th Joint European Conference on Theory
+  and Practice of Software, International Conference on Compiler Construction},
+  CC'10/ETAPS'10, pages 244--263, Berlin, Heidelberg, 2010. Springer-Verlag.
+\newblock ISBN 3-642-11969-7, 978-3-642-11969-9.
+\newblock \doi{10.1007/978-3-642-11970-5_14}.
+\newblock URL \url{http://dx.doi.org/10.1007/978-3-642-11970-5_14}.
+
+\bibitem[Baxter et~al.(1989)Baxter, Mirchandaney, and
+  Saltz]{Baxter:1989:RPS:72935.72967}
+D.~Baxter, R.~Mirchandaney, and J.~H. Saltz.
+\newblock Run-time parallelization and scheduling of loops.
+\newblock In \emph{Proceedings of the First Annual ACM Symposium on Parallel
+  Algorithms and Architectures}, SPAA '89, pages 303--312, New York, NY, USA,
+  1989. ACM.
+\newblock ISBN 0-89791-323-X.
+\newblock \doi{10.1145/72935.72967}.
+\newblock URL \url{http://doi.acm.org/10.1145/72935.72967}.
+
+\bibitem[Beamer et~al.(2015)Beamer, Asanović, and Patterson]{Beamer2015GAP}
+Scott Beamer, Krste Asanović, and David Patterson.
+\newblock The gap benchmark suite.
+\newblock 08 2015.
+
+\bibitem[Benabderrahmane et~al.(2010)Benabderrahmane, Pouchet, Cohen, and
+  Bastoul]{benabderrahmane2010polyhedral}
+Mohamed-Walid Benabderrahmane, Louis-No{\"e}l Pouchet, Albert Cohen, and
+  C{\'e}dric Bastoul.
+\newblock The polyhedral model is more widely applicable than you think.
+\newblock In \emph{International Conference on Compiler Construction}, pages
+  283--303. Springer, 2010.
+
+\bibitem[Blackford et~al.(2002)Blackford, Demmel, Dongarra, Duff, Hammarling,
+  Henry, Heroux, Kaufman, Lumsdaine, Petitet, Pozo, Remington, and
+  Whaley]{2002:USB:567806.567807}
+L.~Susan Blackford, James Demmel, Jack Dongarra, Iain Duff, Sven Hammarling,
+  Greg Henry, Michael Heroux, Linda Kaufman, Andrew Lumsdaine, Antoine Petitet,
+  Roland Pozo, Karin Remington, and R.~Clint Whaley.
+\newblock An updated set of basic linear algebra subprograms (blas).
+\newblock \emph{ACM Trans. Math. Softw.}, 28\penalty0 (2):\penalty0 135--151,
+  June 2002.
+\newblock ISSN 0098-3500.
+\newblock \doi{10.1145/567806.567807}.
+\newblock URL \url{http://doi.acm.org/10.1145/567806.567807}.
+
+\bibitem[Brown et~al.(2011)Brown, Sujeeth, Lee, Rompf, Chafi, Odersky, and
+  Olukotun]{brown11heterogeneous}
+Kevin~J. Brown, Arvind~K. Sujeeth, Hyouk~Joong Lee, Tiark Rompf, Hassan Chafi,
+  Martin Odersky, and Kunle Olukotun.
+\newblock A heterogeneous parallel framework for domain-specific languages.
+\newblock In \emph{Proceedings of the 2011 International Conference on Parallel
+  Architectures and Compilation Techniques}, PACT '11, pages 89--100,
+  Washington, DC, USA, 2011. IEEE Computer Society.
+\newblock ISBN 978-0-7695-4566-0.
+\newblock \doi{10.1109/PACT.2011.15}.
+\newblock URL \url{http://dx.doi.org/10.1109/PACT.2011.15}.
+
+\bibitem[Catanzaro et~al.(2010)Catanzaro, Garland, and
+  Keutzer]{catanzaro11copperhead}
+Bryan Catanzaro, Michael Garland, and Kurt Keutzer.
+\newblock Copperhead: Compiling an embedded data parallel language.
+\newblock Technical Report UCB/EECS-2010-124, EECS Department, University of
+  California, Berkeley, Sep 2010.
+\newblock URL
+  \url{http://www2.eecs.berkeley.edu/Pubs/TechRpts/2010/EECS-2010-124.html}.
+
+\bibitem[Chafi et~al.(2011)Chafi, Sujeeth, Brown, Lee, Atreya, and
+  Olukotun]{chafi11domain}
+Hassan Chafi, Arvind~K. Sujeeth, Kevin~J. Brown, HyoukJoong Lee, Anand~R.
+  Atreya, and Kunle Olukotun.
+\newblock A domain-specific approach to heterogeneous parallelism.
+\newblock \emph{SIGPLAN Not.}, 46\penalty0 (8):\penalty0 35--46, February 2011.
+\newblock ISSN 0362-1340.
+\newblock \doi{10.1145/2038037.1941561}.
+\newblock URL \url{http://doi.acm.org/10.1145/2038037.1941561}.
+
+\bibitem[Chakravarty et~al.(2011)Chakravarty, Keller, Lee, McDonell, and
+  Grover]{chakravarty11accelerating}
+Manuel~M.T. Chakravarty, Gabriele Keller, Sean Lee, Trevor~L. McDonell, and
+  Vinod Grover.
+\newblock Accelerating haskell array codes with multicore {GPUs}.
+\newblock In \emph{Proceedings of the Sixth Workshop on Declarative Aspects of
+  Multicore Programming}, DAMP '11, pages 3--14, New York, NY, USA, 2011. ACM.
+\newblock ISBN 978-1-4503-0486-3.
+\newblock \doi{10.1145/1926354.1926358}.
+\newblock URL \url{http://doi.acm.org/10.1145/1926354.1926358}.
+
+\bibitem[Chandan~Reddy and Cohen(2016)]{Reddy2016Reduction}
+Michael~Kruse Chandan~Reddy and Albert Cohen.
+\newblock Reduction drawing: Language constructs and polyhedral compilation for
+  reductions on {GPUs}.
+\newblock In \emph{Proceedings of the 25rd International Conference on Parallel
+  Architectures and Compilation}, PACT '16, 2016.
+
+\bibitem[Chi-Chung et~al.(1997)Chi-Chung, Sadayappan, and
+  Wenger]{chi1997optimizing}
+Lam Chi-Chung, P~Sadayappan, and Rephael Wenger.
+\newblock On optimizing a class of multi-dimensional loops with reduction for
+  parallel execution.
+\newblock \emph{Parallel Processing Letters}, 7\penalty0 (02):\penalty0
+  157--168, 1997.
+
+\bibitem[Collins et~al.(2014)Collins, Grewe, Grover, Lee, and
+  Susnea]{collins14nova}
+Alexander Collins, Dominik Grewe, Vinod Grover, Sean Lee, and Adriana Susnea.
+\newblock {NOVA}: A functional language for data parallelism.
+\newblock In \emph{Proceedings of ACM SIGPLAN International Workshop on
+  Libraries, Languages, and Compilers for Array Programming}, ARRAY'14, pages
+  8:8--8:13, New York, NY, USA, 2014. ACM.
+\newblock ISBN 978-1-4503-2937-8.
+\newblock \doi{10.1145/2627373.2627375}.
+\newblock URL \url{http://doi.acm.org/10.1145/2627373.2627375}.
+
+\bibitem[Davis and Hu(2011)]{Davis:2011:UFS:2049662.2049663}
+Timothy~A. Davis and Yifan Hu.
+\newblock The university of florida sparse matrix collection.
+\newblock \emph{ACM Trans. Math. Softw.}, 38\penalty0 (1):\penalty0 1:1--1:25,
+  December 2011.
+\newblock ISSN 0098-3500.
+\newblock \doi{10.1145/2049662.2049663}.
+\newblock URL \url{http://doi.acm.org/10.1145/2049662.2049663}.
+
+\bibitem[Demetrescu et~al.()Demetrescu, Goldberg, and
+  Johnson]{demetrescu2009shortest}
+Camil Demetrescu, Andrew~V. Goldberg, and David~S. Johnson.
+\newblock \emph{The Shortest Path Problem: Ninth DIMACS Implementation
+  Challenge}, volume~74.
+\newblock American Mathematical Soc.
+
+\bibitem[Doerfert et~al.(2015)Doerfert, Streit, Hack, and
+  Benaissa]{Doerfert2015Polly}
+Johannes Doerfert, Kevin Streit, Sebastian Hack, and Zino Benaissa.
+\newblock Polly's polyhedral scheduling in the presence of reductions.
+\newblock \emph{CoRR}, abs/1505.07716, 2015.
+\newblock URL \url{http://arxiv.org/abs/1505.07716}.
+
+\bibitem[Dongarra et~al.(2001)Dongarra, Eijkhout, and {van der
+  Vorst}]{Dongarra2001}
+Jack Dongarra, Victor Eijkhout, and Henk {van der Vorst}.
+\newblock An {{Iterative Solver Benchmark}}.
+\newblock \emph{Sci. Program.}, 9\penalty0 (4):\penalty0 223--231, December
+  2001.
+\newblock ISSN 1058-9244.
+\newblock \doi{10.1155/2001/527931}.
+\newblock URL \url{https://doi.org/10.1155/2001/527931}.
+
+\bibitem[Doye et~al.(1999)Doye, Miller, and Wales]{doi:10.1063/1.478595}
+Jonathan P.~K. Doye, Mark~A. Miller, and David~J. Wales.
+\newblock The double-funnel energy landscape of the 38-atom lennard-jones
+  cluster.
+\newblock \emph{The Journal of Chemical Physics}, 110\penalty0 (14):\penalty0
+  6896--6906, 1999.
+\newblock \doi{10.1063/1.478595}.
+
+\bibitem[Elafrou et~al.(2018)Elafrou, Karakasis, Gkountouvas, Kourtis, Goumas,
+  and Koziris]{sparsex}
+Athena Elafrou, Vasileios Karakasis, Theodoros Gkountouvas, Kornilios Kourtis,
+  Georgios Goumas, and Nectarios Koziris.
+\newblock {{SparseX}}: {{A Library}} for {{High}}-{{Performance Sparse
+  Matrix}}-{{Vector Multiplication}} on {{Multicore Platforms}}.
+\newblock \emph{ACM Trans. Math. Softw.}, 44\penalty0 (3):\penalty0
+  26:1--26:32, January 2018.
+\newblock ISSN 0098-3500.
+\newblock \doi{10.1145/3134442}.
+\newblock URL \url{http://doi.acm.org/10.1145/3134442}.
+
+\bibitem[Fisher and Ghuloum(1994)]{fisher1994parallelizing}
+Allan~L Fisher and Anwar~M Ghuloum.
+\newblock Parallelizing complex scans and reductions.
+\newblock In \emph{ACM SIGPLAN Notices}, volume~29, pages 135--146. ACM, 1994.
+
+\bibitem[Franchetti et~al.(2009)Franchetti, de~Mesmay, McFarlin, and
+  P\"uschel]{Franchetti09OL}
+Franz Franchetti, Fr\'ed\'eric de~Mesmay, Daniel McFarlin, and Markus
+  P\"uschel.
+\newblock Operator language: A program generation framework for fast kernels.
+\newblock In \emph{IFIP TC 2 Working Conference on Domain-Specific Languages}.
+  Springer, 2009.
+
+\bibitem[Ginsbach and O'Boyle(2017)]{ginsbach2017discovery}
+Philip Ginsbach and Michael F.~P. O'Boyle.
+\newblock Discovery and exploitation of general reductions: a constraint based
+  approach.
+\newblock In \emph{{CGO}}, pages 269--280. {ACM}, 2017.
+
+\bibitem[Ginsbach et~al.(2018{\natexlab{a}})Ginsbach, Crawford, and
+  O\&\#39;Boyle]{Ginsbach:2018:CDS:3178372.3179515}
+Philip Ginsbach, Lewis Crawford, and Michael F.~P. O\&\#39;Boyle.
+\newblock Candl: A domain specific language for compiler analysis.
+\newblock In \emph{Proceedings of the 27th International Conference on Compiler
+  Construction}, CC 2018, pages 151--162, New York, NY, USA,
+  2018{\natexlab{a}}. ACM.
+\newblock ISBN 978-1-4503-5644-2.
+\newblock \doi{10.1145/3178372.3179515}.
+\newblock URL \url{http://doi.acm.org/10.1145/3178372.3179515}.
+
+\bibitem[Ginsbach et~al.(2018{\natexlab{b}})Ginsbach, Remmelg, Steuwer, Bodin,
+  Dubach, and O'Boyle]{Ginsbach:2018:AML:3173162.3173182}
+Philip Ginsbach, Toomas Remmelg, Michel Steuwer, Bruno Bodin, Christophe
+  Dubach, and Michael F.~P. O'Boyle.
+\newblock Automatic matching of legacy code to heterogeneous apis: An idiomatic
+  approach.
+\newblock In \emph{Proceedings of the Twenty-Third International Conference on
+  Architectural Support for Programming Languages and Operating Systems},
+  ASPLOS '18, pages 139--153, New York, NY, USA, 2018{\natexlab{b}}. ACM.
+\newblock ISBN 978-1-4503-4911-6.
+\newblock \doi{10.1145/3173162.3173182}.
+\newblock URL \url{http://doi.acm.org/10.1145/3173162.3173182}.
+
+\bibitem[Grosser et~al.(2012)Grosser, Größlinger, and
+  Lengauer]{Lengauer2012Polly}
+Tobias Grosser, Armin Größlinger, and Christian Lengauer.
+\newblock Polly - performing polyhedral optimizations on a low-level
+  intermediate representation.
+\newblock \emph{Parallel Processing Letters}, 22\penalty0 (4), 2012.
+\newblock URL
+  \url{http://dblp.uni-trier.de/db/journals/ppl/ppl22.html#GrosserGL12}.
+
+\bibitem[Gulwani et~al.(2008)Gulwani, Srivastava, and
+  Venkatesan]{Gulwani:2008:PAC:1375581.1375616}
+Sumit Gulwani, Saurabh Srivastava, and Ramarathnam Venkatesan.
+\newblock Program analysis as constraint solving.
+\newblock In \emph{Proceedings of the 29th ACM SIGPLAN Conference on
+  Programming Language Design and Implementation}, PLDI '08, pages 281--292,
+  New York, NY, USA, 2008. ACM.
+\newblock ISBN 978-1-59593-860-2.
+\newblock \doi{10.1145/1375581.1375616}.
+\newblock URL \url{http://doi.acm.org/10.1145/1375581.1375616}.
+
+\bibitem[Gupta and Rajopadhye(2006)]{gupta2006simplifying}
+Gautam Gupta and Sanjay~V Rajopadhye.
+\newblock Simplifying reductions.
+\newblock In \emph{POPL}, volume~6, pages 30--41, 2006.
+
+\bibitem[Guti{\'e}rrez et~al.(2000)Guti{\'e}rrez, Plata, and
+  Zapata]{Gutierrez:2000}
+E.~Guti{\'e}rrez, O.~Plata, and E.~L. Zapata.
+\newblock A compiler method for the parallel execution of irregular reductions
+  in scalable shared memory multiprocessors.
+\newblock In \emph{Proceedings of the 14th International Conference on
+  Supercomputing}, ICS '00, pages 78--87, New York, NY, USA, 2000. ACM.
+\newblock ISBN 1-58113-270-0.
+\newblock \doi{10.1145/335231.335239}.
+\newblock URL \url{http://doi.acm.org/10.1145/335231.335239}.
+
+\bibitem[Guti{\'e}rrez et~al.(2003)Guti{\'e}rrez, Plata, and
+  Zapata]{gutierrez2003optimization}
+Eladio Guti{\'e}rrez, O~Plata, and Emilio~L Zapata.
+\newblock Optimization techniques for parallel irregular reductions.
+\newblock \emph{Journal of systems architecture}, 49\penalty0 (3):\penalty0
+  63--74, 2003.
+
+\bibitem[Guti{\'e}rrez et~al.(2008)Guti{\'e}rrez, Plata, and
+  Zapata]{gutierrez2008analytical}
+Eladio Guti{\'e}rrez, Oscar Plata, and Emilio~L Zapata.
+\newblock An analytical model of locality-based parallel irregular reductions.
+\newblock \emph{Parallel Computing}, 34\penalty0 (3):\penalty0 133--157, 2008.
+
+\bibitem[Hagedorn et~al.(2018)Hagedorn, Stoltzfus, Steuwer, Gorlatch, and
+  Dubach]{HagedornSSGD18}
+Bastian Hagedorn, Larisa Stoltzfus, Michel Steuwer, Sergei Gorlatch, and
+  Christophe Dubach.
+\newblock High performance stencil code generation with {Lift}.
+\newblock In \emph{{CGO}}. {ACM}, 2018.
+
+\bibitem[Int(2003)]{mkl}
+\emph{{Math Kernel Library}}.
+\newblock Intel, 2003.
+\newblock URL \url{https://software.intel.com/en-us/intel-mkl}.
+
+\bibitem[Jablin et~al.(2011{\natexlab{a}})Jablin, Prabhu, Jablin, Johnson,
+  Beard, and August]{Jablin:2011:ACC:1993316.1993516}
+Thomas~B. Jablin, Prakash Prabhu, James~A. Jablin, Nick~P. Johnson, Stephen~R.
+  Beard, and David~I. August.
+\newblock Automatic cpu-gpu communication management and optimization.
+\newblock \emph{SIGPLAN Not.}, 46\penalty0 (6):\penalty0 142--151, June
+  2011{\natexlab{a}}.
+\newblock ISSN 0362-1340.
+\newblock \doi{10.1145/1993316.1993516}.
+\newblock URL \url{http://doi.acm.org/10.1145/1993316.1993516}.
+
+\bibitem[Jablin et~al.(2011{\natexlab{b}})Jablin, Prabhu, Jablin, Johnson,
+  Beard, and August]{jablin11automatic}
+Thomas~B. Jablin, Prakash Prabhu, James~A. Jablin, Nick~P. Johnson, Stephen~R.
+  Beard, and David~I. August.
+\newblock Automatic {CPU-GPU} communication management and optimization.
+\newblock In \emph{PLDI}, 2011{\natexlab{b}}.
+
+\bibitem[Johnson et~al.(1994)Johnson, Pearson, and Pingali]{johnson1994program}
+Richard Johnson, David Pearson, and Keshav Pingali.
+\newblock The program structure tree: Computing control regions in linear time.
+\newblock In \emph{Proceedings of the ACM SIGPLAN 1994 Conference on
+  Programming Language Design and Implementation}, PLDI '94, pages 171--185,
+  New York, NY, USA, 1994. ACM.
+\newblock ISBN 0-89791-662-X.
+\newblock \doi{10.1145/178243.178258}.
+\newblock URL \url{http://doi.acm.org/10.1145/178243.178258}.
+
+\bibitem[Jouppi et~al.(2017)Jouppi, Young, Patil, Patterson, Agrawal, Bajwa,
+  Bates, Bhatia, Boden, Borchers, Boyle, Cantin, Chao, Clark, Coriell, Daley,
+  Dau, Dean, Gelb, Ghaemmaghami, Gottipati, Gulland, Hagmann, Ho, Hogberg, Hu,
+  Hundt, Hurt, Ibarz, Jaffey, Jaworski, Kaplan, Khaitan, Killebrew, Koch,
+  Kumar, Lacy, Laudon, Law, Le, Leary, Liu, Lucke, Lundin, MacKean, Maggiore,
+  Mahony, Miller, Nagarajan, Narayanaswami, Ni, Nix, Norrie, Omernick,
+  Penukonda, Phelps, Ross, Ross, Salek, Samadiani, Severn, Sizikov, Snelham,
+  Souter, Steinberg, Swing, Tan, Thorson, Tian, Toma, Tuttle, Vasudevan,
+  Walter, Wang, Wilcox, and Yoon]{jouppi2017datacenter}
+Norman~P. Jouppi, Cliff Young, Nishant Patil, David Patterson, Gaurav Agrawal,
+  Raminder Bajwa, Sarah Bates, Suresh Bhatia, Nan Boden, Al~Borchers, Rick
+  Boyle, Pierre{-}luc Cantin, Clifford Chao, Chris Clark, Jeremy Coriell, Mike
+  Daley, Matt Dau, Jeffrey Dean, Ben Gelb, Tara~Vazir Ghaemmaghami, Rajendra
+  Gottipati, William Gulland, Robert Hagmann, C.~Richard Ho, Doug Hogberg, John
+  Hu, Robert Hundt, Dan Hurt, Julian Ibarz, Aaron Jaffey, Alek Jaworski,
+  Alexander Kaplan, Harshit Khaitan, Daniel Killebrew, Andy Koch, Naveen Kumar,
+  Steve Lacy, James Laudon, James Law, Diemthu Le, Chris Leary, Zhuyuan Liu,
+  Kyle Lucke, Alan Lundin, Gordon MacKean, Adriana Maggiore, Maire Mahony,
+  Kieran Miller, Rahul Nagarajan, Ravi Narayanaswami, Ray Ni, Kathy Nix, Thomas
+  Norrie, Mark Omernick, Narayana Penukonda, Andy Phelps, Jonathan Ross, Matt
+  Ross, Amir Salek, Emad Samadiani, Chris Severn, Gregory Sizikov, Matthew
+  Snelham, Jed Souter, Dan Steinberg, Andy Swing, Mercedes Tan, Gregory
+  Thorson, Bo~Tian, Horia Toma, Erick Tuttle, Vijay Vasudevan, Richard Walter,
+  Walter Wang, Eric Wilcox, and Doe~Hyun Yoon.
+\newblock In-datacenter performance analysis of a tensor processing unit.
+\newblock In \emph{Proceedings of the 44th Annual International Symposium on
+  Computer Architecture, {ISCA} 2017, Toronto, ON, Canada, June 24-28, 2017},
+  pages 1--12, 2017.
+\newblock \doi{10.1145/3079856.3080246}.
+\newblock URL \url{http://doi.acm.org/10.1145/3079856.3080246}.
+
+\bibitem[Jouvelot and Dehbonei(1989)]{jouvelot1989unified}
+Pierre Jouvelot and Babak Dehbonei.
+\newblock A unified semantic approach for the vectorization and parallelization
+  of generalized reductions.
+\newblock In \emph{Proceedings of the 3rd international conference on
+  Supercomputing}, pages 186--194. ACM, 1989.
+
+\bibitem[Kamil et~al.(2016)Kamil, Cheung, Itzhaky, and
+  Solar-Lezama]{Kamil2016Verified}
+Shoaib Kamil, Alvin Cheung, Shachar Itzhaky, and Armando Solar-Lezama.
+\newblock Verified lifting of stencil computations.
+\newblock In \emph{Proceedings of the 37th ACM SIGPLAN Conference on
+  Programming Language Design and Implementation}, PLDI '16, pages 711--726,
+  New York, NY, USA, 2016. ACM.
+\newblock ISBN 978-1-4503-4261-2.
+\newblock \doi{10.1145/2908080.2908117}.
+\newblock URL \url{http://doi.acm.org/10.1145/2908080.2908117}.
+
+\bibitem[Kepner et~al.(2015)Kepner, Bader, Buluç, Gilbert, Mattson, and
+  Meyerhenke]{Kepner2015GraphsMA}
+Jeremy Kepner, David~A. Bader, Aydin Buluç, John~R. Gilbert, Timothy~G.
+  Mattson, and Henning Meyerhenke.
+\newblock Graphs, matrices, and the graphblas: Seven good reasons.
+\newblock In \emph{ICCS}, 2015.
+
+\bibitem[Kiriansky et~al.(2016)Kiriansky, Zhang, and
+  Amarasinghe]{Kiriansky:2016:OIM:2967938.2967948}
+Vladimir Kiriansky, Yunming Zhang, and Saman Amarasinghe.
+\newblock Optimizing indirect memory references with milk.
+\newblock In \emph{Proceedings of the 2016 International Conference on Parallel
+  Architectures and Compilation}, PACT '16, pages 299--312, New York, NY, USA,
+  2016. ACM.
+\newblock ISBN 978-1-4503-4121-9.
+\newblock \doi{10.1145/2967938.2967948}.
+\newblock URL \url{http://doi.acm.org/10.1145/2967938.2967948}.
+
+\bibitem[Kundu et~al.(2009)Kundu, Tatlock, and
+  Lerner]{Kundu:2009:POC:1543135.1542513}
+Sudipta Kundu, Zachary Tatlock, and Sorin Lerner.
+\newblock Proving optimizations correct using parameterized program
+  equivalence.
+\newblock \emph{SIGPLAN Not.}, 44\penalty0 (6):\penalty0 327--337, June 2009.
+\newblock ISSN 0362-1340.
+\newblock \doi{10.1145/1543135.1542513}.
+\newblock URL \url{http://doi.acm.org/10.1145/1543135.1542513}.
+
+\bibitem[Lattner and Adve(2004)]{lattner2004llvm}
+Chris Lattner and Vikram Adve.
+\newblock Llvm: A compilation framework for lifelong program analysis \&
+  transformation.
+\newblock In \emph{Code Generation and Optimization, 2004. CGO 2004.
+  International Symposium on}, pages 75--86. IEEE, 2004.
+
+\bibitem[Lee et~al.(2009{\natexlab{a}})Lee, Min, and
+  Eigenmann]{Lee:2009:OGC:1594835.1504194}
+Seyong Lee, Seung-Jai Min, and Rudolf Eigenmann.
+\newblock Openmp to gpgpu: A compiler framework for automatic translation and
+  optimization.
+\newblock \emph{SIGPLAN Not.}, 44\penalty0 (4):\penalty0 101--110, February
+  2009{\natexlab{a}}.
+\newblock ISSN 0362-1340.
+\newblock \doi{10.1145/1594835.1504194}.
+\newblock URL \url{http://doi.acm.org/10.1145/1594835.1504194}.
+
+\bibitem[Lee et~al.(2009{\natexlab{b}})Lee, Min, and Eigenmann]{lee09openmp}
+Seyong Lee, Seung-Jai Min, and Rudolf Eigenmann.
+\newblock {OpenMP} to {GPGPU}: A compiler framework for automatic translation
+  and optimization.
+\newblock \emph{SIGPLAN Not.}, 44\penalty0 (4):\penalty0 101--110, February
+  2009{\natexlab{b}}.
+\newblock ISSN 0362-1340.
+\newblock \doi{10.1145/1594835.1504194}.
+\newblock URL \url{http://doi.acm.org/10.1145/1594835.1504194}.
+
+\bibitem[Lerner et~al.(2005)Lerner, Millstein, Rice, and
+  Chambers]{Lerner:2005:ASP:1040305.1040335}
+Sorin Lerner, Todd Millstein, Erika Rice, and Craig Chambers.
+\newblock Automated soundness proofs for dataflow analyses and transformations
+  via local rules.
+\newblock In \emph{Proceedings of the 32Nd ACM SIGPLAN-SIGACT Symposium on
+  Principles of Programming Languages}, POPL '05, pages 364--377, New York, NY,
+  USA, 2005. ACM.
+\newblock ISBN 1-58113-830-X.
+\newblock \doi{10.1145/1040305.1040335}.
+\newblock URL \url{http://doi.acm.org/10.1145/1040305.1040335}.
+
+\bibitem[Lipps et~al.(1989)Lipps, M{\"o}ncke, and Wilhelm]{Lipps1989}
+Peter Lipps, Ulrich M{\"o}ncke, and Reinhard Wilhelm.
+\newblock \emph{OPTRAN - A language/system for the specification of program
+  transformations: System overview and experiences}, pages 52--65.
+\newblock Springer Berlin Heidelberg, Berlin, Heidelberg, 1989.
+\newblock ISBN 978-3-540-46200-2.
+\newblock \doi{10.1007/3-540-51364-7_4}.
+\newblock URL \url{https://doi.org/10.1007/3-540-51364-7_4}.
+
+\bibitem[Lopes et~al.(2015)Lopes, Menendez, Nagarakatte, and
+  Regehr]{Lopes:2015:PCP:2737924.2737965}
+Nuno~P. Lopes, David Menendez, Santosh Nagarakatte, and John Regehr.
+\newblock Provably correct peephole optimizations with alive.
+\newblock In \emph{Proceedings of the 36th ACM SIGPLAN Conference on
+  Programming Language Design and Implementation}, PLDI '15, pages 22--32, New
+  York, NY, USA, 2015. ACM.
+\newblock ISBN 978-1-4503-3468-6.
+\newblock \doi{10.1145/2737924.2737965}.
+\newblock URL \url{http://doi.acm.org/10.1145/2737924.2737965}.
+
+\bibitem[Martin(1998)]{Martin1998}
+Florian Martin.
+\newblock Pag -- an efficient program analyzer generator.
+\newblock \emph{International Journal on Software Tools for Technology
+  Transfer}, 2\penalty0 (1):\penalty0 46--67, Nov 1998.
+\newblock ISSN 1433-2779.
+\newblock \doi{10.1007/s100090050017}.
+\newblock URL \url{https://doi.org/10.1007/s100090050017}.
+
+\bibitem[McDonell et~al.(2013)McDonell, Chakravarty, Keller, and
+  Lippmeier]{mcdonell13optimising}
+Trevor~L. McDonell, Manuel~M.T. Chakravarty, Gabriele Keller, and Ben
+  Lippmeier.
+\newblock Optimising purely functional {GPU} programs.
+\newblock In \emph{Proceedings of the 18th ACM SIGPLAN International Conference
+  on Functional Programming}, ICFP '13, pages 49--60, New York, NY, USA, 2013.
+  ACM.
+\newblock ISBN 978-1-4503-2326-0.
+\newblock \doi{10.1145/2500365.2500595}.
+\newblock URL \url{http://doi.acm.org/10.1145/2500365.2500595}.
+
+\bibitem[Mendis et~al.(2015)Mendis, Bosboom, Wu, Kamil, Ragan-Kelley, Paris,
+  Zhao, and Amarasinghe]{Mendis2015Helium}
+Charith Mendis, Jeffrey Bosboom, Kevin Wu, Shoaib Kamil, Jonathan Ragan-Kelley,
+  Sylvain Paris, Qin Zhao, and Saman Amarasinghe.
+\newblock Helium: Lifting high-performance stencil kernels from stripped x86
+  binaries to {Halide} {DSL} code.
+\newblock In \emph{Proceedings of the 36th ACM SIGPLAN Conference on
+  Programming Language Design and Implementation}, PLDI '15, pages 391--402,
+  New York, NY, USA, 2015. ACM.
+\newblock ISBN 978-1-4503-3468-6.
+\newblock \doi{10.1145/2737924.2737974}.
+\newblock URL \url{http://doi.acm.org/10.1145/2737924.2737974}.
+
+\bibitem[Menendez and Nagarakatte(2017)]{Menendez:2017:ADP:3062341.3062372}
+David Menendez and Santosh Nagarakatte.
+\newblock Alive-infer: Data-driven precondition inference for peephole
+  optimizations in llvm.
+\newblock In \emph{Proceedings of the 38th ACM SIGPLAN Conference on
+  Programming Language Design and Implementation}, PLDI 2017, pages 49--63, New
+  York, NY, USA, 2017. ACM.
+\newblock ISBN 978-1-4503-4988-8.
+\newblock \doi{10.1145/3062341.3062372}.
+\newblock URL \url{http://doi.acm.org/10.1145/3062341.3062372}.
+
+\bibitem[Menendez et~al.(2016)Menendez, Nagarakatte, and Gupta]{Menendez2016}
+David Menendez, Santosh Nagarakatte, and Aarti Gupta.
+\newblock \emph{Alive-FP: Automated Verification of Floating Point Based
+  Peephole Optimizations in LLVM}, pages 317--337.
+\newblock Springer Berlin Heidelberg, Berlin, Heidelberg, 2016.
+\newblock ISBN 978-3-662-53413-7.
+\newblock \doi{10.1007/978-3-662-53413-7_16}.
+\newblock URL \url{https://doi.org/10.1007/978-3-662-53413-7_16}.
+
+\bibitem[Moreton-Fernandez et~al.(2017{\natexlab{a}})Moreton-Fernandez,
+  Gonzalez-Escribano, and Ferraris]{Diego2017Multi}
+Ana Moreton-Fernandez, Arturo Gonzalez-Escribano, and Diego Ferraris.
+\newblock Multi-device controllers: A library to simplify parallel
+  heterogeneous programming.
+\newblock 12 2017{\natexlab{a}}.
+
+\bibitem[Moreton-Fernandez et~al.(2017{\natexlab{b}})Moreton-Fernandez,
+  Rodriguez-Gutiez, Gonzalez-Escribano, and
+  Llanos]{10.1007/978-3-319-64203-1_33}
+Ana Moreton-Fernandez, Eduardo Rodriguez-Gutiez, Arturo Gonzalez-Escribano, and
+  Diego~R. Llanos.
+\newblock Supporting the xeon phi coprocessor in a heterogeneous programming
+  model.
+\newblock In Francisco~F. Rivera, Tom{\'a}s~F. Pena, and Jos{\'e}~C. Cabaleiro,
+  editors, \emph{Euro-Par 2017: Parallel Processing}, pages 457--469, Cham,
+  2017{\natexlab{b}}. Springer International Publishing.
+\newblock ISBN 978-3-319-64203-1.
+
+\bibitem[Mullapudi et~al.(2015)Mullapudi, Vasista, and
+  Bondhugula]{Mullapudi:2015:PAO:2694344.2694364}
+Ravi~Teja Mullapudi, Vinay Vasista, and Uday Bondhugula.
+\newblock {PolyMage}: Automatic optimization for image processing pipelines.
+\newblock In \emph{Proceedings of the Twentieth International Conference on
+  Architectural Support for Programming Languages and Operating Systems},
+  ASPLOS '15, pages 429--443, New York, NY, USA, 2015. ACM.
+\newblock ISBN 978-1-4503-2835-7.
+\newblock \doi{10.1145/2694344.2694364}.
+\newblock URL \url{http://doi.acm.org/10.1145/2694344.2694364}.
+
+\bibitem[Mullapudi et~al.(2016)Mullapudi, Adams, Sharlet, Ragan-Kelley, and
+  Fatahalian]{Mullapudi:2016:ASH:2897824.2925952}
+Ravi~Teja Mullapudi, Andrew Adams, Dillon Sharlet, Jonathan Ragan-Kelley, and
+  Kayvon Fatahalian.
+\newblock Automatically scheduling halide image processing pipelines.
+\newblock \emph{ACM Trans. Graph.}, 35\penalty0 (4):\penalty0 83:1--83:11, July
+  2016.
+\newblock ISSN 0730-0301.
+\newblock \doi{10.1145/2897824.2925952}.
+\newblock URL \url{http://doi.acm.org/10.1145/2897824.2925952}.
+
+\bibitem[Mullen et~al.(2016)Mullen, Zuniga, Tatlock, and
+  Grossman]{Mullen:2016:VPO:2908080.2908109}
+Eric Mullen, Daryl Zuniga, Zachary Tatlock, and Dan Grossman.
+\newblock Verified peephole optimizations for compcert.
+\newblock In \emph{Proceedings of the 37th ACM SIGPLAN Conference on
+  Programming Language Design and Implementation}, PLDI '16, pages 448--461,
+  New York, NY, USA, 2016. ACM.
+\newblock ISBN 978-1-4503-4261-2.
+\newblock \doi{10.1145/2908080.2908109}.
+\newblock URL \url{http://doi.acm.org/10.1145/2908080.2908109}.
+
+\bibitem[Muralidharan et~al.(2016)Muralidharan, Roy, Hall, Garland, and
+  Rai]{MuralidharanRHG16}
+Saurav Muralidharan, Amit Roy, Mary~W. Hall, Michael Garland, and Piyush Rai.
+\newblock Architecture-adaptive code variant tuning.
+\newblock In \emph{{ASPLOS}}, pages 325--338. {ACM}, 2016.
+
+\bibitem[N\"{o}tzli and Brown(2016)]{Notzli:2016:LVP:2931021.2931024}
+Andres N\"{o}tzli and Fraser Brown.
+\newblock {LifeJacket}: Verifying precise floating-point optimizations in llvm.
+\newblock In \emph{Proceedings of the 5th ACM SIGPLAN International Workshop on
+  State Of the Art in Program Analysis}, SOAP 2016, pages 24--29, New York, NY,
+  USA, 2016. ACM.
+\newblock ISBN 978-1-4503-4385-5.
+\newblock \doi{10.1145/2931021.2931024}.
+\newblock URL \url{http://doi.acm.org/10.1145/2931021.2931024}.
+
+\bibitem[Nvi()]{cublas}
+\emph{{cuBLAS}}.
+\newblock Nvidia.
+\newblock URL \url{http://developer.nvidia.com/cuBLAS}.
+
+\bibitem[{NVIDIA}()]{cusparse}
+{NVIDIA}.
+\newblock {NVIDIA CUDA Sparse Matrix library (cuSPARSE)}.
+\newblock \url{https://developer.nvidia.com/cusparse}.
+
+\bibitem[Nvi(2011)]{nvidia11guide}
+\emph{Nvidia {OpenCL} Best Practices Guide}.
+\newblock Nvidia, 2011.
+
+\bibitem[Ofenbeck et~al.(2013)Ofenbeck, Rompf, Stojanov, Odersky, and
+  P{\"u}schel]{ofenbeck13spiral}
+Georg Ofenbeck, Tiark Rompf, Alen Stojanov, Martin Odersky, and Markus
+  P{\"u}schel.
+\newblock {SPIRAL} in {S}cala: Towards the systematic construction of
+  generators for performance libraries.
+\newblock In \emph{International Conference on Generative Programming: Concepts
+  \& Experiences}, GPCE, 2013.
+
+\bibitem[Olmos and Visser(2005)]{Olmos:2005:CSD:2136624.2136643}
+Karina Olmos and Eelco Visser.
+\newblock Composing source-to-source data-flow transformations with rewriting
+  strategies and dependent dynamic rewrite rules.
+\newblock In \emph{Proceedings of the 14th International Conference on Compiler
+  Construction}, CC'05, pages 204--220, Berlin, Heidelberg, 2005.
+  Springer-Verlag.
+\newblock ISBN 3-540-25411-0, 978-3-540-25411-9.
+\newblock \doi{10.1007/978-3-540-31985-6_14}.
+\newblock URL \url{http://dx.doi.org/10.1007/978-3-540-31985-6_14}.
+
+\bibitem[Phothilimthana et~al.(2013)Phothilimthana, Ansel, Ragan{-}Kelley, and
+  Amarasinghe]{PhothilimthanaARA13}
+Phitchaya~Mangpo Phothilimthana, Jason Ansel, Jonathan Ragan{-}Kelley, and
+  Saman~P. Amarasinghe.
+\newblock Portable performance on heterogeneous architectures.
+\newblock In \emph{{ASPLOS}}, pages 431--444. {ACM}, 2013.
+
+\bibitem[Pinter and Pinter(1994{\natexlab{a}})]{Pinter:1994:POP:177492.177494}
+Shlomit~S. Pinter and Ron~Y. Pinter.
+\newblock Program optimization and parallelization using idioms.
+\newblock \emph{ACM Trans. Program. Lang. Syst.}, 16\penalty0 (3):\penalty0
+  305--327, May 1994{\natexlab{a}}.
+\newblock ISSN 0164-0925.
+\newblock \doi{10.1145/177492.177494}.
+\newblock URL \url{http://doi.acm.org/10.1145/177492.177494}.
+
+\bibitem[Pinter and Pinter(1994{\natexlab{b}})]{pinter1994program}
+Shlomit~S Pinter and Ron~Y Pinter.
+\newblock Program optimization and parallelization using idioms.
+\newblock \emph{ACM Transactions on Programming Languages and Systems
+  (TOPLAS)}, 16\penalty0 (3):\penalty0 305--327, 1994{\natexlab{b}}.
+
+\bibitem[Pottenger and Eigenmann(1995)]{pottenger1995idiom}
+Bill Pottenger and Rudolf Eigenmann.
+\newblock Idiom recognition in the polaris parallelizing compiler.
+\newblock In \emph{Proceedings of the 9th international conference on
+  Supercomputing}, pages 444--448. ACM, 1995.
+
+\bibitem[Ragan-Kelley et~al.(2013{\natexlab{a}})Ragan-Kelley, Barnes, Adams,
+  Paris, Durand, and Amarasinghe]{Ragan-Kelley2013Halide}
+Jonathan Ragan-Kelley, Connelly Barnes, Andrew Adams, Sylvain Paris, Fr{\'e}do
+  Durand, and Saman Amarasinghe.
+\newblock Halide: A language and compiler for optimizing parallelism, locality,
+  and recomputation in image processing pipelines.
+\newblock In \emph{Proceedings of the 34th ACM SIGPLAN Conference on
+  Programming Language Design and Implementation}, PLDI '13, pages 519--530,
+  New York, NY, USA, 2013{\natexlab{a}}. ACM.
+\newblock ISBN 978-1-4503-2014-6.
+\newblock \doi{10.1145/2491956.2462176}.
+\newblock URL \url{http://doi.acm.org/10.1145/2491956.2462176}.
+
+\bibitem[Ragan-Kelley et~al.(2013{\natexlab{b}})Ragan-Kelley, Barnes, Adams,
+  Paris, Durand, and Amarasinghe]{Ragan-Kelley:2013:HLC:2499370.2462176}
+Jonathan Ragan-Kelley, Connelly Barnes, Andrew Adams, Sylvain Paris, Fr{\'e}do
+  Durand, and Saman Amarasinghe.
+\newblock Halide: A language and compiler for optimizing parallelism, locality,
+  and recomputation in image processing pipelines.
+\newblock \emph{SIGPLAN Not.}, 48\penalty0 (6):\penalty0 519--530, June
+  2013{\natexlab{b}}.
+\newblock ISSN 0362-1340.
+\newblock \doi{10.1145/2499370.2462176}.
+\newblock URL \url{http://doi.acm.org/10.1145/2499370.2462176}.
+
+\bibitem[Rauchwerger and Padua(1999)]{rauchwerger1999lrpd}
+Lawrence Rauchwerger and David~A Padua.
+\newblock The {LRPD} test: Speculative run-time parallelization of loops with
+  privatization and reduction parallelization.
+\newblock \emph{IEEE Transactions on Parallel and Distributed Systems},
+  10\penalty0 (2):\penalty0 160--180, 1999.
+
+\bibitem[Ravi et~al.(2010)Ravi, Ma, Chiu, and Agrawal]{ravi2010compiler}
+Vignesh~T Ravi, Wenjing Ma, David Chiu, and Gagan Agrawal.
+\newblock Compiler and runtime support for enabling generalized reduction
+  computations on heterogeneous parallel configurations.
+\newblock In \emph{Proceedings of the 24th ACM international conference on
+  supercomputing}, pages 137--146. ACM, 2010.
+
+\bibitem[Redon and Feautrier(1994)]{redon1994scheduling}
+Xavier Redon and Paul Feautrier.
+\newblock Scheduling reductions.
+\newblock In \emph{Proceedings of the 8th international conference on
+  Supercomputing}, pages 117--125. ACM, 1994.
+
+\bibitem[Rompf and Odersky(2012)]{Rompf:2012:LMS:2184319.2184345}
+Tiark Rompf and Martin Odersky.
+\newblock Lightweight modular staging: A pragmatic approach to runtime code
+  generation and compiled {DSLs}.
+\newblock \emph{Commun. ACM}, 55\penalty0 (6), 2012.
+
+\bibitem[Saad(1989)]{doi:10.1137/0910073}
+Y.~Saad.
+\newblock Krylov subspace methods on supercomputers.
+\newblock \emph{SIAM Journal on Scientific and Statistical Computing},
+  10\penalty0 (6):\penalty0 1200--1232, 1989.
+\newblock \doi{10.1137/0910073}.
+\newblock URL \url{https://doi.org/10.1137/0910073}.
+
+\bibitem[Saad(2003)]{doi:10.1137/1.9780898718003}
+Y.~Saad.
+\newblock \emph{Iterative Methods for Sparse Linear Systems}.
+\newblock Society for Industrial and Applied Mathematics, second edition, 2003.
+\newblock \doi{10.1137/1.9780898718003}.
+\newblock URL \url{https://epubs.siam.org/doi/abs/10.1137/1.9780898718003}.
+
+\bibitem[Srivastava et~al.(2010)Srivastava, Gulwani, and
+  Foster]{Srivastava:2010:PVP:1707801.1706337}
+Saurabh Srivastava, Sumit Gulwani, and Jeffrey~S. Foster.
+\newblock From program verification to program synthesis.
+\newblock \emph{SIGPLAN Not.}, 45\penalty0 (1):\penalty0 313--326, January
+  2010.
+\newblock ISSN 0362-1340.
+\newblock \doi{10.1145/1707801.1706337}.
+\newblock URL \url{http://doi.acm.org/10.1145/1707801.1706337}.
+
+\bibitem[Steuwer et~al.(2015)Steuwer, Fensch, Lindley, and
+  Dubach]{steuwer15rewrite}
+Michel Steuwer, Christian Fensch, Sam Lindley, and Christophe Dubach.
+\newblock Generating performance portable code using rewrite rules: From
+  high-level functional expressions to high-performance {OpenCL} code.
+\newblock \emph{SIGPLAN Not.}, 50\penalty0 (9):\penalty0 205--217, August 2015.
+\newblock ISSN 0362-1340.
+\newblock \doi{10.1145/2858949.2784754}.
+\newblock URL \url{http://doi.acm.org/10.1145/2858949.2784754}.
+
+\bibitem[Steuwer et~al.(2017)Steuwer, Remmelg, and Dubach]{SteuwerRD17}
+Michel Steuwer, Toomas Remmelg, and Christophe Dubach.
+\newblock Lift: a functional data-parallel {IR} for high-performance {GPU} code
+  generation.
+\newblock In \emph{{CGO}}, pages 74--85. {ACM}, 2017.
+
+\bibitem[Stock et~al.(2014)Stock, Kong, Grosser, Pouchet, Rastello, Ramanujam,
+  and Sadayappan]{stock2014framework}
+Kevin Stock, Martin Kong, Tobias Grosser, Louis-No\"{e}l Pouchet, Fabrice
+  Rastello, J.~Ramanujam, and P.~Sadayappan.
+\newblock A framework for enhancing data reuse via associative reordering.
+\newblock In \emph{Proceedings of the 35th ACM SIGPLAN Conference on
+  Programming Language Design and Implementation}, PLDI '14, pages 65--76, New
+  York, NY, USA, 2014. ACM.
+\newblock ISBN 978-1-4503-2784-8.
+\newblock \doi{10.1145/2594291.2594342}.
+\newblock URL \url{http://doi.acm.org/10.1145/2594291.2594342}.
+
+\bibitem[Stratton et~al.(2018)Stratton, Rodrigues, Sung, Obeid, Chang, Anssari,
+  Geng, Liu, and Hwu]{Stratton2018}
+John Stratton, Christopher Rodrigues, I-Jui Sung, Nady Obeid, Li-Wen Chang,
+  Nasser Anssari, Daniel Geng, Wen-Mei Liu, and Wen-mei Hwu.
+\newblock Parboil: {{A Revised Benchmark Suite}} for {{Scientific}} and
+  {{Commercial Throughput Computing}}.
+\newblock November 2018.
+
+\bibitem[Suganuma et~al.(1996)Suganuma, Komatsu, and
+  Nakatani]{suganuma1996detection}
+Toshio Suganuma, Hideaki Komatsu, and Toshio Nakatani.
+\newblock Detection and global optimization of reduction operations for
+  distributed parallel machines.
+\newblock In \emph{Proceedings of the 10th international conference on
+  Supercomputing}, pages 18--25. ACM, 1996.
+
+\bibitem[Sujeeth et~al.(2014)Sujeeth, Brown, Lee, Rompf, Chafi, Odersky, and
+  Olukotun]{Sujeeth:2014:DCA:2601432.2584665}
+Arvind~K. Sujeeth, Kevin~J. Brown, Hyoukjoong Lee, Tiark Rompf, Hassan Chafi,
+  Martin Odersky, and Kunle Olukotun.
+\newblock Delite: A compiler architecture for performance-oriented embedded
+  domain-specific languages.
+\newblock \emph{ACM TECS}, 13\penalty0 (4s), 2014.
+
+\bibitem[Suriana et~al.(2017)Suriana, Adams, and
+  Kamil]{Suriana:2017:PAR:3049832.3049863}
+Patricia Suriana, Andrew Adams, and Shoaib Kamil.
+\newblock Parallel associative reductions in halide.
+\newblock In \emph{Proceedings of the 2017 International Symposium on Code
+  Generation and Optimization}, CGO '17, pages 281--291, Piscataway, NJ, USA,
+  2017. IEEE Press.
+\newblock ISBN 978-1-5090-4931-8.
+\newblock URL \url{http://dl.acm.org/citation.cfm?id=3049832.3049863}.
+
+\bibitem[Sutherland-Cash et~al.(2017)Sutherland-Cash, Mantell, and
+  Wales]{SUTHERLANDCASH2017288}
+Kyle~H. Sutherland-Cash, Rosemary~G. Mantell, and David~J. Wales.
+\newblock Exploiting sparsity in free energy basin-hopping.
+\newblock \emph{Chemical Physics Letters}, 685:\penalty0 288 -- 293, 2017.
+\newblock ISSN 0009-2614.
+\newblock \doi{https://doi.org/10.1016/j.cplett.2017.07.081}.
+\newblock URL
+  \url{http://www.sciencedirect.com/science/article/pii/S0009261417307583}.
+
+\bibitem[Tate et~al.(2010)Tate, Stepp, and
+  Lerner]{Tate:2010:GCO:1706299.1706345}
+Ross Tate, Michael Stepp, and Sorin Lerner.
+\newblock Generating compiler optimizations from proofs.
+\newblock In \emph{Proceedings of the 37th Annual ACM SIGPLAN-SIGACT Symposium
+  on Principles of Programming Languages}, POPL '10, pages 389--402, New York,
+  NY, USA, 2010. ACM.
+\newblock ISBN 978-1-60558-479-9.
+\newblock \doi{10.1145/1706299.1706345}.
+\newblock URL \url{http://doi.acm.org/10.1145/1706299.1706345}.
+
+\bibitem[Verdoolaege et~al.(2013)Verdoolaege, Carlos~Juega, Cohen,
+  Ignacio~G\'{o}mez, Tenllado, and
+  Catthoor]{Verdoolaege:2013:PPC:2400682.2400713}
+Sven Verdoolaege, Juan Carlos~Juega, Albert Cohen, Jos{\'e} Ignacio~G\'{o}mez,
+  Christian Tenllado, and Francky Catthoor.
+\newblock Polyhedral parallel code generation for cuda.
+\newblock \emph{ACM Trans. Archit. Code Optim.}, 9\penalty0 (4):\penalty0
+  54:1--54:23, January 2013.
+\newblock ISSN 1544-3566.
+\newblock \doi{10.1145/2400682.2400713}.
+\newblock URL \url{http://doi.acm.org/10.1145/2400682.2400713}.
+
+\bibitem[Wales(2002)]{doi:10.1080/00268970210162691}
+David~J. Wales.
+\newblock Discrete path sampling.
+\newblock \emph{Molecular Physics}, 100\penalty0 (20):\penalty0 3285--3305,
+  2002.
+\newblock \doi{10.1080/00268970210162691}.
+
+\bibitem[Wang et~al.(2016)Wang, Wu, Xu, Xiao, and
+  Yang]{Wang:2016:BHP:2925426.2926256}
+Linnan Wang, Wei Wu, Zenglin Xu, Jianxiong Xiao, and Yi~Yang.
+\newblock Blasx: A high performance level-3 blas library for heterogeneous
+  multi-gpu computing.
+\newblock In \emph{Proceedings of the 2016 International Conference on
+  Supercomputing}, ICS '16, pages 20:1--20:11, New York, NY, USA, 2016. ACM.
+\newblock ISBN 978-1-4503-4361-9.
+\newblock \doi{10.1145/2925426.2926256}.
+\newblock URL \url{http://doi.acm.org/10.1145/2925426.2926256}.
+
+\bibitem[Whitfield and Soffa(1997)]{Whitfield:1997:AEC:267959.267960}
+Deborah~L. Whitfield and Mary~Lou Soffa.
+\newblock An approach for exploring code improving transformations.
+\newblock \emph{ACM Trans. Program. Lang. Syst.}, 19\penalty0 (6):\penalty0
+  1053--1084, November 1997.
+\newblock ISSN 0164-0925.
+\newblock \doi{10.1145/267959.267960}.
+\newblock URL \url{http://doi.acm.org/10.1145/267959.267960}.
+
+\bibitem[Willcock et~al.(2009)Willcock, Lumsdaine, and
+  Quinlan]{Willcock:2009:RGP:1621607.1621611}
+Jeremiah~James Willcock, Andrew Lumsdaine, and Daniel~J. Quinlan.
+\newblock Reusable, generic program analyses and transformations.
+\newblock In \emph{Proceedings of the Eighth International Conference on
+  Generative Programming and Component Engineering}, GPCE '09, pages 5--14, New
+  York, NY, USA, 2009. ACM.
+\newblock ISBN 978-1-60558-494-2.
+\newblock \doi{10.1145/1621607.1621611}.
+\newblock URL \url{http://doi.acm.org/10.1145/1621607.1621611}.
+
+\bibitem[X. et~al.(2011)X., V., and G.]{Huo2011HiPC}
+Huo X., Ravi V., and Agrawal G.
+\newblock Porting irregular reductions on heterogeneous {CPU-GPU}
+  configurations.
+\newblock In \emph{Proceedings of the 18th IEEE International Conference on
+  High Performance Computing}, 2011.
+
+\bibitem[Yaneva et~al.(2017)Yaneva, Rajan, and
+  Dubach]{be0fa11ddb194bde86a9dab8589b779c}
+Vanya Yaneva, Ajitha Rajan, and Christophe Dubach.
+\newblock \emph{Compiler-Assisted Test Acceleration on GPUs for Embedded
+  Software}, pages 35--45.
+\newblock ACM, 7 2017.
+\newblock ISBN 978-1-4503-5076-1.
+\newblock \doi{10.1145/3092703.3092720}.
+
+\bibitem[Yang et~al.(2011)Yang, Chen, Eide, and
+  Regehr]{Yang:2011:FUB:1993316.1993532}
+Xuejun Yang, Yang Chen, Eric Eide, and John Regehr.
+\newblock Finding and understanding bugs in c compilers.
+\newblock \emph{SIGPLAN Not.}, 46\penalty0 (6):\penalty0 283--294, June 2011.
+\newblock ISSN 0362-1340.
+\newblock \doi{10.1145/1993316.1993532}.
+\newblock URL \url{http://doi.acm.org/10.1145/1993316.1993532}.
+
+\bibitem[Yu and Rauchwerger(2006)]{yu2006adaptive}
+Hao Yu and Lawrence Rauchwerger.
+\newblock An adaptive algorithm selection framework for reduction
+  parallelization.
+\newblock \emph{IEEE Transactions on Parallel and Distributed Systems},
+  17\penalty0 (10):\penalty0 1084--1096, 2006.
+
+\bibitem[Yuan(2017)]{Yuan:2017:TOS:3101282.3101287}
+Eric Yuan.
+\newblock Towards ontology-based software architecture representations.
+\newblock In \emph{Proceedings of the 1st International Workshop on
+  Establishing the Community-Wide Infrastructure for Architecture-Based
+  Software Engineering}, ECASE '17, pages 21--27, Piscataway, NJ, USA, 2017.
+  IEEE Press.
+\newblock ISBN 978-1-5386-0417-5.
+\newblock \doi{10.1109/ECASE.2017..5}.
+\newblock URL \url{https://doi.org/10.1109/ECASE.2017..5}.
+
+\bibitem[Zhao et~al.(2012)Zhao, Nagarakatte, Martin, and
+  Zdancewic]{Zhao:2012:FLI:2103656.2103709}
+Jianzhou Zhao, Santosh Nagarakatte, Milo M.~K. Martin, and Steve Zdancewic.
+\newblock Formalizing the llvm intermediate representation for verified program
+  transformations.
+\newblock In \emph{Proceedings of the 39th Annual ACM SIGPLAN-SIGACT Symposium
+  on Principles of Programming Languages}, POPL '12, pages 427--440, New York,
+  NY, USA, 2012. ACM.
+\newblock ISBN 978-1-4503-1083-3.
+\newblock \doi{10.1145/2103656.2103709}.
+\newblock URL \url{http://doi.acm.org/10.1145/2103656.2103709}.
+
+\bibitem[Zhao et~al.(2018)Zhao, Kruse, and
+  Cohen]{Zhao:2018:PCF:3178372.3179509}
+Jie Zhao, Michael Kruse, and Albert Cohen.
+\newblock A polyhedral compilation framework for loops with dynamic
+  data-dependent bounds.
+\newblock In \emph{Proceedings of the 27th International Conference on Compiler
+  Construction}, CC 2018, pages 14--24, New York, NY, USA, 2018. ACM.
+\newblock ISBN 978-1-4503-5644-2.
+\newblock \doi{10.1145/3178372.3179509}.
+\newblock URL \url{http://doi.acm.org/10.1145/3178372.3179509}.
+
+\end{thebibliography}

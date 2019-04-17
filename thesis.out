@@ -1,0 +1,88 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Structure of the Thesis}{chapter.1}% 2
+\BOOKMARK [0][-]{chapter.2}{Literature Survey}{}% 3
+\BOOKMARK [1][-]{section.2.1}{Computational Idioms}{chapter.2}% 4
+\BOOKMARK [1][-]{section.2.2}{Literature Survey}{chapter.2}% 5
+\BOOKMARK [2][-]{subsection.2.2.1}{Algorithmic Skeletons}{section.2.2}% 6
+\BOOKMARK [2][-]{subsection.2.2.2}{Berkeley Parallel Dwarves}{section.2.2}% 7
+\BOOKMARK [2][-]{subsection.2.2.3}{Computational Patterns}{section.2.2}% 8
+\BOOKMARK [1][-]{section.2.3}{Idiom Specific Optimizations}{chapter.2}% 9
+\BOOKMARK [2][-]{subsection.2.3.1}{Important Approaches}{section.2.3}% 10
+\BOOKMARK [2][-]{subsection.2.3.2}{Ways of Encapsulating Expertise}{section.2.3}% 11
+\BOOKMARK [2][-]{subsection.2.3.3}{Constraint Programming for Program Analysis}{section.2.3}% 12
+\BOOKMARK [0][-]{chapter.3}{Contraint Programming on Static Single Assignment Code}{}% 13
+\BOOKMARK [1][-]{section.3.1}{Introduction}{chapter.3}% 14
+\BOOKMARK [2][-]{subsection.3.1.1}{Static Single Assignment Form}{section.3.1}% 15
+\BOOKMARK [1][-]{section.3.2}{Deriving a Mathematical Model}{chapter.3}% 16
+\BOOKMARK [2][-]{subsection.3.2.1}{Important Graph Properties}{section.3.2}% 17
+\BOOKMARK [2][-]{subsection.3.2.2}{Control Dependence Example}{section.3.2}% 18
+\BOOKMARK [2][-]{subsection.3.2.3}{Phi Dependence Graph}{section.3.2}% 19
+\BOOKMARK [2][-]{subsection.3.2.4}{Program Dependence Graph}{section.3.2}% 20
+\BOOKMARK [2][-]{subsection.3.2.5}{Interface Example}{section.3.2}% 21
+\BOOKMARK [1][-]{section.3.3}{Formulating Constraint Problems}{chapter.3}% 22
+\BOOKMARK [0][-]{chapter.4}{Introducing the Compiler Analysis Description Language}{}% 23
+\BOOKMARK [1][-]{section.4.1}{Introduction}{chapter.4}% 24
+\BOOKMARK [1][-]{section.4.2}{Motivating Example}{chapter.4}% 25
+\BOOKMARK [1][-]{section.4.3}{Language Specification}{chapter.4}% 26
+\BOOKMARK [2][-]{subsection.4.3.1}{High Level Structure of CAnDL Programs}{section.4.3}% 27
+\BOOKMARK [2][-]{subsection.4.3.2}{Atomic Constraints}{section.4.3}% 28
+\BOOKMARK [2][-]{subsection.4.3.3}{Range Constraints}{section.4.3}% 29
+\BOOKMARK [2][-]{subsection.4.3.4}{Expressing Larger Structures}{section.4.3}% 30
+\BOOKMARK [1][-]{section.4.4}{Implementation}{chapter.4}% 31
+\BOOKMARK [2][-]{subsection.4.4.1}{The CAnDL Compiler}{section.4.4}% 32
+\BOOKMARK [2][-]{subsection.4.4.2}{The Solver}{section.4.4}% 33
+\BOOKMARK [2][-]{subsection.4.4.3}{Developer Tools}{section.4.4}% 34
+\BOOKMARK [1][-]{section.4.5}{Case Studies}{chapter.4}% 35
+\BOOKMARK [2][-]{subsection.4.5.1}{Simple Optimizations}{section.4.5}% 36
+\BOOKMARK [2][-]{subsection.4.5.2}{Graphics Shader Optimizations}{section.4.5}% 37
+\BOOKMARK [2][-]{subsection.4.5.3}{Polyhedral SCoPs}{section.4.5}% 38
+\BOOKMARK [1][-]{section.4.6}{Conclusion}{chapter.4}% 39
+\BOOKMARK [0][-]{chapter.5}{Formalizing Computational Idioms for Heterogeneous Acceleration}{}% 40
+\BOOKMARK [1][-]{section.5.1}{Specification of Idioms in CAnDL}{chapter.5}% 41
+\BOOKMARK [1][-]{section.5.2}{Basic Control Flow Structures}{chapter.5}% 42
+\BOOKMARK [1][-]{section.5.3}{Loop Structures}{chapter.5}% 43
+\BOOKMARK [2][-]{subsection.5.3.1}{Building Blocks}{section.5.3}% 44
+\BOOKMARK [2][-]{subsection.5.3.2}{Full Idiom Definition}{section.5.3}% 45
+\BOOKMARK [2][-]{subsection.5.3.3}{Not Syntactic Pattern Matching}{section.5.3}% 46
+\BOOKMARK [1][-]{section.5.4}{Introduction}{chapter.5}% 47
+\BOOKMARK [1][-]{section.5.5}{Overview}{chapter.5}% 48
+\BOOKMARK [2][-]{subsection.5.5.1}{Compiler Flow}{section.5.5}% 49
+\BOOKMARK [2][-]{subsection.5.5.2}{IDL Example}{section.5.5}% 50
+\BOOKMARK [2][-]{subsection.5.5.3}{Sparse Linear Algebra in IDL}{section.5.5}% 51
+\BOOKMARK [1][-]{section.5.6}{Idiom Description Language}{chapter.5}% 52
+\BOOKMARK [2][-]{subsection.5.6.1}{Compilation Process and Implementation}{section.5.6}% 53
+\BOOKMARK [1][-]{section.5.7}{Targeted Heterogeneous APIs}{chapter.5}% 54
+\BOOKMARK [2][-]{subsection.5.7.1}{Domain Specific Libraries}{section.5.7}% 55
+\BOOKMARK [2][-]{subsection.5.7.2}{Domain Specific Code Generators}{section.5.7}% 56
+\BOOKMARK [1][-]{section.5.8}{Translating Computational Idioms}{chapter.5}% 57
+\BOOKMARK [2][-]{subsection.5.8.1}{Library}{section.5.8}% 58
+\BOOKMARK [2][-]{subsection.5.8.2}{DSL}{section.5.8}% 59
+\BOOKMARK [2][-]{subsection.5.8.3}{Aliasing}{section.5.8}% 60
+\BOOKMARK [1][-]{section.5.9}{Experimental Setup}{chapter.5}% 61
+\BOOKMARK [1][-]{section.5.10}{Results}{chapter.5}% 62
+\BOOKMARK [2][-]{subsection.5.10.1}{Idiom Detection}{section.5.10}% 63
+\BOOKMARK [2][-]{subsection.5.10.2}{Runtime Coverage}{section.5.10}% 64
+\BOOKMARK [2][-]{subsection.5.10.3}{Performance Results}{section.5.10}% 65
+\BOOKMARK [1][-]{section.5.11}{Related and Future Work}{chapter.5}% 66
+\BOOKMARK [1][-]{section.5.12}{Conclusion}{chapter.5}% 67
+\BOOKMARK [0][-]{chapter.6}{Building a Fully integrated Idiom Specific Optimization Pipeline}{}% 68
+\BOOKMARK [1][-]{section.6.1}{Introduction}{chapter.6}% 69
+\BOOKMARK [1][-]{section.6.2}{Overview}{chapter.6}% 70
+\BOOKMARK [2][-]{subsection.6.2.1}{Implementation Overview}{section.6.2}% 71
+\BOOKMARK [1][-]{section.6.3}{What and How}{chapter.6}% 72
+\BOOKMARK [2][-]{subsection.6.3.1}{LiLAC-What: Functional Description}{section.6.3}% 73
+\BOOKMARK [2][-]{subsection.6.3.2}{Sparse Matrix Variations in LiLAC-What}{section.6.3}% 74
+\BOOKMARK [2][-]{subsection.6.3.3}{LiLAC-How}{section.6.3}% 75
+\BOOKMARK [1][-]{section.6.4}{Implementation}{chapter.6}% 76
+\BOOKMARK [2][-]{subsection.6.4.1}{LiLAC-What}{section.6.4}% 77
+\BOOKMARK [2][-]{subsection.6.4.2}{LiLAC-How}{section.6.4}% 78
+\BOOKMARK [2][-]{subsection.6.4.3}{FORTRAN}{section.6.4}% 79
+\BOOKMARK [1][-]{section.6.5}{Experimental Setup}{chapter.6}% 80
+\BOOKMARK [1][-]{section.6.6}{Results}{chapter.6}% 81
+\BOOKMARK [2][-]{subsection.6.6.1}{Performance}{section.6.6}% 82
+\BOOKMARK [2][-]{subsection.6.6.2}{Effectiveness of Data Marshaling}{section.6.6}% 83
+\BOOKMARK [2][-]{subsection.6.6.3}{Reliability of Discovery}{section.6.6}% 84
+\BOOKMARK [1][-]{section.6.7}{Related Work}{chapter.6}% 85
+\BOOKMARK [1][-]{section.6.8}{Conclusion}{chapter.6}% 86
+\BOOKMARK [0][-]{chapter.7}{Conclusion}{}% 87
+\BOOKMARK [0][-]{chapter*.85}{Bibliography}{}% 88
