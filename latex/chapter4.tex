@@ -120,7 +120,7 @@ End
 \end{minipage}
 \end{figure}
 
-    As an example of the CAnDL workflow, consider  \autoref{fig:root}.
+    As an example of the CAnDL workflow, consider \autoref{fig:root}.
     This basic algebraic equation can be interpreted as a recipe for a compiler
     optimisation:
     Assuming an environment without the particularities of floating point
@@ -136,18 +136,19 @@ End
     \end{align}
 
     The compiler should use the equation left to right:
-    It should analyse the user code in order to find representations of  the
-    left side of the equation and then transform all those occurences analogous
-    to the right side of the equation.
-    The compiler therefor must detect occurrences of $\sqrt{a*a}$ in the LLVM IR
-    code and replace them with a call to the \texttt{abs} function.
+    It should analyse the user code in order to find segments that correspond to
+    the of the equation and then transform all those occurences analogous to the
+    right side of the equation.
+    The compiler therefore must detect occurrences of $\sqrt{a*a}$ in the
+    LLVM IR code and replace them with a call to the \texttt{abs} function.
     The generation of the new function call is trivial, but the detection of
     even a simple pattern like $\sqrt{a*a}$ requires some care when implementing
     it manually in a complex code base such as LLVM.
 
-    The established approach would be to implement it as part of the
-    \texttt{instcombine} pass, which applies a collection of such peephole
-    optimisations and already extends to almost 30000 lines of C++ code.
+    The established approach in the clang compiler would be to implement it as
+    part of the \texttt{instcombine} pass, which applies a collection of such
+    peephole optimisations and already extends to almost 30000 lines of
+    C++ code.
     This code makes heavy use of raw pointers and dynamic type casts and has
     been identified as a frequent source of bugs by
     \citet{Yang:2011:FUB:1993316.1993532, Menendez:2017:ADP:3062341.3062372}.
@@ -674,9 +675,10 @@ End
     The \texttt{inheritance} clauses are replaced using standard function
     inlining after the contained variables have been transformed accordingly.
     Also, \texttt{foreach} and \texttt{forany} statements are lowered to
-    conjunction and disjunction constructs by duplicating the contained constraint code
-    and then renaming the contained variable names appropriately for each
-    iteration. This is equivalent to complete loop unrolling.
+    conjunction and disjunction constructs by duplicating the contained
+    constraint code and then renaming the contained variable names appropriately
+    for each iteration.
+    This is equivalent to complete loop unrolling.
     From this point onwards, variable names are treated as flat strings.
     The remaining core language now consists only of atomics, conjunctions,
     disjunctions and collections.

@@ -4,26 +4,27 @@
     This chapter introduces the theoretical underpinnings of this approach,
     developing a method for formally describing and recognising algorithmic
     structures in programs during compilation.
-    Based on a mathematical model of static single assignment form, concepts
-    that are typically applied to syntactic representations of programs are
-    transferred onto more semtantically simple compiler internal
-    representaitons.
+    Based on a mathematical model of static single assignment form (SSA),
+    concepts that are typically discussed on a programming language level are
+    instead transferred onto structurally simple, but semtantically expressive
+    compiler intermediate representations.
 
-    Traditional pattern matching approaches here turn into more subtle
-    constraint problems.
-    This requires careful consideration to handle search space explosion but at
-    the same time powers much more powerful detection capabilities based on
-    higher level algorithmic structures that are impossible to express
-    syntactically.
-    Later chapters will evaluate these claims in details by building a complete
+    Traditional abstract syntax tree pattern matching approaches here turn int
+    more subtle constraint problems.
+    This requires careful consideration to handle search space explosion, but at
+    the same time enables much more powerful detection capabilities and the
+    expression of higher level algorithmic structures that are impossible to
+    express syntactically on programming language level.
+    Later chapters will evaluate these claims in detail by building a complete
     constraint programming language on top of the theory derived in this chapter
     and by then using it to express real compiler analysis problems.
 
-    After defining a mathematical foundation of SSA form and giving basic
-    definitions of constraint problems and solutions, several standard
-    definitions from compiler theory are then reformulated in the the framework.
+    After defining a mathematical foundation of SSA form and introducing
+    formalisms for the expression of contraint problems on top of it, several
+    standard definitions from compiler theory are then reformulated in the the
+    framework.
     This includes common graph properties and the domination concepts as well
-    as control flow structues such as single entry single exit blocks.
+    as control flow structures such as single entry single exit blocks.
     All of this lies the foundations for the succeeding chapter.
 
     As a last part, a practical application of constraint programming to compiler
@@ -36,39 +37,64 @@
 
 \section{Introduction}
 
-    During the different compilation stages, modern optimizing compilers for
-    proceedural languages such as C/C++, Fortran or JavaScript typically use
-    a range of different representations of the user program.
-    Static single assignment (SSA) form has emerged as a suitable representation
-    in the mid end for applying complex optimizing transformations.
-    It abstracts away the complexities of both the source language and the
-    target architecture, enabling reliable analysis and platform independent
-    reasoning.
+    During compilation, modern compilers for proceedural languages such as
+    C/C++, Fortran or JavaScript typically use a range of different
+    representations of the user program.
 
-    Prominent examples of compilers that utilize static single assignement
-    representations for the bulk of their optimisation passes are
-    {\bf clang/clang++} (LLVM IR), {\bf gcc} (GIMPLE), {\bf v8 Crankshaft}
-    (Hydrogen) and {\bf SpiderMonkey} (IonMonkey/MIR).
+    \noindent
+    {\bf Front end representations} generally reflect source language properties,
+    often in the form of an abstract syntax tree.
+    They contain much information about semantically meaningless syntactic
+    choices of the user and easily obscure the underlying logic by not resolving
+    complex language features such as operator overloading.
 
-    The precise instruction set, syntax and type systems of the different static
-    single assignment form intermediate representations vary depending on the
-    requirements of the source languages (static or dynamic) and the operating
-    constraints (JIT or AOF).
+    \noindent
+    {\bf Back end representations} reflect a model of the target hardware.
+    These representations are gtypicallyradually approaching an assembly style
+    format that exposes specific instruction set architectures of the hardware
+    and is concerned with problems that are far removed from the algorithmic
+    core of the user program, such as efficient register allocation and
+    instruction scheduling.
+
+    \noindent
+    {\bf Static single assignment} (SSA) form has emerged as a suitable
+    representation in the middle end, which is traditionally responsible for
+    applying complex optimizing transformations.
+    SSA abstracts away the complexities of both the source language and the
+    target architecture, instead focusing on a relatively simple semantic
+    description of the user program in oder to enable reliable analysis and
+    platform independent reasoning.
+    It is these properties that also make it the suitable target for our task of
+    expressing algorithmic structures.
+
+    Static single assignment form is not a mathematically codified standard.
+    The precise instruction set, syntax and type systems of the many different
+    static single assignment form intermediate representations vary considerably
+    depending on the requirements of the source languages (static or dynamic)
+    and the operating constraints (JIT or AOF).
+    Prominent examples of compilers that utilize SSA representations for the
+    bulk of their optimisation passes are {\bf clang/clang++} (LLVM IR),
+    {\bf gcc} (GIMPLE), {\bf v8 Crankshaft} (Hydrogen) and {\bf SpiderMonkey}
+    (IonMonkey/MIR).
     However, they share the same fundamental paradigmes and we can mostly
     abstract away the differences as implementation specific details in this
     chapter.
-    Fundamentally, a program in single static assignment form is made up of
-    functions that are represented as sequences of instructions that are grouped
-    into basic blocks and that operate on virtual registers.
-    These virtual registers can be assigned only once and the place of
-    assignment can be statically determined.
-    In order to support control flow divergence, SSA form utilized PHI nodes
-    that enapsulate the non-SSA behaviour.
 
-    This chapter derives a methodology to recognise structures in SSA code via
-    constraint programming.
-    For this to work, a mathematical model of the textual representation is
-    required.
+    Fundamentally, a program in single static assignment form is made up of
+    functions, that are represented as sequences of instructions, that are
+    grouped into basic blocks and that operate on virtual registers.
+    Control flow is handled via jump instructions at end of basic blocks.
+    The virtual registers, within a function, can be assigned only at a single
+    static location each, which we will see later has very useful implications
+    and is the eponymous feature of SSA form.
+
+    As opposed to syntactic representations, SSA form is thus a heavily
+    searialized program representation, where expressions have been turned into
+    lists of instructions and control flow structures into lists of basic
+    blocks.
+    The following sections will now show show how this serial nature and hence
+    the enumerability of SSA makes constraint programming concepts very
+    naturally applicable.
 
 \subsection{Static Single Assignment Form}
 
@@ -428,8 +454,8 @@ define void @map_sqrt(i64, double*) {
 
 \section{Formulating Constraint Problems}
 
-    We now use these mathematical background deliberations to derive
-    constraint programming on top of LLVM code.
+    With this mathematical background, it is now possible to derive constraint
+    programming on top of LLVM code.
 
     UNDERFUL VBOX.
 
