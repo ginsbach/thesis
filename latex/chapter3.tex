@@ -2,22 +2,21 @@
     The research contributions of this thesis are based on a novel constraint
     programming approach on compiler intermediate representation.
     This chapter introduces the theoretical underpinnings of this approach,
-    developing a method for formally describing and recognising algorithmic
-    structures in programs during compilation.
-    Based on a mathematical model of static single assignment form (SSA),
-    concepts that are typically discussed on a programming language level are
-    instead transferred onto structurally simple, but semtantically expressive
-    compiler intermediate representations.
+    based on a mathematical model of static single assignment form (SSA).
+    With the help of this model, concepts that are typically discussed on a
+    programming language level are transferred onto the structurally simple,
+    but semtantically expressive class of SSA compiler intermediate
+    representations.
 
-    Traditional abstract syntax tree pattern matching approaches here turn int
-    more subtle constraint problems.
-    This requires careful consideration to handle search space explosion, but at
+    Traditional abstract syntax tree (AST) pattern matching approaches here turn
+    into more subtle constraint problems.
+    This needs careful consideration to handle search space explosion, but at
     the same time enables much more powerful detection capabilities and the
     expression of higher level algorithmic structures that are impossible to
-    express syntactically on programming language level.
+    define syntactically on programming language level.
     Later chapters will evaluate these claims in detail by building a complete
-    constraint programming language on top of the theory derived in this chapter
-    and by then using it to express real compiler analysis problems.
+    constraint programming language on top of the theory in this chapter, and
+    by then using it to solve real compiler analysis problems.
 
     After defining a mathematical foundation of SSA form and introducing
     formalisms for the expression of contraint problems on top of it, several
@@ -37,26 +36,26 @@
 
 \section{Introduction}
 
-    During compilation, modern compilers for proceedural languages such as
-    C/C++, Fortran or JavaScript typically use a range of different
+    During compilation, modern compilers for proceedural languages, such as
+    C/C++, Fortran or JavaScript, typically use a range of different
     representations of the user program.
-
-    \noindent
-    {\bf Front end representations} generally reflect source language properties,
-    often in the form of an abstract syntax tree.
-    They contain much information about semantically meaningless syntactic
-    choices of the user and easily obscure the underlying logic by not resolving
-    complex language features such as operator overloading.
-
-    \noindent
-    {\bf Back end representations} reflect a model of the target hardware.
-    These representations are gtypicallyradually approaching an assembly style
-    format that exposes specific instruction set architectures of the hardware
-    and is concerned with problems that are far removed from the algorithmic
-    core of the user program, such as efficient register allocation and
+    They can be grouped into categories and reflect the requirements of
+    the compilation stages they are used in.
+    \linebreak
+    {\bf Front end representations} reflect source language properties,
+    often in the form of an AST, and contain information about syntactic choices
+    of the programmer that are irrelevant to program logic.
+    These representations scale in complexity with the source language and
+    obscure the underlying semantics by not resolving complex language features
+    such as operator overloading.
+    \linebreak
+    {\bf Back end representations} are based on a model of the target hardware.
+    These representations typically approach an assembly style format that
+    exposes specific instruction set architectures of the hardware;
+    Back end representations are concerned with problems that are removed from
+    the algorithmic core of the user program, such as register allocation and
     instruction scheduling.
-
-    \noindent
+    \\
     {\bf Static single assignment} (SSA) form has emerged as a suitable
     representation in the middle end, which is traditionally responsible for
     applying complex optimizing transformations.
@@ -64,21 +63,20 @@
     target architecture, instead focusing on a relatively simple semantic
     description of the user program in oder to enable reliable analysis and
     platform independent reasoning.
-    It is these properties that also make it the suitable target for our task of
-    expressing algorithmic structures.
+    It is these properties that also make it the suitable target for expressing
+    algorithmic structures.
 
     Static single assignment form is not a mathematically codified standard.
     The precise instruction set, syntax and type systems of the many different
     static single assignment form intermediate representations vary considerably
     depending on the requirements of the source languages (static or dynamic)
-    and the operating constraints (JIT or AOF).
-    Prominent examples of compilers that utilize SSA representations for the
-    bulk of their optimisation passes are {\bf clang/clang++} (LLVM IR),
-    {\bf gcc} (GIMPLE), {\bf v8 Crankshaft} (Hydrogen) and {\bf SpiderMonkey}
-    (IonMonkey/MIR).
-    However, they share the same fundamental paradigmes and we can mostly
-    abstract away the differences as implementation specific details in this
-    chapter.
+    and the operating constraints (just-in-time or ahead-of-time).
+    Some prominent examples of compilers that utilize SSA for their
+    optimisation passes are {\bf clang/clang++} (LLVM IR), {\bf gcc} (GIMPLE),
+    {\bf v8 Crankshaft} (Hydrogen) and {\bf SpiderMonkey} (IonMonkey/MIR).
+    Despite their many difference, they share the same fundamental paradigmes
+    and we can mostly abstract away the differences as implementation specific
+    details here.
 
     Fundamentally, a program in single static assignment form is made up of
     functions, that are represented as sequences of instructions, that are
@@ -87,36 +85,47 @@
     The virtual registers, within a function, can be assigned only at a single
     static location each, which we will see later has very useful implications
     and is the eponymous feature of SSA form.
-
     As opposed to syntactic representations, SSA form is thus a heavily
     searialized program representation, where expressions have been turned into
     lists of instructions and control flow structures into lists of basic
     blocks.
-    The following sections will now show show how this serial nature and hence
-    the enumerability of SSA makes constraint programming concepts very
-    naturally applicable.
+    The following sections will will discuss this in more detail and show how
+    the serial nature and hence the enumerability of SSA makes constraint
+    programming concepts very naturally applicable.
+
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{figures/ssaoverview}
+\caption{Structural overview of SSA programs}
+\label{fig:ssaoverview}
+\end{figure}
 
 \subsection{Static Single Assignment Form}
 
-    Static single assignemnt is a property that applies to compiler intermediate
-    representations.
-    Functions in SSA form are represented as sequences of instructions that
-    operate on an abstract machine and that are grouped into basic blocks.
-    The abstract machine provides an unlimited number of registers and a well
-    defined instruction set.
+    SSA representations of programs are highly serialised, as shown in
+    \autoref{fig:ssaoverview}:
+    Programs are fundamentally lists of functions, functions are fundamentally
+    lists of basic blocks and basic blocks are fundamentally lists of
+    instructions.
+    Functions and basic blocks are labelled, in order to be used as call or jump
+    targets and functions have an argument list.
+
+    Individual instructions operate on an abstract machine, which provides an
+    unlimited number of identical registers and a well defined instruction set.
     Each instruction has a finite amount of input arguments and an opcode that
     refers to a specific operation to be performed.
-    instruction arguments can be registers or constants and instructions can
-    write their result into a single output register.
-    Control flow is expressed as branch instructions that can redirect control
-    conditionally or unconditionally to the start of other basic blocks.
-    Branch instructions signify the end of a basic block.
-    Instructions and registers may be statically typed.
+    Instruction arguments can be registers, constants or globals and
+    instructions can write their result into a single output register.
+    Control flow is expressed as branch instructions, which direct the execution
+    conditionally or unconditionally to other basic blocks.
+    Branch instructions are only allowed at the end of a basic block and can
+    only target the beginnings of basic blocks.
 
     The static single assignemnt property stipulates that within a function,
-    each register is only written at a single static location.
-    This implies that the data dependencies between the instructions are
-    explicit and registers can be identified directly with the instructions that
+    no register can be written at more than a single static location, i.e.\ it
+    is a function argument or is written by at most one of the instructions in
+    the function.
+    This makes the data dependencies between the instructions explicit and
+    means that registers can be identified directly with the instructions that
     write to them.
     The registers themselves can therefore be considered implicit, with only the
     data flow between instructions required to recover them.
@@ -205,7 +214,92 @@
     $Types_\text{LLVM}$ and $Opcodes_\text{LLVM}$ are specific to LLVM and need
     to be replaced.
 
-\newpage
+
+\section{Constraint Programming}
+
+    With a mathematical strucure in place, properties of SSA form programs can
+    now be formulated as constraint problems.
+    The notation for this will be as follows: An SSA constraint problem
+    $C=(V,P)$ is made up of a finite set of {\em variables} $V$ and a boolean
+    predicate $P$ such that
+    \begin{align*}
+        P\colon\mathbb N^V\times\mathcal M\mapsto\{\text{true}, \text{false}\}
+    \end{align*}
+    where $\mathcal M$ is the set of SSA programs.
+    We can then define the set of {\em constraint solutions} for a given
+    constraint problem and a specific function in SSA form $\mathcal F$ as
+    \begin{align*}
+        S(C, \mathcal F) = \{s\in\mathbb N^V\mid P(s,\mathcal F)=\text{true}\}.
+    \end{align*}
+    The interesting aspect of this defition is now the structure of $P$.
+    In particular, this section will concern it self with how meaningful
+    predicates can be composed from small building blocks.
+    This internal structure will then also lead to efficient solver approaches.
+
+\subsection{Example}
+    Consider the task of detecting in a program all simple loop counters.
+    Such loop counters show up in LLVM IR as data flow cycles of a phi node
+    and an add instruction.
+    We express the constraint problem $C=(V,P)$ with a set of three variables
+    $V=\{\text{phi}, \text{update}, \text{step}\}$ and the following predicate:
+    \begin{align*}
+        P(x,\mathcal F)=&(x_\text{phi},x_\text{update},1)\in DFG_\mathcal{F}\land\\
+                        &(x_\text{step},x_\text{update},2)\in DFG_\mathcal{F}\land\\
+                        &(x_\text{step}, phi)\in I_\mathcal{F}\land\\
+                        &(x_\text{step}, add)\in I_\mathcal{F}\land\\
+                        &x_\text{step}\in C_\mathcal{F}^*\land\\
+                        &(x_\text{update},x_\text{phi},1)\in DFG_\mathcal{F}
+    \end{align*}
+
+
+\subsection{Computational of SSA Constraint Problems}
+
+    Predicates for useful SSA constraint problems are composed by logical
+    connectors from a set of basic {\em atomic} predicates.
+    The atomic predicates are defined directly on the mathematical model and
+    they often only utilize a very small set of variables, typically one or two.
+    In the previous example, this was true for all the atomic constraints.
+
+    Via the logical connectors $\land$ and $\lor$, the atomic predicates
+    interact on their shared variables.
+
+    There are some important compiler analysis problems that can not not be
+    decomposed with logical connectors into atomic predicates using only one
+    or two variables.
+    They are mostly concerned with graph properties and we will discuss some of
+    them in detail later in this chapter.
+    For the purposes of constraint solving, these are more difficult to handle.
+
+\subsection{Efficient Solving of SSA Constraint Problems}
+
+    Assuming that the SSA model of a program is represented in some data
+    structure and a function that implements the boolean predicate $P$ of a
+    SSA constraint problem $C=(V,P)$, it is not obvious how to compute the set
+    of constraint solutions.
+    This is because the set $\mathbb N^V$ is infinite and hence a brute force
+    algorithm that evaluates $P$ on every point in $\mathbb N^V$ would never
+    terminate.
+
+    Instead, an algorithmic solution requires an intelligent way to encode the
+    boolean predicate.
+    It is intuitive and well established in literature to use backtracking for
+    solving constraint problems, so firstly this will be reformulated
+    recursively as follows.
+    The finite set of $V$ can be enumerated $V=\{v_0,v_1,\dots,v_n\}$.
+
+    Then consider $C_k=(V_k,P_k)$, where $P_k$ is defined as
+    \begin{align*}
+        P_k(x)=\left\{\begin{array}{}\text{true} if P(x,y)=true for some y\\
+                                     \text{false} otherwise\end{array}\right.
+    \end{align*}
+
+    Consider the following purely algebraic reformulation.
+    \begin{align*}
+        S_k=\{\emptyset\}\\
+        S_{k+1}(C,\mathcal F)=&\{s\in\mathbb N^V_k\mid P(s,\mathcal F)=\text{true}\}\\
+                             =&\{
+    \end{align*}
+
 
 \subsection{Important Graph Properties}
 
@@ -258,14 +352,6 @@
     Control dependence models the behaviour of conditional control flow.
     Instructions that are executed only in some control flow paths are control
     dependent on the conditional branches that preceed them.
-
-    UNDERFUL VBOX.
-
-    UNDERFUL VBOX.
-
-    UNDERFUL VBOX.
-
-    UNDERFUL VBOX.
 
     \begin{definition}{Control Dependence}{cdg}
         Consider instructions $a,b$.
@@ -320,14 +406,6 @@
     Eveything within the body of the conditional is control dependent on $2$.
     Everythig within the loop as well as everything afterwards is control
     dependent on $16$.
-
-
-    UNDERFUL VBOX.
-
-    UNDERFUL VBOX.
-
-    UNDERFUL VBOX.
-
 
 \subsection{Phi Dependence Graph}
 
@@ -456,12 +534,6 @@ define void @map_sqrt(i64, double*) {
 
     With this mathematical background, it is now possible to derive constraint
     programming on top of LLVM code.
-
-    UNDERFUL VBOX.
-
-    UNDERFUL VBOX.
-
-    UNDERFUL VBOX.
 
     Consider the following definitions of simple binary predicates:
 

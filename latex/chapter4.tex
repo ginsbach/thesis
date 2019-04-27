@@ -293,6 +293,20 @@ End
 
 \subsection{Atomic Constraints}
 
+    Based on the model description in \autoref{}, CAnDL provides a wide range of
+    atomic constraints.
+
+    \begin{figure}[h]
+    \begin{minipage}{0.49\textwidth}
+\begin{lstlisting}[language=CAnDL]
+{v} is <op> instruction
+\end{lstlisting}
+    \end{minipage}
+    \begin{minipage}{0.49\textwidth}
+    $(v,\text{op})\in I_\mathcal F$
+    \end{minipage}
+    \end{figure}
+
     The first type of constraint is an {\it atomic} constraint based on
     {\it variable}s.
     {\it Variable}s in CAnDL correspond to instructions and values in LLVM IR. 
@@ -379,10 +393,6 @@ End
     flow from each element to the next.
     We can see how the \texttt{foreach} loop can be expanded similar to loop
     unrolling.
-
-    UNDERFUL VBOX.
-
-    UNDERFUL VBOX.
 
 \begin{figure}[ht]
 \begin{lstlisting}[language=CAnDL]
@@ -627,12 +637,6 @@ End
     no impure functions are used in computing \texttt{output} and the entire
     computation is performed after \texttt{inner} (ruling out e.g.\ loop carried
     variabls from outer loops).
-
-    UNDERFUL VBOX.
-
-    UNDERFUL VBOX.
-
-    UNDERFUL VBOX.
 
 \section{Implementation}
 
@@ -1147,9 +1151,6 @@ Detected in GFX 4.0 & - & 19 \\ \hline
     the Polly implementation in LLVM.
     We rely on the definition of Semantic SCoPs in \citet{Lengauer2012Polly}.
     The constraints for SCoPs can be broken into several components:
-
-    UNDERFUL VBOX.
-
 
     \paragraph{Structured Control Flow}
     SCoPs require well structured control flow.

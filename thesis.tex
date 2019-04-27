@@ -90,7 +90,9 @@ morecomment  = [s]{"}{"}
     This doctoral thesis will present the results of my work into the
     reanimation of lifeless human tissues.
 }
-
+\makeatletter
+\def\convertto#1#2{\strip@pt\dimexpr #2*65536/\number\dimexpr 1#1}
+\makeatother
 \begin{document}
 \begin{preliminary}
 \maketitle
@@ -146,15 +148,31 @@ First and foremost I want to thank Mike for his ...
     \label{chapter:theory}
     \input{latex/chapter3}
 
-\chapter{Introducing the Compiler Analysis Description Language}
+\chapter[Introducing the Compiler Analysis Description Language]
+        {Introducing the Compiler Analysis Description Language
+         \footnote{This chapter is based on published research in
+                  \citet{Ginsbach:2018:CDS:3178372.3179515}.}}
     \label{chapter:candl}
     \input{latex/chapter4}
 
-\chapter{Formalizing Computational Idioms for Heterogeneous Acceleration}
+\chapter[Automatic Parallelisation of Complex Reductions and Histograms]
+        {Automatic Parallelisation of Complex Reductions and Histograms
+         \footnote{This chapter is based on published research in
+                   \citet{ginsbach2017discovery}.}}
+    \label{chapter:reductions}
+
+\chapter[Formalizing Computational Idioms for Heterogeneous Acceleration]
+        {Formalizing Computational Idioms for Heterogeneous Acceleration
+         \footnote{This chapter is based on published research in
+                   \citet{Ginsbach:2018:AML:3173162.3173182}.}}
     \label{chapter:idioms}
     \input{latex/chapter5}
 
-\chapter{Building a Fully integrated Idiom Specific Optimization Pipeline}
+\chapter[Building a Fully integrated Idiom Specific Optimization Pipeline]
+        {Building a Fully integrated Idiom Specific Optimization Pipeline
+         \footnote{This chapter is based on published research in
+                   \citet{}.}}
+    \label{chapter:lilac}
     \input{latex/chapter6}
 
 \chapter{Conclusion}

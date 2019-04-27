@@ -27,17 +27,70 @@
 
     This is what we consider an idiomatic approach.
 
+\pagebreak
 \section{Structure of the Thesis}
 
-    The thesis will be structures as follows.
-    Firstly, there will be a literature survey investigating related work.
+    This PhD thesis is divided into six chapters.
+    Following the introduction in {\bf\cref{chapter:introduction}}, a broad
+    overview of the related work is given in {\bf\cref{chapter:literature}}.
+    This literature survey covers the four main research areas that this work
+    is placed in.
+    Firstly {\em constraint programming}, which is the basis of the methodoloy
+    for most of this research.
+    Secondly {\em compiler analysis and auto-parallelisation}, against which the
+    results in this thesis are evaluated.
+    Thirdly {\em heterogeneous computing}, which motivates many of the compiler
+    approaches that this research enables.
+    Lastly {\em computational idioms}, a term for several overlapping concepts
+    of algorithmic patterns.
 
-    We will then establish a theory for constraint programming on static single
-    assignment compiler intermediate representation code.
-    Using this theory, a constraint programming language will be presented and
-    an implementation provided: The Compiler Analysis Description Language
-    (CAnDL).
+    {\bf\Cref{chapter:theory}} develops the foundations of the constraint
+    programming methodology that is forms the core of the later
+    \cref{chapter:candl,chapter:idioms,chapter:reductions,chapter:lilac}.
+    Based on a novel mathematical model of static single assignment (SSA) form
+    compiler representaions, the core of the constraint programming approach
+    is derived and some particular challenges are discussed in detail.
 
-    Using this language, the thesis will derive computational idioms and show
-    how they can be used to get heterogeneous performance.
-    Lastly, we build a fully integrated system.
+    {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions,chapter:lilac}}
+    are each based on a published research article and elaborate on different
+    applications of constraint programming in compilers.
+
+    {\bf\Cref{chapter:candl}} develops a full-fledged constraint programming
+    language called CAnDL, with an implementation in the LLVM compiler
+    infrastructure that automatically generates compiler analysis passes from
+    declarative descriptions.
+    Using CAnDL, the chapter explores severeal complex compiler analysis
+    challenges, concluding with a full polyhedral code analysis.
+    The work of this chapter has been published as
+    {\bf\citet{Ginsbach:2018:CDS:3178372.3179515}}.
+
+    {\bf\Cref{chapter:reductions}} develops an auto-parallelising compiler for
+    complex reduction and histogram computations using CAnDL-powered analysis
+    functionality.
+    This covers many computations that are inaccesible to established approaches
+    based on data flow or polyhedral analysis and is to demonstrate the greater
+    flexibility of constraint programming.
+    The work of this chapter has been published as
+    {\bf\citet{ginsbach2017discovery}}.
+
+    {\bf\Cref{chapter:idioms}} extends CAnDL into the Idiom Description Language
+    (IDL) and uses it to specify algorithmic concepts that go beyond
+    traditional compiler analysis: stencil computations, complex reductions and
+    histograms as well as sparse and dense linear algebra.
+    The resulting automatic detection passes in LLVM enable automatic
+    heterogeneous acceleration of sequential code and result in significant
+    speedups on established benchmark suites.
+    The work of this chapter has been published as
+    {\bf\citet{Ginsbach:2018:AML:3173162.3173182}}.
+
+    {\bf\Cref{chapter:lilac}} builds on top of the idiom descriptions for linear
+    algebra that were introduced in the previous chapter and demonstrates how
+    compiler analysis based on constraint programming can be made accessible to
+    non-experts.
+    With the novel LiLAC language, constraint programs in IDL are automatically
+    generated from a high-level specification for many different sparse linear
+    algebra representations.
+    This powers a fully integrated compiler approach, handling everything from
+    algorithmic detection, library call insertion and run time data transfer
+    optimisations.
+    The work of this chapter has been published as \citet{}.

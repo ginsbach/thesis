@@ -3,14 +3,14 @@
     introduced, which can generate compiler analysis functionality from terse
     and easily scalable, declarative problem specifications.
     This chapter takes a broader view of what automatic compiler analysis can
-    entail with such a powerful tool at hand.
-    Being freed from having to implement complex optimisation passes manually,
-    it explores the complexity to which CAnDL can be driven, capturing broader
-    computational concepts than were demonstrated previously.
+    encompass with such a powerful tool at hand.
+    Using the Idiom Description Language (IDL) -- an extended version of CAnDL
+    with a different syntax -- this chapter capturies broader computational
+    concepts than were demonstrated previously.
 
     The goal of this chapter is to take abstract algorithmic concepts that are
     conventionally explored outside the context of compiler analysis --
-    computational idioms -- and to formalize them as CAnDL specifications,
+    computational idioms -- and to formalize them as IDL specifications,
     enabling detection and manipulation in optimising compilers.
     Heterogeneous acceleration will serve as the motivation for this effort.
     As many scientific codes are structured around idiomatic performance
@@ -21,7 +21,7 @@
     accelerators and their software ecosystems: sparse and dense linear algebra,
     stencil codes and generalised reductions and histograms.
 
-    The CAnDL specifications are used to build a prototype compiler that
+    The IDL specifications are used to build a prototype compiler that
     automatically detects the idioms and uses them to circumvent the code
     generator with libraries and domain specific languages:
     BLAS implementations, cuSPARSE, clSPARSE, Halide and Lift.
@@ -33,232 +33,6 @@
     execution time, the generated heterogeneous code achieves 1.26$\times$ to
     over 20$\times$ speedup on integrated and external GPUs.
 
-\section{Specification of Idioms in CAnDL}
-\label{sec:idioms}
-
-    The specification of computational idioms in CAnDL requires a careful
-    handling of the arising complexity, using the modularity functionality that
-    CAnDL provides.
-
-    Control flow constructs, memory access patters as well as basic data flow
-    patterns are specified independently and then combined together in order to
-    define the complete constraint specifications.
-
-
-\section{Basic Control Flow Structures}
-
-    The most basic control flow structure that is needed for expressing
-    computational idioms is the single entry single exit (SESE) region.
-    \autoref{candl_sese} shows the specification, which contains some
-    non-obvious considerations.
-
-\begin{figure}[h]
-\begin{lstlisting}[language=CAnDL]
-Constraint SESE
-( {precursor} is branch instruction and
-  {precursor} has control flow to {begin} and
-  {end} is branch instruction and
-  {end} has control flow to {successor} and
-  {begin} control flow dominates {end} and
-  {end} control flow post dominates {begin} and
-  {precursor} strictly control flow dominates {begin} and
-  {successor} strictly control flow post dominates {end} and
-  all control flow from {begin} to {precursor} passes through {end} and
-  all control flow from {successor} to {end} passes through {begin})
-End
-\end{lstlisting}
-\caption{Single Entry Single Exit Regions}
-\label{candl_sese}
-\end{figure}
-
-    The necessity for {\tt begin} and {\tt end} is clear, these are the
-    instructions that bound the SESE region.
-    The other two variables are equally important, as they define the two
-    crucial edges in the control flow.
-    The edge from {\tt precursor} to {\tt begin} is the
-    single entry and the edge from {\tt end} to {\tt sucessor} is the single
-    exit of the SESE region.
-
-    Lines 6 and 7 ensure that {\tt begin} and {\tt end} acually span a region of
-    code in the sense that the control flow will always reach {\tt begin} before
-    {\tt end} and will always eventually reach {\tt end} after passing through
-    {\tt begin}.
-    This is complemented by lines 10 and 11, which guarantee that the region can
-    only be left once after it is entered and can only be entered once before it
-    has to be left.
-    Lines 3 and 8 ensure that {\tt precursor} is in fact the only instruction
-    that reaches {\tt begin} from outside the region, lines 4 and 9 check the
-    corresponding property for {\tt sucessor}.
-    Lines 2 and 4 add as an additional constraint that the SESE region has to be
-    aligned to basic block boundaries.
-
-\section{Loop Structures}
-    Building on top of the SESE region, \autoref{candl_loop} presents the CAnDL
-    specification of a basic loop structure.
-    Using the CAnDL description of a SESE region, this is a very simple
-    definition: A Loop is simply a SESE region with a backedge.
-
-\begin{figure}[h]
-\begin{lstlisting}[language=CAnDL]
-Constraint Loop
-( inherits SESE and
-  {end} has control flow to {begin})
-End
-\end{lstlisting}
-\caption{Loop in CAnDL}
-\label{candl_loop}
-\end{figure}
-
-    More interesting are for loops with well behaved interation spaces.
-    They are distinguished by a specific kind of breaking condition that is
-    based on an induction variable reaching a limit value, which can be
-    expressed in CAnDL using a set of further constraints shown in
-    \autoref{candl_forloop}.
-
-\begin{figure}[h]
-\begin{lstlisting}[language=CAnDL]
-Constraint ForLoop
-( inherits Loop at {loop} and
-  inherits InductionVar
-      with {iterator}  as {old_ind}
-       and {increment} as {new_ind} at {loop} and
-  {iter_begin} has data flow to {iterator} and
-  inherits LocalConst
-      with {iter_begin} as {value}
-       and {loop.begin} as {begin} and
-  inherits OffsetAdd
-      with {increment} as {value}
-       and {iterator}  as {base}
-       and {iter_step} as {offset} at {loop} and
-  {comparison} is first argument of {loop.end} and
-  inherits RangeCheck
-      with {comparison} as {value}
-       and {increment}  as {input}
-       and {iter_end}   as {limit} at {loop} and
-End
-\end{lstlisting}
-\caption{For Loop in CAnDL}
-\label{candl_forloop}
-\end{figure}
-
-    As opposed to the previous CAnDL programs, this one makes extensive use of
-    the modularity and simply binds together a range of simpler construct into
-    a high level definition.
-    Several additional variables are introduced: {\tt increment} is instruction
-    that increased the value of the {\tt iterator} for the next iteration using
-    the offset {\tt iter\_step}.
-
-    With the definition of IDL, we can now specify idioms.
-    The complete set of idioms used in this paper comprises of $\approx$500
-    lines of code.
-    Due to space restrictions, we first show a simple constraint that we rely
-    on -- single entry, single exit regions -- and then describe the top level
-    constraints for each idiom.
-
-\subsection{Building Blocks}
-
-    Before any algorithmic idiom can be specified, we need some basic control
-    flow constructs.
-    The most fundamental is the single entry single exit region (SESE)
-    \cite{johnson1994program} which is used amongst other things to determine
-    loop bodies.
-    A SESE region is a part of code spanned by two instructions $A$ and $B$ such
-    that $A$ dominates $B$, $B$ postdominates $A$ and every cycle containing
-    either $A$ or $B$ also contains the other.
-    It is defined in \autoref{fig:sese}.
-
-    Using simple building blocks such as SESE, we can define more complex
-    control structures such as loops and important memory access patterns such
-    as matrix reads.
-    From this we build powerful idiom definitions that capture complex
-    computational patterns that can include arbitrary control flow.
-
-\subsection{Full Idiom Definition}
-
-    The generalized matrix multiplication idiom is described in
-    \autoref{fig:gemm}.
-    The control flow is captured by three nested for loops.
-    Inside these loops, the memory access is characterized by three matrix
-    accesses, each with a different subset of the loop iterators.
-    The corresponding \texttt{MatrixRead} and \texttt{MatrixWrite} idioms model
-    generic access to matrices allowing strides, transposed matrices etc.
-    The actual computation is encapsulated by the \texttt{DotProductLoop} idiom.
-    This also contains the linear combination with factors \texttt{alpha} and
-    \texttt{beta} that is part of the generalized matrix multiplication.
-
-    \autoref{fig:histogram} shows the generalized histogram idiom.
-    It is contained in a for loop and the basic memory access pattern is a
-    read-modify-write to a bin array.
-    This memory access can be conditional as long as the condition is well
-    behaved, which is guaranteed by the later
-    \texttt{KernelFunction} idiom.
-    The histogram uses input data that is read from input arrays using the loop iterator as a base index (that can be
-    strided, offset etc.).
-    Finally there are two well behaved kernel functions in a histogram, one to compute the access index and one to compute
-    the updated value.
-
-The sparse matrix vector multiplication defined in \autoref{fig:spmv} is different to the other idioms in that
-the control flow of the skeleton of the idiom does not consist of perfectly nested for loops.
-Instead, the iteration space of the inner loop is read from an array using the \texttt{ReadRange} idiom.
-The actual computation that SPMV performs is a dot product and thus it uses the same \texttt{DotProductLoop} idiom as
-\texttt{GEMM} but the memory access pattern is different, with indirect memory access in \texttt{indir\_read}.
-
-    \autoref{fig:stencilcompute} shows the basic stencil idiom.
-    Stencils consist of a loop nest with a multi-dimensional memory access to
-    store the updated cell value.
-    This updated value is computed with a kernel function using a number of
-    values that are constraint by the
-    \texttt{StencilRead} idiom, which specifies multidimensional array access
-    with only constant offsets in all dimensions.
-
-The scalar reduction idiom is specified in \autoref{fig:scalarreduction}.
-We can see that its structure is similar to the histogram idiom, but instead of a read-modify-write memory access
-it operates on an induction variable that is implemented with the \texttt{InductionVar} idiom.
-
-\subsection{Not Syntactic Pattern Matching}
-The idiom descriptions may at first appear to be shallow syntactic pattern matching.
-In fact, because it operates on the IR level, it can detect idioms that are written in superficially distinct style but are semantically equivalent.
-For example, there are two syntactically distinct programs in \autoref{fig:gemmexamples}, which in fact are both implementations of general matrix multiplication.
-The IDL in \autoref{fig:gemm} discovers they are both instances of GEMM and they can both be replaced with an API call to GEMM.
-
-\begin{figure}[ht]
-\begin{lstlisting}[numbers=none,basicstyle=\linespread{1.133}\footnotesize\ttfamily]
-for (int mm = 0; mm < m; ++mm) {
-  for (int nn = 0; nn < n; ++nn) {
-    float c = 0.0f;
-    for (int i = 0; i < k; ++i) {
-      float a = A[mm + i * lda]; 
-      float b = B[nn + i * ldb];
-      c += a * b;
-    }
-    C[mm+nn*ldc] =
-        C[mm+nn*ldc] * beta + alpha * c;
-  }
-}
-\end{lstlisting}
-\vspace{1em}
-\begin{lstlisting}[numbers=none,basicstyle=\linespread{1.133}\footnotesize\ttfamily]
-for(int i = 0; i < 1000; i++)
-    for(int j = 0; j < 1000; j++) {
-        M3[i][j] = 0.0f;
-        for(int k = 0; k < 1000; k++)
-           M3[i][j]+=M1[i][k]*M2[k][j]; }
-\end{lstlisting}
-\vspace{-0.3cm}
-\caption{Two matching instances of GEMM}
-\label{fig:gemmexamples}
-\end{figure}
-
-    There are limitations to this semantic matching.
-    In particular, the use of low level manual optimizations that circumvent the
-    usual IR representation, {\em e.g.}  SIMD compiler intrinsics, would distort
-    the algorithms beyond recognition by our system.
-    In practice, this is rarely encountered.
-
-\input{latex/figure_idioms}
-
-
-
 \section{Introduction}
 
     Heterogeneous accelerators provide the potential for great performance, but
@@ -266,21 +40,22 @@ for(int i = 0; i < 1000; i++)
     In order to target heterogeneous systems, programms need to be partially
     rewritten, making use of a diverse range of broad and narrow interfaces that 
     are quickly evolving.
-    General purpose languages such as OpenCL \cite{nvidia11guide} provide
+    General purpose languages such as OpenCL \citep{nvidia11guide} provide
     some portability across heterogeneous devices, but the achieved performance
-    often disappoints \cite{lee09openmp}, effectively requiring rewrites despite
-    the functional portability.
+    often disappoints, as documented in \citet{lee09openmp}.
+    Effectively rewrites are required despite the functional portability.
     Optimised numerical libraries provide more reliable performance, but they
     are more specialised and often provided by hardware vendors without
-    portability in mind \cite{clblas,cublas,cusparse,clsparse}.
-    More narrow domain specific languages (DSLs) \cite{Franchetti09OL,
+    portability in mind \citep{clblas,cublas,cusparse,clsparse}.
+    More narrow domain specific languages (DSLs) such as \citet{Franchetti09OL,
     Rompf:2012:LMS:2184319.2184345} have been proposed, attempting to deliver
-    both portability and performance \cite{Ragan-Kelley2013Halide}.
+    both portability and performance \citep{Ragan-Kelley2013Halide}.
     However this class is quickly evolving and most of them are academic
     projects with unclear long term support.
 
-    Hardware becomes increasingly heterogeneous, ({\it e.g.} TPU
-    \cite{jouppi2017datacenter}).
+    Hardware becomes increasingly heterogeneous, most recently with the
+    development of neural network accelerators such as the Google TPU in
+    \citet{jouppi2017datacenter}).
     This means library or DSL based programming is likely to become far more
     common.
     The problems with this trend that arise due to the aforementioned tradeoffs
@@ -311,8 +86,8 @@ for(int i = 0; i < 1000; i++)
     The covered idioms are largely a reflection of the existing libraries and
     DSLs, with a focus on sparse and dense linear algebra, stencils and
     generalized reductions and histograms.
-    The idioms are formulated using CAnDL from \autoref{chapter:candl}, which
-    allows the concise formulation and fast detection in optimised LLVM IR code.
+    The idioms are formulated using IDL, which allows the concise formulation
+    and fast detection in optimised LLVM IR code.
 
     Once detected, the idioms are mechanically translated into the appropriate
     DSL or replaced with a library call.
@@ -327,6 +102,60 @@ for(int i = 0; i < 1000; i++)
     This allows the freedom to target many APIs for the same idiom and pick the
     implementation that best suits the target platform.
 
+    New idioms can be easily added thanks to the flexibility of IDL.
+    This provides a powerful means of determining whether a new heterogeneous
+    API matches existing code without touching the core compiler.
+    The idioms addressed in this paper can be expressed in less than 500 lines
+    of IDL code.
+    Our approach is also highly robust, it has been applied to the entire NAS
+    and Parboil benchmark suites and is evaluated on three platforms.
+
+    We present a novel approach that:
+    \begin{itemize}
+    \item Defines a programming language for specifying code idioms, the Idiom
+          Description Language (IDL)
+    \item Implements common idioms in IDL to automatically discover
+     opportunities for accelerator exploitation
+    \item Efficiently translates and maps the detected idioms to APIs for
+          heterogeneous systems
+    \end{itemize}
+
+    While there has been much research in using constraints for program
+    analysis~\cite{nielson2015principles}, there is little prior work in its use
+    for idiom detection.
+    In \cite{ginsbach2017discovery}, constraints are used for detecting
+    reductions, but this is tightly coupled to a specialized code generation
+    phase for small-scale multi-core systems.
+
+    The work most similar in approach concerns discovery of stencil computation
+    and mapping to the Halide DSL.
+    Helium \cite{Mendis2015Helium} recovers stencils from image-processing
+    binaries.
+    This requires large scale dynamic analysis of binary traces and replacing
+    them with Halide calls. 
+    This is significantly extended in~\cite{Kamil2016Verified} which detects
+    stencils in FORTRAN.
+    In this work the focus is on inferring post invariants based on syntax
+    guided synthesis in translation to Halide.
+    However, it uses a narrow approach to selecting code snippets and relies on
+    well structured FORTRAN with occasional user annotations.
+    Our approach is distinct in that we use an external  programming language to
+    describe the idioms we are interested in.
+    This allows an unbounded set of idioms  to be considered across arbitrary
+    programs and is not restricted to stencils. 
+
+    To summarize, this paper presents an automatic approach that discovers
+    idioms in legacy code and maps them to heterogeneous platforms via libraries
+    and DSLs.
+    We apply it to 21 C/C++ programs from the NAS and Parboil benchmark suites
+    and demonstrate that it detects more reductions, stencils, matrix
+    multiplications and sparse matrix-vector computations than existing schemes.
+    For the idioms that dominate execution time, we generate code and evaluate
+    on 3 platforms: a multi-core CPU, an integrated and an external GPU.
+    Overall we detect 60 idioms.
+    In 10 programs these dominate sequential execution time and are worth
+    exploiting.
+    This results in speedups ranging from 1.26$\times$ to over 20$\times$.
 
 \section{Overview}
 
@@ -629,6 +458,230 @@ Therefore, the solution at the bottom of \autoref{fig:firstexample} is the only 
     It is used to capture all possible solutions of a given constraint for
     expressions that require the logical $\forall$ quantifier.
     For example, it can be used to collect all affine array accesses in a loop.
+
+\section{Specification of Idioms in IDL}
+\label{sec:idioms}
+
+    The specification of computational idioms in IDL requires a careful
+    handling of the arising complexity, using the modularity functionality that
+    IDL provides.
+
+    Control flow constructs, memory access patters as well as basic data flow
+    patterns are specified independently and then combined together in order to
+    define the complete constraint specifications.
+
+
+\section{Basic Control Flow Structures}
+
+    The most basic control flow structure that is needed for expressing
+    computational idioms is the single entry single exit (SESE) region.
+    \autoref{candl_sese} shows the specification, which contains some
+    non-obvious considerations.
+
+\begin{figure}[h]
+\begin{lstlisting}[language=CAnDL]
+Constraint SESE
+( {precursor} is branch instruction and
+  {precursor} has control flow to {begin} and
+  {end} is branch instruction and
+  {end} has control flow to {successor} and
+  {begin} control flow dominates {end} and
+  {end} control flow post dominates {begin} and
+  {precursor} strictly control flow dominates {begin} and
+  {successor} strictly control flow post dominates {end} and
+  all control flow from {begin} to {precursor} passes through {end} and
+  all control flow from {successor} to {end} passes through {begin})
+End
+\end{lstlisting}
+\caption{Single Entry Single Exit Regions}
+\label{candl_sese}
+\end{figure}
+
+    The necessity for {\tt begin} and {\tt end} is clear, these are the
+    instructions that bound the SESE region.
+    The other two variables are equally important, as they define the two
+    crucial edges in the control flow.
+    The edge from {\tt precursor} to {\tt begin} is the
+    single entry and the edge from {\tt end} to {\tt sucessor} is the single
+    exit of the SESE region.
+
+    Lines 6 and 7 ensure that {\tt begin} and {\tt end} acually span a region of
+    code in the sense that the control flow will always reach {\tt begin} before
+    {\tt end} and will always eventually reach {\tt end} after passing through
+    {\tt begin}.
+    This is complemented by lines 10 and 11, which guarantee that the region can
+    only be left once after it is entered and can only be entered once before it
+    has to be left.
+    Lines 3 and 8 ensure that {\tt precursor} is in fact the only instruction
+    that reaches {\tt begin} from outside the region, lines 4 and 9 check the
+    corresponding property for {\tt sucessor}.
+    Lines 2 and 4 add as an additional constraint that the SESE region has to be
+    aligned to basic block boundaries.
+
+\section{Loop Structures}
+    Building on top of the SESE region, \autoref{candl_loop} presents the CAnDL
+    specification of a basic loop structure.
+    Using the CAnDL description of a SESE region, this is a very simple
+    definition: A Loop is simply a SESE region with a backedge.
+
+\begin{figure}[h]
+\begin{lstlisting}[language=CAnDL]
+Constraint Loop
+( inherits SESE and
+  {end} has control flow to {begin})
+End
+\end{lstlisting}
+\caption{Loop in CAnDL}
+\label{candl_loop}
+\end{figure}
+
+    More interesting are for loops with well behaved interation spaces.
+    They are distinguished by a specific kind of breaking condition that is
+    based on an induction variable reaching a limit value, which can be
+    expressed in CAnDL using a set of further constraints shown in
+    \autoref{candl_forloop}.
+
+\begin{figure}[h]
+\begin{lstlisting}[language=CAnDL]
+Constraint ForLoop
+( inherits Loop at {loop} and
+  inherits InductionVar
+      with {iterator}  as {old_ind}
+       and {increment} as {new_ind} at {loop} and
+  {iter_begin} has data flow to {iterator} and
+  inherits LocalConst
+      with {iter_begin} as {value}
+       and {loop.begin} as {begin} and
+  inherits OffsetAdd
+      with {increment} as {value}
+       and {iterator}  as {base}
+       and {iter_step} as {offset} at {loop} and
+  {comparison} is first argument of {loop.end} and
+  inherits RangeCheck
+      with {comparison} as {value}
+       and {increment}  as {input}
+       and {iter_end}   as {limit} at {loop} and
+End
+\end{lstlisting}
+\caption{For Loop in CAnDL}
+\label{candl_forloop}
+\end{figure}
+
+    As opposed to the previous CAnDL programs, this one makes extensive use of
+    the modularity and simply binds together a range of simpler construct into
+    a high level definition.
+    Several additional variables are introduced: {\tt increment} is instruction
+    that increased the value of the {\tt iterator} for the next iteration using
+    the offset {\tt iter\_step}.
+
+    With the definition of IDL, we can now specify idioms.
+    The complete set of idioms used in this paper comprises of $\approx$500
+    lines of code.
+    Due to space restrictions, we first show a simple constraint that we rely
+    on -- single entry, single exit regions -- and then describe the top level
+    constraints for each idiom.
+
+\subsection{Building Blocks}
+
+    Before any algorithmic idiom can be specified, we need some basic control
+    flow constructs.
+    The most fundamental is the single entry single exit region (SESE)
+    \cite{johnson1994program} which is used amongst other things to determine
+    loop bodies.
+    A SESE region is a part of code spanned by two instructions $A$ and $B$ such
+    that $A$ dominates $B$, $B$ postdominates $A$ and every cycle containing
+    either $A$ or $B$ also contains the other.
+    It is defined in \autoref{fig:sese}.
+
+    Using simple building blocks such as SESE, we can define more complex
+    control structures such as loops and important memory access patterns such
+    as matrix reads.
+    From this we build powerful idiom definitions that capture complex
+    computational patterns that can include arbitrary control flow.
+
+\subsection{Full Idiom Definition}
+
+    The generalized matrix multiplication idiom is described in
+    \autoref{fig:gemm}.
+    The control flow is captured by three nested for loops.
+    Inside these loops, the memory access is characterized by three matrix
+    accesses, each with a different subset of the loop iterators.
+    The corresponding \texttt{MatrixRead} and \texttt{MatrixWrite} idioms model
+    generic access to matrices allowing strides, transposed matrices etc.
+    The actual computation is encapsulated by the \texttt{DotProductLoop} idiom.
+    This also contains the linear combination with factors \texttt{alpha} and
+    \texttt{beta} that is part of the generalized matrix multiplication.
+
+    \autoref{fig:histogram} shows the generalized histogram idiom.
+    It is contained in a for loop and the basic memory access pattern is a
+    read-modify-write to a bin array.
+    This memory access can be conditional as long as the condition is well
+    behaved, which is guaranteed by the later
+    \texttt{KernelFunction} idiom.
+    The histogram uses input data that is read from input arrays using the loop iterator as a base index (that can be
+    strided, offset etc.).
+    Finally there are two well behaved kernel functions in a histogram, one to compute the access index and one to compute
+    the updated value.
+
+The sparse matrix vector multiplication defined in \autoref{fig:spmv} is different to the other idioms in that
+the control flow of the skeleton of the idiom does not consist of perfectly nested for loops.
+Instead, the iteration space of the inner loop is read from an array using the \texttt{ReadRange} idiom.
+The actual computation that SPMV performs is a dot product and thus it uses the same \texttt{DotProductLoop} idiom as
+\texttt{GEMM} but the memory access pattern is different, with indirect memory access in \texttt{indir\_read}.
+
+    \autoref{fig:stencilcompute} shows the basic stencil idiom.
+    Stencils consist of a loop nest with a multi-dimensional memory access to
+    store the updated cell value.
+    This updated value is computed with a kernel function using a number of
+    values that are constraint by the
+    \texttt{StencilRead} idiom, which specifies multidimensional array access
+    with only constant offsets in all dimensions.
+
+The scalar reduction idiom is specified in \autoref{fig:scalarreduction}.
+Its structure is similar to the histogram idiom, but instead of a read-modify-write memory access
+it operates on an induction variable that is implemented with the \texttt{InductionVar} idiom.
+
+\subsection{Not Syntactic Pattern Matching}
+The idiom descriptions may at first appear to be shallow syntactic pattern matching.
+In fact, because it operates on the IR level, it can detect idioms that are written in superficially distinct style but are semantically equivalent.
+For example, there are two syntactically distinct programs in \autoref{fig:gemmexamples}, which in fact are both implementations of general matrix multiplication.
+The IDL in \autoref{fig:gemm} discovers they are both instances of GEMM and they can both be replaced with an API call to GEMM.
+
+\begin{figure}[ht]
+\begin{lstlisting}[numbers=none,basicstyle=\linespread{1.133}\footnotesize\ttfamily]
+for (int mm = 0; mm < m; ++mm) {
+  for (int nn = 0; nn < n; ++nn) {
+    float c = 0.0f;
+    for (int i = 0; i < k; ++i) {
+      float a = A[mm + i * lda]; 
+      float b = B[nn + i * ldb];
+      c += a * b;
+    }
+    C[mm+nn*ldc] =
+        C[mm+nn*ldc] * beta + alpha * c;
+  }
+}
+\end{lstlisting}
+\vspace{1em}
+\begin{lstlisting}[numbers=none,basicstyle=\linespread{1.133}\footnotesize\ttfamily]
+for(int i = 0; i < 1000; i++)
+    for(int j = 0; j < 1000; j++) {
+        M3[i][j] = 0.0f;
+        for(int k = 0; k < 1000; k++)
+           M3[i][j]+=M1[i][k]*M2[k][j]; }
+\end{lstlisting}
+\vspace{-0.3cm}
+\caption{Two matching instances of GEMM}
+\label{fig:gemmexamples}
+\end{figure}
+
+    There are limitations to this semantic matching.
+    In particular, the use of low level manual optimizations that circumvent the
+    usual IR representation, {\em e.g.}  SIMD compiler intrinsics, would distort
+    the algorithms beyond recognition by our system.
+    In practice, this is rarely encountered.
+
+\input{latex/figure_idioms}
 
 \subsection{Compilation Process and Implementation}
 \label{sec:compilation}
