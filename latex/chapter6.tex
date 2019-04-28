@@ -192,12 +192,14 @@ Sparse matrices can be stored in different formats.
 In this section we introduce two of them and show how LiLAC-What can express
 the corresponding computations.
 
-\begin{figure}[p]
+\begin{figure}[t]
 \input{latex/figure_lilacwhat}
 \vspace{-1.5em}
 \caption{Grammar of the LiLAC-What language}
 \label{bnfgrammar}
-\vspace{1.5em}
+\end{figure}
+
+\begin{figure}[t]
 \begin{minipage}[b]{0.3\linewidth}
 \includegraphics[width=0.9\linewidth]{figures/csrorder.png}
 \vspace{0.04em}
@@ -345,7 +347,9 @@ run time overhead in generated harnesses.
 \vspace{-1.5em}
 \caption{Grammar of LiLAC-How}
 \label{lilacbnf2}
-\vspace{0.8em}
+\end{figure}
+
+\begin{figure}[t]
 \includegraphics[width=0.944\linewidth]{figures/harness2.pdf}
 \\[-0.75em]
 \caption{This LiLAC-What code implements CSR SPMV na\"ively with Intel MKL.
@@ -361,14 +365,19 @@ run time overhead in generated harnesses.
 \\[-0.75em]
 \caption{LiLAC-How code to provide efficient automatic data marshaling between
          host and CUDA accelerator.}
-\vspace{0.5em}
 \label{cudaread}
+\end{figure}
+
+\begin{figure}[t]
 \includegraphics[width=0.944\linewidth]{figures/harness4.pdf}
 \\[-0.75em]
 \caption{{\em INPUT} can also be used to specify data dependent computations
          that are only recalculated when required.}
 \vspace{0.5em}
 \label{readablemax}
+\end{figure}
+
+\begin{figure}[t]
 \includegraphics[width=0.944\linewidth]{figures/harness1.pdf}
 \\[-0.75em]
 \caption{This LiLAC-What specification implements an efficient SPMV harness
@@ -558,8 +567,7 @@ length & $\leftarrow$ & \%14 & right[i] & $\leftarrow$&                 \%21   &
 \label{backtrack}
 \end{figure}
 
-
-\begin{figure}[p]
+\begin{figure}[t]
 \begin{lstlisting}
 template<typename type_in, typename type_out>
 void CudaRead_update(type_in* in, int size,
