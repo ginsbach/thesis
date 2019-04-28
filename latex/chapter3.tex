@@ -214,6 +214,24 @@
     $Types_\text{LLVM}$ and $Opcodes_\text{LLVM}$ are specific to LLVM and need
     to be replaced.
 
+\begin{definition}{Mathematical model of SSA programs}{ssamodel}
+    An {\em SSA model} of a program is a tuple
+    \begin{align*}
+        \mathcal{F}=(T_\mathcal{F},I_\mathcal{F},C_\mathcal{F},P_\mathcal{F},G_\mathcal{F},CDG_\mathcal{F},DFG_\mathcal{F})
+    \end{align*}
+    comprising a {\em type model}
+    $T_\mathcal F\subset\mathbb N\times Types$,
+    an {\em instruction model}
+    $T_\mathcal F\subset\mathbb N\times Opcodes$,
+    a {\em constant model}
+    $C_\mathcal F\subset\mathbb N\times\mathbb R$,
+    a {\em parameter model}
+    $P_\mathcal F\subset\mathbb N$,
+    a {\em data flow model}
+    $$ and a control flow model $$.
+
+\end{definition}
+
 
 \section{Constraint Programming}
 

@@ -1,54 +1,30 @@
-
-\section{Compiler Analysis and Auto-Parallelisation}
-
-
-\section{Computational Idioms}
-
-    The concept of computational idioms has been observed in different contexts
-    and remains a rather vague concept.
-    While terms such as \texttt{reduction}, \texttt{stencil} and
-    \texttt{linear algebra} are commonly used, the concrete concepts can be
-    surprisingly vague, although previous work has established several formal
-    approaches.
-    We will not try to create our own formal definitions in this chapter, but
-    instead want to give an overview of the literature that sheds different
-    perspectives on this topic.
-
-    The basic observation is that software programs don't cover the space of
-    possible programs evenly, instead, they tend to be structured among certain
-    design principles.
-    The same is true algorithmically and particularly for performance intensive
-    applications.
-
-\section{Literature Survey}
-
-\subsection{Algorithmic Skeletons}
-
-\subsection{Berkeley Parallel Dwarves}
-\subsection{Computational Patterns}
-
-\section{Idiom Specific Optimizations}
-
-\subsection{Important Approaches}
-\subsection{Ways of Encapsulating Expertise}
-
+    Four areas of research are of particular relevance to this thesis:
+    {\bf Constraint programming}, including the research about how it relates to
+    program analysis, established approaches to
+    {\bf compiler analysis and auto-parallelisation} that will form the
+    baselines for the evaluation, {\bf heterogeneous computing} with its many
+    different programming paradigmes to overcome the specific challenges of
+    emerging hardware, and lastly the diverse research landscape related to
+    {\bf computational idioms} and similar concepts.
 
 \subsection{Constraint Programming for Program Analysis}
 
     There is a large body of work that uses constraints for program analysis.
     Constraint systems have long been used in program analysis for classical
-    purposes such as dataflow analysis and type inference
-    \citep{Aiken:1999:ISC:339853.339897}.
+    purposes such as dataflow analysis and type inference, as in
+    \citet{Aiken:1999:ISC:339853.339897}.
     \citet{Gulwani:2008:PAC:1375581.1375616} showed how constraints can be
     used to for some  existing analysis problems.
-    It can also be used to assist generation of programs from specifications
-    \citep{Srivastava:2010:PVP:1707801.1706337}.
+    It can also be used to assist generation of programs from specifications,
+    as in \citet{Srivastava:2010:PVP:1707801.1706337}.
 
+    There is particularly extensive work in the are of security and formal
+    verification of software systems.
     There is considerable work on formally verifying existing compiler
     transformations using SMT solvers and theorem provers that operate on IR
-    code, among them \cite{Zhao:2012:FLI:2103656.2103709}.
-    Recent domain specific language for formally verifying compiler
-    optimizations, such as Alive \cite{Lopes:2015:PCP:2737924.2737965} operate
+    code, among them \citet{Zhao:2012:FLI:2103656.2103709}.
+    Recent domain specific languages for formally verifying compiler
+    optimizations, such as Alive \citep{Lopes:2015:PCP:2737924.2737965} operate
     on single static assignment compiler IR as well.
     However, it has no support for control flow and is limited to simple
     peephole optimizations.
@@ -84,12 +60,12 @@
     compiler implementation and do not scale beyond simple functions.
 
     As opposed to code transformation techniques based on the LLVM ASTMatcher
-    library and LibTooling \citep{be0fa11ddb194bde86a9dab8589b779c}, we work on
-    compiler intermediate representation and are independent from the compiler
-    frontend.
-    This makes us integrate well with the existing optimization infrastructure,
-    allows us to be language independent and makes our approach robust to
-    shallow syntactic changes.
+    library and LibTooling \citep{be0fa11ddb194bde86a9dab8589b779c}, this work
+    is based on compiler intermediate representation and is independent from the
+    compiler frontend.
+    This makes it possible integrate well with the existing optimization
+    infrastructure, allows the approach to be language independent and makes it
+    approach robust to shallow syntactic changes.
 
     Another language for implementing optimizations that emphasizes developer
     productivity is OPTIMIX \citep{Assmann1996,Assmann98optimix}, based on graph
@@ -123,9 +99,7 @@
     interoperability of software architectures.
 
 
-
-\section{Related Work}
-\label{sec:relatedwork}
+\section{Compiler Analysis and Auto-Parallelisation}
 
 \paragraph*{Compiler centric linear algebra optimization}
     Compiler management of indirect memory accesses was first studied using an
@@ -193,6 +167,8 @@ computations (dense memory access).
 While this allows formal reasoning about correctness, is too restrictive to
 model sparse linear algebra.
 
+
+\section{Heterogeneous Computing}
 
 % Domain specific languages
 \paragraph*{Domain Specific Languages}
@@ -381,3 +357,23 @@ programmer intervention.
 %assignments. It is not clear how such an approach would work on general
 %'C' programs.
 %
+
+
+
+\section{Computational Idioms}
+
+    The concept of computational idioms has been observed in different contexts
+    and remains a rather vague concept.
+    While terms such as \texttt{reduction}, \texttt{stencil} and
+    \texttt{linear algebra} are commonly used, the concrete concepts can be
+    surprisingly vague, although previous work has established several formal
+    approaches.
+    This chapter not try to create new formal definitions, but instead want to
+    give an overview of the literature that sheds different perspectives on this
+    topic.
+
+    The basic observation is that software programs don't cover the space of
+    possible programs evenly, instead, they tend to be structured among certain
+    design principles.
+    The same is true algorithmically and particularly for performance intensive
+    applications.
