@@ -1,15 +1,26 @@
     Four areas of research are of particular relevance to this thesis:
     {\bf Constraint programming}, including the research about how it relates to
-    program analysis, established approaches to
+    program analysis; established approaches to
     {\bf compiler analysis and auto-parallelisation} that will form the
-    baselines for the evaluation, {\bf heterogeneous computing} with its many
+    baselines for the evaluation; {\bf heterogeneous computing} with its many
     different programming paradigmes to overcome the specific challenges of
-    emerging hardware, and lastly the diverse research landscape related to
-    {\bf computational idioms} and similar concepts.
+    emerging hardware; and lastly the diverse research landscape around
+    {\bf computational idioms} and related concepts.
 
-\subsection{Constraint Programming for Program Analysis}
+\section{Constraint Programming}
 
-    There is a large body of work that uses constraints for program analysis.
+    Constraint programming and its use for program analysis has been studied
+    extensively, covering several major research areas around security and
+    formal verification as well as more compiler centric dataflow analysis and
+    type inference.
+    It has to be understood in the context of research fields such as SMT
+    solving, theorem proving and model checking, but important background for
+    this thesis also comes from the programming language perspective,
+    particularly around the prolog community.
+    These different fields vary greatly in their interests and approaches, but
+    many of the underlying challenges can be similar, especially performance and
+    scalability issues of backtracking solvers.
+
     Constraint systems have long been used in program analysis for classical
     purposes such as dataflow analysis and type inference, as in
     \citet{Aiken:1999:ISC:339853.339897}.
@@ -18,11 +29,12 @@
     It can also be used to assist generation of programs from specifications,
     as in \citet{Srivastava:2010:PVP:1707801.1706337}.
 
-    There is particularly extensive work in the are of security and formal
+    There is particularly extensive work in the area of security and formal
     verification of software systems.
-    There is considerable work on formally verifying existing compiler
+    This work inxludes investigations into formally verifying existing compiler
     transformations using SMT solvers and theorem provers that operate on IR
     code, among them \citet{Zhao:2012:FLI:2103656.2103709}.
+
     Recent domain specific languages for formally verifying compiler
     optimizations, such as Alive \citep{Lopes:2015:PCP:2737924.2737965} operate
     on single static assignment compiler IR as well.
@@ -98,7 +110,6 @@
     This representation enables automatic reasoning and analysis about the
     interoperability of software architectures.
 
-
 \section{Compiler Analysis and Auto-Parallelisation}
 
 \paragraph*{Compiler centric linear algebra optimization}
@@ -169,6 +180,17 @@ model sparse linear algebra.
 
 
 \section{Heterogeneous Computing}
+
+Heterogeneous computing has been a particularly active research field in more
+recent work, since the widespread adoption of GPUs for general purpose
+computations.
+This has both included research into from a hardware perspective, studying the
+most meaningful diversification axes for processors in heterogeneous systems as
+well as many different programming approaches, broadly categorised into library
+approaches, compiler based methods and proposed DSLs.
+
+For this work, the most relevant work is on programming approaches and for
+direct comparison also the compiler based methods.
 
 % Domain specific languages
 \paragraph*{Domain Specific Languages}
