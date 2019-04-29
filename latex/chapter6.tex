@@ -1,1051 +1,1281 @@
- 
-    Sparse linear algebra is central to many scientific codes, yet compilers
-    fail to optimize it well.
-    Instead, programmers rely on library implementations that are hand optimized
-    and can utilize accelerator hardware.
-    This comes at a cost, however, as it ties programs into vendor specific
-    software ecosystems and results in non-portable code.
 
-    This chapter develops an approach based on the {\em specification
-    Language for implementers of Linear Algebra Computations} (LiLAC).
-    Rather than requiring application developers to (re)write every program for
-    a given library, the burden is shifted to a {\em one-off} description for
-    the library implementer.
-    The LiLAC-enabled compiler then uses this to incorporate library routines
-    automatically.
+    In the previous chapter, the CAnDL constraint programming language was
+    introduced, which can generate compiler analysis functionality from terse
+    and easily scalable, declarative problem specifications.
+    This chapter takes a broader view of what automatic compiler analysis can
+    encompass with such a powerful tool at hand.
+    Using the Idiom Description Language (IDL) -- an extended version of CAnDL
+    with a different syntax -- this chapter capturies broader computational
+    concepts than were demonstrated previously.
 
-    LiLAC provides automatic data marshaling, seamlessly maintaining state
-    between calls as needed and minimizing data transfers.
-    Appropriate places for library replacement are detected at the compiler
-    intermediate representation level, making our approach language independent.
+    The goal of this chapter is to take abstract algorithmic concepts that are
+    conventionally explored outside the context of compiler analysis --
+    computational idioms -- and to formalize them as IDL specifications,
+    enabling detection and manipulation in optimising compilers.
+    Heterogeneous acceleration will serve as the motivation for this effort.
+    As many scientific codes are structured around idiomatic performance
+    bottlenecks, efforts that focus on computational idioms can greatly
+    improve performance, especially with accelerators that were designed
+    with similar computations in mind.
+    The focus is therefore on calculations that are well supported by
+    accelerators and their software ecosystems: sparse and dense linear algebra,
+    stencil codes and generalised reductions and histograms.
 
-    We evaluate on legacy large-scale scientific applications written in FORTRAN;
-    standard benchmarks written in C/C++ and FORTRAN; and C++ graph analytics kernels.
-    Across heterogeneous platforms, applications and data sets we show performance
-    improvements of 1.1x to over 10x without any user intervention.
-
+    The IDL specifications are used to build a prototype compiler that
+    automatically detects the idioms and uses them to circumvent the code
+    generator with libraries and domain specific languages:
+    BLAS implementations, cuSPARSE, clSPARSE, Halide and Lift.
+    The funcionality is directly accessible in a modified version of the widely
+    used clang C/C++ compilers.
+    The evaluation can therefore be performed on the well established benchmark
+    suites NAS and Parboil, where 60 idiom instances are detected.
+    In those cases where idioms are a significant part of the sequential
+    execution time, the generated heterogeneous code achieves 1.26$\times$ to
+    over 20$\times$ speedup on integrated and external GPUs.
 
 \section{Introduction}
 
-    Linear algebra is an important component of many compute intensive
-    applications.
-    While there are many compiler papers examining automatic optimization of
-    dense linear algebra, sparse codes have received less attention. 
-    Sparse algorithms are, however, increasingly important as the basis for
-    graph algorithms and data analytics \cite{Kepner2015GraphsMA}.
+    Heterogeneous accelerators provide the potential for great performance, but
+    achieving that potential is difficult and requires significant effort.
+    In order to target heterogeneous systems, programms need to be partially
+    rewritten, making use of a diverse range of broad and narrow interfaces that 
+    are quickly evolving.
+    General purpose languages such as OpenCL \citep{nvidia11guide} provide
+    some portability across heterogeneous devices, but the achieved performance
+    often disappoints, as documented in \citet{lee09openmp}.
+    Effectively rewrites are required despite the functional portability.
+    Optimised numerical libraries provide more reliable performance, but they
+    are more specialised and often provided by hardware vendors without
+    portability in mind \citep{clblas,cublas,cusparse,clsparse}.
+    More narrow domain specific languages (DSLs) such as \citet{Franchetti09OL,
+    Rompf:2012:LMS:2184319.2184345} have been proposed, attempting to deliver
+    both portability and performance \citep{Ragan-Kelley2013Halide}.
+    However this class is quickly evolving and most of them are academic
+    projects with unclear long term support.
 
-Ideally, we would like compilers to automatically map dense and sparse-based
-codes to heterogeneous compute platforms efficiently and with no user
-intervention. However,  this has proven difficult.
+    Hardware becomes increasingly heterogeneous, most recently with the
+    development of neural network accelerators such as the Google TPU in
+    \citet{jouppi2017datacenter}).
+    This means library or DSL based programming is likely to become far more
+    common.
+    The problems with this trend that arise due to the aforementioned tradeoffs
+    are clear:
+    Firstly, application developers have to learn multiple specialized DSLs and
+    vendor-specific libraries if they want good performance.
+    Secondly, they will have to rewrite their existing applications to use them.
+    Thirdly, this ties their code into an ecosystem with unclear future support
+    that might deprecate quickly.
+    This situation is a severe impediment to the wide-spread efficient
+    exploitation of heterogeneous hardware.
 
-Instead, we see the wide-scale provision of fast libraries
-\cite{cusparse,clsparse,mkl}, often provided by hardware vendors themselves.
-They provide excellent performance, but place the burden of code rewriting on
-the application developer and are rarely portable across platforms.
-Rewriting legacy applications involves considerable effort, especially when
-using hardware accelerators that require careful data marshaling.
-In fact, the difficulty of efficient integration is a key impediment to the
-wider use of accelerator libraries.
-Furthermore, source code modifications reduce the portability of the
-program and require a commitment to specific hardware vendors, resulting in legacy
-code bases that quickly become obsolete.
+    Ideally, we would like a compiler that automatically maps existing code to
+    heterogeneous hardware, with full performance and requiring no directions
+    from the application programmer.
+    While this is unrealistic in general, the system that is presented in this
+    chapter achieves a good approximation of such a general purpose system by
+    utilising the knowhow that is already available, encapsulated in the
+    existing interfaces as an intermediary.
+    Instead of implementing code generation for several heterogeneous
+    accelerators, it maps user code to heterogeneous hardware using the
+    existing libraries and domain specific languages, effectively outsorcing the
+    code genration to hardware specialists.
 
-In this chapter, we reexamine the way that compilers and libraries are used
-to tackle the challenge of achieving full performance without requiring any
-application programmer effort.
-Highly tuned and platform specific libraries are invariably the fastest
-implementations available, therefore we use them as our building blocks.
-We then develop a new specification language for implementers of such
-libraries, the {\em specification Language for implementers of Linear Algebra
-Computations} (LiLAC).
+    The approach is based on detecting specific {\em computational idioms} in
+    application code that correspond to the functionality of existing APIs for
+    heterogeneous acceleration.
+    The covered idioms are largely a reflection of the existing libraries and
+    DSLs, with a focus on sparse and dense linear algebra, stencils and
+    generalized reductions and histograms.
+    The idioms are formulated using IDL, which allows the concise formulation
+    and fast detection in optimised LLVM IR code.
 
-Using LiLAC, library implementers specify with a few lines of code,
-{\em what} a library does and {\em how} it is invoked.  Our compiler
-then determines where the library specification matches the user's
-code and automatically rewrites the code to utilize library calls.
+    Once detected, the idioms are mechanically translated into the appropriate
+    DSL or replaced with a library call.
+    This optimized code is then linked into the original program.
+    As backends, the libraries cuSparse, clSparse, cuBLAS, clBLAS for
+    sparse and dense linear algebra and target the DSL Halide
+    \cite{Ragan-Kelley2013Halide} for stencil computations are used in the
+    evaluation.
+    In addition to this, the Lift language \cite{SteuwerRD17} is used - a data
+    parallel language that supports generalized reductions as well as stencils
+    and linear algebra.
+    This allows the freedom to target many APIs for the same idiom and pick the
+    implementation that best suits the target platform.
 
-\paragraph*{LiLAC-What}
-is a high level language to describe sparse and dense linear
-algebra programs.
-The LiLAC compiler uses it to detect such functionality
-in user applications at the level of compiler intermediate representation.
-It is powerful enough to formulate linear algebra, yet remains
-independent of compiler internals and is easy to understand and program.
+    New idioms can be easily added thanks to the flexibility of IDL.
+    This provides a powerful means of determining whether a new heterogeneous
+    API matches existing code without touching the core compiler.
+    The idioms addressed in this paper can be expressed in less than 500 lines
+    of IDL code.
+    Our approach is also highly robust, it has been applied to the entire NAS
+    and Parboil benchmark suites and is evaluated on three platforms.
 
-\paragraph*{LiLAC-How}
-is a language to specify how parts of the LiLAC-What description
-can be used for library invocations and how state can be retained in between
-calls.
-Our compiler uses this to automatically generate library call {\em harnesses} that
-efficiently schedule memory transfers, execute setup code and handle hardware
-context management.
+    We present a novel approach that:
+    \begin{itemize}
+    \item Defines a programming language for specifying code idioms, the Idiom
+          Description Language (IDL)
+    \item Implements common idioms in IDL to automatically discover
+     opportunities for accelerator exploitation
+    \item Efficiently translates and maps the detected idioms to APIs for
+          heterogeneous systems
+    \end{itemize}
 
-Our approach is broadly applicable. To demonstrate its applicability
-to legacy FORTRAN codes, we improved and extended the flang frontend
-to LLVM and evaluated on a large-scale scientific application.
-It also works on standard C/C++ and FORTRAN benchmark programs and C++ graph
-\mbox{analytics} kernels. The presented LiLAC system achieves significant performance
-improvement across heterogeneous platforms, from 1.1x to over 10x, without any
-user intervention.
+    While there has been much research in using constraints for program
+    analysis~\cite{nielson2015principles}, there is little prior work in its use
+    for idiom detection.
+    In \cite{ginsbach2017discovery}, constraints are used for detecting
+    reductions, but this is tightly coupled to a specialized code generation
+    phase for small-scale multi-core systems.
 
-\begin{figure*}[t]
-\includegraphics[width=\textwidth]{figures/lilac_overview.pdf}
-\caption{LiLAC applied to NPB Conjugate Gradient:
-         Code that matches the LiLAC-What specification is replaced with calls
-         to a harness function. The harness is generated from a LiLAC-How
-         specification to utilize Intel MKL.}
-\label{motivationcode}
-\end{figure*}
+    The work most similar in approach concerns discovery of stencil computation
+    and mapping to the Halide DSL.
+    Helium \cite{Mendis2015Helium} recovers stencils from image-processing
+    binaries.
+    This requires large scale dynamic analysis of binary traces and replacing
+    them with Halide calls. 
+    This is significantly extended in~\cite{Kamil2016Verified} which detects
+    stencils in FORTRAN.
+    In this work the focus is on inferring post invariants based on syntax
+    guided synthesis in translation to Halide.
+    However, it uses a narrow approach to selecting code snippets and relies on
+    well structured FORTRAN with occasional user annotations.
+    Our approach is distinct in that we use an external  programming language to
+    describe the idioms we are interested in.
+    This allows an unbounded set of idioms  to be considered across arbitrary
+    programs and is not restricted to stencils. 
+
+    To summarize, this paper presents an automatic approach that discovers
+    idioms in legacy code and maps them to heterogeneous platforms via libraries
+    and DSLs.
+    We apply it to 21 C/C++ programs from the NAS and Parboil benchmark suites
+    and demonstrate that it detects more reductions, stencils, matrix
+    multiplications and sparse matrix-vector computations than existing schemes.
+    For the idioms that dominate execution time, we generate code and evaluate
+    on 3 platforms: a multi-core CPU, an integrated and an external GPU.
+    Overall we detect 60 idioms.
+    In 10 programs these dominate sequential execution time and are worth
+    exploiting.
+    This results in speedups ranging from 1.26$\times$ to over 20$\times$.
 
 \section{Overview}
-\label{sec:overview}
 
-Consider the example in \autoref{motivationcode}.  In the top left
-corner (1), we see unmodified application source code.  This is
-{\em conjugate gradient} from the NAS-PB suite.  The program is written
-in a straightforward manner and a naively compiled program would fail
-to exploit the full potential of modern hardware.
+    Our approach is automatic and has been implemented inside the LLVM compiler
+    infrastructure.
+    It takes arbitrary sequential C/C++ programs as input.
+    Using the clang compiler, the input source code is compiled into a Single
+    Static Assignment (SSA) intermediate representation.
+    We then search this representation for particular idioms which are replaced
+    with calls to specific APIs.
+    Finally, the code generated by the LLVM compiler and the output of the idiom
+    specific code generators/libraries are linked together into a binary,
+    producing an optimized program.
+    LLVM was chosen as it is the best supported SSA-based compiler;
+    the methodology could easily be transferred to other infrastructures such as
+    gcc.
 
-In order to achieve good performance on Intel processors, we provide a
-LiLAC specification of Intel MKL.
-The LiLAC compiler (2) uses this to detect that the code in the framed loop is a
-sparse matrix-vector product.
-Instead of passing it on to the generic compiler backend, it replaces it with a
-call to an auto-generated {\em harness} function  and captures the parameters of the computation
-as function call arguments.
-This is performed on optimized intermediate representation code (3)
-and results in a program that is equivalent to the source code shown in the
-bottom left (4).
+\subsection{Compiler Flow}
 
-LiLAC also automatically generates the corresponding harness as shown at
-the right of the figure (5).
-The resulting shared library is then linked with the application binary at
-runtime, interfacing the underlying library implementation (6).
-
-\begin{figure*}[t]
-\includegraphics[width=\textwidth]{figures/whathowflow.pdf}
-\caption{Overview of the LiLAC internals: On the left is the entire LiLAC
-         program the library implementer must write. This results in a modified
-         LiLAC-compiler in the bottom right that behaves as the shown in
-         \autoref{motivationcode}.}
-\label{motivationflow}
-\end{figure*}
-
-\subsection{Implementation Overview}
-
-\autoref{motivationflow} provides more detail on the internals of
-LiLAC.  On the left we can see the LiLAC specification provided by the
-library implementer - just 16 lines of code.  It consists of a
-{\em What} and a {\em How} part.  These two parts are processed by the
-LiLAC system, eventually resulting in a runtime library and a modified
-C/C++ compiler.
-
-{\bf LiLAC-What} specifies the functionality that is provided by a library,
-in this example {\em spmv-csr} (cf.\ \autoref{motivationcode}).
-From this specification, a detection program that finds the computation in
-normalized LLVM IR code is automatically generated and the harness interface
-is determined.
-
-{\bf LiLAC-How} specifies how the library, in this case Intel MKL, can be
-invoked to perform the specified calculation.
-This involves boilerplate code, but also advanced features, such as optimized
-data transfers to accelerators.
-In the last two lines, we can see how to efficiently compute the {\em columns}
-variable with LiLAC.
-It is not present in the {\em LiLAC-What} definition but is required by the MKL library. It  cannot be
-captured statically and has to be computed at runtime using the values in the
-{\em row\_ptr} array.
-Using {\em Marshalling}, LiLAC automatically generates the harness
-such that this is only recomputed if the values in {\em row\_ptr} change.
-
-On the right of the figure we can see how the components generated from the
-LiLAC specification are used to build the LiLAC-compiler.
-Based on the LLVM infrastructure, it implements a transformation pass that
-is executed after the normal optimization pipeline.
-Using the generated detection function, it finds instances of the computation
-and replaces them with calls to the specified harness interface.
-Application binaries are dynamically linked to the harness library.
-
-\section{What and How}
-
-This section describes in more detail the two components of the LiLAC language.
-LiLAC-What describes what a specific library does and LiLAC-How describes how
-user code is bound to the underlying implementation.
-
-\subsection{LiLAC-What: Functional Description}
-At the heart of our approach is a simple language to specify sparse and dense
-linear algebra operations.
-This serves two purposes in our LiLAC system: Firstly, it is used to generate
-a detection program for finding the computation in user code.
-Secondly, it identifies the variables that are arguments to the library, thus
-defining the harness interface.
-
-The key challenge in the design of this language was to stay simple enough
-to allow automatic generation of robust detection functionality, yet to be able
-to capture interesting functionality.
-Crucial for sparse linear algebra routines is capturing the many different
-memory access patterns, the control flow on the other hand is very rigid.
-This is reflected in the grammar as shown in \autoref{bnfgrammar}.
-
-\subsection{Sparse Matrix Variations in LiLAC-What}
-Sparse matrices can be stored in different formats.
-In this section we introduce two of them and show how LiLAC-What can express
-the corresponding computations.
+    The structure of our approach is described in more detail in
+    \autoref{fig:methodology}.
+    Our compiler takes two programs as inputs: the first is the user's program
+    source code, the second describes the idioms we wish to detect using our
+    idiom description language (section 3).
+    The same idioms, of course, can be detected across many user programs, so
+    the IDL program does not have to change from one run to the next.
 
 \begin{figure}[t]
-\input{latex/figure_lilacwhat}
-\vspace{-1.5em}
-\caption{Grammar of the LiLAC-What language}
-\label{bnfgrammar}
+    \centering
+    \includegraphics[width=\linewidth]{figures/compiler_flow.pdf}
+    \caption{Workflow of our system}
+    \label{fig:methodology}
+    \vspace{-0.5em}
 \end{figure}
+
+    The program source code is compiled to optimized LLVM intermediate
+    representation code and the idiom description is translated into constraints
+    and represented internally as a C++ object.
+    The C++ representation of the constraints and the user program LLVM IR code
+    are then passed as inputs to a backtracking solver
+    \cite{ginsbach2017discovery}, which detects all cases where the idioms can
+    be found in the LLVR IR.
+
+    The recognized idioms and the LLVM IR code are then passed on
+    to the transformation phase of our system.
+    The sections of code corresponding to computational idioms are extracted
+    and reformulated for the appropriate heterogeneous APIs.
+    For libraries this means replacing
+    the code covered by the idiom with a library call. 
+    For domain specific language interfaces,
+    things are a little more involved. As before, we first extract the code
+    associated with the idiom and replace it with a function call. This
+    extracted code is now translated into the appropriate DSL and then
+    passed on to the external DSL compiler which optimizes and generates
+    code. The generated code is then linked
+    with the object code from the main program.
+
+    Determining the best heterogeneous APIs to use for a given platform
+    and the best idioms to exploit will become a major issue as the number
+    of idioms and APIs grows.  Currently, in this paper, we just try all
+    applicable libraries and DSLs and pick the best executing
+    code. Determining the best option is future work.
+
+
+\subsection{IDL Example}
+
+    At the core of our approach is IDL, which is described in \autoref{sec:idl}.
+    A fundamental part of its design is the
+    ability to detect  complex idioms.  Here we first focus on a simple example
+    to show how IDL works.  Consider the standard factorizing
+    optimization that applies the algebraic rule of distributivity
+    \[(x*y)+(x*z) = x*(y+z)\]
+    to simplify calculations by reducing the number of multiplications in an
+    expression.
+    The established way of implementing such an optimization is to hard code a
+    detection compiler pass.
+    In LLVM, this is 47 lines of code inside the \texttt{instcombine} pass.
 
 \begin{figure}[t]
-\begin{minipage}[b]{0.3\linewidth}
-\includegraphics[width=0.9\linewidth]{figures/csrorder.png}
-\vspace{0.04em}
-\end{minipage}
-\begin{minipage}[b]{0.65\linewidth}
-\begin{align*}
-\text{\bf val} =& \begin{bmatrix}
-1\ \ 1\ \ 2\ \ 2\ \ \text{-}1\ \ 3\ \ 2\ \ 2\ \ \text{-}1\ \ 1\\
-\end{bmatrix}\\
-\text{\bf col\_ind} =& \begin{bmatrix}
-0\ \ 2\ \ 1\ \ 3\ \ 1\ \ 2\ \ 3\ \ 3\ \ 2\ \ 4\\
-\end{bmatrix}\\
-\text{\bf row\_ptr} =& \begin{bmatrix}
-0\ \ 2\ \ 4\ \ 7\ \ 8\ \ 10\\
-\end{bmatrix}
-\end{align*}
-\end{minipage}
-\caption{Compressed Sparse Row representation as used by the LiLAC-What example
-         in \autoref{motivationcode}}
-\label{csr_lilacwhat_fig}
-\vspace{1.5em}
-\centering
-\begin{minipage}[b]{0.3\linewidth}
-\includegraphics[width=0.9\linewidth]{figures/jdsorder.png}
-\vspace{0.04em}
-\end{minipage}
-\begin{minipage}[b]{0.65\linewidth}
-\footnotesize
-\begin{align*}
-\text{\bf perm} =& \begin{bmatrix}1\ \ 2\ \ 0\ \ 4\ \ 3\\\end{bmatrix}\\[-0.4em]
-\text{\bf val} =& \begin{bmatrix}\text{-}1\ \ 1\ \ 2\ \ \text{-}1\ \ 2\ \ 3\ \ 1\ \ 2\ \ 1\ \ 2\\\end{bmatrix}\\[-0.4em]
-\text{\bf col\_ind} =& \begin{bmatrix}1\ \ 0\ \ 1\ \ 2\ \ 3\ \ 2\ \ 2\ \ 3\ \ 4\ \ 3\\\end{bmatrix}\\[-0.4em]
-\text{\bf jd\_ptr} =& \begin{bmatrix}0\ \ 5\ \ 9\ \ 10\\\end{bmatrix}\\[-0.4em]
-\text{\bf nzcnt} =& \begin{bmatrix}3\ \ 2\ \ 2\ \ 2\ \ 1\end{bmatrix}
-\end{align*}
-\end{minipage}
-\vspace{0.5em}
-\hrule
-\vspace{0.3em}
-\includegraphics[width=\linewidth]{figures/spmvjdswhat.pdf}
-\vspace{-1.2em}
-\caption{Jagged Diagonal Storage in LiLAC-What}
-\label{jds_lilacwhat_fig}
+\begin{lstlisting}[language={constraints},escapechar=|,basicstyle=\linespread{1.133}\scriptsize\ttfamily]
+Constraint FactorizationOpportunity
+( {sum} is add instruction and
+  {left_addend} is first argument of {sum} and
+  {left_addend} is mul instruction and
+  {right_addend} is second augment of {sum} and
+  {right_addend} is mul instruction and
+  |\label{line:factorFirstLeft}|( {factor} is first argument of {left_addend} or
+  |\label{line:factorSecondLeft}|  {factor} is second argument of {left_addend}) and
+  |\label{line:factorFirstRight}|( {factor} is first argument of {right_addend} or
+  |\label{line:factorSecondRight}|  {factor} is second argument of {right_addend}))
+End
+\end{lstlisting}
+\vspace{-0.3cm}
+\caption{IDL formulation of (x*y)+(x*z) pattern}
+\label{fig:IDLfactorization}
 \end{figure}
 
-\subsubsection{Compressed Sparse Row}
-For Compressed Sparse Row (CSR) \cite{doi:10.1137/1.9780898718003}, all non-zero
-entries are stored in a flat array \textbf{val}.
-The \textbf{col\_ind} array stores the column position for each value.
-Finally, the \textbf{row\_ptr} array stores the beginning of each row of the
-matrix as an offset into the other two arrays.
-The number of rows in the matrix is given directly by the length of the
-\textbf{row\_ptr} array minus one, however the number of columns is not
-explicitly stored.
-In \autoref{csr_lilacwhat_fig}, a 5x5 matrix is shown represented in this
-format, the LiLAC-What code is in the top left of \autoref{motivationflow}.
+    With IDL, we can formulate this in only a few lines of an easily
+    understandable program (\autoref{fig:IDLfactorization}).
+    For this example, the underlying constraint problem is immediately visible:
+    There are four variables \texttt{sum}, \texttt{left\_addend},
+    \texttt{right\_addend}, \texttt{factor} and nine individual constraints
+    that are combined with boolean operators.
 
-\subsubsection{Jagged Diagonal Storage}
-For Jagged Diagonal Storage (JDS) \cite{doi:10.1137/0910073}, the rows of the
-matrix are permuted such that the number of nonzeros  per row  decreases. The
-permutation is stored in a vector \textbf{perm}, the number of nonzeros in
-\textbf{nzcnt}.
-The nonzero entries are then stored in an array \textbf{val} in the following
-order: The first nonzero entry in each row, then the second nonzero entry in
-each row etc.
-The array \textbf{col\_ind} stores the column for each of the values and
-\textbf{jd\_ptr} stores offsets into \textbf{val} and \textbf{col\_idx}.
-The product of a sparse matrix in JDS format with a dense vector is specified 
-in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
+    From the formulation in \autoref{fig:IDLfactorization}, the IDL compiler
+    builds an internal representation of the underlying constraint problem that
+    is passed to a constraint solver.
+    For a given section of user code, this solver returns the set of
+    factorization opportunities, each containing four entries
+    \texttt{sum}, \texttt{left\_addend}, \texttt{right\_addend}, \texttt{factor}
+    that refer to values inside the user code.
+    \autoref{fig:firstexample} shows a simple example.
+    The incoming C code is translated to optimized LLVM IR.
+    The solver then finds a single solution to the constraint problem.
 
-\subsection{LiLAC-How}
-\label{sec:lilachow}
-
-    Where LiLAC-What specifies the computations that are implemented by a
-    library, LiLAC-How describes how precisely library calls are to be be used
-    for performing them.
-    The langauge was designed with important existing libraries such as 
-    cuSPARSE, clBLAS and Intel MKL in mind.
-    In order to support the idiosyncrasies of these libraries, the
-    specifications need to be built around boilerplate C++ code that manages the
-    construction of parameter structures, calling conventions etc.
-    However, it is also crucial for the specification language to be as
-    high-level as as possible without sacrificing any performance, and the fine
-    balance between these requirements drove the design of the language.
-    In particular, LiLAC-How abstracts away memory transfers.
-
-    The result is a language that can be further divided into two interacting
-    components.
-    Firstly, it describes boilerplate code that is required for individual library
-    call invocations in a {\em harness}.
-    Secondly, it is used for data {\em marshaling} between the core program and the
-    library, which is particularly crucial for heterogeneous compute environments.
-    \autoref{lilacbnf2} shows the grammar specification of LiLAC-How.
-
-\subsubsection{Individual Library Invocations}
-We need to encapsulate the boilerplate code that any given library requires,
-such as setup code, filling of parameter structures etc.
-This part of the language is straightforward.
-
-\paragraph{Harness}
-The harness construct is the central way of telling the LiLAC system how a
-library can be used to perform a computation that was specified in LiLAC-What.
-As we can see at the top of \autoref{lilacbnf2}, a harness refers to a
-LiLAC-What program by name and also has a name itself.
-It is built around some C++ code, which can use all the variables from the
-LiLAC-What program to connect with the surrounding program.
-It also needs to specify the relevant C++ header files
-that the underlying library requires.
-Lastly, the harness can incorporate persistent state and utilize data
-marshaling functionality.
-
-\paragraph{Persistence}
-Many libraries need setup and cleanup code, which is specified with the
-keywords {\em BeforeFirstExecution} and {\em AfterLastExecution}.
-These are used in combination with {\em PersistentVariables}, allowing state to
-persist between harness invocations, e.g.\ to retain handlers to hardware
-accelerators.
-
-\paragraph{Example}
-In \autoref{mklharness1}, we see a trivial LiLAC-What program for implementing
-\texttt{spmv\_csr} with the Intel MKL library.
-The actual call to the relevant library function is in line 16.
-To prepare for that call, there is boilerplate code in lines 7--14 to fill
-parameter structures.
-
-Critically, there is an additional parameter required by the library that is
-not part of the LiLAC-What specification: the number of columns, {\em cols}, in
-the sparse matrix.
-It is determined at runtime, in lines 2--5, leading to reduced performance.
-We will avoid this with the data marshaling constructs in the next section.
-
-\subsubsection{Data Marshaling}
-Heterogeneous accelerators require data transfers to keep memory consistent
-between host device and accelerator.
-To achieve the best performance, these have to be minimized.
-
-Importantly, unchanged data should never be copied again.
-This is not trivial to achieve, as it requires dynamic checks.
-LiLAC-How uses hardware memory protection to implement this with minimal
-run time overhead in generated harnesses.
-
-\begin{figure}[t]
-\centering
-\input{latex/figure_lilachow}
-\vspace{-1.5em}
-\caption{Grammar of LiLAC-How}
-\label{lilacbnf2}
+\begin{figure}[ht]
+Original C code:
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+int example(int a, int b, int c) {
+    int d = a;
+    return (a*b) + (c*d);
+}
+\end{lstlisting}
+\vspace{1em}
+Resulting LLVM IR:
+\begin{lstlisting}[escapeinside={(*}{*)},language={LLVM},basicstyle=\footnotesize\ttfamily]
+define i32 @example(i32 %a, i32 %b, i32 %c) {
+  %1 = mul i32 %a, %b
+  %2 = mul i32 %c, %a
+  %3 = add i32 %1, %2
+  ret i32 %3
+}
+\end{lstlisting}
+\vspace{1em}
+Detected factorization opportunities:
+\begin{lstlisting}[escapeinside={(*}{*)},language={},basicstyle=\footnotesize\ttfamily]
+{ "sum" :          %3,
+  "left_addend" :  %1,
+  "right_addend" : %2,
+  "factor" :       %a }
+\end{lstlisting}
+\vspace{-0.3cm}
+\caption{Demonstration of simple idiom detection}
+\label{fig:firstexample}
 \end{figure}
 
-\begin{figure}[t]
-\includegraphics[width=0.944\linewidth]{figures/harness2.pdf}
-\\[-0.75em]
-\caption{This LiLAC-What code implements CSR SPMV na\"ively with Intel MKL.
-         Performance is degraded because of lines 2--5.
-         \autoref{readablemax} will present a solution to this bottleneck.}
-\vspace{2.em}
-\label{mklharness1}
-\end{figure}
+    In this case, the variable {\tt sum} is matched to the value {\tt \%3}, an
+    add instruction, while the variables {\tt left\_addend} and
+    {\tt right\_addend} match the left and right operands {\tt \%1} and
+    {\tt \%2} of this instruction. 
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.944\linewidth]{figures/harness3.pdf}
-\\[-0.75em]
-\caption{LiLAC-How code to provide efficient automatic data marshaling between
-         host and CUDA accelerator.}
-\label{cudaread}
-\end{figure}
+    Lines \ref{line:factorFirstLeft} and \ref{line:factorSecondLeft} of
+    \autoref{fig:IDLfactorization} say that {\tt factor} can either be the first
+    argument OR the second argument of {\tt left\_addend}.
+    As the {\tt left\_addend} is {\tt \%1}, then {\tt factor} can be either
+    {\tt \%a} or {\tt \%b}.
+    Similarly lines \ref{line:factorFirstRight} and
+    \ref{line:factorSecondRight} of \autoref{fig:IDLfactorization} say that
+    {\tt factor} can be be the first argument OR the second argument of the
+    {\tt right\_addend}.
+    As the {\tt right\_addend} is {\tt \%1}, then {\tt factor} can be either
+    {\tt \%c} or {\tt \%a}.
+    The two disjunctions in Lines 7-10 are connected by AND, so they must both
+    hold.
 
-\begin{figure}[t]
-\includegraphics[width=0.944\linewidth]{figures/harness4.pdf}
-\\[-0.75em]
-\caption{{\em INPUT} can also be used to specify data dependent computations
-         that are only recalculated when required.}
-\vspace{0.5em}
-\label{readablemax}
-\end{figure}
-
-\begin{figure}[t]
-\includegraphics[width=0.944\linewidth]{figures/harness1.pdf}
-\\[-0.75em]
-\caption{This LiLAC-What specification implements an efficient SPMV harness
-  using cuSPARSE in only 25 lines of code.}
-\label{spmvharness}
-\end{figure}
-
-This data {\em marshaling} comes in two flavors; INPUT and OUTPUT.
-Both of these are bound to a range of memory in the harness.
-The LiLAC-generated code then uses hardware memory protection to detect read and
-write accesses to these memory ranges.
-In the specification, the underlying array is available using the
-identifiers {\tt in}, {\tt size}, and {\tt out}.
-
-\subsubsection{Detailed Example}
-In \autoref{cudaread}, LiLAC-How functionality is specified using the
-\texttt{cudaMemcpy} function from NVIDIA CUDA.
-It is used to copy data from the host to the accelerator.
-Note that for this to work, it first needs to allocate memory of the
-device using \texttt{cudaMalloc}, which is later freed with \texttt{cudaFree}.
-\texttt{cudaMemcpy} is executed only when a value in the array changes,
-resulting in minimal memory transfers.
-
-We can use the same construct to efficiently compute values
-such as the \texttt{cols} variable in \autoref{mklharness1}, as shown in
-\autoref{readablemax}.
-The optimized implementation is nearly identical to the code in
-\autoref{mklharness1} lines 2-5, however instead of the concrete variable name
-the reserved identifiers {\tt in}, {\tt size}, and {\tt out} are used.
-\pagebreak
-
-We can now use these in \autoref{spmvharness}, showing a CSR SPMV
-LiLAC-How program for the cuSPARSE library.
-A number of data marshaling variables are introduced in lines 12--17, that
-automatically optimize both memory transfers and the computation of the
-\texttt{cols} variable.
-The core of the harness in lines 2--10 is again nothing more than 
-library specific boilerplate C++ code.
-
-\section{Implementation}
-\label{sec:implementation}
-
-    The LiLAC system, as shown in \autoref{motivationflow} is entirely
-    integrated into the LLVM build system.
-    When LLVM is compiled, the LiLAC specification is parsed using a Python
-    program.
-    Based on the LiLAC-What and LiLAC-How sections, C++ code is generated that
-    is automatically incorporated into LLVM in further stages of the build
-    process.
-
-    The result is an LLVM optimization pass that is available when linking LLVM
-    with the clang C/C++ compiler.
-    This performs the discovery of linear algebra code and the insertion of
-    harness calls.
-    Furthermore, the harness libraries themselves are built at compile time of
-    LLVM, using C++ code emitted from the LiLAC-How sections.
-
-    The two crucial implementation details are therefore:
-    Firstly, how automatic detection functionality in C++ can be generated from
-    the abstract LiLAC-What specifications and \linebreak
-    secondly, how the LiLAC-How sections are used to generate fast C++
-    implementations of the specified library harnesses.
-
-\subsection{LiLAC-What}
-Once the LiLAC-What sections have been parsed, they are turned into C++
-functionality that is used by the LiLAC LLVM pass to detect appropriate places
-for harness calls.
-Instead of performing this via syntax-level pattern matching, we use optimized
-intermediate compiler representation.
-The standard optimizations for \texttt{-O2} without vectorization and loop
-unrolling are used.
-This results in code in a normal form, which allows us to abstract away many
-syntactic differences and programming languages.
-
-The effect is demonstrated in \autoref{robustness}, which shows three
-implementations of a dot product in different languages: C, C++ and FORTRAN.
-After translating to LLVM IR and performing optimizations, the dot product is
-recognized in the LiLAC system using the same LiLAC-What specification.
-
-The exact detection algorithm works in two steps.
-Firstly, the control flow skeleton is recognized.
-This is simple, as the control flow that can be expressed in LiLAC-What is
-limited, and we only need to detect loop nests of a certain depth.
-After candidate loop nests have been identified, the index and loop range
-calculations from LiLAC-What are mapped onto the LLVM IR nodes.
-This is done via a backtracking search procedure that requires some careful
-consideration in order to get robust results on implementation details of LLVM,
-particularly for different ways of array indexing, pointer casts and integer
-conversions.
-
-\subsubsection{Backtracking Search Algorithm}
-In order to match instances of LiLAC-What specifications in user programs,
-the LLVM IR segments that match the corresponding control flow skeleton are
-processed with a backtracking search algorithm.
-
-All $\left<exp\right>$ expressions in the LiLAC-What program are identified.
-These now have to be assigned instructions or other values from the LLVM IR
-segment. The top-level $\left<exp\right>$ expressions that are used as limits or
-iterators in $\left<range\right>$ expressions are easily connected with the
-corresponding loop boundaries in the matched control flow structures.
-
-    The remaining expressions are then successively assigned by backtracking.
-    Consider the example in \autoref{llvmexample}, which shows a candidate loop
-    from the LLVM IR generated from the C++ dot product code in
-    \autoref{robustness}.
-    The iteration space is determined by loop analysis and this immediately
-    allows us to assign the LiLAC-What iterator and range in
-    \autoref{backtrack}.
-    The LLVM IR instructions that correspond to \texttt{left[i]}, \texttt{left},
-    \texttt{right[i]}, \texttt{right} and \texttt{result} are then searched for
-    one by one.
-    When a partial solution fails, such as at the point when \texttt{right} is
-    assigned the same value as \texttt{left}, we backtrack.
-    If we cannot determine a solution this way, we discard the control flow
-    candidate.
-
-\subsubsection{Code Replacement}
-
-    For each identified loop nest that matches a LiLAC-What specification, the
-    code is replaced with a harness call.
-    To minimize the invasiveness of our pass, this is performed as follows:
-    Firstly, a harness call is inserted directly before the loop.
-    The function call arguments are then selected from the backtracking result
-    and passed to the harness.
-    Secondly, the LLVM instruction that stores the result of the computation or
-    passes it out of the loop as a phi node is removed.
-    The remainder of the loop nest is be removed automatically by dead code
-    elimination.
+\begin{equation}
+\begin{split}
+((factor = a) \lor & (factor = b)) \\\land ((factor = c) \lor & (factor = a)) \\
+\implies & factor = a 
+\end{split}
+\nonumber
+\end{equation}
+The only value of {\tt factor} that satisfies this condition is {\tt factor = \%a}.
+Therefore, the solution at the bottom of \autoref{fig:firstexample} is the only factorization opportunity in the code.
 
 \begin{figure}[p]
-\begin{lstlisting}[language=LiLAC,numbers=none]
-COMPUTATION dotproduct
-    result = sum(0 <= i < length) left[i] * right[i];
-\end{lstlisting}
-\begin{lstlisting}[language=C,numbers=none]
-int i = 0;
-while(i < N) {
-    x += (*(A+i))*(*(B+i));
-    i+=1; }
-\end{lstlisting}
-\vspace{-0.75em}
-\begin{lstlisting}[language=C++,numbers=none]
-for(int i = 0; i < vec_a.size(); i++)
-    x += vec_a[i]*vec_b[i];
-\end{lstlisting}
-\vspace{-0.75em}
-\begin{lstlisting}[language=FORTRAN,numbers=none]
-DO I = 1, N, 1
-    X = X + A(i)*B(i)
-END DO
-\end{lstlisting}
-\vspace{-0.75em}
-\caption{Syntactically different computations in C, C++ or FORTRAN are captured
-         by one LiLAC-What specification.}
-\label{robustness}
-\vspace{1em}
-\begin{lstlisting}[language=llvm,numbers=none]
-; <label>:17:
-  %18 = phi i64 [ 0, %10 ], [ %26, %17 ]
-  %19 = phi double [ 0.0, %10 ], [ %25, %17 ]
-  %20 = getelementptr double, double* %9, i64 %18
-  %21 = load double, double* %20
-  %22 = getelementptr double, double* %12
-  %23 = load double, double* %22
-  %24 = fmul double %21, %23
-  %25 = fadd double %19, %24
-  %26 = add nuw i64 %18, 1
-  %27 = icmp ugt i64 %14, %26
-  br i1 %27, label %17, label %15
-\end{lstlisting}
-\vspace{-0.75em}
-\caption{Optimizations remove language specific features, the result is
-         normalized LLVM IR. Control flow candidates for a match are easily
-         determined with standard loop analysis.}
-\label{llvmexample}
-\vspace{1em}
-\begin{tabular}{rcr|rcrr}
-       &              &      & left[i]  & $\leftarrow$&                 \%21   &     \\
-     i & $\leftarrow$ & \%18 & left     & $\leftarrow$&                  \%9   &     \\
-length & $\leftarrow$ & \%14 & right[i] & $\leftarrow$&                 \%21   & \%23\\
-       &              &      & right    & $\leftarrow$& \textcolor{red}{fail!} & \%12\\
-       &              &      & result   & $\leftarrow$&                        & \%19\\
-\end{tabular}
-\caption{Control flow candidates contain iterator ranges directly (left),
-         backtracking identifies the dot product by assigning the other
-         LiLAC-What entities one by one (right).}
-\label{backtrack}
+    \input{latex/figure_spmvexample3}
 \end{figure}
 
-\begin{figure}[t]
-\begin{lstlisting}
-template<typename type_in, typename type_out>
-void CudaRead_update(type_in* in, int size,
-                     type_out& out) {
-    cudaMemcpy(out, in, sizeof(type_in)*size,
-               cudaMemcpyHostToDevice);
-}
-template<typename type_in, typename type_out>
-void CudaRead_construct(int size, type_out& out) {
-    cudaMalloc(&out, sizeof(type_in)*size);
-}
-template<typename type_in, typename type_out>
-void CudaRead_destruct(int size, type_out& out) {
-    cudaFree(out);
-}
-template<typename type_in, typename type_out>
-using CudaRead = ReadObject<type_in, type_out,
-    CudaRead_update<type_in,type_out>,
-    CudaRead_construct<type_in,type_out>,
-    CudaRead_destruct<type_in,type_out>>;
+\subsection{Sparse Linear Algebra in IDL}
+
+    Although the previous example illustrated how constraints can be applied to 
+    program analysis, we want to detect much more complex idioms and 
+    map them to existing APIs.
+
+    The C code in \autoref{fig:spmvexample1} shows the performance bottleneck of
+    the NAS \emph{Conjugate Gradient (GC)} benchmark, as well as the
+    corresponding LLVM IR code.
+    It implements a standard operation from sparse linear algebra, namely a
+    multiplication of a sparse matrix in Compressed Sparse Row (CSR) format with
+    a dense vector.
+
+    This code contains several features that make it unsuitable for most
+    established compiler optimizations:
+    The iteration domain of the nested loop is memory dependent (line 3) and
+    there is indirect memory access (line 4).
+    This makes the iteration domain of the loop nest non-polyhedral and the
+    access structure to memory non-affine.
+    Under these conditions, simple data dependence models, but also
+    sophisticated analysis based on the polyhedral model, would fail.
+
+    We can express this idiom in IDL (\autoref{sec:idioms}, \autoref{fig:spmv}).
+    The IR code, together with the IDL program, is fed into a constraint solver,
+    which outputs a constraint solution as shown in \autoref{fig:spmvexample2}.
+    We can see that different parts of the IR have been assigned to IDL
+    variables.
+
+    \autoref{fig:spmvexample3} shows how this solution is used to generate a
+    call to a cuSPARSE procedure.
+    The solution variables are inserted into the {\tt cusparseDcsrmv} code
+    template as function arguments. 
+    The original code is then cut out and replaced with this function call.
+    The cuSPARSE library is then linked with the object code produced by the
+    LLVM compiler, resulting in a speedup of $17\times$ on a GPU as described in
+    \autoref{sec:results}.
+
+    Central to our approach is the ability to detect idioms.
+    In the next section we introduce a powerful description language that is
+    capable of expressing a wide class of idioms that are suitable for
+    acceleration by heterogeneous hardware.
+
+\section{Idiom Description Language}
+\label{sec:idl}
+
+\begin{figure*}[t]
+    \input{latex/figure_idlbnf}
+    \label{fig:idlbnf}
+\end{figure*}
+
+    Any detection method needs to be robust and work on real code.
+    It should work in the presence of complex language features, such as the
+    standard library containers, operator overloading and class hierarchies in
+    C++, as well as the myriad different ways users can write the same, common
+    algorithms.
+
+    This rules out a syntactic approach.
+    To allow robust detection of complex idioms, we devised IDL, a domain
+    specific constraint language that operates on the SSA based LLVM IR.
+    In IDL, idioms are specified in a modular fashion, exploiting standard
+    compiler primitives such as types and data and control flow analysis.
+
+    IDL was developed with the aim of enabling analysis routines that are too
+    complex to directly implement by hand.
+    However, it is still targeted at compiler experts.
+    Writing and debugging IDL code is challenging, but the modularity mechanisms
+    make it very suitable for unit testing.
+    The full syntax specification of IDL in BNF notation is shown in
+    \autoref{fig:idlbnf}.
+
+    \paragraph{Terminals}
+    The symbols $\left<\text{\bf s}\right>$ and $\left<\text{\bf n}\right>$ in
+    the grammar correspond to arbitrary strings and positive integer literals
+    respectively, while  the $\left<\text{\tt specification}\right>$ top level
+    construct of the language binds an idiom definition to a name.
+    The significant  part of the language specification is everything covered by
+    $\left<\text{\tt constraint}\right>$.
+
+    \paragraph{Atomic Constraints}
+    All idiom definitions are eventually built up by combining atomic
+    constraints.
+    These correspond to basic boolean predicates that may hold for one or more
+    values in the IR.
+    The atomic constraints describe standard properties within the IR.
+    Control flow in our model is evaluated on the granularity of instructions.
+    This is to reduce the size of the language, there is no notion of basic
+    blocks.
+    For phi nodes, the incoming basic blocks are identified with their
+    terminating branch instruction.
+
+    \paragraph{Higher Level Constructs}
+    Atomic constraints can be combined with many higher level language
+    constructs.
+    The semantics of $\left<\text{\tt conjunction}\right>$ and $\left<\text{\tt disjunction}\right>$ correspond to AND, OR.
+    The $\left<\text{\tt inheritance}\right>$ inserts another idiom description
+    into the current one.
+    Idiom definitions can be parameterized in a way that is inspired by C++
+    templates with integers, allowing more concise descriptions.
+    The $\left<\text{\tt if}\right>$ constraint has the standard meaning.
+
+    The $\left<\text{\tt forall}\right>$ and $\left<\text{\tt forsome}\right>$
+    constructs provide range based versions of conjunction and disjunction.
+    The contained constraint formula is duplicated for each index in the
+    provided range and the contained variable names are modified according to
+    the index (i.e.\ if the index occurs in a variable name, it is substituted
+    with the current iteration value).
+    The duplicated formulas are then combined with conjunctions or disjunctions
+    respectively.
+
+    To allow modularity, complementing the inheritance feature, there are two
+    mechanisms to change the variable names in the contained constraint
+    specification.
+    With $\left<\text{\tt rename}\right>$, the translation of variable names is
+    done with a simple dictionary, where every variable that is not explicitly
+    mentioned in the dictionary remains unchanged.
+    The $\left<\text{\tt rebase}\right>$ has the same behaviour for variables in
+    the dictionary, but for every other variable, a prefix is added to the
+    variable name.
+
+    The $\left<\text{\tt collect}\right>$ construct is more powerful.
+    It is used to capture all possible solutions of a given constraint for
+    expressions that require the logical $\forall$ quantifier.
+    For example, it can be used to collect all affine array accesses in a loop.
+
+\section{Specification of Idioms in IDL}
+\label{sec:idioms}
+
+    The specification of computational idioms in IDL requires a careful
+    handling of the arising complexity, using the modularity functionality that
+    IDL provides.
+
+    Control flow constructs, memory access patters as well as basic data flow
+    patterns are specified independently and then combined together in order to
+    define the complete constraint specifications.
+
+
+\section{Basic Control Flow Structures}
+
+    The most basic control flow structure that is needed for expressing
+    computational idioms is the single entry single exit (SESE) region.
+    \autoref{candl_sese} shows the specification, which contains some
+    non-obvious considerations.
+
+\begin{figure}[h]
+\begin{lstlisting}[language=CAnDL]
+Constraint SESE
+( {precursor} is branch instruction and
+  {precursor} has control flow to {begin} and
+  {end} is branch instruction and
+  {end} has control flow to {successor} and
+  {begin} control flow dominates {end} and
+  {end} control flow post dominates {begin} and
+  {precursor} strictly control flow dominates {begin} and
+  {successor} strictly control flow post dominates {end} and
+  all control flow from {begin} to {precursor} passes through {end} and
+  all control flow from {successor} to {end} passes through {begin})
+End
 \end{lstlisting}
-\vspace{-0.5em}
-\caption{LiLAC uses code from \autoref{cudaread} to define three functions that
-         specialize the ReadObject template, which uses \texttt{mprotect} for
-         memory protection internally.}
-\label{templatecode}
+\caption{Single Entry Single Exit Regions}
+\label{candl_sese}
 \end{figure}
 
-\subsection{LiLAC-How}
-To generate harnesses, LiLAC uses C++ templates.
-The LiLAC-How syntax elements that take C++ code are used to generate
-generic functions, and template parameter deduction inserts concrete types later.
+    The necessity for {\tt begin} and {\tt end} is clear, these are the
+    instructions that bound the SESE region.
+    The other two variables are equally important, as they define the two
+    crucial edges in the control flow.
+    The edge from {\tt precursor} to {\tt begin} is the
+    single entry and the edge from {\tt end} to {\tt sucessor} is the single
+    exit of the SESE region.
 
-Consider \autoref{templatecode}, generated from LiLAC-How code in
-\autoref{cudaread}.
-The correspondence between generated C++ and LiLAC-How code is clearly visible
-in the three functions that contain the source code specified in LiLAC-How.
-These functions are used to specialize the {\em ReadObject} class template.
-It guarantees the following properties using hardware memory protection:
+    Lines 6 and 7 ensure that {\tt begin} and {\tt end} acually span a region of
+    code in the sense that the control flow will always reach {\tt begin} before
+    {\tt end} and will always eventually reach {\tt end} after passing through
+    {\tt begin}.
+    This is complemented by lines 10 and 11, which guarantee that the region can
+    only be left once after it is entered and can only be entered once before it
+    has to be left.
+    Lines 3 and 8 ensure that {\tt precursor} is in fact the only instruction
+    that reaches {\tt begin} from outside the region, lines 4 and 9 check the
+    corresponding property for {\tt sucessor}.
+    Lines 2 and 4 add as an additional constraint that the SESE region has to be
+    aligned to basic block boundaries.
 
-    \noindent
-    {\bf {\em construct}} is called before the first invocation and when
-    \texttt{in} or \texttt{size} change for consecutive harness invocations.
+\section{Loop Structures}
+    Building on top of the SESE region, \autoref{candl_loop} presents the CAnDL
+    specification of a basic loop structure.
+    Using the CAnDL description of a SESE region, this is a very simple
+    definition: A Loop is simply a SESE region with a backedge.
 
-    \noindent
-    {\bf {\em update}} is called after {\em construct} and whenever any of the
-    data in the array changes between consecutive harness invocations.
+\begin{figure}[h]
+\begin{lstlisting}[language=CAnDL]
+Constraint Loop
+( inherits SESE and
+  {end} has control flow to {begin})
+End
+\end{lstlisting}
+\caption{Loop in CAnDL}
+\label{candl_loop}
+\end{figure}
 
-    \noindent
-    {\bf {\em destruct}} is called in between consecutive {\em construct}
-    calls and before the program terminates.
+    More interesting are for loops with well behaved interation spaces.
+    They are distinguished by a specific kind of breaking condition that is
+    based on an induction variable reaching a limit value, which can be
+    expressed in CAnDL using a set of further constraints shown in
+    \autoref{candl_forloop}.
 
-% \paragraph{Multi-version profitability analysis}
-% For most platforms there will be multiple libraries available
-% implementing the same functionality. While we have moved the burden of
-% using a DSL to accelerate from the user to the library vendor, we
-% would also like to automate the selection of which library to use
-% which may change over time and per application.
+\begin{figure}[h]
+\begin{lstlisting}[language=CAnDL]
+Constraint ForLoop
+( inherits Loop at {loop} and
+  inherits InductionVar
+      with {iterator}  as {old_ind}
+       and {increment} as {new_ind} at {loop} and
+  {iter_begin} has data flow to {iterator} and
+  inherits LocalConst
+      with {iter_begin} as {value}
+       and {loop.begin} as {begin} and
+  inherits OffsetAdd
+      with {increment} as {value}
+       and {iterator}  as {base}
+       and {iter_step} as {offset} at {loop} and
+  {comparison} is first argument of {loop.end} and
+  inherits RangeCheck
+      with {comparison} as {value}
+       and {increment}  as {input}
+       and {iter_end}   as {limit} at {loop} and
+End
+\end{lstlisting}
+\caption{For Loop in CAnDL}
+\label{candl_forloop}
+\end{figure}
 
-% Ideally, we would ask each library implementation to provide a model
-% that predicts how good it will perform on certain data input. We would then
-% ask each model its predicted performance and select the best. This would enable
-% new libraries to be easily added.
-% However, as such models are not currently available, we develop a simple
-% prototype classifier for each platform, which given the 
-% data input dynamically  selects the best library to use. We evaluate 
-% this in the results section.
+    As opposed to the previous CAnDL programs, this one makes extensive use of
+    the modularity and simply binds together a range of simpler construct into
+    a high level definition.
+    Several additional variables are introduced: {\tt increment} is instruction
+    that increased the value of the {\tt iterator} for the next iteration using
+    the offset {\tt iter\_step}.
 
-\subsection{FORTRAN}
-Compatibility with Fortran was a key implementation hurdle. 
-The LLVM frontend under active development, flang, is in an unfinished state and
-produces unconventional LLVM IR code by default.
-Significant additional work was required to normalize the IR code.
-We developed normalization passes in LLVM to overcome the specific
-shortcomings, enabling Fortran programs to be managed as easily as C/C++.
+    With the definition of IDL, we can now specify idioms.
+    The complete set of idioms used in this paper comprises of $\approx$500
+    lines of code.
+    Due to space restrictions, we first show a simple constraint that we rely
+    on -- single entry, single exit regions -- and then describe the top level
+    constraints for each idiom.
 
-% flang utilizes the codebase from the PGI Fortran compiler.
-% In effect, the PGI compiler parses the source code and generates intermediate
-% representation code.
-% This is then parsed and translated into LLVM IR code.
-    The problems that we encountered included: the differing indexing
-    conventions required offsetting pointer variables on a byte granularity with
-    untyped pointers;
-    Pointer arguments are passed untyped, obfuscating the intermediate
-    representation types to \texttt{i64} pointers, frequently necessitating a
-    pointer type conversion followed by a load from memory;
-    obfuscated loops with additional induction variable that counts down instead
-    of up such that the standard LLVM \textbf{indvars} pass is unable to merge
-    the loop iterators.
+\subsection{Building Blocks}
 
+    Before any algorithmic idiom can be specified, we need some basic control
+    flow constructs.
+    The most fundamental is the single entry single exit region (SESE)
+    \cite{johnson1994program} which is used amongst other things to determine
+    loop bodies.
+    A SESE region is a part of code spanned by two instructions $A$ and $B$ such
+    that $A$ dominates $B$, $B$ postdominates $A$ and every cycle containing
+    either $A$ or $B$ also contains the other.
+    It is defined in \autoref{fig:sese}.
 
-%\paragraph{Implementation Status} 
-%The LiLAC language, parser and scheme to detect and replace appropriate code
-%with optimized calls to harness functions is fully implemented in the LLVM
-%framework and available in the LLVM-based C/C++ compiler clang.
-%The FORTRAN normalization code is implemented as an LLVM optimization pass.
+    Using simple building blocks such as SESE, we can define more complex
+    control structures such as loops and important memory access patterns such
+    as matrix reads.
+    From this we build powerful idiom definitions that capture complex
+    computational patterns that can include arbitrary control flow.
 
+\subsection{Full Idiom Definition}
+
+    The generalized matrix multiplication idiom is described in
+    \autoref{fig:gemm}.
+    The control flow is captured by three nested for loops.
+    Inside these loops, the memory access is characterized by three matrix
+    accesses, each with a different subset of the loop iterators.
+    The corresponding \texttt{MatrixRead} and \texttt{MatrixWrite} idioms model
+    generic access to matrices allowing strides, transposed matrices etc.
+    The actual computation is encapsulated by the \texttt{DotProductLoop} idiom.
+    This also contains the linear combination with factors \texttt{alpha} and
+    \texttt{beta} that is part of the generalized matrix multiplication.
+
+    \autoref{fig:histogram} shows the generalized histogram idiom.
+    It is contained in a for loop and the basic memory access pattern is a
+    read-modify-write to a bin array.
+    This memory access can be conditional as long as the condition is well
+    behaved, which is guaranteed by the later
+    \texttt{KernelFunction} idiom.
+    The histogram uses input data that is read from input arrays using the loop iterator as a base index (that can be
+    strided, offset etc.).
+    Finally there are two well behaved kernel functions in a histogram, one to compute the access index and one to compute
+    the updated value.
+
+The sparse matrix vector multiplication defined in \autoref{fig:spmv} is different to the other idioms in that
+the control flow of the skeleton of the idiom does not consist of perfectly nested for loops.
+Instead, the iteration space of the inner loop is read from an array using the \texttt{ReadRange} idiom.
+The actual computation that SPMV performs is a dot product and thus it uses the same \texttt{DotProductLoop} idiom as
+\texttt{GEMM} but the memory access pattern is different, with indirect memory access in \texttt{indir\_read}.
+
+    \autoref{fig:stencilcompute} shows the basic stencil idiom.
+    Stencils consist of a loop nest with a multi-dimensional memory access to
+    store the updated cell value.
+    This updated value is computed with a kernel function using a number of
+    values that are constraint by the
+    \texttt{StencilRead} idiom, which specifies multidimensional array access
+    with only constant offsets in all dimensions.
+
+The scalar reduction idiom is specified in \autoref{fig:scalarreduction}.
+Its structure is similar to the histogram idiom, but instead of a read-modify-write memory access
+it operates on an induction variable that is implemented with the \texttt{InductionVar} idiom.
+
+\subsection{Not Syntactic Pattern Matching}
+The idiom descriptions may at first appear to be shallow syntactic pattern matching.
+In fact, because it operates on the IR level, it can detect idioms that are written in superficially distinct style but are semantically equivalent.
+For example, there are two syntactically distinct programs in \autoref{fig:gemmexamples}, which in fact are both implementations of general matrix multiplication.
+The IDL in \autoref{fig:gemm} discovers they are both instances of GEMM and they can both be replaced with an API call to GEMM.
+
+\begin{figure}[ht]
+\begin{lstlisting}[numbers=none,basicstyle=\linespread{1.133}\footnotesize\ttfamily]
+for (int mm = 0; mm < m; ++mm) {
+  for (int nn = 0; nn < n; ++nn) {
+    float c = 0.0f;
+    for (int i = 0; i < k; ++i) {
+      float a = A[mm + i * lda]; 
+      float b = B[nn + i * ldb];
+      c += a * b;
+    }
+    C[mm+nn*ldc] =
+        C[mm+nn*ldc] * beta + alpha * c;
+  }
+}
+\end{lstlisting}
+\vspace{1em}
+\begin{lstlisting}[numbers=none,basicstyle=\linespread{1.133}\footnotesize\ttfamily]
+for(int i = 0; i < 1000; i++)
+    for(int j = 0; j < 1000; j++) {
+        M3[i][j] = 0.0f;
+        for(int k = 0; k < 1000; k++)
+           M3[i][j]+=M1[i][k]*M2[k][j]; }
+\end{lstlisting}
+\vspace{-0.3cm}
+\caption{Two matching instances of GEMM}
+\label{fig:gemmexamples}
+\end{figure}
+
+    There are limitations to this semantic matching.
+    In particular, the use of low level manual optimizations that circumvent the
+    usual IR representation, {\em e.g.}  SIMD compiler intrinsics, would distort
+    the algorithms beyond recognition by our system.
+    In practice, this is rarely encountered.
+
+\input{latex/figure_idioms}
+
+\subsection{Compilation Process and Implementation}
+\label{sec:compilation}
+
+    Idiom definitions are compiled to C++ functions that perform idiom
+    recognition on LLVM IR.
+    In a first step, the compiler eliminates
+    $\left<\text{\tt inheritance}\right>$, $\left<\text{\tt forall}\right>$,
+    $\left<\text{\tt forsome}\right>$, $\left<\text{\tt if}\right>$,
+    $\left<\text{\tt rename}\right>$ and $\left<\text{\tt rebase}\right>$.
+    They are replaced with simpler $\left<\text{\tt conjunction}\right>$ and
+    $\left<\text{\tt disjunction}\right>$ constructs.
+    This also involves removing all parameterizations from the formula and
+    flattening all variable names.
+    Next, variables are collected and ordered to assist constraint solving.
+    The ordering impacts performance, as it determines how well the search space
+    is pruned. 
+    For each variable, all the constraints associated with the variable are
+    assembled.
+
+    The compiler then emits C++ code which is passed to a generic solver based on \cite{ginsbach2017discovery} to search for idiom instances.
+    This solver is based on standard backtracking.
+    As shown in the results section, this increases compilation time, but the overhead is modest.
+
+\section{Targeted Heterogeneous APIs}
+
+    After idiom detection, we must transform the user program to exploit the
+    relevant API.
+    Two types of heterogeneous APIs are currently targeted: libraries and domain
+    specific languages with their optimizing compilers.
+
+    \subsection{Domain Specific Libraries}
+    Libraries provide narrow interfaces but are often highly optimized.
+    For example, the cuBLAS library is only suitable for a limited set of dense
+    linear algebra operations and only works on Nvidia GPUs, but its
+    implementation provides outstanding performance.
+    For sparse linear algebra we use the vendor provided cuSPARSE, clSPARSE, and
+    MKL libraries.
+    For dense BLAS routines cuBLAS, clBLAS, CLBlast, and MKL are used.
+
+    \subsection{Domain Specific Code Generators}
+    Domain Specific Languages provide wider interfaces than libraries and allow
+    problems to be expressed as composition of dedicated language constructs.
+    An optimizing compiler then specializes the program for the target hardware.
+    We currently support Halide and Lift as domain specific code generators.
+
+    \paragraph{Halide}~\cite{Ragan-Kelley2013Halide} is a language and
+    optimizing compiler targeted at image processing applications.
+    Optimized code is generated for CPUs as well as GPUs.
+    Halide separates the functional description of the problem from the
+    description of the implementation which is called a \emph{schedule}.
+    This allows retargeting of Halide programs to different platforms.
+    We translate some of the stencil idioms and linear algebra idioms into
+    Halide.
+    Stencils involving control flow in their computations are not easily
+    expressible in Halide.
+
+    \paragraph{Lift}~\cite{steuwer15rewrite, SteuwerRD17, HagedornSSGD18} is an
+    optimizing code generator based on rewrite rules.
+    The Lift language consists of functional parallel patterns such as
+    \emph{map} and \emph{reduce} which  express a range of parallel
+    applications.
+    For this work we translate stencil idioms, complex reductions and linear
+    algebra idioms to Lift.
+
+\section{Translating Computational Idioms}
+
+    This section describes how the detected idioms are mapped to the previously
+    described library APIs domain specific languages.
+    The two types of APIs (library interfaces and domain specific languages) are
+    treated individually.
+
+\subsection{Library}
+
+    For library call interfaces, the original code is removed and an appropriate
+    function call is inserted.
+    The solution that is generated by the solver using the IDL program contains
+    both the IR instructions to remove as well as the arguments that are to be
+    used for the function call.
+
+    For example, in the case of the {\tt GEMM} program that was shown in
+    \autoref{fig:gemm}, the original code is removed by deleting the IR
+    instruction at {\tt output.store\_instr} explicitly, which captures the
+    store instruction of the {\tt MatrixStore} subprogram.
+    The remaining cleanup is left to the standard dead code elimination pass.
+    The arguments that specify the matrix dimensions are taken from
+    {\tt ForNest} in combination with the stride and offset determined by
+    {\tt MatrixRead} and {\tt MatrixWrite}.
+
+    The mapping of solution variables to the arguments of the generated function
+    call needs to be implemented individually for each backend, as we have no
+    way to describe it in IDL itself.
+    Once the code is replaced, LLVM continues with code generation as usual.
+
+\subsection{DSL}
+
+    For domain specific languages, the situation is a bit more involved.
+    Reduction, histogram and stencil idioms are higher order functions that
+    contain a kernel function or reduction operator that has to be represented
+    for the DSL.
+
+    For each combination of idiom and DSL there is a parameterized
+    skeleton program.
+    This skeleton is then specialized for the appropriate data types and numeric
+    parameters as well as the kernel function or reduction operator.
+
+    Numerical parameters are picked from the constraint solution in the same way
+    that was described previously for library call interfaces.
+    Also from the constraint solution, we have the loop body that contains the
+    kernel function or reduction operator, as well as the input values and the
+    result value used.
+    We use this information to cut out the kernel function that is then used to
+    generate code appropriate for the DSL backends:
+
+\paragraph{Lift}  expects stencil kernels or reduction operators to be sequential C code with a specific function interface that
+is used internally by Lift when generating OpenCL code.
+We therefore implemented a rudimentary LLVM IR to C backend for generating this function.
+
+\paragraph{Halide} is a language embedded in C++, it requires a syntax tree of the kernel functions built using a class hierarchy.
+
+\begin{figure}[ht]
+\begin{lstlisting}[language=C,escapechar=|]
+float mult(float x, float y) { return x*y; }
+float add(float x, float y) { return x+y; }
+
+gemm_in_lift(A, B, C, alpha, beta) {
+ map(fun(a_row, c_row) {
+  map(fun(b_col, c) {
+   map(fun(ab){ add(mult(alpha, ab), mult(beta, c))},
+    |\label{line:dot}|reduce(add, 0.0f, map(mult, zip(a_row, b_col))))
+  }, zip(transpose(B), c_row))
+ }, zip(A, C))
+}
+\end{lstlisting}
+\vspace{-.3cm}
+\caption{Example of matrix multiplication in Lift.}
+\label{fig:liftmxm}
+\vspace{-1em}
+\end{figure}
+
+\paragraph{}
+After code for the DSLs is generated, it is passed to the DSL code generator.
+\autoref{fig:liftmxm} shows an example of the Lift code generated for GEMM (\texttt{gemm\_in\_lift}).
+It performs a dot product (expressed in line~\ref{line:dot} using the Lift skeletons \texttt{zip}, \texttt{map}, and \texttt{reduce}) for each row of matrix A (\texttt{a\_row}) and column of matrix B (\texttt{b\_col}).
+This code is compiled by Lift into optimized OpenCL code.
+
+Finally, we again replace the idiom code in the user's code with a call to the code generated by the DSL and continue once again with LLVM code generation.
+
+\subsection{Aliasing}
+
+    Since idiom detection works statically, we are unable to fully rule out
+    aliasing of pointers, which can make transformations unsound.
+    For dense linear algebra this is easily solved with some basic run time
+    checks for non-overlapping memory.
+    However, for sparse linear algebra this is not as straightforward and in
+    corner cases our approach is unsound.
+    In practice this did not cause problems on any of the benchmark programs,
+    however this means that optimizations based on these techniques will have to
+    provide appropriate feedback to the programmer.
 
 \section{Experimental Setup}
-\label{sec:experimentalsetup}
 
-    We wrote short LiLAC programs for a collection of linear algebra libraries.
-    The approach was then applied to a chemical simulation application, two
-    graph analytics applications and a collection of standard benchmark suites.
+    \paragraph*{Benchmarks}
+    We applied our approach to all of the sequential C/C++ versions of the NAS
+    Parallel Benchmarks.
+    We use the SNU NPB implementation by the Seoul National University,
+    containing the original 8 NAS benchmarks plus two of the newer unstructured
+    components UA and DC.
+    We also evaluated our approach on all Parboil benchmarks, giving 21 programs
+    in total. 
 
-\vspace{0.25em}
-\noindent
-{\bf\em Libraries\ }
-    We selected four different libraries for sparse linear algebra functions.
-    These were: Intel MKL \cite{mkl}, Nvidia cuSPARSE \cite{cusparse}, clSPARSE
-    \cite{clsparse} and SparseX \cite{sparsex}.
-    MKL is a general-purpose mathematical library designed to provide
-    easy-to-integrate performance primitives, while clSPARSE and cuSPARSE are
-    OpenCL and CUDA implementations of sparse linear algebra designed to be
-    executed on the GPU and SparseX uses an auto-tuning model and code
-    generation to optimize sparse operations on particular matrices.
+    \paragraph*{Platform and Evaluation}
+    We use an AMD A10-7850K APU with a multi-core CPU and an integrated Radeon
+    R7 GPU on the same die using driver version 1912.5, as well as an Nvidia GTX
+    Titan X as an external GPU using driver version 375.66.
+    We report the median runtime of 10 executions for each program.
 
-\vspace{0.25em}
-\noindent
-{\bf\em Applications\ }
-To evaluate the impact of LiLAC in a real world context, the
-\textsc{pathsample} physical chemistry simulation suite was used.
-This is a large
-FORTRAN legacy application \citep{doi:10.1080/00268970210162691} consisting of
-over 40,000 lines of code.
-Recent work shows that applications in this area are amenable to acceleration
-using sparse linear algebra techniques \cite{SUTHERLANDCASH2017288}, and
-\textsc{pathsample} provides a useful example of this.
-We also evaluated two modern C++ graph analytics kernels (BFS and PageRank
-\cite{demetrescu2009shortest,Beamer2015GAP}).
-\textsc{pathsample} was run in two different modes and three different levels of
-pruning, in each case using a system of 38 atoms \cite{doi:10.1063/1.478595}
-commonly used to evaluate applications in this domain.
-The graph kernels were run against 10 matrices from the University of Florida's
-sparse matrix collection from \citet{Davis:2011:UFS:2049662.2049663}, with sizes
-between 300K and 80M non-zero elements.
+    \paragraph*{Alternative detection approaches}
+    \hspace{0.2cm}There are no easily available compilers to compare against
+    that perform idiom detection.
+    Instead, we consider two parallelizing compilers and examine
+    whether they detect idioms as part of their parallelization approach.
+    As their goal is parallelization and not idiom detection, this should be
+    borne in mind in the results section.
 
-\vspace{0.25em}
-\noindent
-For completeness and validation that our LiLAC-generated implementations were
-correct, we also applied our technique to sparse codes from standard benchmark
-suites: CG from the NAS parallel benchmarks \cite{Bailey1991NPB}, spmv from
-Parboil \cite{Stratton2018} and the Netlib sparse benchmark suites
-\cite{Dongarra2001}.
-Each benchmark suite was run using their supplied inputs.
+    Polly \cite{Doerfert2015Polly} is an LLVM based polyhedral compiler
+    capable of finding parallel loops and reductions in static control
+    flow (SCoP) parts of programs.  This allows comparison against
+    another approach that uses the same compiler infrastructure.
+    We gathered the SCoPs that Polly detected with the options
+    \texttt{-O3 -mllvm -polly -mllvm -polly-export} and manually inspected
+    the reported SCoPs for stencil like parallel loops and reduction operations.
+    When Polly captured such a loop as a SCoP, we counted it as an idiom
+    detection, although Polly itself has no concept of idioms.
+    This gives an optimistic estimate as to what idiom coverage a polyhedral
+    based approach can achieve.
 
-\paragraph{Platforms}
-
-We evaluated our approach across 
-%5
-3  different machines with varying hardware
-performance and software availability. Each one was only compatible with a
-subset of our LiLAC-generated implementations---a summary of these machines is
-given in \autoref{tab:hardware}.
-
-%% MOB assume we have only 3 machines?????
-% intel0 = monaco
-% intel1 = avus
-% intel2 = spa
-% amd0 = michel
-% amd1 = bob
-
-\makeatletter
-\newcommand{\IntelBig}{\bBigg@{5}}
-\newcommand{\AMDBig}{\bBigg@{3}}
-\newcommand{\AMDSmall}{\bBigg@{2}}
-\makeatother
-
-\begin{table}[t]
-  \begin{tabularx}{\columnwidth}{cXl}
-    \textbf{Name} & \textbf{Hardware} & \textbf{Libraries} \\
-    \toprule
-    \toprule
-    Intel-0 & 2$\times$ Intel Xeon E5-2620 \newline Nvidia Tesla K20 GPU
-           & \multirow{4}{*}[-0.3em]{
-                \begin{tabular}{l} 
-                  MKL \\ 
-                  cuSPARSE \\
-                  clSPARSE \\
-                  SparseX
-                \end{tabular}
-              }\\[1.5em]
-    Intel-1 & Intel Core i7-8700K \newline Nvidia GTX 1080 GPU 
-           & \\[.8em]
-    \midrule
-    AMD & AMD A10-7850K \newline AMD Radeon R7 iGPU \newline Nvidia Titan X GPU 
-         & \multirow{3}{*}{
-              \begin{tabular}{l}
-                cuSPARSE \\
-                clSPARSE $\times 2$\\
-                SparseX
-              \end{tabular}
-            }\\[1.8em]
-  \end{tabularx}
-\vspace{0.5em}
-  \caption{Evaluated platforms and library harnesses;
-           AMD-0 supports clSPARSE on both its internal and its external GPU.}
-  \label{tab:hardware}
-\end{table}
-
-% \begin{enumerate}
-%   \item Does our approach reliably speed up the execution of code across a
-%     variety of platforms with different hardware and software availability?
-%   \item Are the speedups we achieve automatically comparable to those achievable
-%     using best-in-class manual approaches?
-%   \item How important are the lazy computation elements of our approach to the
-%     performance gains achieved?
-%   \item Can the fastest implementation available on a particular platform be
-%     accurately and efficiently chosen at runtime?
-%   \item How effective is our approach at discovering instances of code that can
-%     be run using accelerated implementations?
-% \end{enumerate}
+    The Intel C++ Compiler (ICC) is a mature industry strength compiler that
+    provides a detection mechanism for parallelizing reduction idioms based on
+    data dependency analysis.
+    We use the \texttt{-parallel -qopt-report} command line options and checked
+    in the optimization report files whether the corresponding loop is
+    considered parallelizable.
 
 \section{Results}
-\label{sec:results}
 
-We show that across a variety of hardware and software platforms, LiLAC can
-speed up real-world applications.
-We present raw performance impact first, then we analyze two intermediate
-metrics: the reliability of linear algebra discovery and the effectiveness of
-memory transfer optimizations.
-
-\subsection{Performance}
+    We first evaluate how often our approach is able to detect idioms and its
+    compile time cost.
+    We then investigate the runtime coverage of the idioms to see where
+    exploitation might be beneficial.
+    Where runtime coverage is substantial, we report speedups over sequential C
+    code and compare the performance of each of the targets APIs.
+    We also compare against the handwritten OpenMP and OpenCL implementations
+    that are included with the benchmark suites as reference implementations.
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\linewidth]{figures/baseline.pdf}
-  \includegraphics[width=\linewidth]{figures/baseline_bench.pdf}
-\\[-0.75em]
-  \caption{Evaluation on real-world application code and well-known benchmark
-          suites:
-           Bars show geometric mean speedup of best-performing LiLAC harness across the
-           set of input examples for each benchmark and platform. }
-  \label{spmv_app_perf}
+  \includegraphics[width=\textwidth]{figures/asplosplots/detection.pdf}
+  \caption{The different computational idioms found in all benchmarks.}
+  \label{detection-figure}
+\end{figure*}
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/asplosplots/coverage.pdf}
+  \caption{Runtime coverage of the detected idioms in all benchmarks.}
+  \label{coverage-figure}
+  \vspace{0.5em}
 \end{figure*}
 
-The speedups that LiLAC achieves on real applications as well as benchmarks are
-shown in \autoref{spmv_app_perf}.
-They range from $1.1$--$3\times$ on the scientific application codes to
-12$\times$ on well-known sparse benchmark programs.
+\subsection{Idiom Detection}
 
-On the \textsc{pathsample} applications (PFold and NGT), we measured
-consistent speedups of approximately 50$\%$ and 10$\%$ respectively across
-all 3 platforms.
-For large applications, Amdahl's law is a severe limitation for
-approaches like ours --- other parts of the applications dominate execution
-times when linear algebra is accelerated.
+    \autoref{tab:detection} shows the number of idioms found by our approach, Polly, and ICC.
+    Polly finds 3 scalar reductions and 6 stencils while ICC which just considers  scalar reduction finds 28.
+    Polly is unable to perform idiom specific optimizations on GEMM.
+    Other approaches do not detect any histograms or sparse matrix operations, because such code involves indirect and thus non-affine memory accesses.
+    This fundamentally contradicts assumptions that these tools rely on and is not merely an implementation artifact.
+    Our IDL approach detects 60 idioms overall with the compile time cost shown in figure \autoref{tab:compiletimecost}.
+    On average, the compilation time is increased by 82\%, which can be reduced further by optimizing the solver.
 
-PageRank requires a large number of SPMV calls using the same input matrix to
-iterate until convergence.
-The GPU implementations running on AMD and Intel-1 are able to take advantage of
-data remaining in memory.
-The larger number of CPU cores and slower GPU available on \mbox{Intel-0} make
-MKL its best-performing implementation.
-CPU implementations perform best on BFS by avoiding memory copies entirely
---- on AMD, SparseX outperforms GPU implementations.
+    \autoref{detection-figure} shows the different idioms detected across
+    the  benchmarks. We detect both scalar
+    and histogram reductions as well as stencils, dense matrix operations
+    and sparse matrix-vector multiplication.
+    Polly and ICC are only capable of detecting simple scalar
+    reductions, but we are able to detect histogram reductions, {\em e.g.} in
+    the \emph{histo} benchmark as well.  For stencils, Polly detects two
+    in \emph{lbm} and \emph{stencil} while our approach
+    detects all the stencils in \emph{lbm}, \emph{stencil} and \emph{MG}.
+    Unlike any existing approach, we detect sparse matrix-vector
+    operations in {\emph CG} and {\emph spmv} as well as dense matrix
+    operations in \emph{sgemm}. It is worth repeating, however, that both
+    Polly and ICC are parallelizing compilers, not idiom recognition
+    tools.
 
-On standard sparse linear algebra benchmarks, LiLAC achieves speedups of up to
-$12\times$.
-The impact is independent of the source language, as the C and FORTRAN versions
-of the Netlib benchmark demonstrate.
-LiLAC is able to achieve consistent, useful speedups across a variety of
-hardware configurations.
-
-    \autoref{fig:performance-distribution} demonstrates that achieving good
-    performance independent of the hardware platform is no small feat.
-    It shows the distribution of speedups on the NPB-CG benchmark across
-    different machines, problem sizes and linear algebra implementation.
-    More detailed performance data is in \autoref{tab:perf_data}.
-    The best-performing implementation varies considerably, depending on
-    characteristics of the problem in question.
-    No accelerator library performs well reliably, each harness outperforms
-    any other harness on some combination of data set and platform.
-    clSPARSE on the AMD iGPU is the only harness that is consistently
-    outperformed.
-
-\begin{table*}[t]
-  \centering
-  \footnotesize
-  \begin{tabular}{ll|ccc|ccc|ccc|ccc}
-    \multirow{2}{*}{\textbf{Platform}} &
-    \multirow{2}{*}{\textbf{Implementation}} &
-    \multicolumn{3}{c}{\textbf{PFold}} & \multicolumn{3}{c}{\textbf{NGT}} &
-    \multicolumn{3}{c}{\textbf{PageRank}} & \multicolumn{3}{c}{\textbf{BFS}} \\[-0.3em]
-    & & \hspace{0.8em}L0\hspace{0.8em} & \hspace{0.8em}L1\hspace{0.8em} & \hspace{0.8em}L2\hspace{0.8em}
-      & \hspace{0.8em}L0\hspace{0.8em} & \hspace{0.8em}L1\hspace{0.8em} & \hspace{0.8em}L2\hspace{0.8em}
-      & \hspace{0.35em}Erdos\hspace{0.35em} & LJ-2008 & \hspace{0.35em}Road\hspace{0.35em}
-      & \hspace{0.35em}Erdos\hspace{0.35em} & LJ-2008 & \hspace{0.35em}Road\hspace{0.35em} \\
-    \hline
-    \hline
-    \multirow{3}{*}{Intel-0} 
-    & MKL & 2.88 & 2.46 & 1.00 & 1.18 & 1.18 & 1.18 & 1.25 & 2.93 & 1.72 & 2.50 & 1.06 & 1.05 \\[-0.3em]
-    & cuSPARSE & 0.75 & 0.60 & 0.45 & 0.66 & 0.66 & 0.66 & 1.39 & 1.00 & 3.32 & 0.87 & 1.74 & 1.28 \\[-0.3em]
-    & clSPARSE & 0.90 & 0.75 & 0.46 & 0.81 & 0.79 & 0.78 & 1.24 & 0.95 & 2.24 & 0.13 & 1.45 & 0.07 \\[-0.3em]
-    & SparseX & - & - & - & - & - & - & - & - & - & 1.19 & - & - \\
-    \hline
-    \multirow{3}{*}{Intel-1}
-    & MKL & 2.70 & 2.43 & 1.01 & 1.20 & 1.20 & 1.19 & 1.63 & 1.03 & 2.26 & 1.06 & 2.09 & 1.27 \\[-0.3em]
-    & cuSPARSE & 0.48 & 0.41 & 0.30 & 0.68 & 0.69 & 0.68 & 1.59 & 0.87 & 4.44 & 1.01 & 1.83 & 1.63 \\[-0.3em]
-    & clSPARSE & 1.00 & 1.00 & 1.00 & 1.00 & 1.02 & 1.00 & 1.50 & 0.87 & 3.46 & 0.23 & 1.81 & 0.13 \\[-0.3em]
-    & SparseX & - & - & - & - & - & - & - & - & - & 1.25 & - & - \\
-    \hline
-    \multirow{4}{*}{AMD}
-    & cuSPARSE & 1.38 & 1.18 & 0.67 & 0.69 & 0.69 & 0.70 & 3.44 & 1.18 & 9.97 & 1.62 & 6.55 & 1.96 \\[-0.3em]
-    & clSPARSE (eGPU) & 2.17 & 1.82 & 1.22 & 1.16 & 1.16 & 1.16 & 3.08 & 1.24 & 6.06 & 0.50 & 11.03 & 0.24 \\[-0.3em]
-    & clSPARSE (iGPU) & 2.03 & 1.78 & 1.03 & 0.90 & 0.90 & 0.90 & 3.26 & 1.31 & 4.05 & 0.14 & 4.17 & 0.05 \\[-0.3em]
-    & SparseX & - & - & - & - & - & - & - & - & - & 1.93 & - & - \\
-  \end{tabular}
-\vspace{0.5em}
-  \caption{LiLAC speedups on each platform, across different applications and
-  problem sizes.
-  SparseX demonstrated promising performance on some applications, but we were
-  unable to evaluate on every relevant instance due to instability.}
-  \label{tab:perf_data}
-\vspace{-2em}
-\end{table*}
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\columnwidth,height=0.67\columnwidth]{figures/distribution.pdf}
-\\[-0.75em]
-  \caption{Distribution of speedups achieved by LiLAC on the NPB-CG benchmark.
-    Each column of points shows the speedup achieved by each implementation
-    available on a platform for a particular problem size. Data is sorted along
-  the $x$-axis by the best speedup in that column.}
-  \label{fig:performance-distribution}
-\end{figure}
-
-We verify that LiLAC can reach near-optimal performance, despite using general
-and portable harnesses, by comparing the achieved speedups with the performance
-of reference implementations.
-This was possible on the NPB and Parboil benchmarks, where expert hand
-crafted version are available that achieve close to peak performance.
-
-
-\autoref{tab:lilac-linesofcode} shows our results from these experiments.
-For context, we also measure application programmer effort for peak performance,
-which is substantial, requiring hundreds of lines of carefully crafted
-high performance OpenCL code.
-On the NPB-CG benchmark, we achieve $\sim 3\times$ speedup,
-while the expert implementation is approximately 3$\times$ faster than LiLAC.
-This is partly due to Amdahl's law --- the benchmark also performs operations
-other than sparse matrix-vector multiplication and the expert implementation is
-a complete rewrite that performs all these operations on the GPU.
-On Parboil SPMV, the difference between an expert and LiLAC is only
-1.07$\times$.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.9\columnwidth,height=0.5\columnwidth]{figures/expert.pdf}
-\\[0.5em]
-  \begin{tabular}{lrr}
-    \multirow{2}{*}{\textbf{Benchmark}} & \multicolumn{2}{c}{\textbf{Modified LoC}} \\
-    & LiLAC & Expert \\
-    \toprule
-    \toprule
-    NPB          & 0 (44) & 1948 \\
-    Parboil SPMV & 0 (44) & 261
-  \end{tabular}
-\\[0.45em]
-  \caption{LiLAC vs Expert: We achieve good performance with no application
-           programmer effort (measured as required LoC change).
-           LiLAC code to be written by library developers is in parentheses.
-           Amdahl's Law limits our impact on NPB.
-}
-  \label{tab:lilac-linesofcode}
-\end{figure}
-
-After moving the burden of targeting accelerators from the user to the
-library vendor with LiLAC, we would also like to automate the selection of which
-library to use.
-This may change over time and per application, as we saw in
-\autoref{fig:performance-distribution}.
-We have experimented with simple classifiers for each platform, that dynamically
-select the best library given the data input.
-This was straightforward to achieve for our problem space, but more data is
-needed for a meaningful evaluation, and we leave it to future work.
-
-
-\subsection{Effectiveness of Data Marshaling}
-Our implementation of LiLAC relies on a non-trivial data marshaling system that
-prevents redundant computations and memory transfers. We present performance
-results that show the importance and effectiveness of this system.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\columnwidth,height=0.67\columnwidth]{figures/marshall.pdf}
-\\[-0.75em]
-  \caption{LiLAC vs. na\"ive library calls without harnesses.
-           Avoiding memory transfers is necessary for performance.}
-  \label{fig:transfer-performance}
-\end{figure}
-
-We repeated our experiments, using the best-performing implementations from
-\autoref{spmv_app_perf}.
-Instead of using our data marshaling scheme, we transfer memory naively for
-each accelerator invocation.
-We then measured the performance advantage that our harness system gives us over
-this naive approach, results are in \autoref{fig:transfer-performance}.
-The GPU implementations received speedups of 1.4--3.5$\times$ and SparseX was
-sped up by over $25\times$ (because it performs an internal matrix tuning phase
-that is far more expensive than a memory copy).
-These speedups are large enough that in each case, the application would in fact
-have performed worse than their sequential baselines without performing data
-marshaling.
-
-\begin{table}[b]
+\begin{table}[t]
 \centering
-\caption{Sparsity does not fit the polyhedral model, Intel compilers fail to
-         parallelize and Polly is not available for FORTRAN.
-         Only LiLAC detects sparse linear algebra reliably.}
-\label{compareiccpolly}
-\vspace{-0.5em}
-\small
-\begin{tabular}{l|c|c|c}
-{\bf Benchmark}      & {\bf LiLAC}    & {\bf Polly}   & {\bf Intel icc/ifort} \\
-\hline
-\hline
-PFold          & CSR & - & parallel dependence \\[-0.3em]
-NGT            & CSR & - & parallel dependence \\[-0.3em]
-Parboil-SPMV   & JDS & no SCoP & parallel dependence \\[-0.3em]
-BFS            & CSR & no SCoP & parallel dependence \\[-0.3em]
-NPB-CG         & CSR & - & parallel dependence \\[-0.3em]
-PageRank       & CSR & no SCoP & parallel dependence \\[-0.3em]
-Netlib C       & CSR & no SCoP & parallel dependence \\[-0.3em]
-Netlib Fortran & CSR & - & parallel dependence \\
+  \footnotesize
+  \begin{tabular}{lP{2.16cm}P{2.16cm}P{2.16cm}P{2.163cm}P{2.163cm}}
+  \toprule
+  & Scalar\newline{}Reduction & Histogram\newline{}Reduction & Stencil & Matrix~Op. & Sparse\newline{}Matrix~Op.\\
+  \midrule
+  Polly &  3  &  --- &   5  &  --- & --- \\[0.25em]
+  ICC   &  28 &  --- &  --- &  --- & --- \\[0.25em]
+  IDL   &  45 &   5  &   6  &   1  &  3  \\
+  \bottomrule
 \end{tabular}
+
+  \vspace{.1cm}
+\caption{Idioms detected by IDL, ICC, Polly}
+\label{tab:detection}
+\vspace{-1em}
 \end{table}
 
-\subsection{Reliability of Discovery}
+\subsection{Runtime Coverage}
 
-    To achieve performance impact, LiLAC needs to reliably detect linear algebra
-    computations, independent of coding style and source programming language.
-    The results so far demonstrated that this works reliably and the data in
-    \autoref{compareiccpolly} reiterates this.
-    Established approaches, like the polyhedral model, on the otehr hand, are
-    unable to model sparse linear algebra.
-    We verified this with the Polly compiler and found that no SCoPs captured
-    sparse linear algebra.
-    This is unsurprising, as the basic assumptions of affine memory access are
-    contradicted by the indirection that is inherent in sparsity.
-    Similarly, the Intel icc and ifort compilers fail to auto-parallelize, as
-    they cannot reason about sparsity and have to assume additional dependencies
-    where sparse accesses occur.
+    To determine if the detected idioms are actually important,
+    \autoref{coverage-figure} shows the percentage of time spent in the detected
+    computational idiom.
+    This data shows that either the detected idioms have a low runtime
+    contribution or they dominate almost the entire execution.
+    \emph{EP} is the only exception where about 50\% of the runtime is spent
+    inside a detected histogram reduction.
+    We focus on the 10 programs which spend a significant amount of time in the
+    detected idioms, as only these can reasonably expect a performance gain
+    using our approach.
 
+\subsection{Performance Results}
+
+\addtolength{\tabcolsep}{-.3em}
+\begin{table}[t]
+  \scriptsize
+  \begin{tabular}{lcccccccccccc}
+  \toprule
+  & \hspace{.631mm}BT\hspace{.631mm}
+  & \hspace{.631mm}CG\hspace{.631mm}
+  & \hspace{.631mm}DC\hspace{.631mm}
+  & \hspace{.631mm}EP\hspace{.631mm}
+  & \hspace{.631mm}FT\hspace{.631mm}
+  & \hspace{.631mm}IS\hspace{.631mm}
+  & \hspace{.631mm}LU\hspace{.631mm}
+  & \hspace{.631mm}MG\hspace{.631mm}
+  & \hspace{.631mm}SP\hspace{.631mm}
+  & \hspace{.631mm}UA\hspace{.631mm}
+  & \hspace{.631mm}bfs\hspace{.631mm}
+  & \hspace{.631mm}cutcp\hspace{.631mm} \\
+  \midrule
+without IDL    & 1.9 & 0.5 & 1.0 & 0.3 & 0.6 & 0.3 & 1.9 & 0.8 & 1.6 & 2.7 & 0.4 & 0.4 \\[0.25em]
+with IDL       & 4.0 & 0.8 & 1.6 & 0.6 & 1.2 & 0.5 & 3.9 & 4.5 & 3.2 & 7.3 & 0.5 & 0.6 \\[0.75em]
+overhead in \% & 116 &  77 &  57 &  77 &  93 &  62 & 103 & 484 &  97 & 169 &  30 &  65 \\
+
+  \bottomrule
+\end{tabular}
+
+\vspace{2em}
+
+  \begin{tabular}{lccccccccc}
+  \toprule
+  & \hspace{0.530mm}histo\hspace{0.53mm}
+  & \hspace{0.530mm}lbm\hspace{0.530mm}
+  & \hspace{0.530mm}mri-g\hspace{0.530mm}
+  & \hspace{0.530mm}mri-q\hspace{0.530mm}
+  & \hspace{0.530mm}sad\hspace{0.530mm}
+  & \hspace{0.530mm}sgemm\hspace{0.530mm}
+  & \hspace{0.530mm}spmv\hspace{0.530mm}
+  & \hspace{0.530mm}stencil\hspace{0.530mm}
+  & \hspace{0.530mm}tpacf\hspace{0.530mm} \\
+  \midrule
+without IDL    & 0.2 & 0.3 & 0.2 & 0.2 & 0.4 & 0.6 & 0.3 & 0.2 & 0.2 \\[0.25em]
+with IDL       & 0.2 & 0.6 & 0.4 & 0.3 & 0.6 & 0.7 & 0.7 & 0.2 & 0.4 \\[0.75em]
+overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
+  \bottomrule
+\end{tabular}
+
+  \vspace{.1cm}
+\caption{Compile time cost in seconds}
+\label{tab:compiletimecost}
+\end{table}
+\addtolength{\tabcolsep}{+.3em}
+
+\paragraph*{Speedup vs. Sequential}
+\autoref{fig:speedup-figure} shows the end-to-end speedup obtained by accelerating idioms with heterogeneous APIs on a CPU, an integrated GPU, and an external GPU.
+All results include data transfer overhead to and from the GPUs.
+Here the best performing API is shown;
+\autoref{tab:detailed-results} provides detailed results  for all APIs. 
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/asplosplots/speedup_vs_sequential_wide.pdf}
+  \caption{Speedup compared to the sequential C program.
+           Results for the best performing heterogeneous API on each device are shown.
+           The red bars indicate a manual runtime optimization for avoiding unnecessary data transfers.}
+  \label{fig:speedup-figure}
+  \vspace{1.5em}
+  \centering
+  \includegraphics[width=\textwidth]{figures/asplosplots/comparison.pdf}
+  \caption{Speedup of our constraints based approach (executed on the best hardware and highlighted in red) compared to handwritten parallel OpenCL (executed on the GPU) and OpenMP (executed on the CPU) implementations.}
+  \label{fig:speedup-figure-2}
+  \vspace{0.5em}
+\end{figure*}
+
+\newlength{\txtwd}
+\newcommand{\msb}[1]{\settowidth{\txtwd}{#1}{\scriptsize\ttfamily\bfseries \hfill\tiny #1}}
+\newcommand{\ms}[1]{\settowidth{\txtwd}{#1}{\scriptsize\ttfamily \hfill\tiny #1}}
+
+\addtolength{\tabcolsep}{-.25em}
+\begin{sidewaysfigure*}[p]
+  \centering
+  \scriptsize
+  \begin{tabular}{l
+                  P{0.146cm}
+                  P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm}
+                  P{0.146cm}
+                  P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm}
+                  P{0.146cm}
+                  P{1.3cm} P{1.2cm} P{1.2cm} P{1.1cm}}
+  \toprule
+  & & \multicolumn{6}{c}{\bfseries\small CPU} & & \multicolumn{5}{c}{\bfseries\small iGPU} & & \multicolumn{4}{c}{\bfseries\small GPU} \\[0.5em]
+  & & MKL & libSPMV & Halide & clBLAS & CLBlast & Lift & & clSPARSE & libSPMV & clBLAS & CLBlast & Lift & & cuSPARSE & libSPMV & cuBLAS & Lift \\
+  \midrule
+  {\footnotesize CG} &  & \msb{1504.21} & --- & --- & --- & --- & --- & & \msb{644.02} & --- & --- & --- & --- &  & \msb{113.51} & --- & --- & --- \\[0.5em]
+  {\footnotesize EP} &  & --- & --- & --- & --- & --- &  \msb{32762.50} &  & --- & --- & --- & --- & \msb{30983.40}  & & --- & --- & --- & \msb{24680.70} \\[0.5em]
+  {\footnotesize IS} &  & --- & --- & \msb{426.95} & ---  & --- & \ms{1765.61} &  &  --- & --- & --- & --- & \msb{547.28}  & & --- & --- & --- & \msb{99.95} \\[0.5em]
+  {\footnotesize MG} &  & --- & --- & --- & --- & --- &  \msb{4699.63} &  & --- & --- & --- & --- & \msb{1439.58}  & & --- & --- & --- & \msb{2211.56} \\[0.5em]
+  {\footnotesize histo} &  & --- & --- & --- & --- & --- &  \msb{27.42} &  & --- & --- & --- & --- & \msb{17.20}  & & --- & --- & --- & \msb{19.54} \\[0.5em]
+  {\footnotesize lbm} &  & --- & --- & --- & --- & --- &  \msb{6457.93} &  & --- & --- & --- & --- & \msb{5335.09}  & & --- & --- & --- & \msb{590.60} \\[0.5em]
+  {\footnotesize sgemm} &  & \msb{53.50} & --- & --- & \ms{1661.75} & \ms{660.44} & \ms{1339.15} &  & --- & --- & \msb{14.73} & \ms{19.03} & \ms{15.04}  & & --- & --- & \msb{5.99} & \ms{7.87} \\[0.5em]
+  {\footnotesize spmv} &  & --- & \msb{218.17} & --- & --- & --- & --- & & --- &\msb{102.233} & --- & --- & --- & & --- &\msb{18.437} & --- &  ---\\[0.5em]
+  {\footnotesize stencil} &  & --- & ---& \msb{5760.81} & --- & --- & \ms{21951.80} &  & --- & ---& --- & --- & \msb{2261.48} &  & --- & ---& --- & \msb{279.38} \\[0.5em]
+  {\footnotesize tpacf} &  & --- & ---& --- & --- & --- & \msb{19276.40} &  & --- & ---& --- & --- & \msb{61111.90}  & & --- & ---& --- & \msb{23358.20} \\
+  \bottomrule
+\end{tabular}
+
+  \vspace{.2cm}
+\caption{Detailed performance results for each heterogeneous API used in milliseconds.
+         Fastest implementations for each benchmark and target hardware are highlighted in bold.}
+\label{tab:detailed-results}
+\end{sidewaysfigure*}
+\addtolength{\tabcolsep}{+.25em}
+
+    For five benchmarks we obtain moderate speedups from 1.26$\times$ for
+    \emph{histo} up to 4.5$\times$ for \emph{IS}.
+    All of these benchmarks besides \emph{MG} have a scalar or histogram
+    reduction as their performance bottleneck and are, therefore, not
+    computationally expensive.
+    Interestingly, we can see that for different benchmarks, different hardware
+    is beneficial:
+    for \emph{tpcaf}  the CPU is the best platform, beating the GPU  for which
+    the data transfer time dominates;
+    for \emph{MG} and \emph{histo} the integrated GPU strikes the right balance
+    between computational power while avoiding the movement of data to the
+    external GPU;
+    and, finally, for \emph{EP} and \emph{IS} the data transfer to the GPU pays
+    off exploiting the high GPU internal memory bandwidth.
+    These results emphasize the significance of heterogeneous code generation
+    flexibility.
+
+For five of the benchmarks we achieve significantly higher performance gains, from 17$\times$ for \emph{CG} and up to over 275$\times$ for \emph{sgemm}.
+These benchmarks are computationally expensive and the external GPU is always the fastest architecture by a considerable margin.
+
+The red highlighting in the plot indicates an important runtime optimization:
+redundant data transfers for the iterative \emph{CG}, \emph{lbm}, \emph{spmv} and \emph{stencil} benchmarks.
+All of these benchmarks execute computations inside a for loop and do not require access to the data on the CPU between iterations.
+We manually applied a straightforward lazy copying technique by flagging memory objects to avoid redundant transfers, similar to~\cite{jablin11automatic}.
+As can be seen this runtime optimization is crucial for achieving high performance for these benchmarks.
+
+\paragraph*{API performance comparison}
+\autoref{tab:detailed-results} shows a breakdown of the performance of each API on each program and platform.
+Not all APIs
+target all platforms, {\emph{e.g.} cuSPARSE only targets NVIDIA GPUs and in the
+case of Halide, the current version that we have access to failed to generate
+valid GPU code for any of the benchmarks we tried.
+The best performing API is highlighted in bold in the table entries.
+The \emph{spmv} benchmark uses an unusual sparse matrix format, so that we
+implemented a custom library libSPMV for this benchmark.
+
+On the multicore CPUs, the Intel MKL library gives the best linear algebra performance, outperforming the other libraries and Lift.
+Halide achieves good performance for the NPB \emph{IS} and Parboil \emph{stencil} benchmarks on the CPU, outperforming Lift due to its more advanced vectorization capabilities.
+In the programs where scalar reductions dominate, Lift performs well.
+On the iGPU, clBLAS provides a better matrix-multiplication implementation than either CLBlast or Lift.
+On the external GPUs, the libraries provide better linear algebra implementations, while Lift performs well on stencils and reductions.
+
+\paragraph*{Speedup vs. Handwritten Parallel Implementations}
+\autoref{fig:speedup-figure-2} shows the performance of our approach compared to hand-written reference OpenMP and OpenCL implementations.
+For some of the benchmarks, the parallel versions are significantly modified using different algorithms beyond the domain of automation.
+We can see that for benchmarks where the handwritten implementation does not make algorithmic changes (\emph{CG}, \emph{histo}, \emph{lbm}, \emph{sgemm}, \emph{spmv}, \emph{stencil}), we achieve comparable -- or better -- performance.
+For four benchmarks (\emph{EP}, \emph{IS}, \emph{MG}, and \emph{tpacf}) it is beneficial to parallelize the entire application -- which is beyond the scope of this paper. Future work will examine outer loop parallelism as an idiom to exploit.
+
+For the \emph{sgemm} and \emph{stencil} benchmarks we improved the baseline implementation provided by the benchmarks as these had extremely poor performance.
+A simple interchange of two loops improved performance by almost 20 times.
+
+\paragraph*{Summary}
+
+    60 idioms were detected across the benchmark suites and significant
+    performance improvements were achieved by targeting different heterogeneous
+    APIs for those benchmarks where idioms dominate execution time.
+
+\section{Related and Future Work}
+
+\paragraph*{Domain specific Languages}
+    Domain specific languages have received much attention in recent years,
+    ranging from SPIRAL \citep{ofenbeck13spiral}, a DSL for Fast Fourier
+    Transforms, over Lift \citep{steuwer15rewrite, SteuwerRD17,HagedornSSGD18}
+    to UFL \citep{Alnaes:2014:UFL:2594412.2566630}, a DSL for partial
+    differential equations.
+    Stencils in particular have received much attention
+    \citep{Mullapudi:2015:PAO:2694344.2694364,HagedornSSGD18}, the best known of
+    which is Halide \citep{Ragan-Kelley2013Halide}.
+    DSLs to exploit complex reductions are less studied.
+    \citet{Reddy2016Reduction} introduce a type of DSL via annotations
+    that allow expression of complex reductions.
+    This was based on the  Platform-Neutral Compute Intermediate Language by
+    \citet{baghdadi2015PENCIL}.
+    The Matrix multiplication idimos is well supported by
+    specific libraries \citep{clblas,mkl,cublas}.
+
+\paragraph*{Generation of Performance Portable Code for Heterogeneous Hardware}
+    Recent research has highlighted the challenges of generating code that
+    performs well on different heterogeneous hardware architectures.
+    PetaBricks~\cite{PhothilimthanaARA13} is one of the first languages to
+    address this performance portability challenge by encoding algorithmic
+    choices which are then empirically evaluated and automatically taken by the
+    compiler.
+    Similarly \cite{MuralidharanRHG16} explores automatic selection of code
+    variants using machine learning.
+    In a similar spirit, Lift~\cite{steuwer15rewrite} uses rewrite rules to
+    explore optimization choices automatically.
+
+\paragraph*{Functional Code Generation Approaches}
+    There exist multiple functional approaches for generating code for
+    heterogeneous hardware.
+    \citet{chakravarty11accelerating,mcdonell13optimising} propose Accelerate,
+    a domain specific language embedded in Haskell that generates efficient GPU
+    code.
+    Recently, \citet{collins14nova} introduced NOVA, a new functional language
+    targeted at code generation for GPUs, and Copperhead
+    \cite{catanzaro11copperhead}, a data parallel language embedded in Python.
+    Delite~\cite{brown11heterogeneous,chafi11domain} is a system that enables
+    the creation of domain-specific languages using functional parallel patterns
+    and targets multi-core CPUs or GPUs.
+    In contrast to these approaches, we require no rewriting of legacy programs.
+
+\paragraph*{Idiom Detection}
+    Idiom based optimization based on AST manipulation, as described by
+    \citet{Pinter:1994:POP:177492.177494}, has fallen out of fashion.
+    More systematic approaches based on static single assignment representation
+    \cite{lattner2004llvm} and polyhedral representations
+    \cite{benabderrahmane2010polyhedral} however were more recently
+    investigated.
+    They were largely based on syntactic pattern matching and not robust in the
+    presence of complex control and dataflow.
+    More recently, work by \citet{Andion2015Compilation} describes a compiler
+    based parallelization approach for heterogeneous computing, based on an
+    diomatic intermediate representation called KIR.  
+    It is not clear how such an approach would work on general C/C++ programs.
+
+\paragraph*{Stencils}
+    Stencil detection has been driven by the introduction of DSLs such as
+    Halide.  Helium \cite{Mendis2015Helium} tackles the challenging task
+    of detecting stencils in binary code. It relies
+    on dynamic analysis and cannot easily be extended to
+    other idioms.
+    Another closely related paper is \cite{Kamil2016Verified}, which detects stencils in FORTRAN by the
+    verified lifting of code segments to a representation that can be
+    mapped to Halide DSL.  It uses syntax guided synthesis to verify
+    translation with added constrains to ensure that it can be mapped to
+    Halide.
+    It however requires nested loops  without conditionals in well behaved FORTRAN
+    and in some cases requires user annotations.
+
+\paragraph*{Reductions}
+    Discovering and exploiting scalar reductions in programs has been
+    studied for many years based on dependence analysis and idiom detection
+     \cite{fisher1994parallelizing,pottenger1995idiom,suganuma1996detection}.
+    Alongside this data dependence based approach, there has also been a
+     large body of work exploring mapping of reductions in a
+     polyhedral setting \cite{jouvelot1989unified,redon1994scheduling}
+     The treatment of
+    more general reduction operations has received  less attention.
+    Work has focused on exploitation rather than discovery
+    \cite{Gutierrez:2000,gutierrez2003optimization,gutierrez2008analytical}, examining trade-offs in implementation \cite{yu2006adaptive}
+     or exploitation of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
+    Recent work \cite{ginsbach2017discovery} shows that more complex reductions can be 
+    detected, but this is tied to  an  ad~hoc non-portable code generation phase. 
+
+\paragraph*{Polyhedral Approaches}
+    Polyhedral compilers \cite{Baskaran:2010:ACC:2175462.2175482,Verdoolaege:2013:PPC:2400682.2400713} perform advanced loop optimizations and have been used for the generation of fast GPU kernels.
+    More recently, extensions to the polyhedral framework have been proposed, allowing it to capture reduction computations \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
+    Such efforts are described in \cite{Doerfert2015Polly}, but they are fragile in the presence of non static control flow.
+
+\paragraph*{Future Work}
+    Although idioms can be described concisely with IDL, we currently
+    have to implement a separate translation scheme for each API. While
+    much of the translation code is common, it would be preferable to have
+    an API description language similar to IDL that allows automatic
+    generation of API translators. This would allow rapid evaluation of
+    different APIs for the same idiom.
+
+    With a growing number of APIs and idioms, profitability heuristics
+    will become necessary to determine the best API to use for each
+    program and platform.  Machine learning approaches are an obvious
+    starting point as they easily adapt to changing targets.
+
+    This paper restricts its attention to five common idioms. Other idioms
+    such as graph processing can also be described. Given that IDL works on
+    the compiler IR, loop and function parallelism can also be
+    described as idioms.
+    In those cases where user codes do not quite match the platform API
+    and associated idioms, we can apply
+    program transformations to refactor or rejuvenate code to fit.
+
+    To be a robust approach to heterogeneous programming, we need to ensure correctness.
+    Syntax guided synthesis is a promising means of verifying the idiom translation.
+
+    It would be interesting  to see to whether our approach  could be used for binary optimization or  applied to 
+    heavily optimized and  complex code bases.
 
 \section{Conclusion}
-\label{sec:conclusion}
-% Sparse and dense linear algebra are critical workloads for many important
-% established applications and will only gain more significance with emerging
-% domains such as deep learning and AI.
 
-% Past experience has shown that acceleration solutions that require even limited
-% modifications of legacy source code hinder mainstream adoption.
-% Hence, the providion of custom APIs for new accelerator hardware is insufficient
-% to penetrate scientific computing outside of elite projects.
-% At the same time, entirely compiler based solution have failed to scale and
-% perform.
+    This paper develops a compiler based approach that automatically
+    detects a wide class of idioms supported by libraries or domain
+    specific languages for heterogeneous processors. This approach is
+    based on a constraint based description language that identifies
+    program subsets that adhere to idiom specifications.  Once
+    detected, the idioms are mechanically translated into API calls to
+    external libraries or code generated by DSL compilers.
 
-% We have demonstrated that our approach of compiler based detection coupled with
-% library based acceleration manages to combine the advantages of both, achieving
-% the full performance without requiring programmer intervention.
-% We showed that this scales to large scientific codes across multiple programming
-% languages.
+    The approach is robust and was evaluated on C/C++ versions of two well
+    known benchmark suites: NAS and Parboil. We detected more stencils,
+    sparse matrix operations and generalized reductions and histograms than
+    existing approaches and generated fast code.
 
-This paper has presented LiLAC, a language and compiler that enables existing
-code bases to exploit sparse (and dense) linear algebra accelerator libraries.
-No effort is required from the application programmer.
-Instead, the library implementer provides a few lines of specification, which
-LiLAC uses to  automatically and efficiently matches  user code to
-underlying high performance libraries.
-
-We demonstrated this approach on  C, C++ and FORTRAN benchmarks as well as
-legacy applications and shown significant performance improvement across
-platforms and data sets.
-Many language features of the LiLAC language could be repurposed for libraries
-beyond linear algebra.
-In future work, we will investigate how our framework could be adapted to other
-application domains, enabling effort free access to an even larger set of
-accelerator libraries.
+    Future work will extend the constraint formulation to consider other common
+    idioms.
+    As the number of idioms detected and of implementations available grows, a
+    smart profitability analysis will be needed and is the subject of future
+    work.
 
