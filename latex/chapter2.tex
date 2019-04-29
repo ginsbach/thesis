@@ -46,8 +46,8 @@
     \citep{Lerner:2005:ASP:1040305.1040335}, PEC
     \citep{Kundu:2009:POC:1543135.1542513} and Gospel
     \citep{Whitfield:1997:AEC:267959.267960}.
-    The CompCert tool by \citet{Mullen:2016:VPO:2908080.2908109} verifies peephole
-    optimizations directly on x86 assembly code and LifeJacket
+    The CompCert tool by \citet{Mullen:2016:VPO:2908080.2908109} verifies
+    peephole optimizations directly on x86 assembly code and LifeJacket
     \cite{Notzli:2016:LVP:2931021.2931024} proves the correctness of floating
     point optimizations in LLVM, as does Alive-FP \cite{Menendez2016}, which
     also generates C++ code.
@@ -144,96 +144,104 @@
     Unfortunately such restrictions prevent application to real world programs;
     none of our benchmarks or data sets have this structure.
 
-\paragraph*{Compiler detection}
-There has been previous work on
-detecting code structures in compilers using constraint programming.
-Early work was based on abstract computation graphs
-\cite{pinter1994program}, but more recent approaches have used real
-compiler intermediate code and made connections to the polyhedral
-model \cite{Ginsbach:2018:CDS:3178372.3179515}.
+\subsction{Compiler detection}
 
-In \cite{Ginsbach:2018:AML:3173162.3173182} they implement a method that operates on SSA
-intermediate representation.
-%It is based on the Idiom Description Language (IDL), a domain specific
-%constraint programming language.
-%There are several fundamental differences to our approach:
-%Firstly, IDL
-It uses a  general-purpose low level constraint programming language  aimed at
-compiler engineers. % , not library implementers.
-%It is difficult to use and
-% requires a deep understanding of compiler internals.
-%Secondly,
-The %methodology of the
-paper focuses  on code detection, with library calls inserted by hand.
-%the
-%necessary replacement functionality is then implemented manually.
-It is performed naively without the use of harnesses and the results show
-significant performance degradation due to the redundant memory transfers that
-have to be amended manually.
-Other advanced approaches to extracting higher
-level structures from assembly and well structured FORTRAN code
-involve temporal logic \cite{Mendis2015Helium, Kamil2016Verified}.
-These approaches tend to focus on a more restricted set of
-computations (dense memory access).
-While this allows formal reasoning about correctness, is too restrictive to
-model sparse linear algebra.
+    There has been previous work on
+    detecting code structures in compilers using constraint programming.
+    Early work was based on abstract computation graphs
+    \cite{pinter1994program}, but more recent approaches have used real
+    compiler intermediate code and made connections to the polyhedral
+    model \cite{Ginsbach:2018:CDS:3178372.3179515}.
 
+    In \cite{Ginsbach:2018:AML:3173162.3173182} they implement a method that
+    operates on SSA intermediate representation.
+    %It is based on the Idiom Description Language (IDL), a domain specific
+    %constraint programming language.
+    %There are several fundamental differences to our approach:
+    %Firstly, IDL
+    It uses a  general-purpose low level constraint programming language  aimed at
+    compiler engineers. % , not library implementers.
+    %It is difficult to use and
+    % requires a deep understanding of compiler internals.
+    %Secondly,
+    The %methodology of the
+    paper focuses  on code detection, with library calls inserted by hand.
+    %the
+    %necessary replacement functionality is then implemented manually.
+    It is performed naively without the use of harnesses and the results show
+    significant performance degradation due to the redundant memory transfers that
+    have to be amended manually.
+    Other advanced approaches to extracting higher
+    level structures from assembly and well structured FORTRAN code
+    involve temporal logic \cite{Mendis2015Helium, Kamil2016Verified}.
+    These approaches tend to focus on a more restricted set of
+    computations (dense memory access).
+    While this allows formal reasoning about correctness, is too restrictive to
+    model sparse linear algebra.
 
 \section{Heterogeneous Computing}
 
-Heterogeneous computing has been a particularly active research field in more
-recent work, since the widespread adoption of GPUs for general purpose
-computations.
-This has both included research into from a hardware perspective, studying the
-most meaningful diversification axes for processors in heterogeneous systems as
-well as many different programming approaches, broadly categorised into library
-approaches, compiler based methods and proposed DSLs.
+    Heterogeneous computing has been a particularly active research field in
+    more recent work, since the widespread adoption of GPUs for general purpose
+    computations.
+    This has both included research into from a hardware perspective, studying
+    the most meaningful diversification axes for processors in heterogeneous
+    systems as well as many different programming approaches, broadly
+    categorised into library approaches, compiler based methods and proposed
+    DSLs.
 
-For this work, the most relevant work is on programming approaches and for
-direct comparison also the compiler based methods.
+    For this work, the most relevant work is on programming approaches and for
+    direct comparison also the compiler based methods.
 
-% Domain specific languages
-\paragraph*{Domain Specific Languages}
-There have been multiple domain specific libraries proposed to formulate linear
-algebra computations.
-% targeted at application programmers rather than library implementors
-Many of these contain some degree of autotuning functionality to achieve good
-performance across different platforms
-%%The Delite
-\cite{Sujeeth:2014:DCA:2601432.2584665}.
-%language can be used as an
-%%intermediate representation to construct domain specific languages for
-%%heterogeneous platforms.
-%%However, the approach is tightly integrated with the Scala programming language
-%%and does not offer a readily available end-to-end solution.
-Halide %programming language
-\cite{Ragan-Kelley:2013:HLC:2499370.2462176}
-was designed for image processing.
-%but also allows the formulation
-%of matrix multiplications and other computations based on reductions
-\cite{Suriana:2017:PAR:3049832.3049863}.
-Its core design decision is the scheduling model that allows the separation of
-the computation schedule and the actual computation.
-There has been work on automatically tuning the schedules
-\cite{Mullapudi:2016:ASH:2897824.2925952} but in general the computational
-burden is put on the application programmer.
-%%The LIFT programming language \cite{Steuwer:2015:GPP:2858949.2784754} provides
-%%constructs from functional programming to implement data-parallel algorithms and
-%%operations.
-%%It is particularly suitable for dense linear algebra applications
-%%\cite{Steuwer:2016:MMB:2968455.2968521} but extensions to sparsity exist
-%%\cite{b5f556d505d746109608f8db3cbce4ac}.
-The MILK programming model \cite{Kiriansky:2016:OIM:2967938.2967948} extends C++
-with pragmas to annotate indirect memory accesses.
-This allows low level optimizations that are applicable to sparse linear
-algebra.
-%The authors
-%report performance gains of up to 3x.
-However, the approach is unable to utilize
-the much greater potential of heterogeneous compute and requires detailed
-programmer intervention.
+\subsection{Domain Specific Languages}
 
-\paragraph*{Libraries}
+    Domain specific languages have been proposed to allow efficient programming
+    of heterogeneous systems.
+    They allow implementers to restrict the compiler and runtime away from
+    general purpose programming concepts that are difficult to support on
+    specific hardware.
+    Domain specific languages can be stand alone with an entire tool chain and
+    runtime ecosystem of be embedded in existing languages, such as C++ or
+    Scala.
+    DSLs range in complexity from onlymarginally more flexible than library
+    interfaces to full-fledged programming languages such as OpenCL and CUDA.
+
+    There have been multiple domain specific libraries proposed specifically
+    for linear algebra computations.
+    Many of these contain some degree of autotuning functionality to achieve
+    good performance across different platforms.
+    The Delite langauge of \citet{Sujeeth:2014:DCA:2601432.2584665} can be used
+    as an intermediate representation to construct domain specific languages for
+    heterogeneous platforms.
+    The approach is tightly integrated with the Scala programming language
+    and does not offer a readily available end-to-end solution.
+    Halide, as proposed by \citet{Ragan-Kelley:2013:HLC:2499370.2462176}
+    was designed for image processing, but is flexible enough to also allow the 
+    formulation of matrix multiplications and other computations.
+    \citet{Suriana:2017:PAR:3049832.3049863} demonstrates that this can extend
+    to reduction computations as well.
+    Its core design decision is the scheduling model that allows the separation
+    of the computation schedule and the actual computation.
+    There has been work on automatically tuning the schedules, e.g.\ 
+    \citet{Mullapudi:2016:ASH:2897824.2925952}, but in general the computational
+    burden is put on the application programmer.
+
+    The LIFT programming language of \citet{Steuwer:2015:GPP:2858949.2784754}
+    provides constructs from functional programming to implement data-parallel
+    algorithms and operations.
+    It is particularly suitable for dense linear algebra applications
+    \citep{Steuwer:2016:MMB:2968455.2968521}, but extensions to sparsity exist
+    \citep{b5f556d505d746109608f8db3cbce4ac}.
+    The MILK programming model \citep{Kiriansky:2016:OIM:2967938.2967948}
+    extends C++ with pragmas to annotate indirect memory accesses.
+    This allows low level optimizations that are applicable to sparse linear
+    algebra.
+    The authors report performance gains of up to 3x, but the approach is unable
+    to utilize the much greater potential of heterogeneous compute and requires
+    detailed programmer intervention.
+
+\subsection{Libraries}
+
     The most established way of encapsulating fast linear algebra is via
     dedicated library implementations, generally based on the BLAS interface
     specification \cite{2002:USB:567806.567807}.
@@ -251,7 +259,6 @@ programmer intervention.
     heterogeneous compute, among them \citet{Wang:2016:BHP:2925426.2926256,
     10.1007/978-3-319-64203-1_33, Diego2017Multi}. 
 
-
 %\paragraph{Graphs as sparse linear algebra}
 %Graph processing is an important computational domain, especially in the context
 %of large social media graphs \cite{5470687, 6408680}.
@@ -261,16 +268,18 @@ programmer intervention.
 %GraphBLAS attempts to define a standard set of building blocks for graph
 %algorithms that use the language of linear algebra.
 
-\paragraph*{CPU-GPU data transfer optimizations}
+\subsection{CPU-GPU data transfer optimizations}
+
     Data transfers between CPU and GPU have been studied extensively as an
     important
     bottleneck for parallelization efforts.
-    Previous work \cite{Jablin:2011:ACC:1993316.1993516} established a system for
-    automatic management of CPU-GPU communication.
+    Previous work \cite{Jablin:2011:ACC:1993316.1993516} established a system
+    for automatic management of CPU-GPU communication.
     The authors of \cite{Lee:2009:OGC:1594835.1504194} implemented a system to
-    move OpenMP code to GPUs, optimizing data transfers using data flow analysis.
-    However, this approach performs a direct translation, not optimizing the code
-    for the specific performance characteristics of GPUs.
+    move OpenMP code to GPUs, optimizing data transfers using data flow
+    analysis.
+    However, this approach performs a direct translation, not optimizing the
+    code for the specific performance characteristics of GPUs.
 
 
 %% EArly scalar detection sc
