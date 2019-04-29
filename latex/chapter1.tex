@@ -1,32 +1,42 @@
-    The end of Moores Law and the end of Dennard Scaling require new approaches
-    in hardware.
+    The end of Moores Law and the end of Dennard Scaling have required new
+    approaches in hardware.
+    In response, accelerator processors have become widespread, first in the
+    form of general purpose graphics processing units (GPGPU) and now
+    increasingly with even more deep learning accelerators.
 
-    Heterogeneous computing platforms are the natural reaction to this.
-
-    However, with heterogeneous hardware becoming an essential component of
-    computing capabilities, thinking of it as library accelerators becomes
-    wrong.
+    Heterogeneous computing platforms is the natural and necessary reaction to
+    the scaling limitations of general purpose processors, but they pose a huge
+    challenge to the surrounding software ecosystem.
+    As opposed to microarchitectural improvements, existing software is not able
+    to automatically profit from new acccelerators designs.
 
     A new hardware software contract is needed instead and heterogeneous
     hardware should become a responsibility of the compiler.
-
     While compilers have lagged behind the developments in the hardware domain,
     research into this area can profit from experience with multi-core
     processors.
 
     Auto-parallelizing compilers have failed to solve the problems and have only
     had major success for specific kernels and using auto-tuning.
-
     Heterogeneous computing is a superset of parallel computing and so an
     approach to fully automatically optimize code is unlikely.
 
     At the same time, a library and DSL based approach has been successful,
     however fails to become mainstream due to adoption cost.
+    What is promising therefore is a combination of hand-optimized libraries
+    together with compiler automatisms.
 
-    What is promising therefore is a combination of hand-optimized and
-    -parallelized libraries together with compiler automatisms.
+    This requires a disruptive improvement in compiler analysis capabilites.
+    While the detection of higher level structures in compilers has been
+    investigated before, the established approaches cannot scale to what this
+    challenge requires.
+    This is  because syntactic matching on programming languages has become
+    unviable for the complexities of both modern programming languages and
+    complex code bases.
 
-    This is what this work will consider an idiomatic approach.
+    Instead, this thesis develops an entirely novel approach based on concepts
+    from constraint solving, building a pragmatic methodology for detecting
+    complex algorithmic structures -- computational idioms.
 
 \pagebreak
 \section{Structure of the Thesis}
