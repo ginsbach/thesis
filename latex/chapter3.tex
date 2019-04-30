@@ -93,37 +93,35 @@
     the serial nature and hence the enumerability of SSA makes constraint
     programming concepts very naturally applicable.
 
+\subsection{Static Single Assignment Form}
+
 \begin{figure}[t]
-\includegraphics[width=\columnwidth]{figures/ssaoverview}
-\caption{Structural overview of SSA programs}
+\centering
+\includegraphics{figures/ssaoverview}
+\caption{Structural overview of SSA: Programs are represented as hierarchies of
+    lists. The SSA property makes registers implicit, values can be statically
+    matched to defining instructions.}
 \label{fig:ssaoverview}
 \end{figure}
 
-\subsection{Static Single Assignment Form}
-
     SSA representations of programs are highly serialised, as shown in
     \autoref{fig:ssaoverview}:
-    Programs are fundamentally lists of functions, functions are fundamentally
-    lists of basic blocks and basic blocks are fundamentally lists of
-    instructions.
-    Functions and basic blocks are labelled, in order to be used as call or jump
-    targets and functions have an argument list.
+    Programs are lists of functions, functions are lists of basic blocks,
+    basic blocks are lists of instructions and instructions are lists of
+    arguments.
 
     Individual instructions operate on an abstract machine, which provides an
     unlimited number of identical registers and a well defined instruction set.
-    Each instruction has a finite amount of input arguments and an opcode that
-    refers to a specific operation to be performed.
-    Instruction arguments can be registers, constants or globals and
-    instructions can write their result into a single output register.
     Control flow is expressed as branch instructions, which direct the execution
-    conditionally or unconditionally to other basic blocks.
-    Branch instructions are only allowed at the end of a basic block and can
-    only target the beginnings of basic blocks.
+    conditionally or unconditionally to other basic blocks, which may be
+    statically identified via labels.
+    Instruction arguments can be registers, constants or globals and branch
+    instructions additionally take basic block labels.
+    Instructions can write their result into a single output register.
+    Branch instructions are only allowed at the end of a basic block.
 
-    The static single assignemnt property stipulates that within a function,
-    no register can be written at more than a single static location, i.e.\ it
-    is a function argument or is written by at most one of the instructions in
-    the function.
+    The static single assignment property stipulates that within a function,
+    no register can be written at more than a single static location.
     This makes the data dependencies between the instructions explicit and
     means that registers can be identified directly with the instructions that
     write to them.
@@ -131,12 +129,49 @@
     data flow between instructions required to recover them.
 
     In the presence of dynamic control flow behaviour in the program, most
-    simply in the case of a conditional branch, the static single assignment
-    property can only be maintained using phi instructions.
-    These are particular pseudo-instructions that encapsulate assignments that
-    can only dynamically be determined.
+    simply in the case of a conditional branch, it is evidently not possible to
+    match values to producing instructions statically.
+    This is resolved with {\em phi} instructions.
+    These instructions select a value from several arguments depending on the
+    previously executed basic block, i.e.\ depending on the branch from where
+    the execution reached the basic block containing the phi node.
+
 
 \section{Deriving a Mathematical Model}
+    As previously discussed, the static single assignment property makes
+    registers implicit.
+    Together with the entirely list based representation, this allows for the
+    entire argument structure of the instructions in an SSA function to be
+    conveniently turned into a labelled multigraph, with edge labels accounting
+    for the argument order.
+
+    Not accounting for branch targets, instruction arguments fall into four
+    categories: function parameters, instructions, constants and globals.
+    For each function, these sets can be statically determined and are finite,
+    so a single integer is enough to encode each instruction argument as an
+    index into the union of those four sets listed in an arbitrary order.
+
+    Altogether, the data flow graph in this research will be defined as follows.
+
+\begin{definition}{Data Flow Graph}{def:dfg}
+    Let $\mathcal F$ be a function in SSA form with $n_a$ arguments
+    $arg_1,\dots arg_{n_a}$.
+    Let $n_i$ be the number of instructions in the function and let
+    $ins_1,\dots ins_{n_i}$ the instructions ordered depth first.
+    Let $n_g$ the amount of globals and $n_c$ the amount of constants that are
+    referenced as an argument of any of the instructions and let
+    $cst_1,\dots cst_{n_c}$ and $glb_1,\dots glb_{n_g}$ the corresponding
+    constants and globals in an arbitrary but fixed order.
+
+    The {\em data flow graph} of the SSA function $\mathcal F$ is the set
+    $CGF_{\mathcal F}\subset \mathbb N^3$ such that
+    \begin{align*}
+        (a,b,n)\in CFG_{\mathcal F}\iff[1\leq n\leq n_a\land&(arg_a\text{ is the $n$th argument of }ins_b)] \\
+                                   \lor[1\leq n-n_a\leq n_i\land&(ins_{a-n_a}\text{ is the $n$th argument of }ins_b)] \\
+                                   \lor[1\leq n-n_a-n_i\leq n_g\land&(gbl_{a-n_a-n_i}\text{ is the $n$th argument of }ins_b)] \\
+                                   \lor[1\leq n-n_a-n_i-n_g\leq n_c\land&(cst_{a-n_a-n_i-n_g}\text{ is the $n$th argument of }ins_b)].
+    \end{align*}
+    \end{definition}
 
 \begin{figure}[p]
 \centering
