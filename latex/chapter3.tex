@@ -374,6 +374,8 @@ $DFG=$\\[1pt]{
         k\in P_\mathcal F\iff& 1\leq k-n_i\leq n_p\text{ and}\\
         k\in G_\mathcal F\iff& 1\leq k-n_i-n_p-n_c\leq n_g.
     \end{align*}
+
+    The set of SSA models is denoted $\mathcal M$.
 \end{definition}
 
     \autoref{fig:derivemaths} shows how this comes together on an example
@@ -407,73 +409,89 @@ $DFG=$\\[1pt]{
 
     In the bottom row of \autoref{fig:derivemaths}, the mathematical
     representation of the function is shown, adhering to \autoref{def:ssamodel}.
-\section{Constraint Programming}
 
-    With a mathematical strucure in place, properties of SSA form programs can
-    now be formulated as constraint problems.
-    The notation for this will be as follows: An SSA constraint problem
-    $C=(V,P)$ is made up of a finite set of {\em variables} $V$ and a boolean
-    predicate $P$ such that
+    To conclude this section, there is some additional notation for convenience,
+    listed in \autoref{not:convenience}.
+
+\begin{notation}{Convenient Notation}{convenience}
+    For $G\subset\mathbb N^3, k\in\mathbb N$, the following notation applies:
     \begin{align*}
-        P\colon\mathbb N^V\times\mathcal M\mapsto\{\text{true}, \text{false}\}
+        G^k:=&\{(a,b)\in\mathbb N^2\mid (a,b,k)\in G\}\\
+        G^*:=&\{(a,b)\in\mathbb N^2\mid \exists c\in\mathbb N:(a,b,c)\in G\}.
     \end{align*}
-    where $\mathcal M$ is the set of SSA programs.
-    We can then define the set of {\em constraint solutions} for a given
-    constraint problem and a specific function in SSA form $\mathcal F$ as
+
+    For $G\subset\mathbb N\times\mathbb R, c\in\mathbb R$, the following
+    notation applies:
     \begin{align*}
-        S(C, \mathcal F) = \{s\in\mathbb N^V\mid P(s,\mathcal F)=\text{true}\}.
+        G^c:=&\{a\in\mathbb N\mid (a,c)\in G\}\\
+        G^*:=&\{a\in\mathbb N\mid \exists c\in\mathbb R:(a,c)\in G\}.
     \end{align*}
+\end{notation}
+
+\section{Constraint Programming on SSA Programs}
+
+    With a mathematical strucure of SSA models in place, properties of SSA form
+    programs can now be formulated as constraint problems.
+
+\begin{definition}{SSA constraint problem}{cprob}
+
+    An SSA constraint problem $C=(V,P)$ is made up of a finite set of variables
+    $V$ and a boolean predicate
+    $P\colon\mathbb N^V\times\mathcal M\mapsto\{\text{true}, \text{false}\}$.
+    The set of {\em constraint solutions} for a given constraint problem and a
+    specific SSA model $M\in\mathcal M$ is given as
+    \begin{align*}
+        S(C,M) = \{s\in\mathbb N^V\mid P(s,M)=\text{true}\}.
+    \end{align*}
+\end{definition}
+
     The interesting aspect of this defition is now the structure of $P$.
-    In particular, this section will concern it self with how meaningful
-    predicates can be composed from small building blocks.
-    This internal structure will then also lead to efficient solver approaches.
+    This section will concern it self with how meaningful predicates can be
+    composed from small building blocks and how the internal structure of the
+    predicate can lead to efficient solver approaches.
+    In order to evoke an intuition about these challenges, there will first be
+    an example.
 
-\subsection{Example}
+\subsection{Constraint Program Example}
+
     Consider the task of detecting in a program all simple loop counters.
     Such loop counters show up in LLVM IR as data flow cycles of a phi node
     and an add instruction.
     We express the constraint problem $C=(V,P)$ with a set of three variables
     $V=\{\text{phi}, \text{update}, \text{step}\}$ and the following predicate:
+
+\begin{figure}
+\begin{minipage}{0.4\textwidth}
     \begin{align*}
-        P(x,\mathcal F)=&(x_\text{phi},x_\text{update},1)\in DFG_\mathcal{F}\land\\
-                        &(x_\text{step},x_\text{update},2)\in DFG_\mathcal{F}\land\\
-                        &(x_\text{step}, phi)\in I_\mathcal{F}\land\\
+        V=&\{\text{phi}, \text{update}, \text{step}\}\\
+        P(x,\mathcal F)=&(x_\text{phi},x_\text{update})\in DFG_\mathcal{F}^*\land\\
+                        &(x_\text{step},x_\text{update})\in DFG_\mathcal{F}^*\land\\
+                        &(x_\text{phi}, phi)\in I_\mathcal{F}\land\\
                         &(x_\text{step}, add)\in I_\mathcal{F}\land\\
-                        &x_\text{step}\in C_\mathcal{F}^*\land\\
-                        &(x_\text{update},x_\text{phi},1)\in DFG_\mathcal{F}
+                        &(x_\text{step},1)\in C_\mathcal{F}\land\\
+                        &(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*
     \end{align*}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+Model from Figure 3.2.
+\end{minipage}\\
+\begin{align*}
+S=\{\{\text{phi}:6,\text{update}:7,\text{step}:12\}\}.
+\end{align*}
+\end{figure}
 
+\subsection{Solving of SSA Constraint Problems}
 
-\subsection{Computational of SSA Constraint Problems}
+    The aim of a solver for SSA constraint problems is to compute the set of
+    solutions $S(C,M)$ for some concrete values of $C$ and $M$.
+    This is fundamentally a search problem: the space of $\mathbb N^V$ has to be
+    searched for values satisfying $P$.
+    The size of $\mathbb N^V$, wich is countable but infinite, requires
+    non-trivial computational approaches to this problem, even when the direct
+    evaluation of $P$ can be efficiently performed.
 
-    Predicates for useful SSA constraint problems are composed by logical
-    connectors from a set of basic {\em atomic} predicates.
-    The atomic predicates are defined directly on the mathematical model and
-    they often only utilize a very small set of variables, typically one or two.
-    In the previous example, this was true for all the atomic constraints.
-
-    Via the logical connectors $\land$ and $\lor$, the atomic predicates
-    interact on their shared variables.
-
-    There are some important compiler analysis problems that can not not be
-    decomposed with logical connectors into atomic predicates using only one
-    or two variables.
-    They are mostly concerned with graph properties and we will discuss some of
-    them in detail later in this chapter.
-    For the purposes of constraint solving, these are more difficult to handle.
-
-\subsection{Efficient Solving of SSA Constraint Problems}
-
-    Assuming that the SSA model of a program is represented in some data
-    structure and a function that implements the boolean predicate $P$ of a
-    SSA constraint problem $C=(V,P)$, it is not obvious how to compute the set
-    of constraint solutions.
-    This is because the set $\mathbb N^V$ is infinite and hence a brute force
-    algorithm that evaluates $P$ on every point in $\mathbb N^V$ would never
-    terminate.
-
-    Instead, an algorithmic solution requires an intelligent way to encode the
-    boolean predicate.
+    On top of that, an algorithmic solution requires an intelligent way to
+    encode the boolean predicate.
     It is intuitive and well established in literature to use backtracking for
     solving constraint problems, so firstly this will be reformulated
     recursively as follows.
@@ -492,6 +510,34 @@ $DFG=$\\[1pt]{
                              =&\{
     \end{align*}
 
+\subsection{Structure of SSA Constraint Problems}
+
+    Predicates for useful SSA constraint problems are composed by logical
+    connectors from a limited set of {\em atomic} predicates, that cannot
+    further be decomposed.
+    The atomic predicates are defined directly on the mathematical model and
+    they often only utilize a very small set of variables, typically one or two.
+    Many of then are simple element-of relationships for the different
+    components in the SSA model.
+    In the previous example, this was true for all the atomic constraints.
+
+    There are some important compiler analysis problems that can not not be
+    decomposed with logical connectors into atomic predicates using only one
+    or two variables.
+    They are mostly concerned with graph properties and we will discuss some of
+    them in detail later in this chapter.
+    For the purposes of constraint solving, these are more difficult to handle.
+
+    Via the logical connectors $\land$ and $\lor$, the atomic predicates
+    interact on their shared variables.
+    There will be some additional high level connectors introduced later, which
+    appriximate logical operators from first order logic.
+
+\section{Implementation of Constraint Predicates}
+
+    With the solver approach derived, it now needs to be established how real
+    constarint problem predicates can be algorithmically implemented in order
+    to evaluate the required functions.
 
 \subsection{Important Graph Properties}
 
