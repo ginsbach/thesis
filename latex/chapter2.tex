@@ -112,7 +112,13 @@
 
 \section{Compiler Analysis and Auto-Parallelisation}
 
-\paragraph*{Compiler centric linear algebra optimization}
+    This work applies constraint programming approaches to compiler analysis
+    problems in a novel way.
+    In order to evaluate this, traditional compiler analysis approaches are
+    used for comparison.
+
+\subsection{Compiler centric linear algebra optimization}
+
     Compiler management of indirect memory accesses was first studied using an
     inspector-executor model for distributed-memory machines in
     \citet{Baxter:1989:RPS:72935.72967}.
@@ -124,7 +130,8 @@
     However, the performance achieved by these approaches is modest due to
     runtime overhead and falls well short of library performance.
 
-\paragraph*{Polyhedral compiler approaches}
+\subsection{Polyhedral compiler approaches}
+
     The polyhedral model is a well established approach for modeling data
     dependencies in compilers, with relevant publications by
     \citet{redon1994scheduling, jouvelot1989unified,

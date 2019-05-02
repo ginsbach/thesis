@@ -31,12 +31,23 @@
 \newcommand{\tcb@cnt@definitionautorefname}{Definition}
 \makeatother
 
+\makeatletter
+\newcommand{\tcb@cnt@notationautorefname}{Notation}
+\makeatother
+
 \newtcbtheorem[auto counter,number within=chapter]{definition}{Definition}{
 label type=definition,
 colback=white,
 colframe=black,
 fonttitle=\bfseries,
 title={Definition \thetcbcounter}}{def}
+
+\newtcbtheorem[auto counter,number within=chapter]{notation}{Notation}{
+label type=notation,
+colback=white,
+colframe=black,
+fonttitle=\bfseries,
+title={Definition \thetcbcounter}}{not}
 
 \definecolor{sh_comment}{rgb}{0.65, 0.00, 0.00 }
 \definecolor{sh_keyword}{rgb}{0.15, 0.25, 0.25}

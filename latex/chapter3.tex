@@ -136,42 +136,208 @@
     previously executed basic block, i.e.\ depending on the branch from where
     the execution reached the basic block containing the phi node.
 
+\section{Deriving a Mathematical Model for SSA}
 
-\section{Deriving a Mathematical Model}
-    As previously discussed, the static single assignment property makes
-    registers implicit.
-    Together with the entirely list based representation, this allows for the
-    entire argument structure of the instructions in an SSA function to be
-    conveniently turned into a labelled multigraph, with edge labels accounting
-    for the argument order.
+    In order to develop constraint programming on real world SSA programs with
+    mathematical rigour, a sound model is needed first, which will be derived in
+    this section.
+    It is not the aim here to introduce a formal operational semantics, or more
+    generally to derive a model for the execution of SSA programs.
+    Instead, the section will investigate the static structure, focusing on
+    clear notation of the commonalities of existing SSA intermediate
+    representations.
+    The remainder of this section uses the notation in \autoref{not:ssa}, note
+    that no specific representative of the many different SSA languages is
+    chosen at this point.
 
-    Not accounting for branch targets, instruction arguments fall into four
-    categories: function parameters, instructions, constants and globals.
-    For each function, these sets can be statically determined and are finite,
-    so a single integer is enough to encode each instruction argument as an
-    index into the union of those four sets listed in an arbitrary order.
-
-    Altogether, the data flow graph in this research will be defined as follows.
-
-\begin{definition}{Data Flow Graph}{def:dfg}
-    Let $\mathcal F$ be a function in SSA form with $n_a$ arguments
-    $arg_1,\dots arg_{n_a}$.
-    Let $n_i$ be the number of instructions in the function and let
-    $ins_1,\dots ins_{n_i}$ the instructions ordered depth first.
+\begin{notation}{Static Single Assignment Function}{ssa}
+    Let $\mathcal F$ be a function in SSA form with $n_p$ parameters
+    $par_1,\dots par_{n_p}$.
+    Let $n_i$ the number of instructions in the function and let
+    $ins_1,\dots ins_{n_i}$ the instructions ordered depth first, starting from
+    the execution entry.
     Let $n_g$ the amount of globals and $n_c$ the amount of constants that are
     referenced as an argument of any of the instructions and let
     $cst_1,\dots cst_{n_c}$ and $glb_1,\dots glb_{n_g}$ the corresponding
-    constants and globals in an arbitrary but fixed order.
+    constants and globals in the order of first use by the instructions of
+    $\mathcal F$.
+\end{notation}
 
+    As previously discussed, the static single assignment property makes
+    registers implicit.
+    Not accounting for branch targets, instruction arguments therefore fall into
+    four categories: function parameters, instructions, constants and globals.
+    For each function, these sets can be statically determined and are finite,
+    as implied by \autoref{not:ssa}, so a single integer is enough to encode
+    each instruction argument as an index into the union of those four sets.
+    Together with the list based representation, this allows for the
+    entire argument structure of the instructions in an SSA function to be
+    conveniently turned into a labelled multigraph, with edge labels accounting
+    for the argument order.
+    These observations lead to \autoref{def:dfg}.
+
+\begin{definition}{Data Flow Graph}{dfg}
     The {\em data flow graph} of the SSA function $\mathcal F$ is the set
+    $DGF_{\mathcal F}\subset \mathbb N^3$ such that
+    \begin{align*}
+        (a,b,n)\in DFG_{\mathcal F}\iff[1\leq a\leq n_a\land&(arg_a\text{ is the $n$th argument of }ins_b)] \\
+                                   \lor[1\leq a-n_a\leq n_i\land&(ins_{a-n_a}\text{ is the $n$th argument of }ins_b)] \\
+                                   \lor[1\leq a-n_a-n_i\leq n_g\land&(gbl_{a-n_a-n_i}\text{ is the $n$th argument of }ins_b)] \\
+                                   \lor[1\leq a-n_a-n_i-n_g\leq n_c\land&(cst_{a-n_a-n_i-n_g}\text{ is the $n$th argument of }ins_b)].
+    \end{align*}
+\end{definition}
+
+    Complementing the data flow graph is the control flow graph of the function.
+    The control flow graph is usually defined on a basic block granularity, but
+    here it will be defined directly on instructions, in order to better
+    complement the data flow graph.
+    The basic block structure is easily recoverable from this representations.
+
+\begin{definition}{Control Flow Graph}{cfg}
+    The control flow graph of the SSA function $\mathcal F$ is the set
     $CGF_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (a,b,n)\in CFG_{\mathcal F}\iff[1\leq n\leq n_a\land&(arg_a\text{ is the $n$th argument of }ins_b)] \\
-                                   \lor[1\leq n-n_a\leq n_i\land&(ins_{a-n_a}\text{ is the $n$th argument of }ins_b)] \\
-                                   \lor[1\leq n-n_a-n_i\leq n_g\land&(gbl_{a-n_a-n_i}\text{ is the $n$th argument of }ins_b)] \\
-                                   \lor[1\leq n-n_a-n_i-n_g\leq n_c\land&(cst_{a-n_a-n_i-n_g}\text{ is the $n$th argument of }ins_b)].
+        (a,b,n)\in CFG_{\mathcal F}\iff[n=1\land a+1=b\land&(ins_a,ins_b\text{ are in the same basic block})] \\
+                                   \lor[(ins_a\text{ terminates a basic block})\land&\\
+                                        (ins_b\text{ is the first instruction in the}&\text{ $n$th basic block argument of }ins_a)].
     \end{align*}
-    \end{definition}
+\end{definition}
+
+
+    With the control flow and data flow separated into separate mathematical
+    structures, the individual instructions are encoded by their opcodes alone.
+    This is demonstrated in \autoref{fig:separation}.
+    At the left of the figure is a simple function in an abstract SSA
+    representation that calculates an approximation of the square root of
+    a number using Newton's method.
+    The function has 10 instructions separated into three basic blocks, with the
+    majority of the instructions in a loop structure that iteratively improves
+    the result.
+
+    The entire information that is encoded in this SSA representation can also
+    be recovered from the structures at the right side of the figure:
+    per-instruction opcode information, lists of the parameters, constants and
+    globals used, the data flow graph as in \autoref{def:dfg} and the control
+    flow graph as in \autoref{def:cfg}.
+
+    The only parts of the SSA representation that need to be modeled are the
+    per-instruction information, which in this case is nothing more than a list
+    of opcodes, and the list of constants, paramters and globals.
+    The opcodes are specific to different SSA representations, although a wide
+    overlap exists (basic arithmetic, phi nodes).
+    For this work, they can simply be modeled as elements of an arbitrary set,
+    e.g. $Opcodes_\text{LLVM}$.
+
+\begin{figure}[h]
+\begin{minipage}{0.352\textwidth}
+\begin{tabular}{|cl|}
+\multicolumn{2}{c}{{\bf function} Sqrt($S$)}\\
+\hline
+{\bf entry} & $\text{goto } loop$\\
+\hline
+\multirow{8}{*}{\bf loop} & $x \leftarrow \Phi(1,x')$\\
+                          & $t_1\leftarrow S/x$\\
+                          & $t_2\leftarrow x+t_1$\\
+                          & $x'\leftarrow t_2/2$\\
+                          & $i\leftarrow \Phi(0,i')$\\
+                          & $i'\leftarrow i+1$\\
+                          & $c\leftarrow i'+N$\\
+                          & $\text{if }c\text{ goto }loop\text{ else }exit$\\
+\hline
+{\bf exit} & $\text{return }x'$\\
+\hline
+\end{tabular}
+\end{minipage}
+\begin{minipage}{0.04\textwidth}
+\centering
+$\cong$
+\end{minipage}
+\begin{minipage}{0.22\textwidth}
+\begin{tabular}{|l|}
+\multicolumn{1}{c}{{\bf function} Sqrt($\square$)}\\
+\hline
+$\text{goto } \square$\\
+$\Phi(\square,\square)$\\
+$\square/\square$\\
+$\square+\square$\\
+$\square/\square$\\
+$\Phi(\square,\square)$\\
+$\square+\square$\\
+$\square+\square$\\
+$\text{if }\square\text{ goto }\square\text{ else }\square$\\
+$\text{return }\square$\\
+\hline
+\end{tabular}
+\end{minipage}
+\begin{minipage}{0.04\textwidth}
+\centering
+$+$
+\end{minipage}
+\begin{minipage}{0.3\textwidth}
+$par=($`S'$)$\\
+$cst=(1,2,0)$\\
+$glb=($`N'$)$\\
+$CFG=$\\[1pt]{
+\tiny\tt\bf
+\setlength{\tabcolsep}{1pt}
+\renewcommand{\arraystretch}{0.7}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\hphantom{1}&1&&&&&&&&\\[-0.5mm]
+\hline
+&&1&&&&&&&\\[-0.5mm]
+\hline
+&&&1&&&&&&\\[-0.5mm]
+\hline
+&&&&1&&&&&\\[-0.5mm]
+\hline
+&&&&&1&&&&\\[-0.5mm]
+\hline
+&&&&&&1&&&\\[-0.5mm]
+\hline
+&&&&&&&1&&\\[-0.5mm]
+\hline
+&&&&&&&&1&\\[-0.5mm]
+\hline
+&1&&&&&&&&2\\[-0.5mm]
+\hline
+&&&&&&&&&\\
+\hline
+\end{tabular}}\\[0.75em]
+$DFG=$\\[1pt]{
+\tiny\tt\bf
+\setlength{\tabcolsep}{1pt}
+\renewcommand{\arraystretch}{0.7}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c||c||c|c|c||c|}
+\hline
+\hphantom{1}&&&\hphantom{1}&&&&&\hphantom{1}&\hphantom{1}&&&&&\\
+\hline
+&&&&2&&&&&&&1&&&\\[-0.5mm]
+\hline
+&2&&&&&&&&&1&&&&\\[-0.5mm]
+\hline
+&1&2&&&&&&&&&&&&\\[-0.5mm]
+\hline
+&&1&&&&&&&&&&2&&\\[-0.5mm]
+\hline
+&&&&&&2&&&&&&&1&\\[-0.5mm]
+\hline
+&&&&&1&&&&&&2&&&\\[-0.5mm]
+\hline
+&&&&&&1&&&&&&&&2\\[-0.5mm]
+\hline
+&&&&&&&1&&&&&&&\\[-0.5mm]
+\hline
+&&&&1&&&&&&&&&&\\
+\hline
+\end{tabular}}
+\end{minipage}
+
+\caption{Example of DFG and CFG for on a function in abstract SSA representation
+         that approximates the square root via Netwon's method.}
+\label{fig:separation}
+\end{figure}
+
 
 \begin{figure}[p]
 \centering
@@ -185,23 +351,11 @@
 \label{fig:derivemaths}
 \end{figure}
 
-    This section derives a mathematical model of programs in single static
-    assignemnt form.
-    Using this model as a sound basis and mathematical notation, common compiler
-    analysis problems are then reformulated.
-    Later chapters will use this to define computational idioms formally, and to
-    implement automatic compiler tools.
-    It is not the aim here to introduce a formal operational semantics, or more
-    generally to derive a model for the execution of SSA programs.
-    Instead, the section will investigate the static structure, focusing on
-    clear notation of the commonalities of existing SSA intermediate
-    representations.
-
-    The previous section showed how programs in SSA representations can be
-    disected into several components, including control flow, data flow and
+    This section showed how programs in SSA representations can be disected into
+    several components, including control flow, data flow and
     instruction specifications.
-    \autoref{fig:derivemaths} shows how this can be taken further in order to
-    extract a more mathematical approach.
+    \autoref{fig:derivemaths} shows how this comes together on an example
+    program that is represented in a conrete SSA representation.
     At the top of the figure, different textual representations of a simple
     vector dot product are shown.
     The version of the top right is in an SSA intermediate representation: LLVM
