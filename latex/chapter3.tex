@@ -66,15 +66,17 @@
     It is these properties that also make it the suitable target for expressing
     algorithmic structures.
 
-    Static single assignment form is not a mathematically codified standard.
+    SSA is not a strictly defined or mathematically codified standard, but
+    refers to a group of representations that share important characteristics,
+    the SSA property being only one of those.
     The precise instruction set, syntax and type systems of the many different
     static single assignment form intermediate representations vary considerably
     depending on the requirements of the source languages (static or dynamic)
     and the operating constraints (just-in-time or ahead-of-time).
     Some prominent examples of compilers that utilize SSA for their
-    optimisation passes are {\bf clang/clang++} (LLVM IR), {\bf gcc} (GIMPLE),
+    optimisation passes include {\bf clang} (LLVM IR), {\bf gcc} (GIMPLE),
     {\bf v8 Crankshaft} (Hydrogen) and {\bf SpiderMonkey} (IonMonkey/MIR).
-    Despite their many difference, they share the same fundamental paradigmes
+    Despite their differences, they share the same fundamental paradigmes
     and we can mostly abstract away the differences as implementation specific
     details here.
 
@@ -110,8 +112,9 @@
     basic blocks are lists of instructions and instructions are lists of
     arguments.
 
-    Individual instructions operate on an abstract machine, which provides an
-    unlimited number of identical registers and a well defined instruction set.
+    The individual instructions operate on an abstract machine, which provides
+    an unlimited number of identical registers and a well defined instruction
+    set.
     Control flow is expressed as branch instructions, which direct the execution
     conditionally or unconditionally to other basic blocks, which may be
     statically identified via labels.
@@ -410,8 +413,8 @@ $DFG=$\\[1pt]{
     In the bottom row of \autoref{fig:derivemaths}, the mathematical
     representation of the function is shown, adhering to \autoref{def:ssamodel}.
 
-    To conclude this section, there is some additional notation for convenience,
-    listed in \autoref{not:convenience}.
+    To conclude this section, there is some additional notation that will be
+    used for convenience later on, listed in \autoref{not:convenience}.
 
 \begin{notation}{Convenient Notation}{convenience}
     For $G\subset\mathbb N^3, k\in\mathbb N$, the following notation applies:
@@ -472,12 +475,99 @@ $DFG=$\\[1pt]{
                         &(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*
     \end{align*}
 \end{minipage}
-\begin{minipage}{0.4\textwidth}
-Model from Figure 3.2.
-\end{minipage}\\
+\begin{minipage}{0.04\textwidth}
+\centering
+$\cong$
+\end{minipage}
+\begin{minipage}{0.22\textwidth}
+\begin{tabular}{|l|}
+\multicolumn{1}{c}{{\bf function} Sqrt($\square$)}\\
+\hline
+$\text{goto } \square$\\
+$\Phi(\square:\square,\square:\square)$\\
+$\square/\square$\\
+$\square+\square$\\
+$\square/\square$\\
+$\Phi(\square:\square,\square:\square)$\\
+$\square+\square$\\
+$\square+\square$\\
+$\text{if }\square\text{ goto }\square\text{ else }\square$\\
+$\text{return }\square$\\
+\hline
+\end{tabular}
+\end{minipage}
+\begin{minipage}{0.04\textwidth}
+\centering
+$+$
+\end{minipage}
+\begin{minipage}{0.27\textwidth}
+$par=($`S'$)$\\
+$cst=(1,2,0)$\\
+$glb=($`N'$)$\\
+$CFG=$\\[1pt]{
+\tiny\tt\bf
+\setlength{\tabcolsep}{1pt}
+\renewcommand{\arraystretch}{0.7}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\hphantom{1}&1&&&&&&&&\\[-0.5mm]
+\hline
+&&1&&&&&&&\\[-0.5mm]
+\hline
+&&&1&&&&&&\\[-0.5mm]
+\hline
+&&&&1&&&&&\\[-0.5mm]
+\hline
+&&&&&1&&&&\\[-0.5mm]
+\hline
+&&&&&&1&&&\\[-0.5mm]
+\hline
+&&&&&&&1&&\\[-0.5mm]
+\hline
+&&&&&&&&1&\\[-0.5mm]
+\hline
+&1&&&&&&&&2\\[-0.5mm]
+\hline
+&&&&&&&&&\\
+\hline
+\end{tabular}}\\[0.75em]
+$DFG=$\\[1pt]{
+\tiny\tt\bf
+\setlength{\tabcolsep}{1pt}
+\renewcommand{\arraystretch}{0.7}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c||c||c|c|c||c|}
+\hline
+\hphantom{1}&&&\hphantom{1}&&&&&\hphantom{1}&\hphantom{1}&&&&&\\
+\hline
+2&&&&3&&&&4&&&1&&&\\[-0.5mm]
+\hline
+&2&&&&&&&&&1&&&&\\[-0.5mm]
+\hline
+&1&2&&&&&&&&&&&&\\[-0.5mm]
+\hline
+&&1&&&&&&&&&&2&&\\[-0.5mm]
+\hline
+2&&&&&&3&&4&&&&&1&\\[-0.5mm]
+\hline
+&&&&&1&&&&&&2&&&\\[-0.5mm]
+\hline
+&&&&&&1&&&&&&&&2\\[-0.5mm]
+\hline
+&&&&&&&1&&&&&&&\\[-0.5mm]
+\hline
+&&&&1&&&&&&&&&&\\
+\hline
+\end{tabular}}
+\end{minipage}
+
 \begin{align*}
 S=\{\{\text{phi}:6,\text{update}:7,\text{step}:12\}\}.
 \end{align*}
+
+\caption{Example constraint problem is applied to SSA model from
+         \autoref{fig:separation}.
+         There is only one simple loop conter in the program, corresponding to
+         the loop interator, shown at the bottom.}
 \end{figure}
 
 \subsection{Solving of SSA Constraint Problems}
@@ -499,8 +589,8 @@ S=\{\{\text{phi}:6,\text{update}:7,\text{step}:12\}\}.
 
     Then consider $C_k=(V_k,P_k)$, where $P_k$ is defined as
     \begin{align*}
-        P_k(x)=\left\{\begin{array}{}\text{true} if P(x,y)=true for some y\\
-                                     \text{false} otherwise\end{array}\right.
+        P_k(x)=\left\{\begin{array}{l}\text{true} if P(x,y)=true for some y\\
+                                      \text{false} otherwise\end{array}\right.
     \end{align*}
 
     Consider the following purely algebraic reformulation.

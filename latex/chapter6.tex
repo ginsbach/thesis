@@ -103,8 +103,8 @@
     implementation that best suits the target platform.
 
     New idioms can be easily added thanks to the flexibility of IDL.
-    This provides a powerful means of determining whether a new heterogeneous
-    API matches existing code without touching the core compiler.
+    This provides a powerful means of determining whether a heterogeneous
+    APIs match existing code without touching the core compiler.
     The idioms addressed in this paper can be expressed in less than 500 lines
     of IDL code.
     Our approach is also highly robust, it has been applied to the entire NAS
@@ -114,7 +114,7 @@
     \begin{itemize}
     \item Defines a programming language for specifying code idioms, the Idiom
           Description Language (IDL)
-    \item Implements common idioms in IDL to automatically discover
+    \item Implements several common idioms in IDL to automatically discover
      opportunities for accelerator exploitation
     \item Efficiently translates and maps the detected idioms to APIs for
           heterogeneous systems
@@ -127,8 +127,8 @@
     reductions, but this is tightly coupled to a specialized code generation
     phase for small-scale multi-core systems.
 
-    The work most similar in approach concerns discovery of stencil computation
-    and mapping to the Halide DSL.
+    The work most similar in approach discovers stencil computations and maps to
+    the Halide DSL for acceleration.
     Helium \cite{Mendis2015Helium} recovers stencils from image-processing
     binaries.
     This requires large scale dynamic analysis of binary traces and replacing

@@ -71,10 +71,10 @@
     schemes however are not able to work at the IR level essential for
     compiler implementation and do not scale beyond simple functions.
 
-    As opposed to code transformation techniques based on the LLVM ASTMatcher
+    Different to code transformation techniques based on the LLVM ASTMatcher
     library and LibTooling \citep{be0fa11ddb194bde86a9dab8589b779c}, this work
-    is based on compiler intermediate representation and is independent from the
-    compiler frontend.
+    is on compiler intermediate representation and independent from
+    the compiler frontend.
     This makes it possible integrate well with the existing optimization
     infrastructure, allows the approach to be language independent and makes it
     approach robust to shallow syntactic changes.
@@ -119,8 +119,8 @@
 
 \subsection{Compiler centric linear algebra optimization}
 
-    Compiler management of indirect memory accesses was first studied using an
-    inspector-executor model for distributed-memory machines in
+    Compiler management of indirect memory accesses was already studied in the
+    1980s using an inspector-executor model for distributed-memory machines in
     \citet{Baxter:1989:RPS:72935.72967}.
     Here the location of read data was discovered at runtime and appropriate
     communication automatically inserted.
@@ -133,8 +133,8 @@
 \subsection{Polyhedral compiler approaches}
 
     The polyhedral model is a well established approach for modeling data
-    dependencies in compilers, with relevant publications by
-    \citet{redon1994scheduling, jouvelot1989unified,
+    dependencies that has been used by several compilers, with relevant
+    publications by \citet{redon1994scheduling, jouvelot1989unified,
     chi1997optimizing, gupta2006simplifying, stock2014framework}.
     Polyhedral optimizers have been implemented in mainstream C/C++ compilers,
     notably are the Polly extensions to LLVM described in
@@ -151,10 +151,10 @@
     Unfortunately such restrictions prevent application to real world programs;
     none of our benchmarks or data sets have this structure.
 
-\subsction{Compiler detection}
+\subsection{Compiler detection}
 
     There has been previous work on
-    detecting code structures in compilers using constraint programming.
+    detecting code structures during compilation using constraint programming.
     Early work was based on abstract computation graphs
     \cite{pinter1994program}, but more recent approaches have used real
     compiler intermediate code and made connections to the polyhedral
@@ -188,22 +188,22 @@
 
 \section{Heterogeneous Computing}
 
-    Heterogeneous computing has been a particularly active research field in
-    more recent work, since the widespread adoption of GPUs for general purpose
-    computations.
-    This has both included research into from a hardware perspective, studying
-    the most meaningful diversification axes for processors in heterogeneous
+    Heterogeneous computing has been a particularly active research field
+    recently, especially since the widespread adoption of GPUs for general
+    purpose computations in the last decade.
+    This includes research from a hardware perspective, studying
+    the most meaningful ways of diversification for processors in heterogeneous
     systems as well as many different programming approaches, broadly
     categorised into library approaches, compiler based methods and proposed
     DSLs.
 
-    For this work, the most relevant work is on programming approaches and for
-    direct comparison also the compiler based methods.
+    For the context of this thesis, the most relevant work is on programming
+    approaches and for direct comparison also the compiler based methods.
 
 \subsection{Domain Specific Languages}
 
-    Domain specific languages have been proposed to allow efficient programming
-    of heterogeneous systems.
+    Many domain specific languages have been proposed for efficient and
+    performant programming of heterogeneous systems.
     They allow implementers to restrict the compiler and runtime away from
     general purpose programming concepts that are difficult to support on
     specific hardware.
@@ -250,10 +250,10 @@
 \subsection{Libraries}
 
     The most established way of encapsulating fast linear algebra is via
-    dedicated library implementations, generally based on the BLAS interface
+    library implementations, generally based on the BLAS interface
     specification \cite{2002:USB:567806.567807}.
-    These are generally very fast on specific hardware platforms, but require
-    application programmer effort and offer little performance portability.
+    These are generally very fast on their specific hardware platforms, but
+    require application programmer effort and offer little performance portability.
     Implementations of dense linear algebra are available for most suitable
     hardware platforms, such as cuBLAS \cite{cublas} for NVIDIA GPUs, clBLAS
     \cite{clblas} for AMD GPUs and the Intel MKL library \cite{mkl} for Intel
@@ -277,16 +277,15 @@
 
 \subsection{CPU-GPU data transfer optimizations}
 
-    Data transfers between CPU and GPU have been studied extensively as an
-    important
-    bottleneck for parallelization efforts.
+    Data transfers between CPU and GPU have been studied extensively as
+    important bottlenecks for parallelization efforts.
     Previous work \cite{Jablin:2011:ACC:1993316.1993516} established a system
     for automatic management of CPU-GPU communication.
     The authors of \cite{Lee:2009:OGC:1594835.1504194} implemented a system to
     move OpenMP code to GPUs, optimizing data transfers using data flow
     analysis.
-    However, this approach performs a direct translation, not optimizing the
-    code for the specific performance characteristics of GPUs.
+    However, this approach performs a direct translation of the code, without
+    optimizing it for the specific performance characteristics of GPUs.
 
 
 %% EArly scalar detection sc
