@@ -39,20 +39,19 @@
 
 \section{Introduction}
 
-    Compilers are complex pieces of software responsible that proces source code
-    in several stages to produce an efficient binary program.
-    In order to generate fast programs, compilers rely on a complex mid end, in
-    which program optimisations are applied to the user program after parsing
-    and before code genreation.
+    Compilers are complex pieces of software, which transform input source code
+    through several compilation stages to eventually produce a binary program.
+    In order to generate fast programs, modern compilers rely on a complex mid
+    end, in which program optimisations are applied to the user program after
+    parsing and before code genreation.
     In this mid end, user code is typically represented in a static single
     assignment intermediate representation and is optimised by successively
     applying a wide range of optimization passes.
-    There is generally obvious upper bound to the complexity of optimisations
-    that are considered, instead compilers are limited by their increasing code
-    complexity and by the necessity to reason at each stage about the soundness
-    of the performed operations.
+    Compilers are limited here by their increasing code complexity and by the
+    necessity to reason at each stage about the soundness of the performed
+    operations.
     It is crucial that optimisations retain the semantics of the original
-    program, as otherwise the resulting binary might be compromised.
+    program, as otherwise the resulting binary might be corrupted.
     
 
     Implementations of compiler optimizations generally require two components:
@@ -70,12 +69,12 @@
     transformations being simple.
     This impedes the implementation of new compiler passes, preventing the rapid
     prototyping of new ideas.
-    Furthermore, this is an important source of bugs and bugs in this stage of
+    Furthermore, this is an important source of bugs, and bugs in this stage of
     the compiler are particularly pernicious, as they tamper with the user
-    programs.
-    Ideally, we would like a simpler way of describing such analysis that
-    reduces boiler-plate code and opens the way for new compiler optimization
-    innovation in a controlled fashion.
+    programs, but can remain unnoticed and only trigger in corner cases.
+    Ideally, we would like a simpler way of implementing such analysis that
+    reduces boiler-plate code and opens the way for new compiler optimisation
+    innovation.
 
     This chapter presents CAnDL, a domain specific language for compiler
     analysis.
@@ -86,7 +85,7 @@
     compiler infrastructure, it enables compiler writers to specify optimization
     functionality external to the main C++ code base.
     The CAnDL compiler then generates C++ functions that are linked together
-    with the clang compiler binary and that implement LLVM passs.
+    with the clang compiler binary and that implement LLVM passes.
     The formulation of optimizing transformations in CAnDL is faster, simpler
     and less error prone than writing them in C++.
     It has a strong emphasis on modularity, which enables debugging and the
@@ -103,8 +102,6 @@
 
 \begin{figure}[b]
 \centering
-\caption{Simple Declarative CAnDL Specificaiton}
-\label{fig:candlspec}
 \begin{minipage}[t]{0.67\textwidth}
 \begin{lstlisting}[language=CAnDL]
 Constraint SqrtOfSquare
@@ -118,6 +115,8 @@ Constraint SqrtOfSquare
 End
 \end{lstlisting}
 \end{minipage}
+\caption{Simple Declarative CAnDL Specificaiton}
+\label{fig:candlspec}
 \end{figure}
 
     As an example of the CAnDL workflow, consider \autoref{fig:root}.
@@ -137,21 +136,22 @@ End
 
     The compiler should use the equation left to right:
     It should analyse the user code in order to find segments that correspond to
-    the of the equation and then transform all those occurences analogous to the
-    right side of the equation.
+    the left side of the equation and then transform all those occurences
+    analogous to the right side of the equation.
     The compiler therefore must detect occurrences of $\sqrt{a*a}$ in the
     LLVM IR code and replace them with a call to the \texttt{abs} function.
     The generation of the new function call is trivial, but the detection of
-    even a simple pattern like $\sqrt{a*a}$ requires some care when implementing
-    it manually in a complex code base such as LLVM.
+    even this simple pattern requires some care when implementing it manually in
+    a complex code base such as LLVM.
 
-    The established approach in the clang compiler would be to implement it as
-    part of the \texttt{instcombine} pass, which applies a collection of such
-    peephole optimisations and already extends to almost 30000 lines of
+    The established approach in the clang compiler is to implement it in the
+    \texttt{instcombine} pass, which applies a collection of such
+    peephole optimisations and already extends to $\sim30000$ lines of
     C++ code.
     This code makes heavy use of raw pointers and dynamic type casts and has
-    been identified as a frequent source of bugs by
-    \citet{Yang:2011:FUB:1993316.1993532, Menendez:2017:ADP:3062341.3062372}.
+    been identified as a frequent source of bugs, as documented by
+    \citet{Yang:2011:FUB:1993316.1993532} and
+    \citet{Menendez:2017:ADP:3062341.3062372}.
     This is impractical and an impediment to compiler development.
 
     Instead, CAnDL allows a declarative description of the analysis problem,
@@ -167,52 +167,57 @@ End
     together with the logical conjunction operator ``$\land$''.
 
     The CAnDL compiler translates this declarative program into a C++ analysis
-    function that is used as an LLVM optimisation pass.
+    function that is used in an LLVM optimisation pass.
     This is demonstrated in \autoref{fig:candlexample}, which shows the analysis
     function generated from the CAnDL specification in \autoref{fig:candlspec}
-    applied to a user program ({\bf a}-{\bf d}).
-    The input program ({\bf a}) is a simple C program that calls the
+    applied to a user program as follows:
+    The input program ({\bf a}) is a simple C function that calls the
     \texttt{sqrt} function twice with squares of floating point values.
-    It is translated using the clang compiler into LLVM IR code ({\bf b}),
+    This is translated using the clang compiler into LLVM IR code ({\bf b}),
     applying standard optimisation passes during the process.
-    This results in the expressions from the user program being sequentialised,
-    with the two occurences of the \texttt{SqrtOfSquare} idiom clearly visible:
-    The two \texttt{fmul} instructions compute squares via a floating point
-    multiplication and these are then used as arguments to \texttt{sqrt}
-    function invocations. 
+    The expressions from the user program are now sequentialised and represented
+    as a list of instructions with register assignemnts, with the two occurences
+    of the \texttt{SqrtOfSquare} idiom clearly visible:
+    The two \texttt{fmul} instructions (lines 3 and 5) compute squares via a
+    floating point multiplication and these are then used as arguments to
+    \texttt{sqrt} function invocations (lines 4 and 6).
 
-    The analysis function detects two opportunities to apply the transformation,
-    shown as first solution ({\bf d}) and second solution ({\bf e}).
+    The optimised LLVM IR representation ({\bf b}) is used as the input to the
+    generated analysis function, which detects two opportunities to apply the
+    transformation, shown as first solution ({\bf d}) and second solution
+    ({\bf e}).
     Each of the two solutions assigns values from within the LLVM IR code to
-    each of the variables in the CAnDL program such that all the specified
-    constraints are fulfilled.
+    each of the variables in the CAnDL program in \autoref{fig:candlspec}, such
+    that all the specified constraints are fulfilled.
     The validity of these solutions is demonstrated in the middle row of the
     figure ({\bf e}-{\bf f}).
-    Subsituting the variables in the CAnDL programs with the concrete
-    instantiations from the solutions, we can verify the individual atomic
+    Subsituting the variables in the CAnDL program with the concrete
+    instances from the solutions, we can verify the individual atomic
     constraints one by one:
     \begin{itemize}
     \item \texttt{\%4} and \texttt{\%6} are function calls and their first
           argument (the function to be called) is \texttt{@sqrt}.
     \item \texttt{@sqrt} is the square root function.
-          Note that we have no choice but to identify it by name.
-    \item The second argument of the function call instruction (and hence the
-          first actual function argument) are \texttt{\%3} and \texttt{\%5}
+          Note that it is identified by name.
+    \item The second arguments of the function call instructions (and hence the
+          first function arguments) are \texttt{\%3} and \texttt{\%5}
           respectively.
     \item \texttt{\%3} and \texttt{\%5} are square values, i.e.\ a floating
           point multiplication of a value with itself.
     \end{itemize}
 
     With the solutions identified by the CAnDL system, performing the
-    transformation is now simple.
-    The result of the analysis for each solution is provided in the form of a
-    C++ dictionary \texttt{std::map<std::string,llvm::Value*>}, which contains
-    the information required to apply appropriate code transformations
-    ({\bf g}).
+    transformation is now simple ({\bf g}).
+    The solutions to the constraint problem are internally provided as C++
+    dictionaries of the form \texttt{std::map<std::string,llvm::Value*>},
+    containing all the information required to apply appropriate code
+    transformations.
     A new function call to \texttt{abs} is generated, with \texttt{a} as the
-    only argument.
+    only argument (line 6).
     This instruction then replaces the original call instruction that was
-    captured in \texttt{sqrt\_call}.
+    captured in \texttt{sqrt\_call} (line 5).
+    The LLVM infrastructure already provides all the necessary functions
+    to create and replace instructions in the intermediate representation.
     After post processing with standard dead code elimination, this results in
     the optimized code shown at the bottom of the figure ({\bf h}).
 
@@ -234,62 +239,57 @@ End
 
     The Compiler Analysis Description Language (CAnDL) is a domain specific
     programming language for the specification of compiler analysis problems. 
-    Individual CAnDL programs define computational structures that can be
-    exploited by code transformations in optimising compilers.
+    Individual CAnDL programs define computational structures in user programs
+    that can be exploited by code transformations in optimising compilers.
     These structures are specified as constraint programs on static single
-    assignment (SSA) form representation of user code, the most common
-    intermediate representation in modern compilers.
+    assignment (SSA) form representation of user code in LLVM IR.
+    CAnDL could also easily be ported to different SSA representations with the
+    background from \autoref{chapter:theory}.
 
     The expressed structures can scale from simple instruction patterns that are
     suited for peephole optimizations over basic control flow structures such as
     loops to complex algorithmic concepts such as stencil codes with arbitrary
     kernel functions or code regions suitable for polyhedral analysis.
 
-    The basic building blocks of CAnDL programs are well known compiler analysis
+    Like traditional constraint programs, CAnDL programs comprise two
+    fundamental features: \textbf{variables} and \textbf{constraints}.
+    The basic constraint building blocks are well established compiler analysis
     tools, such as constraints on data and control flow, data types and
     instruction opcodes.
-    On top of these low level constraints, CAnDL employs powerful mechanisms for
-    modularity and encapsulation that allow the construction of complex
-    programs.
-
-    Like most constraint programming languages, CAnDL programs have two
-    fundamental features: \textbf{variables} and \textbf{constraints}.
-    These are composed with several higher level language features and, with a
-    system of modularity and extensability on top.
-    This section will introduce the language features from the top down,
-    starting from the high level program structure.
+    These are composed with logical connectors and several higher level language
+    features, such as loops, with finally with a system of modularity and
+    extensability on top.
+    This section will introduce the language features,
+    starting from the overall program structure.
 
 \subsection{High Level Structure of CAnDL Programs}
 
-    An individual CAnDL program contains constraint formulas that are
-    bound to identifiers.
-    As we already saw in \autoref{fig:firstexample} (a), the syntax for this is
-    as follows:
-    \begin{align*}
-        \text{\bf Constraint}\ \left<\text{\bf s}\right>\ \text{\it formula}\ \text{\bf End}
-    \end{align*}
     For the description of CAnDL syntax we use these notational conventions:
     terminal symbols are {\bf bold}, non-terminals are {\it italic},
     $\left<\text{\bf s}\right>$ is an identifier (alphanumeric string) and
     $\left<\text{\bf n}\right>$ is an integer literal.
-
-    We already saw in \autoref{fig:firstexample} (a) that logical conjunctions
+    An individual CAnDL program contains constraint formulas that are
+    bound to identifiers.
+    As we already saw in \autoref{fig:candlexample}, the syntax for this is as
+    follows:
+    \begin{align*}
+        specification ::= \text{\bf Constraint}\ \left<\text{\bf s}\right>\ \text{\it formula}\ \text{\bf End}
+    \end{align*}
+    We furthermore saw in \autoref{fig:candlexample} that logical conjunctions
     can be used to combine {\it formula}s.
     More generally, a {\it formula} can be any of the following:
     \begin{align*}
-        &\text{\it atomic}\mid\text{\it conjunction}\mid \text{\it disjunction}\\
-        \mid{}&{}\text{\it foreach}\mid \text{\it forany}\mid\text{\it include}\mid\text{\it collect}
+        formula ::= \text{\it atomic}\mid\text{\it conjunction}\mid\text{\it disjunction}\mid\text{\it foreach}\mid \text{\it forany}\mid\text{\it include}\mid\text{\it collect}
     \end{align*}
-    The basis of every CAnDL program are {\it atomic} constraints.
-    For example in \autoref{fig:firstexample} (a), lines 2-8 each specify
-    individual atomic constraints.
-    Atomic constraints are bound together by logical connectives $\land$ and
-    $\lor$ ({\it conjunction} and {\it disjunction}) and other higher level
-    constructs.
+    The basis of every CAnDL program are {\it atomic} constraints, which are
+    bound together by logical connectives $\land$ and $\lor$
+    ({\it conjunction} and {\it disjunction}) and other higher level constructs.
     These include two kinds of loop structures ({\it foreach}, {\it forany}), as
     well as a system for modularity (\texttt{include}).
     Lastly, the {\it collect} construct allows for the formulation of more
     complex constraints that require the $\forall$ quantifier.
+    The individual classes of atomic constraints will be introduced next,
+    followed the the higher level constructs.
 
 \subsection{Atomic Constraints}
 
