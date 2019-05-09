@@ -13,14 +13,1547 @@
     are achieved on several important programs.
 
 \section{Introduction}
+
+The reduction idiom occurs widely in numerical applications \cite{hall1996maximizing}.  This
+includes standard HPC workloads based on linear algebra as well as
+embedded benchmarks and emerging machine learning and computer vision
+applications \cite{Reddy2016Reduction}.
+
+The typical reduction operation successively applies an arithmetic
+operator to an array of numeric values, in order to compute, for
+example, the sum of a set of floating point numbers.  These scalar
+reductions are prevalent but rarely constitute performance
+bottlenecks.  There is a larger class of reduction,  sometimes referred
+to as irregular reductions or histograms \cite{Han:2000:ILA:645678.663936}.
+Such reductions are typically more intense computationally and can be
+more profitably exploited.
+
+%% In this paper we want to draw the
+%% attention to general histogram reductions that we recognise as
+%% performance critical in several benchmark programs and that can be
+%% exploited for automatic compiler parallelisation.
+
+Discovering and exploiting scalar reductions in programs has been
+studied for many years \cite{pottenger1995idiom}.  The treatment of
+more general reduction operations has received  less attention.
+% than systematic approaches
+%to scalar reductions and to do-all parallelism detection. 
+%%  As we show
+%% in this paper, there are many reduction opportunities within programs
+%% that go currently undetected and this includes in particular those
+%% reductions that are most critical to runtime performance.
+The reason is that histogram reductions intrinsically contain indirect
+memory accesses,  which poses a great challenge to compilers that use
+data dependence \cite{kuck1981dependence} or polyhedral
+representation \cite{ benabderrahmane2010polyhedral} as the basis for
+their analysis.
+
+Most prior work has focused on the exploitation of generalized reductions
+rather than discovery
+\cite{Gutierrez:2000}, examining trade-offs in implementation \cite{yu2006adaptive}
+ or exploitation of novel hardware \cite{Huo2011HiPC}. Early work
+focused on well structured Fortran and paid little attention to
+compiler-based detection.  More recent work has attempted to find
+reductions in more complex C based code with partial reduction
+variables \cite{Han2010Speculative}. This approach is  based on update
+chains in the dependence graph and requires hardware speculation support
+to check dependences, but is unable to detect histogram
+reductions. In \cite{Johnson:2012:SSP:2254064.2254107}, a complex system is
+proposed to allow structure privatization, yet it only exploits simple
+scalar reductions.  The difficulty in automatically detecting
+reductions has led to language or annotation based approaches where it
+is the user's responsibility to mark reductions in the
+program \cite{Reddy2016Reduction,ciesko2015scaling}.
+
+In this paper we develop a new compiler based approach that
+automatically detects a wide class of generalized reductions. Such
+reductions can span large sections of code, contain general
+control-flow, have non-linear access to arrays and include histograms.
+
+Rather than developing a bespoke detection pass, we introduce a novel
+constraint based 
+representation of generalized reductions. This is embedded in a constraint 
+language which allows easy extensions to cover other idioms 
+and has  been implemented as an LLVM \cite{lattner2004llvm}  pass
+after lowering to SSA-form.  
+%% This formulation allows us to specify the
+%% reduction idiom in a semi-formal way using data flow and control flow
+%% constraints.
+We then develop a customized constraint solver to identify
+satisfying subsets that constitute a reduction operation.  We use a a careful
+enumeration strategy to reduce the theoretic combinatorial complexity
+of detection to  linear time.
+%% With the advent of GPUS and heterogeneous systems, reductions can be efficiently
+%% exploited and can lead to significant additional performance improvement over
+%% standard parallelisation. 
+
+%Once all candidate reductions have been identified we then use a specialised SAT
+%solver which by a careful enumeration strategy reduces the theoretic
+%combinatorial complexity of detection to linear time in practice.
+
+We applied our approach to C/C++ versions of 3 well known benchmark
+ suites: NAS \cite{seo2011performance},
+ Parboil\cite{stratton2012parboil} and
+ Rodinia \cite{Che2009Rodinia}. These are non-trivial code bases and
+ vary considerably in terms of code structure and complexity. We
+ compared our approach to state of the art polyhedral and data
+ dependence approaches and find 84 scalar reductions and 6
+ histograms. Only our approach finds general histogram reductions.
+%% In order to further evaluate our approach, we manually profiled and
+%% examined the code and found that our approach is able to determine xyz\% of 
+%% all possible reductions.
+
+This paper focuses on the detection of reductions and then assumes
+ later compiler stages are responsible for mapping to existing tuned
+ libraries. However, to illustrate the potential performance of our
+ scheme we developed and implemented a code generation pass that
+ generates templated parallel pthread reduction code. Using this
+ scheme, on those benchmarks where reductions are 
+ performance bottleneck we achieve significant  speedups.
+ 
+
+ Our constraint based approach can be used for a wide range of optimizations 
+beyond reduction detection. To illustrate this we prototyped a linear algebra kernel detection pass which replaces dense and sparse matrix operations with the appropriate library call leading to significant speedup.
+
+This paper makes the following contributions:
+
+\begin{itemize}
+\item Detection of more general reductions than  previous work. 
+\item Works in the presence of general control-flow, arrays with non-linear access functions, and complex operations within the reduction program scope.
+\item First constraint based formulation of general reductions allowing decoupling from the 
+detection algorithm.
+\item When implemented in LLVM and applied to large scale benchmark suites, it  detects more  reductions than existing approaches.
+\item Demonstrates that general reductions can give significant performance improvement.  
+\end{itemize}
+
 \section{Motivation}
+
+Figure \ref{sum-figure} shows a standard scalar reductions.  Rather
+than sequentially scanning {\tt a} and accumulating it into {\tt sum},
+it is possible to calculate private partial sums in parallel before
+they are added together to form the final value.  Such simple
+reductions frequently occur and can be readily detected.  However,
+such reductions rarely dominate execution in a program.
+
+\begin{figure}[ht]
+\begin{lstlisting}
+sum = 0;
+for(i = 0; i < n; i++)
+  sum += a[i];
+\end{lstlisting}
+\caption{Sum Reduction}
+\label{sum-figure}
+\end{figure}
+
+
+Figure \ref{complex-reduction-figure} in contrast shows a more complex section
+of code that constitutes a performance bottleneck of a standard benchmark
+program (Embarrassingly Parallel of the NAS Parallel Benchmarks).
+At first glance it is not obvious that this computation can be treated as a reduction.
+It can however, can be parallelized in a similar way as the simple sum using privatization.
+
+\begin{figure}[ht]
+\begin{lstlisting}
+for (i = 0; i < NK; i++) {
+  x1 = 2.0 * x[2*i] - 1.0;
+  x2 = 2.0 * x[2*i+1] - 1.0;
+  t1 = x1 * x1 + x2 * x2;
+  if (t1 <= 1.0) {
+    t2   = sqrt(-2.0 * log(t1) / t1);
+    t3   = (x1 * t2);
+    t4   = (x2 * t2);
+    l    = MAX(fabs(t3), fabs(t4));
+    q[l] = q[l] + 1.0;
+    sx   = sx + t3;
+    sy   = sy + t4;
+  }
+}
+\end{lstlisting}
+\caption{Complex Reduction}
+\label{complex-reduction-figure}
+\end{figure}
+
+As in the case of the simple sum, the parallelization of this code
+requires the computation of partial results in a separate memory
+location before merging together the partial results. 
+ The whole process is illustrated
+in Figure \ref{nice-picture}.
+Here  we privatize the scalar variables \texttt{sx}, \texttt{sy}
+and the array \texttt{q}.  We can then accumulate partial results in
+these local copies by partitioning the iteration space 0{\dots}N across 
+the individual threads.  Finally we synchronize and  merge together partial
+results.  This is done by adding together the local copies
+of \texttt{sx}, \texttt{sy} and by performing an element wise addition
+of the local copies of \texttt{q}. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/nicepicture.png}
+\caption{Illustration of Parallel Complex Reduction. Private copies of the reduction variables which accumulate partial results. These are merged after synchronization}
+\label{nice-picture}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+ \includegraphics[width=0.45\textwidth]{figures/nicepicture2.png}
+ \caption{A subset of the Data Flow, Control Flow and Control Dependences of Figure 2}
+ \label{nice-picture2}
+ \end{figure}
+
+The reason existing schemes do not detect such reductions can be better understood by considering 
+Figure \ref{nice-picture2} which denotes the compiler representation of this 
+program.  The histogram update occurs in the 3rd basic block. with the load, assign and store operations but it is by no means obvious that it is a safe reduction
+
+In fact, accurately detecting reductions is non-trivial.  If in the
+ original program, shown in Figure \ref{complex-reduction-figure}, the
+ condition on line 5 was changed to {\tt t1<=sx}, there would be no
+ longer a legal reduction as there is now a control dependence on an
+ intermediate result. This is turn would manifest as an additional
+ data dependence edge from block 3 to block 2 in
+ Figure \ref{nice-picture2}.
+Furthermore the code segment can only be classified as a reduction because all the function calls that are present are pure.
+ Such details have to be checked to ensure
+ correctness. What is needed is a way to specify these conditions
+ exactly and to then automatically identify code regions that meet the
+ constraints.
+
+ 
+
+%% This becomes clearer when we write the operation with appropriately defined
+%% types and using a custom overloaded operator as in Figure
+%% \ref{complex-reduction-reformulated-figure}.
+
+%% \begin{figure}[ht]
+%% \begin{lstlisting}
+%% for (i = 0; i < NK; i++) {
+%%   Type2 value = {x[2*i], x[2*i+1]};
+%%   result += value;
+%% }
+%% \end{lstlisting}
+%% \begin{lstlisting}
+%% struct Type1
+%% {
+%%   double q[10];
+%%   double sx;
+%%   double sy;
+%% };
+
+%% struct Type2
+%% {
+%%   double x1;
+%%   double x2;
+%% };
+
+%% Type1& operator+=(Type1& a, const Type2& b) {
+%%   double x1 = 2.0 * b.x1 - 1.0;
+%%   double x2 = 2.0 * b.x2 - 1.0;
+%%   double t1 = x1 * x1 + x2 * x2;
+
+%%   if (t1 <= 1.0) {
+%%     double t2 = sqrt(-2.0 * log(t1) / t1);
+%%     double t3 = (x1 * t2);
+%%     double t4 = (x2 * t2);
+%%     int    l  = MAX(fabs(t3), fabs(t4));
+%%     a.q[l]    = q[l] + 1.0;
+%%     a.sx      = a.sx + t3;
+%%     a.sy      = a.sy + t4;
+%%   }
+%%   return a;
+%% }
+%% \end{lstlisting}
+%% \caption{Complex Reduction Reformulated}
+%% \label{complex-reduction-reformulated-figure}
+%% \end{figure}
+
+%% The parallelisation strategy that is used for simple scalar reductions as
+%% described above can not be applied directly here.
+%% This is because it relies on the combining operator to be assciative.
+%% As the operator that is defined in Figure
+%% \ref{complex-reduction-reformulated-figure} is external (i.e.\ it operates on
+%% two operands of different types), it clearly can not be associative in the
+%% classical sense.
+
+%% This associativity requirement can however be relaxed and we can introduce a
+%% second operator $*=$ to complement $+=$ as in Figure
+%% \ref{complement-operator-figure}.
+%% Using these two operators we can proceed as with the simple sum example by
+%% generating partial results in parallel with $+=$ and then merging them in the
+%% end using $*=$.
+
+%% \begin{figure}[ht]
+%% \begin{lstlisting}
+%% Type1& operator*=(Type1& a, const Type1& b) {
+%%   for(int i = 0; i < 10; i++) a.q[i] += b.q[i];
+%%   a.sx += b.sx; a.sy += b.sy;
+%%   return a;
+%% }
+%% \end{lstlisting}
+%% \caption{Complementary Reduction Operator}
+%% \label{complement-operator-figure}
+%% \end{figure}
+
+%% In this complex reduction example we can see that the operation is fundamentally
+%% composed of two elementary reduction operations.
+%% The values of {\tt sx} and {\tt sy} are computed via scalar reductions and the
+%% values of the array {\tt q} are computed via a histogram type computation.
+%% These two building blocks span a large set of reduction operations that are
+%% prevalent in many benchmark applications.
+
+%% The definition of the $+=$ operator can be attained by applying strainghtforward
+%% code transformations on the original source code.
+%% The $*=$ operator can not be this easily deduced but is not dependent on he whole
+%% operation performed in the $+=$ operator.
 
 \section{Approach}
 
+There are three fundamental issues to address in exploiting
+reductions: detection, replacement and profitability.  This article
+focuses on the reliable detection of reductions based on a constraint
+specification.  For evaluation purposes we have also implemented a
+preliminary code generation phase that generates parallel pthread
+code.  In future work we intend to rely on specific DSLs or libraries
+as more efficient code generation backends.  Profitability heuristics
+are important in practice to determine whether or not to apply
+parallelizing code transformations.  We use a simple profile-based
+approach to determine whether or not to apply our optimization.
+
+Our method for the detection of reduction operations is based on a novel constraint based description language for computational idioms and a generic solver algorithm that searches in single static assignment compiler IR code for subsets that satisfy them.
+This decoupling of specification and detection enables us to build an extensible system that can process complex reductions beyond the capabilities of established approaches.
+
+In the next sub-sections we first motivate and describe our constraint based specification approach.
+We describe how the reduction idiom can be specified in this system.
+We then derive a generic algorithm that can be used to generate detection functionality directly from the constraint description.
+This is followed by a brief outline of how this can be integrated in the LLVM compiler infrastructure.
+Finally, in the following section,  we give an overview of our code generation   approach.
+
+\subsection{Constraint based formulation}
+In this section we describe how scalar and generalized reductions can be formulated as constraints.
+%% In the motivation section we described how reductions can be
+%% parallelized and suggested that the same basic technique can be
+%% applied to a wide range of generalised reductions.  To enable
+%% compilers to exploit this, we need a precise definition of the kinds
+%% of computations that fit this approach.  We will start with an
+%% intuitive description and then deconstruct it into a specification
+%% that is made up of constraints that can be automatically verified.
+\subsubsection{Scalar Reductions}
+Informally  we require the following conditions to hold in piece of source code for it to contain a scalar reduction:
+\begin{enumerate}
+\item The code is contained in a for loop and the iteration space is known in advance (not necessarily at compile time).
+\item There is a scalar value $x$ that is updated in every iteration.
+\item One or multiple values $a_1,\dots,a_n$ are read from arrays and the indices are affine in the loop iterator.
+\item The updated value $x'$ is computed as a term only of $x$, the array values $a_1,\dots,a_n$ and values that are constant within the loop.
+\end{enumerate}
+
+The definition is broader than usual.  In particular we allow the
+reduction to encompass multiple arrays.  Furthermore we allow complex
+computations inside the reduction, not just a scalar binary operator.
+
+\paragraph{Example}
+Figure \ref{complex-reduction-figure} in section 2 already  demonstrated the 
+need for this broader definition.
+It contains two scalar reductions, one to \texttt{sx} and one to \texttt{sy}.
+The main loop contains control flow in the form of a conditional statement.
+The branch condition is however only dependent on values that are read affinely from the array \texttt{x} and the constants \texttt{1.0} and \texttt{2.0}.
+In the same way the new values of \texttt{sx} and \texttt{sy} are only dependent of the respective old values, values that are read affinely from the array \texttt{x} and the constants \texttt{1.0} and \texttt{2.0}.
+This is due to the fact that all functions used in the computation are pure functions.
+The values of \texttt{sx} and \texttt{sy} are not unconditionally updated in the C code, but the second condition is still true due to the introduction of PHI nodes in the SSA intermediate representation.
+
+\subsubsection{Generalized reductions or histograms}
+Histogram reductions can be defined with only slight changes to the above definition.
+\begin{enumerate}
+\item The code is contained in a for loop and the iteration space is known in advance (not necessarily at compile time).
+\item One or multiple values $a_1,\dots,a_n$ are read from arrays and the indices are affine in the loop iterator.
+\item A value {\tt idx} is computed as a term only of the array values $a_1,\dots,a_n$ and values that are constant within the loop.
+\item A value $x$ is read from an array at index {\tt idx} and a modified value $x'$ is written at the same index
+\item The updated value $x'$ is computed as a term only of $x$, the array values $a_1,\dots,a_n$ and values that are constant within the loop.
+\end{enumerate}
+
+%% are precise enough for human readers but we need a
+%% more formal definition of these properties to implement functionality
+%% that can automatically verify them. 
+
+\begin{figure}[th]
+{\small
+A for loop is a tuple
+\begin{align*}
+(&\text{\tt entry, exit, loop begin, loop jump, test,}\\
+ &\text{\tt loop body, backedge, iterator, next iter,}\\
+ &\text{\tt iter begin, iter step, iter end})\\
+ &\in\text{\tt LLVM::Value}^{12}
+\end{align*}
+such that the following holds:
+\begin{align*}
+&\texttt{entry}\xrightarrow[cfg]{sese}\texttt{exit}\mathrel{\land}\\
+&\texttt{entry}=\texttt{branch}(\texttt{loop begin})\mathrel{\land}\\
+&\texttt{loop jump}=\texttt{branch}(\texttt{test}, \texttt{loop body}, \texttt{exit})\mathrel{\land}\\
+&\texttt{loop body}\xrightarrow[cfg]{sese}\texttt{backedge}\mathrel{\land}\\
+&\texttt{backedge}=\texttt{branch}(\texttt{loop begin})\mathrel{\land}\\
+&\texttt{loop jump}\xrightarrow[cfg]{dominate}\texttt{exit}\mathrel{\land}\\
+&\texttt{test}=\texttt{int comparison}(\texttt{iterator},\texttt{iter end})\mathrel{\land}\\
+&(\texttt{iter end}\in\texttt{constant}\mathrel{\lor}\\
+&\texttt{iter end}\xrightarrow[cfg]{dominate}\texttt{entry})\mathrel{\land}\\
+&\texttt{iterator}=\Phi(\texttt{next iterator},\texttt{iter begin})\mathrel{\land}\\
+&(\texttt{iter begin}\in\texttt{constant}\mathrel{\lor}\\
+&\texttt{iter begin}\xrightarrow[cfg]{dominate}\texttt{entry}))\mathrel{\land}\\
+&\texttt{next iter}=\texttt{add}(\texttt{iterator},\texttt{iter step})\mathrel{\land}\\
+&(\texttt{iter step}\in\texttt{constant}\mathrel{\lor}\\
+&\texttt{iter step}\xrightarrow[cfg]{dominate}\texttt{entry}).
+\end{align*}}
+\caption{Constraint Formulation of For Loops}
+\label{for-loop-constraints}
+\end{figure}
+
+%% The detection of loops in LLVM IR is of course a solved problem and LLVM has compiler passes for this purpose built in.
+%% Therefore it might seem pointless to explicitely state these properties again in this context.
+%% The algorithm that we will introduce is however much more flexible and can detect any computational idiom that can be formulated in this specification language.
+
+
+\begin{figure}[ht]
+\begin{align*}
+&\texttt{loop jump},x,a_1,\dots,a_n,c_1,\dots,c_n\xrightarrow[pdg]{1+dominate}x'\mathrel{\land}\\
+&(c_1\in\texttt{constant}\mathrel{\lor}\\
+&c_1\xrightarrow[cfg]{dominate}\texttt{entry})\mathrel{\land}\\
+&\dots\\
+&(c_m\in\texttt{constant}\mathrel{\lor}\\
+&c_m\xrightarrow[cfg]{dominate}\texttt{entry})\mathrel{\land}
+\end{align*}
+\caption{Constraint Formulation of Condition 4}
+\label{dom-expr-constraints}
+\end{figure}
+
+These definitions 
+need be formulated precisely in a constraint language in a form that can 
+automatically verified by a constraint solver.
+So we  developed a
+formal language  to achieve this.
+%% for this purpose that can also be used 
+%% to specify computational idioms such
+%%as scalar and histogram reductions. %%  Computational idioms are defined
+%% as a combination of constraints on LLVM IR values and the underlying
+%% data and control flow graphs.
+%The separation of the detection algorithm and the specification of the idiom 
+% allows for a very modular and extensible system.
+
+Figure \ref{for-loop-constraints} shows
+the formulation of the first condition regarding the type of loop structure allowed in this language.  
+Figure \ref{dom-expr-constraints} specifies the fourth condition.
+The first item in Figure \ref{dom-expr-constraints}  requires some clarifications.
+When we say that a node $a$ is {\tt 1+dominat}ed by nodes $b_1,\dots,b_n$, we do not mean that each individual node $b_k$ dominates $a$.
+Instead we mean that each path from a source (non pure function call, load instruction) to $a$ has to pass through {\em at least one} of the nodes $b_1,\dots,b_n$.
+This ensures that no other inputs influence the value of $x'$.
+We use the program dependence graph instead of the data flow graph to also allow well behaved control flow.
+It is obtained as the union of data flow and control dependence graph.
+This is the reason that we have to include \texttt{loop jump}, which reaches $x'$ in the program dependence graph.
+Including it takes care of the control flow outside of the loop body.
+
+The other conditions, and therefore the whole reduction idiom, can be specified using the same basic constraints as well.
+Due to space we omit further details.
+
+%% We now have a well defined specification of reductions.
+%% In the next section we will derive an algorithm that automatically finds parts of LLVM IR code in a given function that correspond to these specifications.
+
+\subsection{Solving Constraints}
+Instead of hand crafting detection routines to identify reductions 
+ that fit these specifications, we want an algorithm
+that is generic and takes a constraint specification as an input
+argument.  We can then implement our specification language as an
+embedded domain specific language in C++ that provides the detection
+functionality in the LLVM framework. %%  Such a generic algorithm can
+%% then also be used to detect other computational idioms, e.g.\ linear
+%% algebra or stencil computations.
+
+%We now introduce some mathematical formalities.
+The constraint based idiom specifications 
+consists of two parts.  One component is an index set
+$I$ of labels that represent the different elements of the idiom.  The
+other component is a boolean predicate $c$ on $\texttt{LLVM::Value}^I$
+that is specified in terms of constraints.
+
+%% We want to construct an algorithm that can spot idioms such as
+%% reductions in single static assignment IR code that are specified as
+%% previously described.
+
+For a given function $\mathcal F$,  determining the subsets that match the constraint specification
+is  equivalent to enumerating the following set.
+\begin{equation*}
+\{x\in values(\mathcal F)^\mathcal I\mid c(x)=\text{true}\}
+\end{equation*}
+
+where $values(\mathcal F)$ is the set of all instructions,
+constants, function arguments, basic block labels and global variables
+that are used in the function $\mathcal F$.  Therefore elements of
+$values(\mathcal F)^\mathcal I$ are $I$-tuples of such values.
+
+With the constraint formulation it is easy to evaluate the predicate $c$ for a given element of $values(\mathcal F)^I$.
+All that is required is to check the atomic constraints, all of which can be 
+easily evaluated.
+This means that we can essentially just enumerate all values in $values(\mathcal F)^I$ and filter out those that do not satisfy the predicate.
+
+This, however, is exponential in the complexity of the specification.
+It is far from the best solution, as there are  more efficient
+solutions for specific computational idioms such as loops.  Instead,
+we need a smarter approach that utilizes the knowledge 
+about the composition of the predicate to deliver a more efficient
+algorithm.
+
+\subsection{Detection Algorithm}
+The main idea is that idioms are made up in a modular
+fashion.  Instead of testing every appropriately sized tuple of LLVM
+IR values for adherence to the idiom specification, we accumulate the
+idiom piece by piece and discard the partial solutions if we ``get
+stuck''.  This approach is  essentially a
+depth first search.
+
+Given the constraint specifications consist of a set of labels $I$ and a binary predicate $c$, we proceed with the steps shown in Figure \ref{Detection}.
+
+\begin{figure}[h]
+\begin{enumerate}
+\item
+There is no canonical order on the set $I$.
+We can choose some enumeration $i_1,\dots,i_n$ such that $I=\{i_1,\dots,i_n\}$.
+The exact choice of this enumeration does not affect the functionality but will be very important for the runtime behaviour of this method, as described later.
+
+\item
+For each $k=1\dots n$ we define a binary predicate $c_k$ on $\texttt{LLVM::Value}^{\{i_1,\dots,i_k\}}$.
+We do this by starting with the constraint description of $c$ and replacing all atomic constraint that depend on $i_{k+1},\dots,i_n$ with constant \texttt{true}.
+
+\item
+We can now use the following simple recursive algorithm to output all detections.
+\begin{algorithmic}[1]
+\Procedure{Detect}{$\mathcal F$, $k\gets 0$, $x\gets\emptyset$}
+\If{$k = n$}
+\State\Call{Yield}{x}
+\Else
+\State$Y\gets\{y\in\mathcal F\mid c_{k+1}(x_1,\dots, x_k, y)=\text{true}\}$
+\For{$y\in Y$}
+\State \Call{Detect}{$\mathcal F$, $k+1$, $(x_1,\dots,x_k,y)$}
+\EndFor
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{enumerate}
+\caption{Detection Procedure}
+\label{Detection}
+\end{figure}
+
+This has transformed our problem into a depth first tree traversal on the search for leaves that have distance $n$ to the root.
+Leaves of a different distance to the root are therefore `dead ends' and should be avoided.
+This can be achieved by a well chosen enumeration of $I$ in the first step.
+
+This result corresponds to how one would manually identify loops,
+ first looking for the loop header, which is
+characterized a conditional branch instruction; then looking
+for the end of the loop body and verify that it branches back to the
+loop header etc.
+
+%% Starting instead with the begin of the loop body on the other hand is
+%% a bad idea.  Without any context, each basic block could be the start
+%% of a loop body and hence this would result in a lot of dead ends being
+%% taken in the tree
+.
+
+\subsection{Implementation in LLVM}
+We implemented the algorithm in the LLVM compiler infrastructure.  The
+constraint language is implemented as an embedded language in C++ shown in Figure
+\ref{code-snippet}.
+It is based on an abstract \texttt{Constraint} interface.
+An implementation of the \texttt{Constraint}
+interface has to provide a \texttt{next\_solution} function that is
+used to iterate over the set in line 5 of the DETECT algorithm.  In
+future such specifications may be read from external files at runtime,
+avoiding the need for recompilation to experiment with analysis
+passes.
+
+The algorithm is implemented easily and the implementation complexity is contained in the implementations of the \texttt{Constraint} interface.
+Besides all the atomic constraints, this includes the implementations \texttt{ConstraintAnd} and \texttt{ConstraintOr} that are used to logically combine constraints (c.f.\ the $\land$ and $\lor$ operators in the description language).
+The detection compiler pass runs in a matter of seconds on all the benchmark programs that we tested.
+
+%% Figure \ref{code-snippet} shows an example of how the constraint specifications are integrated into C++.
+%% We have considered external files for constraint specifications to allow adding specifications without recompilation.
+%% This might be implemented in future work.
+
+\begin{figure*}[ht]
+\begin{lstlisting}
+class ConstraintSESE : public ConstraintAnd<unsigned>
+{
+public:
+  struct Labels
+  {
+    unsigned precursor;
+    unsigned begin;
+    unsigned end;
+    unsigned successor;
+  };
+
+  ConstraintSESE(FunctionWrapper& w, Labels& l)
+  : ConstraintAnd<unsigned>
+    ( ConstraintCFGEdge          (w, l.precursor, l.begin),
+      ConstraintCFGEdge          (w, l.end,       l.successor),
+      ConstraintCFGDominate      (w, l.begin,     l.end),
+      ConstraintCFGPostdom       (w, l.end,       l.begin),
+      ConstraintCFGDominateStrict(w, l.precursor, l.begin),
+      ConstraintCFGPostdomStrict (w, l.successor, l.end),
+      ConstraintCFGBlocked       (w, l.begin,     l.end,   l.precursor),
+      ConstraintCFGBlocked       (w, l.successor, l.begin, l.end)) { }
+};
+\end{lstlisting}
+\caption{Constraint Language Embedded in C++}
+\label{code-snippet}
+\end{figure*}
+
+\section{Code Generation}
+%% To give speedup results in the evaluation section we implemented some functionality to use our detection functionality.
+%% More precisely we implemented a code transformation pass that automatically parallelizes histogram reductions.
+%% We did not implement equivalent functionality for scalar reductions as preliminary runtime coverage results showed them to be almost irrelevant for the performance of many benchmark programs.
+
+%% The code generation proceeds as follows.
+Our code generator is implemented as an LLVM pass immediately following 
+the detection pass.
+For each reduction that is found, all the relevant input
+arrays and scope variables are identified and packed into a structure
+together with the histogram array and some additional parameters.  A
+function is generated that takes this structure as its only parameter.
+Depending on the amount of processors in the system and the recursion
+depth, the function decides whether to bisect its workload
+recursively.  If not, it simple executes the histogram functionality.
+Otherwise it uses \texttt{pthread\_create} to offload half of its
+workload into another thread.  For this, it copies its parameter array
+but replaces the histogram array with a newly allocated copy.  After
+both threads finished their work, the copy is merged with the original
+histogram element wise and the copy is deallocated.
+
+In general, the size of the histogram array can not be determined at
+compile time.  We therefore use dynamic boundary checking in all the
+branched off threads and reallocate the histogram array when
+necessary.  This introduces some overhead but proved acceptable in
+many benchmark programs.
+
+Optimal code generation was not the main focus of this research and more sophisticated methods for the parallelization of reductions could be added.
+In future work we intend to outsource the code generation functionality to dedicated DSLs and optimized numeric libraries.
+
+
 \section{Experimental Setup}
+
+\subsection{Benchmarks}
+We applied our prototype idiom detection pass to 'C' versions of the NAS Parallel Benchmarks.
+We use the SNU NPB implementation by the Seoul National University which contains
+the original 8 NAS benchmarks plus two of the newer unstructured components UA and DC. %{\em MOB why not BT-IO, DT}
+
+We also evaluated our approach on all Parboil and Rodinia
+benchmark programs.  This constitutes 40 programs in total of varying
+length.  EP in NPB for instance is a single file of 324 lines in
+length. Leukocyte in Rodinia by contrast contains over 50 files.
+%{\em MOB check number here are correct}
+%{\em MOB Any programs missing and if so - why??}
+For each of the individual benchmark programs, we counted how many distinct scalar and histogram reductions were found.
+
+\subsection{Alternative approaches}
+To provide a useful comparison we evaluated against two competitive
+existing approaches. The first is a  recently published approach that detects 
+reductions within the polyhedral framework, the second is a mature state-of-the-art industrial  compiler.
+
+\paragraph{Polly-Reduction}
+In \cite{Doerfert2015Polly} they develop a compiler analysis and transformation within Polly
+that detects reductions in static control flow parts of programs.
+This technique is implemented in Polly, an LLVM based polyhedral compiler.
+The polyhedral model is extremely powerful when applicable and as Polly is also LLVM based, this allows for a comparison against another approach that uses the same IR and compiler infrastructure.
+
+We compiled the sequential versions of the benchmark programs with
+version 3.9 of the clang compiler with polly built in.  We gathered
+the SCoPs that Polly detected with the compiler options \texttt{-O3
+-mllvm -polly -mllvm -polly-export}. As the approach only works on SCoPs,
+we then manually searched the
+reported SCoPs for reduction operations and counted each of them as a
+hit for Polly.  This gives an optimistic  estimate as to what coverage a
+polyhedral based approach to reduction operations can achieve \cite{Doerfert2015Polly}.
+
+\paragraph{Intel icc}
+The Intel icc compiler is a mature compiler incorporating
+auto-parallelization and vectorization. It uses data dependences rather than the polyhedral model as its fundamental analysis tool.
+It is therefore less powerful than polyhedral approaches but more robust.  We compiled the benchmarks with
+the \texttt{-parallel -qopt-report} options
+%For each of the
+%reductions that our detection pass identified, 
+and  checked in the icc
+optimization report whether icc considered the corresponding loop as
+parallelizable.  We also included in the detection results all those loops that
+icc considered possible but inefficient.
+
+
+\subsection{Platform}
+To determine runtime coverage and performance, we evaluated the benchmarks on a 64 core machine with four AMD Opteron(tm) 6376 processors and one terrabyte of RAM.
+
+%{\em MOB put in more details on platform}
+
+
+%% To measure the runtime coverage of the detected reductions we then used standard profiling techniques to weed out
+%% reductions located in functions that are irrelevant to the runtime.
+%% For the remaining reduction we annotated the source code with timing routines to investigate individual runtime
+%% impact.
+%% This of course modified the original program but the results were quite clear-cut and so we did not worry about this.
+
+%% For comparison we also evaluated the NAS Parallel Benchmarks using Polly and the Intel icc compiler.
+
+\subsection{Beyond reductions}
+
+Aside from reductions, we also formulated dense matrix multiplication
+as a set of constraints that could be detected and replaced with a library call
+% and sparse matrix vector multiplications to
+to investigate the flexibility of our constraint system.
 
 \section{Results}
 
-\section{Related Work}
+This section first presents the number of reduction found by the
+various schemes. This is followed an analysis of how significant each
+reduction is. Finally we show the performance impact of our scheme.
+   
+\subsection{Discovery}
+We applied our approach to the three benchmark suites  and the results are shown in Figures \ref{npb_spotted}, \ref{parboil_spotted} and \ref{rodinia_spotted}. 
+Across the suites, our detection algorithms
+was able to identify 84 scalar reductions and 6 histogram reductions.
+
+%{\em MOB Why no reductions in FT and LU}.
+There were reductions detected in nearly all of the individual NAS benchmarks with UA having the highest number, 11.
+Reductions were less prevalent in Parboil with 5 out of 11
+benchmarks having reductions. Cutcp had the most, 7, reductions. 
+%{\em MOB Why no reductions in spmv,stencil}.
+Surprisingly, the Rodinia benchmark collection contained many more identifiable reductions than Parboil.
+Our program detected reductions in 15 out of the 19 benchmarks, with 9 reductions in the particlefilter program alone.
+
+There were some regions that we were able to identify as reductions manually that our system did not find.
+This was generally the case when the reduction loop was not the innermost loop, e.g.\ in the following code segment from SP.
+\begin{lstlisting}
+for (k = 1; k <= nz2; k++) {
+  for (j = 1; j <= ny2; j++) {
+    for (i = 1; i <= nx2; i++) {
+      for (m = 0; m < 5; m++) {
+        add = rhs[k][j][i][m];
+        rms[m] = rms[m] + add*add;
+      } 
+    } 
+  } 
+}
+\end{lstlisting}
+
+
+Histogram reductions are rarer than scalar reductions.  However
+our algorithm was able to detect 3 in NAS, 2 in Parboil and 1 in
+Rodinia.   They were still fundamentally sums but contained
+complex expressions to compute the update values.  An  example is the
+inner most loop of this code snippet from backprop.
+\begin{lstlisting}
+for (j = 1; j <= nh; j++) {
+  h = hidden[j];
+  sum = 0.0;
+  for (k = 1; k <= no; k++) {
+    sum += delta_o[k] * who[j][k];
+  }
+  delta_h[j] = h * (1.0 - h) * sum;
+  errsum += ABS(delta_h[j]);
+}
+\end{lstlisting}
+%{\em MOB say something interesting about the reductions found. Any unusual ones}
+
+%% The spotted hsitogram reductions looked much more diverse than the scalar reductions, which were mostly still slightly generalised sums of floating point numbers.
+%% We already saw the reduction in EP in figure \ref{complex-reduction-figure}.
+One interesting examples is tpacf from the Parboil benchmarks.
+In this reduction, the histogram index is computed via a binary search in an additional array.
+On the other hand the performance bottleneck of IS is a plain histogram without any complications.
+\begin{lstlisting}
+for( i=0; i<NUM_KEYS; i++ )
+  key_buff_ptr[key_buff_ptr2[i]]++;
+\end{lstlisting}
+%{\em MOB say something interesting about the histograms found. Any unusual ones}
+
+Polly+Reductions, however, is able to find just 2 scalar reductions in
+the NAS benchmarks: BT and SP, 1 in Parboil: sgemm and 1 in
+Rodina:leukocte. 4 in total compared to the 84 found by our scheme. It
+was unable to detect any of the histogram reductions.
+
+In contrast, the Intel icc compiler was more successful than Polly in detecting 
+reductions: 25  out if 38 in NAS, 3 out of 11 in Parboil and 23 out of 38 in Rodinia.
+Unfortunately, these were all scalar reductions; no histograms were detected.
+
+%% Only one of the histogram reduction operations need a slight
+%% relaxation of our constraint system (tpacf from the Parboil
+%% benchmarks).  The figures \ref{npb_spotted}, \ref{parboil_spotted}
+%% and \ref{rodinia_spotted} show the detection results in detail.
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & scalar reductions & histogram reductions & total reductions\\
+BT &  2 & 0 &  2 \\
+CG &  8 & 1 &  9\\
+DC &  6 & 0 &  6\\
+EP &  3 & 1 &  4\\
+FT &  0 & 0 &  0\\
+IS &  4 & 1 &  5\\
+LU &  0 & 0 &  0\\
+MG &  1 & 0 &  1\\
+SP &  2 & 0 &  2\\
+UA & 11 & 0 & 11\\
+}\NASDetectionData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & scalar reductions & histogram reductions & total reductions\\
+bfs          & 0 & 0 & 0\\
+cutcp        & 7 & 0 & 7\\
+histo        & 0 & 1 & 1\\
+lbm          & 0 & 0 & 0\\
+mri-gridding & 0 & 0 & 0\\
+mri-q        & 0 & 0 & 0\\
+sad          & 1 & 0 & 1\\
+sgemm        & 1 & 0 & 1\\
+spmv         & 0 & 0 & 0\\
+stencil      & 0 & 0 & 0\\
+tpacf        & 0 & 1 & 1\\
+}\ParboilDetectionData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & scalar reductions & histogram reductions & total reductions\\
+backprop       & 2 & 0 & 2\\
+bfs            & 0 & 0 & 0\\
+b+tree         & 2 & 0 & 2\\
+cfd            & 0 & 0 & 0\\
+heartwall      & 3 & 0 & 3\\
+hotspot        & 1 & 0 & 1\\
+hotspot3D      & 2 & 0 & 2\\
+kmeans         & 4 & 1 & 5\\
+lavaMD         & 1 & 0 & 1\\
+leukocyte      & 2 & 0 & 2\\
+lud            & 3 & 0 & 3\\
+mummergpu      & 1 & 0 & 1\\
+myocyte        & 2 & 0 & 2\\
+nn             & 1 & 0 & 1\\
+nw             & 0 & 0 & 0\\
+particlefilter & 9 & 0 & 9\\
+pathfinder     & 0 & 0 & 0\\
+srad           & 2 & 0 & 2\\
+streamcluster  & 3 & 0 & 3\\
+}\RodiniaDetectionData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & scalar reductions & histogram reductions\\
+BT & 0 & 0\\
+CG & 0.0150372131 & 0\\
+DC & 0 & 0\\
+EP & 0 & 0.46702\\
+FT & 0 & 0\\
+IS & 0 & 0.9837540635\\
+LU & 0 & 0\\
+MG & 0 & 0\\
+SP & 0 & 0\\
+UA & 0.0773052818 & 0\\
+}\NASCoverageData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & scalar reductions & histogram reductions\\
+bfs          & 0 & 0\\
+cutcp        & 0 & 0\\
+histo        & 0 & 0.9423193647\\
+lbm          & 0 & 0\\
+mri-gridding & 0 & 0\\
+mri-q        & 0 & 0\\
+sad          & 0 & 0\\
+sgemm        & 0.9780887552 & 0\\
+spmv         & 0 & 0\\
+stencil      & 0 & 0\\
+tpacf        & 0 & 0.999213841\\
+}\ParboilCoverageData
+
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & histogram reductions\\
+backprop       & 0\\
+bfs            & 0\\
+b+tree         & 0\\
+cfd            & 0\\
+heartwall      & 0\\
+hotspot        & 0\\
+hotspot3D      & 0\\
+kmeans         & 0.9998935921\\
+lavaMD         & 0\\
+leukocyte      & 0\\
+lud            & 0\\
+mummergpu      & 0\\
+myocyte        & 0\\
+nn             & 0\\
+nw             & 0\\
+particlefilter & 0\\
+pathfinder     & 0\\
+srad           & 0\\
+streamcluster  & 0\\
+}\RodiniaCoverageData
+
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & reduction SCoPs & other SCoPs\\
+BT &  1 & 8\\
+CG &  0 & 1\\
+DC &  0 & 0\\
+EP &  0 & 0\\
+FT &  0 & 1\\
+IS &  0 & 0\\
+LU &  0 & 5\\
+MG &  0 & 5\\
+SP &  1 & 17\\
+UA &  0 & 0\\
+    }\NASPollyData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & reduction SCoPs & other SCoPs\\
+bfs          & 0 & 0\\
+cutcp        & 0 & 0\\
+histo        & 0 & 0\\
+lbm          & 0 & 2\\
+mri-gridding & 0 & 0\\
+mri-q        & 0 & 0\\
+sad          & 0 & 1\\
+sgemm        & 1 & 0\\
+spmv         & 0 & 0\\
+stencil      & 0 & 1\\
+tpacf        & 0 & 0\\
+}\ParboilPollyData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & reduction SCoPs & other SCoPs & remainder SCoPs\\
+backprop       & 0 & 2 & 0 \\
+bfs            & 0 & 0 & 0 \\
+b+tree         & 0 & 0 & 0 \\
+cfd            & 0 & 5 & 0 \\
+heartwall      & 0 & 1 & 0 \\
+hotspot        & 0 & 0 & 0 \\
+hotspot3D      & 0 & 0 & 0 \\
+kmeans         & 0 & 2 & 0 \\
+lavaMD         & 0 & 0 & 0 \\
+leukocyte      & 0 & 2 & 0 \\
+lud            & 1 & 1 & 0 \\
+mummergpu      & 0 & 0 & 0 \\
+myocyte        & 0 & 1 & 0 \\
+nn             & 0 & 0 & 0 \\
+nw             & 0 & 0 & 0 \\
+particlefilter & 0 & 0 & 0 \\
+pathfinder     & 0 & 0 & 0 \\
+srad           & 0 & 0 & 0 \\
+streamcluster  & 0 & 0 & 0 \\
+}\RodiniaPollyData
+
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & detected by icc & not detected by icc\\
+BT &  2 & 0\\
+CG &  8 & 1\\
+DC &  3 & 3\\
+EP &  1 & 3\\
+FT &  0 & 0\\
+IS &  0 & 5\\
+LU &  0 & 0\\
+MG &  1 & 0\\
+SP &  0 & 0\\
+UA & 10 & 1\\
+}\NASICCData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & detected by icc & not detected by icc\\
+bfs          & 0 & 0\\
+cutcp        & 1 & 6\\
+histo        & 0 & 1\\
+lbm          & 0 & 0\\
+mri-gridding & 0 & 0\\
+mri-q        & 0 & 0\\
+sad          & 1 & 0\\
+sgemm        & 1 & 0\\
+spmv         & 0 & 0\\
+stencil      & 0 & 0\\
+tpacf        & 0 & 1\\
+}\ParboilICCData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & detected by icc & not detected by icc\\
+backprop       & 1 & 1\\
+bfs            & 0 & 0\\
+b+tree         & 0 & 2\\
+cfd            & 0 & 0\\
+heartwall      & 3 & 0\\
+hotspot        & 0 & 1\\
+hotspot3D      & 1 & 1\\
+kmeans         & 2 & 3\\
+lavaMD         & 0 & 1\\
+leukocyte      & 0 & 2\\
+lud            & 2 & 1\\
+mummergpu      & 0 & 1\\
+myocyte        & 2 & 0\\
+nn             & 0 & 1\\
+nw             & 0 & 0\\
+particlefilter & 8 & 1\\
+pathfinder     & 0 & 0\\
+srad           & 2 & 0\\
+streamcluster  & 2 & 1\\
+}\RodiniaICCData
+
+%% \begin{figure*}[p]
+%%   \centering
+%%   \begin{subfigure}[b]{0.49\textwidth}
+%%     \centering
+%%     \begin{tikzpicture}
+%%       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
+%%                    xticklabel pos=upper, bar width=.15cm,
+%%                    ymin=0, ymax=13, ytick={0,2,4,6,8,10,12},
+%%                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
+%%                    xticklabel style={rotate=0},
+%%                    width=9cm, height=5.56230589875cm, legend style={at={(3.5cm,3.88cm)},anchor=north}]
+%%         \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\NASDetectionData};
+%%         \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\NASDetectionData};
+%%         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\NASICCData};
+%%         \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
+%%         \legend{histogram reductions, scalar reductions,icc reductions, Polly+reductions}
+%%       \end{axis}
+%%     \end{tikzpicture}
+%%     \caption{NAS Parallel Benchmarks}
+%%     \label{npb_spotted}
+%%   \end{subfigure}
+%%   \begin{subfigure}[b]{0.49\textwidth}
+%%     \centering
+%%     \begin{tikzpicture}
+%%       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
+%%                    xticklabel pos=upper, bar width=.15cm,
+%%                    ymin=0, ymax=9, ytick={0,2,4,6,8},
+%%                    symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
+%%                    xticklabel style={rotate=90},
+%%                    width=9cm, height=5.56230589875cm, legend pos=north east]
+%% %        \addplot table[x=benchmark,y=scalar reductions]{\ParboilDetectionData};
+%% %        \addplot table[x=benchmark,y=histogram reductions]{\ParboilDetectionData};
+%% %        \legend{scalar reductions, histogram reductions}
+%%         \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\ParboilDetectionData};
+%%         \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\ParboilDetectionData};
+%%         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\ParboilICCData};
+%%         \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
+%%         \legend{histogram reductions, scalar reductions,icc reductions, Polly+reductions}
+%%       \end{axis}
+%%     \end{tikzpicture}
+%%     \caption{Parboil Benchmarks}
+%%     \label{parboil_spotted}
+%%   \end{subfigure}
+%%   \begin{subfigure}[b]{\textwidth}
+%%     \centering
+%%     \begin{tikzpicture}
+%%       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
+%%                    xticklabel pos=upper, bar width=.15cm,
+%%                    ymin=0, ymax=11, ytick={0,2,4,6,8,10},
+%%                    symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
+%%                    xticklabel style={rotate=90},
+%%                    width=14.5623058988cm, height=5.56230589875cm, legend pos=north west]
+%% %        \addplot table[x=benchmark,y=scalar reductions]{\RodiniaDetectionData};
+%% %        \addplot table[x=benchmark,y=histogram reductions]{\RodiniaDetectionData};
+%% %        \legend{scalar reductions, histogram reductions}
+%%         \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\RodiniaDetectionData};
+%%         \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\RodiniaDetectionData};
+%%         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\RodiniaICCData};
+%%         \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\RodiniaPollyData};
+%%         \legend{histogram reductions, scalar reductions,icc reductions, Polly reductions}
+%%       \end{axis}
+%%     \end{tikzpicture}
+%%     \caption{Rodinia}
+%%     \label{rodinia_spotted}
+%%   \end{subfigure}
+%%   \caption{Spotted Reductions in the Individual Benchmark Collections}
+%% \end{figure*}
+
+\begin{figure}[ht]%{0.49\textwidth}
+  \centering
+%  \begin{subfigure}[b]
+%    \centering
+    \begin{tikzpicture}
+      \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
+                   xticklabel pos=upper, bar width=.15cm,
+                   ymin=0, ymax=13, ytick={0,2,4,6,8,10,12},
+                   symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
+                   xticklabel style={rotate=0},
+                   width=9cm, height=5.56230589875cm, legend style={at={(3.5cm,3.88cm)},anchor=north}]
+        \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\NASDetectionData};
+        \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\NASDetectionData};
+        \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\NASICCData};
+        \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
+        \legend{histogram reductions, scalar reductions,icc reductions, Polly+reductions}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Reductions detected in NAS}
+    \label{npb_spotted}
+%  \end{subfigure}
+  \end{figure}
+
+%  \begin{subfigure}[b]{0.49\textwidth}
+  \begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
+                   xticklabel pos=upper, bar width=.15cm,
+                   ymin=0, ymax=9, ytick={0,2,4,6,8},
+                   symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
+                   xticklabel style={rotate=90},
+                   width=9cm, height=5.56230589875cm, legend pos=north east]
+%        \addplot table[x=benchmark,y=scalar reductions]{\ParboilDetectionData};
+%        \addplot table[x=benchmark,y=histogram reductions]{\ParboilDetectionData};
+%        \legend{scalar reductions, histogram reductions}
+        \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\ParboilDetectionData};
+        \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\ParboilDetectionData};
+        \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\ParboilICCData};
+        \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
+        \legend{histogram reductions, scalar reductions,icc reductions, Polly+reductions}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Reductions detected in Parboil}
+    \label{parboil_spotted}
+%  \end{subfigure}
+  \end{figure}
+
+%  \begin{subfigure}[b]{\textwidth}
+  \begin{figure*}[ht]%%{\textwidth}
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
+                   xticklabel pos=upper, bar width=.15cm,
+                   ymin=0, ymax=11, ytick={0,2,4,6,8,10},
+                   symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
+                   xticklabel style={rotate=90},
+                   width=14.5623058988cm, height=5.56230589875cm, legend pos=north west]
+%        \addplot table[x=benchmark,y=scalar reductions]{\RodiniaDetectionData};
+%        \addplot table[x=benchmark,y=histogram reductions]{\RodiniaDetectionData};
+%        \legend{scalar reductions, histogram reductions}
+        \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\RodiniaDetectionData};
+        \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\RodiniaDetectionData};
+        \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\RodiniaICCData};
+        \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\RodiniaPollyData};
+        \legend{histogram reductions, scalar reductions,icc reductions, Polly reductions}
+      \end{axis}
+    \end{tikzpicture}
+%    \caption{Rodinia}
+%  \end{subfigure}
+  \caption{Reductions detected in Rodinia}
+    \label{rodinia_spotted}
+\end{figure*}
+
+
+
+\begin{figure}[ht]
+  \centering
+%  \begin{subfigure}[b]{0.49\textwidth}
+%    \centering
+    \begin{tikzpicture}
+      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+                   xticklabel pos=upper, bar width=.3cm,
+                   ymin=0, ymax=20, ytick={0,2,4,6,8,10,12,14,16,18,20},
+                   symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
+                   xticklabel style={rotate=0},
+                   width=9cm, height=5.56230589875cm, legend pos=north west]
+        \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
+        \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\NASPollyData};
+        \legend{reduction SCoPs, other SCoPs}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{SCoPs in NAS}
+    \label{npb_scops}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+                   xticklabel pos=upper, bar width=.3cm,
+                   ymin=0, ymax=3, ytick={0,1,2},
+                   symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
+                   xticklabel style={rotate=90},
+                   width=9cm, height=5.56230589875cm, legend pos=north east]
+        \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
+        \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\ParboilPollyData};
+        \legend{reduction SCoPs, other SCoPs}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{SCoPS in Parboil}
+    \label{parboil_scops}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+                   xticklabel pos=upper, bar width=.3cm,
+                   ymin=0, ymax=6, ytick={0,1,2,3,4,5},
+                   symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
+                   xticklabel style={rotate=90},
+                   width=9.5623058988cm, height=5.56230589875cm, legend pos=north east]
+        \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\RodiniaPollyData};
+        \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\RodiniaPollyData};
+        \legend{reduction SCoPs, other SCoPs}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{SCoPs in Rodinia}
+    \label{rodinia_scops}
+\end{figure}
+
+\paragraph{Polly+Reduction}
+Polly+Reduction generally struggled with the more complex code bases of the
+Rodinia and Parboil benchmarks.  This was often not due to fundamental
+limitations of the polyhedral model.  Instead it was mostly the result
+of not statically known iteration spaces and the use of flat array
+structures.  Figures  \ref{npb_scops},\ref{parboil_scops},\ref{rodinia_scops}
+shows the number of static control-flow
+regions SCoPs that baseline Polly finds. As the reduction pass of
+Polly requires SCoPS these provide a natural upper bound on the
+number of restrictions.  On 23 of the 40 benchmarks, Polly found no
+SCoPs at all.  This corresponded to $40\%$ of NPB, $63.6\%$ of the
+Parboil Benchmarks and $63.2\%$ of Rodinia.
+
+The vast majority of the SCoPs that Polly detected were in stencil computations.
+The stencil based programs LU, BT, SP and MG in the NAS Parallel Benchmarks alone accounted for 37 of the 62 SCoPs that were found across all benchmarks ($59.6\%$). 
+In the NAS Parallel Benchmarks and the Parboil Benchmarks we were only able to identify three scalar reductions contained in SCoPs.
+
+These results are not entirely surprising, as the polyhedral model and Polly were not created for the purpose of optimising reduction operations in particular.
+They do however imply that reduction detection based on Polly is severely limited.
+
+\paragraph{icc}
+The Intel icc compiler is more robust and does not require static
+control flow as a precondition for its analysis. On the well
+structured NAS benchmarks, it performs well but fails to detect any
+reductions in IS.
+%{\em MOB why} - don't know but the reduction is irrelevant anyways
+
+Surprisingly it too does not detect reductions in SP while Polly does. On
+closer inspection, this is again due to a deep perfectly nested loop where
+the reduction iterator is in the middle of the loop nest. (as shown
+earlier in section 6.1).  This is an unusual coding style and was not
+picked up by icc analysis. On the less well structured Parboil
+benchmarks, it fails to detect many of the scalar reductions in cutcp.
+This is because these reductions use the functions \texttt{fmin} and
+\texttt{fmax} that our system recognizes as pure.  On the other hand
+these function calls prevent icc from successful parallelization.
+ It is clear that icc does not attempt to detect
+histograms and missed all instances of them.
+
+\subsection{Runtime Coverage}
+
+\begin{figure}[ht]
+  \centering
+%  \begin{subfigure}[b]{0.49\textwidth}
+%    \centering
+    \begin{tikzpicture}
+      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+                   xticklabel pos=upper, bar width=.3cm,
+                   ymin=0, ymax=1.5, ytick={0.2,0.4,0.6,0.8,1.0},
+                   symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
+                   xticklabel style={rotate=0},
+                   width=9cm, height=5.56230589875cm, legend pos=north west]
+        \addplot [fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\NASCoverageData};
+        \addplot [fill=black!80!white] table[x=benchmark,y=histogram reductions]{\NASCoverageData};
+        \legend{scalar reductions, histogram reductions}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Runtime coverage in NAS}
+    \label{npb_coverage}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+                   xticklabel pos=upper, bar width=.3cm,
+                   ymin=0, ymax=1.5, ytick={0.2,0.4,0.6,0.8,1.0},
+                   symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
+                   xticklabel style={rotate=90},
+                   width=9cm, height=5.56230589875cm, legend pos=north east]
+        \addplot [fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\ParboilCoverageData};
+        \addplot [fill=black!80!white] table[x=benchmark,y=histogram reductions]{\ParboilCoverageData};
+        \legend{scalar reductions, histogram reductions}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Runtime coverage in Parboil}
+    \label{parboil_coverage}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+                   xticklabel pos=upper, bar width=.3cm,
+                   ymin=0, ymax=1.5, ytick={0.2,0.4,0.6,0.8,1.0},
+                   symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
+                   xticklabel style={rotate=90},
+                   width=7.5623058988cm, height=5.56230589875cm, legend pos=north east]
+        \addplot [fill=black!80!white] table[x=benchmark,y=histogram reductions]{\RodiniaCoverageData};
+        \legend{histogram reductions}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Runtime coverage of Rodinia}
+    \label{rodinia_coverage}
+\end{figure}
+
+
+Detecting large numbers of reductions is encouraging, but does not
+address whether or not such detection is useful. To measure this we
+profiled each program  and examined how much time was spent in the
+different types of reduction regions.  The two different classes of
+reductions behaved very differently.  While we found  more scalar
+reductions than histogram reductions, histogram reductions were 
+more likely to constitute performance bottlenecks as shown in Figures \ref{npb_coverage}, \ref{parboil_coverage} and  \ref{rodinia_coverage}.
+In the individual benchmark programs that contained histogram reductions, they accounted for an average of $68\%$ of the
+runtime.
+Scalar reductions on the other hand were generally irrelevant to program runtime, with the one exception of the sgemm
+benchmark (cf.\ figures \ref{npb_coverage},  \ref{parboil_coverage}    \ref{rodinia_coverage}).
+%% We were not able to get meaningful estimates for these values on the Rodinia benchmarks yet due to time.
+%% For the one histogram reduction we were however able to confirm a $>99\%$ runtime coverage.
+%{\em MOB can we guesstimate???}
+
+From this we can conclude, that if we wish to exploit reductions for
+performance reasons, then we should exclude scalar reductions and
+focus on histograms.  Given that neither Polly nor icc were able to
+detect histograms, this is a limitation of their approaches.
+
+
+\subsection{Performance}
+
+%{\em MOB where are the histo and kmeans results?} - working on it
+
+The speedup that we were able to achieve by exploiting histograms is detailed in
+figure \ref{speedup-figure}.  We only evaluated this for benchmarks
+with significant runtime coverage of reductions.  The speedup that our
+parallelization pass can achieve is compared against the parallel
+benchmark versions that are shipped by the original implementors.  The
+baseline is the sequential version of the benchmark programs.
+
+%% \pgfplotstableread[row sep=\\,col sep=&]{
+%%     benchmark & parallel version & reduction parallelism \\
+%%     EP        &          32.7848 &                1.6207 \\
+%%     IS        &           6.3429 &                2.9211 \\
+%%     histo     &           1.0000 &                1.0000 \\
+%%     tpacf     &           1.0000 &               35.7074 \\
+%%     kmeans    &          21.3778 &               21.3778 \\
+%%     }\ParallelisationData
+
+%% \begin{figure}[ht]
+%%   \centering
+%%   \begin{tikzpicture}
+%%     \begin{axis}[ybar, ymode=log, log ticks with fixed point, legend style={font=small},
+%%                  ymajorgrids, xtick style={transparent}, xtick=data,
+%%                  xticklabel pos=upper, bar width=.3cm,
+%%                  ymin=1, ymax=200, ytick={1,2,5,10,20,50,100,200},
+%%                  symbolic x coords={EP,IS,histo,kmeans,tpacf},
+%%                  ylabel={speedup vs sequential baseline},
+%%                  xticklabel style={rotate=0},
+%%                  width==8.09016994375cm, height=5cm, legend pos=north west]
+%%       \addplot [fill=lightgray!80!white] table[x=benchmark,y=parallel version]{\ParallelisationData};
+%%       \addplot [fill=black!80!white] table[x=benchmark,y=reduction parallelism]{\ParallelisationData};
+%%       \legend{original parallel version, reduction parallelism}
+%%     \end{axis}
+%%   \end{tikzpicture}
+%%   \caption{Speedup Potential in Reduction Operations}
+%%   \label{speedup-figure}
+%% \end{figure}
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+    benchmark & parallel version & reduction parallelism \\
+    EP        &          32.7848 &                1.6207 \\
+    IS        &           6.3429 &                2.9211 \\
+    histo     &           1.0000 &                1.0000 \\
+    tpacf     &           1.0000 &               35.7074 \\
+    kmeans    &          21.3778 &               21.3778 \\
+    }\ParallelisationData
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[ybar, ymode=log, log ticks with fixed point, legend style={font=small},
+                 ymajorgrids, xtick style={transparent}, xtick=data,
+                 xticklabel pos=upper, bar width=.3cm,
+                 ymin=1, ymax=200, ytick={1,2,5,10,20,50,100,200},
+                 symbolic x coords={EP,IS,histo,kmeans,tpacf},
+                 ylabel={speedup vs sequential baseline},
+                 xticklabel style={rotate=0},
+                 width=8.09016994375cm, height=5cm, legend pos=north west]
+      \addplot [fill=lightgray!80!white] table[x=benchmark,y=parallel version]{\ParallelisationData};
+      \addplot [fill=black!80!white] table[x=benchmark,y=reduction parallelism]{\ParallelisationData};
+      \legend{original parallel version, reduction parallelism}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Speedup Potential in Reduction Operations}
+  \label{speedup-figure}
+\end{figure}
+
+In EP we achieve $62\%$ speedup over the whole program.
+On this benchmark program, our approach is limited by the coverage of the parallelized reduction operation.
+Linear speedup on the 48 cores of our computer would have resulted in $1/((1-0.46)+0.46/48)-1=82\%$ speedup.
+The original parallel version on the other hand uses coarser parallelism and outperforms our reduction based parallelization.
+
+On the IS benchmark, our automatic reduction based parallelization results in $2.9x$ speedup, compared to $6.3x$ speedup of the original parallel version.
+The discrepancy comes from the fact that the original version uses knowledge about the distribution of the histogram keys that is not available to our program.
+It can therefore sort the keys into disjunct bins before executing the actual histogram and thereby avoid array privatization.
+A smarter code generation approach could narrow this gap and we will explore this in future work.
+
+The histo benchmark of Parboil uses an excessively large amount of bins in the histogram.
+The array privatization prevents any parallel speedup in the program.
+The parallel version provided by the implementers also achieves no speedup against sequential on our system.
+
+%{\em MOB NO. Put in the reduction performance or remove}
+%{\em On the sgemm benchmark we achieve $104x$ speedup.
+%As the sgemm bottleneck is not a histogram computation, it is treated differently by our code transformation pass.
+%We use a extra code transformation pass that uses a formulation of matrix multiplication in our constraint language and replaces occurences with calls to OpenBLAS.}
+
+On tpacf we achieve an almost linear speedup of $35.7074x$.
+%{\em MOB probably drop this text This result was achieved in a semi-manual fashion due to current limitations of our gode generator.
+%We did however follow the same approach mechanically.}
+The original version of this program is implemented poorly using a critical section, resulting in slowdown versus sequential execution on our highly parallel machine.% {\em MOB show the slowdown}.
+
+%% \begin{figure*}[p]
+%%   \centering
+%%   \begin{subfigure}[b]{0.49\textwidth}
+%%     \centering
+%%     \begin{tikzpicture}
+%%       \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+%%                    xticklabel pos=upper, bar width=.3cm,
+%%                    ymin=0, ymax=20, ytick={0,2,4,6,8,10,12,14,16,18,20},
+%%                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
+%%                    xticklabel style={rotate=0},
+%%                    width=9cm, height=5.56230589875cm, legend pos=north west]
+%%         \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
+%%         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\NASPollyData};
+%%         \legend{reduction SCoPs, other SCoPs}
+%%       \end{axis}
+%%     \end{tikzpicture}
+%%     \caption{NAS Parallel Benchmarks}
+%%     \label{npb_scops}
+%%   \end{subfigure}
+%%   \begin{subfigure}[b]{0.49\textwidth}
+%%     \centering
+%%     \begin{tikzpicture}
+%%       \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+%%                    xticklabel pos=upper, bar width=.3cm,
+%%                    ymin=0, ymax=3, ytick={0,1,2},
+%%                    symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
+%%                    xticklabel style={rotate=90},
+%%                    width=9cm, height=5.56230589875cm, legend pos=north east]
+%%         \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
+%%         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\ParboilPollyData};
+%%         \legend{reduction SCoPs, other SCoPs}
+%%       \end{axis}
+%%     \end{tikzpicture}
+%%     \caption{Parboil Benchmarks}
+%%     \label{parboil_scops}
+%%   \end{subfigure}
+%%   \begin{subfigure}[b]{\textwidth}
+%%     \centering
+%%     \begin{tikzpicture}
+%%       \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+%%                    xticklabel pos=upper, bar width=.3cm,
+%%                    ymin=0, ymax=6, ytick={0,1,2,3,4,5},
+%%                    symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
+%%                    xticklabel style={rotate=90},
+%%                    width=14.5623058988cm, height=5.56230589875cm, legend pos=north east]
+%%         \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\RodiniaPollyData};
+%%         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\RodiniaPollyData};
+%%         \legend{reduction SCoPs, other SCoPs}
+%%       \end{axis}
+%%     \end{tikzpicture}
+%%     \caption{Rodinia}
+%%     \label{rodinia_scops}
+%%   \end{subfigure}
+%% \caption{Polly SCoPs in the Individual Benchmark Collections}
+%% \end{figure*}
+
+%\begin{figure*}[p]
+%  \centering
+%  \begin{subfigure}[b]{0.49\textwidth}
+%    \centering
+%    \begin{tikzpicture}
+%      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data,
+%                   xticklabel pos=upper, bar width=.3cm,
+%                   ymin=0, ymax=13, ytick={0,2,4,6,8,10,12},
+%                   symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
+%                   xticklabel style={rotate=0},
+%                   width=9cm, height=5.56230589875cm, legend pos=north west]
+%        \addplot table[x=benchmark,y=detected by icc]{\NASICCData};
+%        \addplot table[x=benchmark,y=not detected by icc]{\NASICCData};
+%        \legend{detected by icc, not detected by icc}
+%      \end{axis}
+%    \end{tikzpicture}
+%    \caption{NAS Parallel Benchmarks}
+%    \label{npb_scops}
+%  \end{subfigure}
+%  \begin{subfigure}[b]{0.49\textwidth}
+%    \centering
+%    \begin{tikzpicture}
+%      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data,
+%                   xticklabel pos=upper, bar width=.3cm,
+%                   ymin=0, ymax=9, ytick={0,2,4,6,8},
+%                   symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
+%                   xticklabel style={rotate=90},
+%                   width=9cm, height=5.56230589875cm, legend pos=north east]
+%        \addplot table[x=benchmark,y=detected by icc]{\ParboilICCData};
+%        \addplot table[x=benchmark,y=not detected by icc]{\ParboilICCData};
+%        \legend{detected by icc, not detected by icc}
+%      \end{axis}
+%    \end{tikzpicture}
+%    \caption{Parboil Benchmarks}
+%    \label{parboil_scops}
+%  \end{subfigure}
+%  \begin{subfigure}[b]{\textwidth}
+%    \centering
+%    \begin{tikzpicture}
+%      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data,
+%                   xticklabel pos=upper, bar width=.3cm,
+%                   ymin=0, ymax=11, ytick={0,2,4,6,8,10},
+%                   symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
+%                   xticklabel style={rotate=90},
+%                   width=15cm, height=6cm, legend pos=north west]
+%        \addplot table[x=benchmark,y=detected by icc]{\RodiniaICCData};
+%        \addplot table[x=benchmark,y=not detected by icc]{\RodiniaICCData};
+%        \legend{detected by icc, not detected by icc}
+%      \end{axis}
+%    \end{tikzpicture}
+%    \caption{Rodinia}
+%    \label{rodinia_scops}
+%  \end{subfigure}
+%\caption{Reductions Detected by Intel icc}
+%\end{figure*}
+
+\subsection{Beyond reductions}
+
+Our constraint based formualtion allows other idioms to be detected. To 
+illustrate this, we implemented a matrix-multiplication pattern as a 
+system of constraints and a code generator that
+replaces occurences with calls to OpenBLAS. 
+It detected the only occurrence in sgemm and was able to achieve a 104x speedup.
 
 \section{Conclusion}
+
+This paper develops a new compiler based approach that
+automatically detects a wide class of reductions. 
+%% Such reductions can
+%% contain general control-flow and non-linear access to arrays. 
+This approach is based on a constraint based formulation which has
+been implemented as an LLVM pass. We use a customized constraint
+solver to identify program subsets that adhere to the constraint
+specification.  By representing general reductions in a formal
+constraint language, we separate specification from detection
+providing a modular and extendable approach to idiom recognition.We
+showed a brief example of how this could be used to detect dense
+matrix multiplication code.  Once reductions are discovered, we
+automatically generate parallel code to exploit the reduction. This
+approach is robust and was evaluated on C versions of three well known
+benchmark suites: NAS, Parboil and Rodinia. We detected 
+more reductions than existing approaches and were alone in being able
+to detect computationally intense  histogram reductions. Such
+reductions were shown to give significant performance improvement.
+Future work will extend the constraint formulation to consider other
+commonly occurring idioms and target domain specific languages. Once the number of idioms detected begins to grow, a smart profitability analysis will be needed and will also be the subject of future work.
+
+
+%% There are many scalar reduction that currently go undetected by established compiler approaches.
+%% The impact of these scalar reductions on the performance of real world software is mostly negligible.
+
+%% Histogram reductions have sofar not been extensively studied and none of the current approaches are able to deal with
+%% them.
+%% While they are less prevalent, they account for a significant amount of bottleneck computations, more so than scalar
+%% reductions.
+%% Approaches to the parallelistion of scalar reductions can be transferred to histogram reductions, making compiler based
+%% code transformations for the parallelisation of those computations possible.
+
+%% Constraint based approaches to the detection of computational idioms are more flexible than existing methods.

@@ -836,6 +836,7 @@ year = 2013
 @manual{cublas,
   title = {{cuBLAS}},
   organization = {Nvidia},
+  year = {2007},
   url = {http://developer.nvidia.com/cuBLAS},
 }
 
@@ -1171,6 +1172,7 @@ In this paper, we discuss the language, compiler, and runtime features that enab
 
 @misc{cusparse,
   title={{NVIDIA CUDA Sparse Matrix library (cuSPARSE)}},
+  year={2010},
   author={{NVIDIA}},
   howpublished = {\url{https://developer.nvidia.com/cusparse}}
 }
@@ -1235,13 +1237,15 @@ author = "Kyle H. Sutherland-Cash and Rosemary G. Mantell and David J. Wales"
   title={The Shortest Path Problem: Ninth DIMACS Implementation Challenge},
   author={Demetrescu, Camil and Goldberg, Andrew V. and Johnson, David S.},
   volume={74},
+  year={2009},
   publisher={American Mathematical Soc.}
 }
 
 @article{Beamer2015GAP,
 author = {Beamer, Scott and Asanović, Krste and Patterson, David},
+journal = {arXiv},
 year = {2015},
-month = {08},
+url = {https://arxiv.org/abs/1508.03619},
 pages = {},
 title = {The GAP Benchmark Suite}
 }
@@ -1297,11 +1301,11 @@ doi = {10.1063/1.478595}
 
 @article{Stratton2018,
   title = {Parboil: {{A Revised Benchmark Suite}} for {{Scientific}} and {{Commercial Throughput Computing}}},
+  year = {2018},
+  journal = {IMPACT Technical Report},
   shorttitle = {Parboil},
   abstract = {The Parboil benchmarks are a set of throughput computing applications useful for studying the performance of throughput computing architecture and compilers. The name comes from the culinary term for a partial cooking process, which represents our belief that useful throughput computing benchmarks must be "cooked", or preselected to implement a scalable algorithm with fine-grained parallel tasks. But useful benchmarks for this field cannot be "fully cooked", because the architectures and programming models and supporting tools are evolving rapidly enough that static benchmark codes will lose relevance very quickly. We have collected benchmarks from throughput computing application researchers in many different scientific and commercial fields including image processing, biomolecular simulation, fluid dynamics, and astronomy. Each benchmark includes several implementations. Some implementations we provide as readable base implementations from which new optimization efforts can begin, and others as examples of the current state-of-the-art targeting specific CPU and GPU architectures. As we continue to optimize these benchmarks for new and existing architectures ourselves, we will also gladly accept new implementations and benchmark contributions from developers to recognize those at the frontier of performance optimization on each architecture. Finally, by including versions of varying levels of optimization of the same fundamental algorithm, the bench-marks present opportunities to demonstrate tools and architectures that help programmers get the most out of their parallel hardware. Less optimized versions are presented as challenges to the compiler and architecture research communities: to develop the technology that automatically raises the performance of simpler implementations to the performance level of sophisticated programmer-optimized implementations, or demonstrate any other performance or programmability improvements. We hope that these benchmarks will facilitate effective demonstrations of such technology.},
-  author = {Stratton, John and Rodrigues, Christopher and Sung, I-Jui and Obeid, Nady and Chang, Li-Wen and Anssari, Nasser and Geng, Daniel and Liu, Wen-Mei and Hwu, Wen-mei},
-  month = nov,
-  year = {2018}
+  author = {Stratton, John and Rodrigues, Christopher and Sung, I-Jui and Obeid, Nady and Chang, Li-Wen and Anssari, Nasser and Geng, Daniel and Liu, Wen-Mei and Hwu, Wen-mei}
 }
 
 @article{Dongarra2001,
@@ -1585,7 +1589,7 @@ year = {2017},
 month = {12},
 pages = {},
 title = {Multi-device Controllers: A Library to Simplify Parallel Heterogeneous Programming},
-booktitle = {International Journal of Parallel Programming}
+journal = {International Journal of Parallel Programming}
 }
 
 @article{Jablin:2011:ACC:1993316.1993516,
@@ -1645,4 +1649,199 @@ booktitle = {International Journal of Parallel Programming}
   keywords = {high-performance computing,HPC,sparse matrix-vector multiplication,CSX,data compression,multicore,scientific applications,SpMV,SpMV library},
   pages = {26:1--26:32},
   file = {/home/bruce/Zotero/storage/E7FB22HG/Elafrou et al. - 2018 - SparseX A Library for High-Performance Sparse Mat.pdf}
+}
+
+@article{Steuwer:2015:GPP:2858949.2784754,
+ author = {Steuwer, Michel and Fensch, Christian and Lindley, Sam and Dubach, Christophe},
+ title = {Generating Performance Portable Code Using Rewrite Rules: From High-level Functional Expressions to High-performance OpenCL Code},
+ journal = {SIGPLAN Not.},
+ issue_date = {September 2015},
+ volume = {50},
+ number = {9},
+ month = aug,
+ year = {2015},
+ issn = {0362-1340},
+ pages = {205--217},
+ numpages = {13},
+ url = {http://doi.acm.org/10.1145/2858949.2784754},
+ doi = {10.1145/2858949.2784754},
+ acmid = {2784754},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {Algorithmic patterns, GPU, OpenCL, code generation, performance portability, rewrite rules},
+}
+
+@inproceedings{Steuwer:2016:MMB:2968455.2968521,
+ author = {Steuwer, Michel and Remmelg, Toomas and Dubach, Christophe},
+ title = {Matrix Multiplication Beyond Auto-tuning: Rewrite-based GPU Code Generation},
+ booktitle = {Proceedings of the International Conference on Compilers, Architectures and Synthesis for Embedded Systems},
+ series = {CASES '16},
+ year = {2016},
+ isbn = {978-1-4503-4482-1},
+ location = {Pittsburgh, Pennsylvania},
+ pages = {15:1--15:10},
+ articleno = {15},
+ numpages = {10},
+ url = {http://doi.acm.org/10.1145/2968455.2968521},
+ doi = {10.1145/2968455.2968521},
+ acmid = {2968521},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+}
+
+@inproceedings{das2010experiences, 
+author={D. {Das} and {Peng Wu}}, 
+booktitle={2010 IEEE International Symposium on Parallel Distributed Processing, Workshops and Phd Forum (IPDPSW)}, 
+title={Experiences of using a dependence profiler to assist parallelization for multi-cores}, 
+year={2010}, 
+volume={}, 
+number={}, 
+pages={1-8}, 
+keywords={multiprocessing programs;optimising compilers;parallel processing;dependence profiler;multi-cores parallelization;data-dependence profiling;DProf;multi-core systems parallelization;optimizing compiler;thread-level parallelism;parallelizing compilers;OpenMP;Runtime;Optimizing compilers;Concurrent computing;Prototypes;Feeds;Multicore processing;Information analysis;Data Dependence;Profiler;Multi-core;Parallelization;Compiler}, 
+doi={10.1109/IPDPSW.2010.5470884}, 
+ISSN={}, 
+month={April}
+}
+
+@inproceedings{Johnson:2012:SSP:2254064.2254107,
+ author = {Johnson, Nick P. and Kim, Hanjun and Prabhu, Prakash and Zaks, Ayal and August, David I.},
+ title = {Speculative Separation for Privatization and Reductions},
+ booktitle = {Proceedings of the 33rd ACM SIGPLAN Conference on Programming Language Design and Implementation},
+ series = {PLDI '12},
+ year = {2012},
+ isbn = {978-1-4503-1205-9},
+ location = {Beijing, China},
+ pages = {359--370},
+ numpages = {12},
+ url = {http://doi.acm.org/10.1145/2254064.2254107},
+ doi = {10.1145/2254064.2254107},
+ acmid = {2254107},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {automatic parallelization, separation, speculation},
+} 
+
+@article{hall1996maximizing, 
+author={M. W. {Hall} and J. M. {Anderson} and S. P. {Amarasinghe} and B. R. {Murphy} and {Shih-Wei Liao} and E. {Bugnion} and M. S. {Lam}}, 
+journal={Computer}, 
+title={Maximizing multiprocessor performance with the SUIF compiler}, 
+year={1996}, 
+volume={29}, 
+number={12}, 
+pages={84-89}, 
+keywords={mathematics computing;multiprocessing systems;optimising compilers;parallelising compilers;performance evaluation;benchmark programs;SPECfp95;NAS;speedups;robust analysis techniques;memory optimization techniques;parallelizing compilers;array-based numerical programs;Stanford University Intermediate Format compiler;automatic parallelization techniques;SUIF compiler;multiprocessor performance;Parallel processing;Phased arrays;Program processors;Information analysis;Concurrent computing;Privatization;Throughput;Multiprocessing systems;Cache memory;Programming profession}, 
+doi={10.1109/2.546613}, 
+ISSN={0018-9162}, 
+month={Dec}
+}
+
+@inproceedings{Han:2000:ILA:645678.663936,
+ author = {Han, Hwansoo and Tseng, Chau-Wen},
+ title = {Improving Locality for Adaptive Irregular Scientific Codes},
+ booktitle = {Proceedings of the 13th International Workshop on Languages and Compilers for Parallel Computing-Revised Papers},
+ series = {LCPC '00},
+ year = {2001},
+ isbn = {3-540-42862-3},
+ pages = {173--188},
+ numpages = {16},
+ url = {http://dl.acm.org/citation.cfm?id=645678.663936},
+ acmid = {663936},
+ publisher = {Springer-Verlag},
+ address = {London, UK, UK},
+} 
+
+@inproceedings{kuck1981dependence,
+  title={Dependence graphs and compiler optimizations},
+  author={Kuck, David J and Kuhn, Robert H and Padua, David A and Leasure, Bruce and Wolfe, Michael},
+  booktitle={Proceedings of the 8th ACM SIGPLAN-SIGACT symposium on Principles of programming languages},
+  pages={207--218},
+  year={1981},
+  organization={ACM}
+}
+
+@inproceedings{ciesko2015scaling,
+  title={Scaling irregular array-type reductions in OmpSs},
+  author={Ciesko, Jan and Mateo Bellido, Sergi and Teruel, Xavier and Beltran, Vicen{\c{c}}},
+  booktitle={BSC Doctoral Symposium (2nd: 2015: Barcelona)},
+  pages={138--140},
+  year={2015},
+  organization={Barcelona Supercomputing Center}
+}
+
+@inproceedings{seo2011performance,
+  title={Performance characterization of the NAS Parallel Benchmarks in OpenCL},
+  author={Seo, Sangmin and Jo, Gangwon and Lee, Jaejin},
+  booktitle={Workload Characterization (IISWC), 2011 IEEE International Symposium on},
+  pages={137--148},
+  year={2011},
+  organization={IEEE}
+}
+
+@article{stratton2012parboil,
+  title={Parboil: A revised benchmark suite for scientific and commercial throughput computing},
+  author={Stratton, John A and Rodrigues, Christopher and Sung, I-Jui and Obeid, Nady and Chang, Li-Wen and Anssari, Nasser and Liu, Geng Daniel and Hwu, Wen-mei W},
+  journal={Center for Reliable and High-Performance Computing},
+  volume={127},
+  year={2012}
+}
+
+@inproceedings{Che2009Rodinia,
+ author = {Che, Shuai and Boyer, Michael and Meng, Jiayuan and Tarjan, David and Sheaffer, Jeremy W. and Lee, Sang-Ha and Skadron, Kevin},
+ title = {Rodinia: A Benchmark Suite for Heterogeneous Computing},
+ booktitle = {Proceedings of the 2009 IEEE International Symposium on Workload Characterization (IISWC)},
+ series = {IISWC '09},
+ year = {2009},
+ isbn = {978-1-4244-5156-2},
+ pages = {44--54},
+ numpages = {11},
+ url = {http://dx.doi.org/10.1109/IISWC.2009.5306797},
+ doi = {10.1109/IISWC.2009.5306797},
+ acmid = {1680782},
+ publisher = {IEEE Computer Society},
+ address = {Washington, DC, USA},
+}
+
+@inproceedings{Han2010Speculative,
+ author = {Han, Liang and Liu, Wei and Tuck, James M.},
+ title = {Speculative Parallelization of Partial Reduction Variables},
+ booktitle = {Proceedings of the 8th Annual IEEE/ACM International Symposium on Code Generation and Optimization},
+ series = {CGO '10},
+ year = {2010},
+ isbn = {978-1-60558-635-9},
+ location = {Toronto, Ontario, Canada},
+ pages = {141--150},
+ numpages = {10},
+ url = {http://doi.acm.org/10.1145/1772954.1772975},
+ doi = {10.1145/1772954.1772975},
+ acmid = {1772975},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {multi-core architecture, parallelization, reduction variables, thread-level speculation},
+}
+
+@inproceedings{aguilar2015unified,
+  title={Unified Identification of Multiple Forms of Parallelism in Embedded Applications},
+  author={Aguilar, Miguel Angel and Leupers, Rainer},
+  booktitle={2015 International Conference on Parallel Architecture and Compilation (PACT)},
+  pages={482--483},
+  year={2015},
+  organization={IEEE}
+}
+
+@article{deitz2002high,
+  title={High-level language support for user-defined reductions},
+  author={Deitz, Steven J and Chamberlain, Bradford L and Snyder, Lawrence},
+  journal={The Journal of Supercomputing},
+  volume={23},
+  number={1},
+  pages={23--37},
+  year={2002},
+  publisher={Springer}
+}
+
+@phdthesis{kim2012dynamic,
+  title={Dynamic program analysis algorithms to assist parallelization},
+  author={Kim, Minjang},
+  year={2012},
+  school={Georgia Institute of Technology}
 }

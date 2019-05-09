@@ -22,6 +22,11 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{rotating}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\usetikzlibrary{patterns}
+\pgfplotsset{compat=1.13}
 
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 
@@ -218,7 +223,7 @@ morecomment  = [s]{"}{"}
 \chapter[Building a Fully integrated Idiom Specific Optimization Pipeline]
         {Building a Fully integrated Idiom Specific Optimization Pipeline
          \footnote{This chapter is based on published research in
-                   \citet{}.}}
+                   \citet{lilacpaper}.}}
     \label{chapter:lilac}
     \input{latex/chapter7}
 
