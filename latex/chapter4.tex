@@ -272,15 +272,29 @@ End
     bound to identifiers.
     As we already saw in \autoref{fig:candlexample}, the syntax for this is as
     follows:
-    \begin{align*}
-        specification ::= \text{\bf Constraint}\ \left<\text{\bf s}\right>\ \text{\it formula}\ \text{\bf End}
-    \end{align*}
+\begin{figure}[H]
+\centering
+\begin{tabular}{|c|}
+    \hline
+    $specification ::= \text{\bf Constraint}\ \left<\text{\bf s}\right>\ \text{\it formula}\ \text{\bf End}$\\
+    \hline
+\end{tabular}
+\end{figure}
+
+    \noindent
     We furthermore saw in \autoref{fig:candlexample} that logical conjunctions
     can be used to combine {\it formula}s.
     More generally, a {\it formula} can be any of the following:
-    \begin{align*}
-        formula ::= \text{\it atomic}\mid\text{\it conjunction}\mid\text{\it disjunction}\mid\text{\it foreach}\mid \text{\it forany}\mid\text{\it include}\mid\text{\it collect}
-    \end{align*}
+\begin{figure}[H]
+\centering
+\begin{tabular}{|c|}
+    \hline
+    $formula ::= \text{\it atomic}\mid\text{\it conjunction}\mid\text{\it disjunction}\mid\text{\it foreach}\mid \text{\it forany}\mid\text{\it include}\mid\text{\it collect}$\\
+    \hline
+\end{tabular}
+\end{figure}
+
+    \noindent
     The basis of every CAnDL program are {\it atomic} constraints, which are
     bound together by logical connectives $\land$ and $\lor$
     ({\it conjunction} and {\it disjunction}) and other higher level constructs.
@@ -291,54 +305,94 @@ End
     The individual classes of atomic constraints will be introduced next,
     followed the the higher level constructs.
 
-\subsection{Atomic Constraints}
+\subsection{Basic Atomic Constraints}
 
-    Based on the model description in \autoref{}, CAnDL provides a wide range of
-    atomic constraints.
+    Based on the mathematical model description in \autoref{chapter:theory},
+    CAnDL provides a wide range of atomic constraints.
+    The most simple group of atomic constraints are those that operate on only
+    a single variable.
+    They are listed in \autoref{onevaratomics} and operate immediately on the
+    underlying mathematical structures, testing element-of properties of the
+    sets in order to constraint data types, instrution opcodes etc.
 
-    \begin{figure}[h]
-    \begin{minipage}{0.49\textwidth}
-\begin{lstlisting}[language=CAnDL]
-{v} is <op> instruction
-\end{lstlisting}
-    \end{minipage}
-    \begin{minipage}{0.49\textwidth}
-    $(v,\text{op})\in I_\mathcal F$
-    \end{minipage}
-    \end{figure}
+\begin{figure}[h]
+  \centering
+  \begin{tabular}{|c|c|}
+    \hline
+    syntax & mathematical equivalent \\
+    \hline
+    \hline
+    $\text{\bf data\_type}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ &  $(x,s)\in T_\mathcal F$\\
+    \hline
+    $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf literal}$ &  $x\in C_\mathcal F^*$\\
+    $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf argument}$ & $x\in P_\mathcal F^*$\\
+    $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf instruction}$ & $x\in I_\mathcal F^*$\\
+    \hline
+    $\text{\bf opcode}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(x,s)\in I_\mathcal F$\\
+    \hline
+    $\text{\bf function\_name}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $PROBLEM$\\
+    \hline
+  \end{tabular}
+  \caption{The simplest atomic constraints operate on a single variable and
+           check element-of properties for the different unerlying sets
+           in the SSA model.}
+  \label{onevaratomics}
+\end{figure}
 
-    The first type of constraint is an {\it atomic} constraint based on
-    {\it variable}s.
-    {\it Variable}s in CAnDL correspond to instructions and values in LLVM IR. 
-    Given some IR code, all occurring values can be assigned to the
-    {\it variable}s of a given constraint formula.
-    This includes instructions, globals, constants and function parameters.
-    Syntactically, a variable is simply an identifier in curly brackets.
+    \noindent
+    Next are atomic constraints based on the data flow and
+    control flow graphs, checking for element-of properties of pairs of
+    variables, as well as shallow ordering constraints.
+    These are listed in \autoref{twovaratomics}.
+    There is also an atomic constraint for Phi nodes as shown in
+    \autoref{phiatomic}.
 
-    CAnDL uses the following atomic constraints:
-    \begin{align*}
-        \text{\bf data\_type}\ \text{\it variable}\ &\text{\bf =}\ \text{\bf int}\\
-        \text{\bf data\_type}\ \text{\it variable}\ &\text{\bf =}\ \text{\bf float}
-    \end{align*}
-    This restricts the data type to integer or floating point.
-    \begin{align*}
-        \text{\bf ir\_type}\ \text{\it variable}\ &\text{\bf =}\ \text{\bf literal}\\
-        \text{\bf ir\_type}\ \text{\it variable}\ &\text{\bf =}\ \text{\bf argument}\\
-        \text{\bf ir\_type}\ \text{\it variable}\ &\text{\bf =}\ \text{\bf instruction}
-    \end{align*}
-    This restricts the type of IR node that is allowed to compile time constants, function arguments or instructions.
-    \begin{align*}
-        \text{\bf opcode}\ \text{\it variable}\ &\text{\bf =}\ \left<\text{\bf s}\right>
-    \end{align*}
-    This restricts the value instructions of the specified opcode.
-    \begin{align*}
-        \text{\bf function\_name}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>
-    \end{align*}
-    This restricts the variable to be a specified standard function (i.e.\ the {\tt sqrt} function).
-    \begin{align*}
-        \text{variable}\ &\text{\bf =}\ \text{variable}\\
-        \text{variable}\ &\text{\bf !=}\ \text{variable}
-    \end{align*}
+\begin{figure}[h]
+  \centering
+  \begin{tabular}{|c|c|}
+    \hline
+    syntax & mathematical equivalent \\
+    \hline
+    \hline
+    $\text{\it variable}\ \text{\bf =}\ \text{\it variable}$ & $x=y$\\
+    $\text{\it variable}\ \text{\bf !=}\ \text{\it variable}$ & $x\neq y$\\
+    \hline
+    $\text{\it variable}\text{\bf.args[}\left<\text{\bf n}\right>\text{\bf]}\ \text{\bf =}\ \text{\it variable}$ & $(y,x,n)\in DFG_\mathcal F$\\
+    $\text{\it variable}\ \text{\bf $\in$}\ \text{\it variable}\text{\bf .args}$ & $(x,y)\in DFG_\mathcal F^*$\\
+    \hline
+    $\text{\it variable}\text{\bf.successors[}\left<\text{\bf n}\right>\text{\bf]}\ \text{\bf =}\ \text{\it variable}$ & $(x,y,n)\in CFG_\mathcal F$\\
+    $\text{\it variable}\ \text{\bf $\in$}\ \text{\it variable}\text{\bf .successors}$ & $(y,x)\in CFG_\mathcal F^*$\\
+    \hline
+  \end{tabular}
+  \caption{The second class of atomic constraints checks for graph edges in the
+           data flow and control low graphs, or simply check for shallow
+           equivalence of two variables.}
+  \label{twovaratomics}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \begin{tabular}{|c|c|}
+    \hline
+    syntax & mathematical equivalent \\
+    \hline
+    \hline
+    \multirow{2}{*}{$\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \Phi\ \text{\it variable}$} & $(z,phi)\in I_\mathcal F\land$ \\
+                                                                                                       & $\exists i\colon [(x,z,2i-1)\in DFG_\mathcal F\land (y,z,2i)\in DFG_\mathcal F)]$\\
+    \hline
+  \end{tabular}
+  \caption{CAnDL exposes phi nodes with a dedicated atomic constraint.}
+  \label{phiatomic}
+\end{figure}
+
+\subsection{Graph Theoretic Atomic Constraints}
+
+    On top of the atomic constraints that operate immediately on the sets of
+    the mathematical model, there are a list of more sophisticated constraints
+    based on graph properties.
+    These include reachability as well as dominance relationships in the data
+    flow and control flow graphs.
+
     This enforces two variables to have the same/not the same value.
     This is a shallow comparison, i.e. it compares whether two variables represent the same IR node. 
     \begin{align*}
@@ -346,11 +400,6 @@ End
         \text{\bf data\_origin}&\ \text{\it variable}
     \end{align*}
     The value is an origin of control (function entry) or data (function argument, {\tt load} instruction, inpure function call).
-    \begin{align*}
-        \text{\it variable}\text{\bf.arg[}\left<\text{\bf n}\right>{\bf]}\ &\text{\bf =}\ \text{\it variable}\\
-        \text{\it variable}\ &\text{\bf $\in$}\ \text{\it variable}\text{\bf .args}
-    \end{align*}
-    There data flow from one value to the next.
     \begin{align*}
         \text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \Phi\ \text{\it variable}
     \end{align*}
