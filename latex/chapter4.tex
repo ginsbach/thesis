@@ -251,7 +251,7 @@ End
     loops to complex algorithmic concepts such as stencil codes with arbitrary
     kernel functions or code regions suitable for polyhedral analysis.
 
-    Like traditional constraint programs, CAnDL programs comprise two
+    Like traditional constraint programs, CAnDL programs have two
     fundamental features: \textbf{variables} and \textbf{constraints}.
     The basic constraint building blocks are well established compiler analysis
     tools, such as constraints on data and control flow, data types and
@@ -393,8 +393,6 @@ End
     These include reachability as well as dominance relationships in the data
     flow and control flow graphs.
 
-    This enforces two variables to have the same/not the same value.
-    This is a shallow comparison, i.e. it compares whether two variables represent the same IR node. 
     \begin{align*}
         \text{\bf control\_origin}&\ \text{\it variable}\\
         \text{\bf data\_origin}&\ \text{\it variable}
@@ -426,22 +424,38 @@ End
     Possible additions include constraints on function attributes, value
     constraints on literals etc.
 
+\newpage
 \subsection{Range Constraints}
 
-    Building on top of the basic conjunction and disjunction constructs, there
-    are range based versions that operate on arrays of variables.
-    \begin{align*}
-        \text{\it formula}\ &\text{\bf foreach}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}\\
-        \text{\it formula}\ &\text{\bf forany}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}
-    \end{align*}
-    These constructs allow the repeated application of a formula according to
-    some range of indices.
-    This is demonstrated by \autoref{fig:forall}, which shows two equivalent
-    CAnDL programs, one formulated with \texttt{foreach} and one without.
+    Building on top of atomics and the fundamental conjunction and disjunction
+    constructs, there are range based versions that operate on arrays of
+    variables, as shown in \autoref{rangeconstraints}.
+\begin{figure}[h]
+  \centering
+  \begin{tabular}{|c|}
+    \hline
+    $foreach ::= \text{\it formula}\ \text{\bf foreach}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}$\\
+    $forany ::= \text{\it formula}\ \text{\bf forany}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}$\\
+    \hline
+  \end{tabular}
+  \caption{There are two range constructs in CAnDL that apply formulas to
+           arrays of variables.}
+  \label{rangeconstraints}
+\end{figure}
+
+    \noindent
+    These constructs allow the replication of a constraint formula according to
+    a range of indices.
+    This is demonstrated in \autoref{fig:forall}, which shows two equivalent
+    CAnDL programs, the first one formulated with \texttt{foreach} and the
+    second one without.
     In both cases, the program specifies an array of five variables with data
     flow from each element to the next.
     We can see how the \texttt{foreach} loop can be expanded similar to loop
-    unrolling.
+    unrolling, with a logical conjunction ($\land$) binding the replicas of the formula
+    together.
+    Otherwise identical, the \texttt{forany} construct invokes a logical
+    disjunction ($\lor$) instead.
 
 \begin{figure}[ht]
 \begin{lstlisting}[language=CAnDL]
@@ -458,9 +472,34 @@ Constraint ValueChain
 End
 \end{lstlisting}
 \vspace{-0.3cm}
-\caption{Expansion of range constraints in CAnDL}
+\caption{Example for the expansion of range constraints in CAnDL:
+         Range based expresions can be ``unrolled'' manually, the two
+         specifications are identical.}
 \label{fig:forall}
 \end{figure}
+
+    Although variable identifiers are black boxes to atomic constraints, their
+    syntactic structure is relevant to range constructs, when indices are
+    evaluated at CAnDL compile time.
+    The syntactic structure of variables is given in \autoref{varsyntax}.
+
+\begin{figure}[b]
+  \centering
+  \begin{tabular}{|c|}
+    \hline
+    $variable ::= \left<\text{\bf s}\right>\mid\text{\it variable}\ \text{\bf [}\ \text{\it calculation}\ \text{\bf ]}\mid\text{\it variable}\ \text{\bf.}\ \left<\text{\bf s}\right>$\\
+    $calculation ::= \left<\text{\bf s}\right>\mid\left<\text{\bf n}\right>\mid\text{\it calculation}\ \text{\bf+}\ \text{\it calculation}\mid\text{\it calculation}\ \text{\bf-}\ \text{\it calculation}$\\
+    \hline
+  \end{tabular}
+  \caption{Variables in CAnDL can contain simple index calculations to support
+           the range constructs as well as an hierarchical structure.
+           The syntax aligns closely to C/C++ conventions.}
+  \label{varsyntax}
+\end{figure}
+
+
+
+
 
 \subsubsection{Modularity}
     \label{sec:modularity}
@@ -705,7 +744,7 @@ End
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.29\textwidth]{figures/compilerFlow2.pdf}
+\includegraphics[width=0.6\textwidth]{figures/compilerFlow2.pdf}
 \caption{CAnDL in the LLVM/clang build system}
 \label{fig:build2}
 \end{figure}
@@ -714,7 +753,7 @@ End
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.29\textwidth]{figures/candlstages.pdf}
+\includegraphics[width=0.6\textwidth]{figures/candlstages.pdf}
 \caption{CAnDL compiler flow}
 \label{fig:compilerflow}
 \end{figure}
