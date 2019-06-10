@@ -1,9 +1,18 @@
 
-    The CAnDL language from the previous chapter makes the powerful constraint
+    The CAnDL language from the previous chapter makes powerful constraint
     programming methods available directly in the LLVM infrastructure.
-    This chapter will demonstrate a case study of an often overlooked
-    computational idiom that allows automatic parallelisation of several
-    important benchmark programs that were previously largely inaccesible to
+    First results showed how this enables complex compiler analysis generation
+    including a full polyhedral analysis.
+    This chapter will demonstrate a case study of automatic parallsisation that
+    is built on top of the constraint programming functionality.
+    Instead of focusing on the parallelisation opportunities that are already
+    accessible via conventional analysis methods, the focus is on a more complex
+    class of parallelisation opoortunities: complex reductions and histogram
+    computations.
+    These computations are rarely thought of as a single class and can be
+    overlooked easily, but this work demonstrated that this allows automatic
+    parallelisation of several  important benchmark programs that were
+    previously largely inaccesible to
     compiler analysis.
 
     By grouping complex reductions and histogram computations together and
@@ -12,105 +21,94 @@
     Complemented with well-established parallelisation approaches, good speedups
     are achieved on several important programs.
 
+\newpage
 \section{Introduction}
 
-The reduction idiom occurs widely in numerical applications \cite{hall1996maximizing}.  This
-includes standard HPC workloads based on linear algebra as well as
-embedded benchmarks and emerging machine learning and computer vision
-applications \cite{Reddy2016Reduction}.
+    Reductions occurs widely in numerical applications
+    \cite{hall1996maximizing}.
+    The typical reduction operation successively applies an arithmetic
+    operator to an array of numeric values, in order to compute, for
+    example, the sum of a set of floating point numbers.
+    Most prominently, a reduction features in the innermost loop of the matrix
+    multiplication kernel in the form of a dot product.
+    In this form, reductions are critical to many standard high performance
+    computing (HPC) workloads based on linear algebra, as well as embedded
+    benchmarks and emerging machine learning and computer vision applications
+    \cite{Reddy2016Reduction}.
 
-The typical reduction operation successively applies an arithmetic
-operator to an array of numeric values, in order to compute, for
-example, the sum of a set of floating point numbers.  These scalar
-reductions are prevalent but rarely constitute performance
-bottlenecks.  There is a larger class of reduction,  sometimes referred
-to as irregular reductions or histograms \cite{Han:2000:ILA:645678.663936}.
-Such reductions are typically more intense computationally and can be
-more profitably exploited.
+    However, there is a much larger class of computations that can be
+    interpreted as reductions than these scalar computations, and this class
+    consitutes another important set of common kernels.
+    The computations that this chapter will investigate include irregular
+    reductions and histograms \cite{Han:2000:ILA:645678.663936}.
+    Such reductions are typically more intense computationally and can be
+    more profitably exploited on their own.
 
-%% In this paper we want to draw the
-%% attention to general histogram reductions that we recognise as
-%% performance critical in several benchmark programs and that can be
-%% exploited for automatic compiler parallelisation.
+    Discovering and exploiting scalar reductions in programs has been
+    studied for many years \cite{pottenger1995idiom}.
+    The treatment of more general reduction operations has received less
+    attention.
+    While some work on parallelization of these computations has been published,
+    automatic detection mostly evades the common compiler analysis methods.
+    The reason is that histogram reductions intrinsically contain indirect
+    memory accesses, which poses a great challenge to compilers that use
+    data dependence \cite{kuck1981dependence} or polyhedral
+    representation \cite{ benabderrahmane2010polyhedral} as the basis for
+    their analysis.
 
-Discovering and exploiting scalar reductions in programs has been
-studied for many years \cite{pottenger1995idiom}.  The treatment of
-more general reduction operations has received  less attention.
-% than systematic approaches
-%to scalar reductions and to do-all parallelism detection. 
-%%  As we show
-%% in this paper, there are many reduction opportunities within programs
-%% that go currently undetected and this includes in particular those
-%% reductions that are most critical to runtime performance.
-The reason is that histogram reductions intrinsically contain indirect
-memory accesses,  which poses a great challenge to compilers that use
-data dependence \cite{kuck1981dependence} or polyhedral
-representation \cite{ benabderrahmane2010polyhedral} as the basis for
-their analysis.
+    Most prior work has focused on the exploitation of generalized reductions
+    rather than discovery \cite{Gutierrez:2000}, examining trade-offs in
+    implementation \cite{yu2006adaptive} or exploitation of novel hardware
+    \cite{Huo2011HiPC}.
+    Early work focused on well structured Fortran and paid little attention to
+    compiler-based detection.  More recent work has attempted to find
+    reductions in more complex C based code with partial reduction
+    variables \cite{Han2010Speculative}. This approach is  based on update
+    chains in the dependence graph and requires hardware speculation support
+    to check dependences, but is unable to detect histogram
+    reductions. In \cite{Johnson:2012:SSP:2254064.2254107}, a complex system is
+    proposed to allow structure privatization, yet it only exploits simple
+    scalar reductions.  The difficulty in automatically detecting
+    reductions has led to language or annotation based approaches where it
+    is the user's responsibility to mark reductions in the
+    program \cite{Reddy2016Reduction,ciesko2015scaling}.
 
-Most prior work has focused on the exploitation of generalized reductions
-rather than discovery
-\cite{Gutierrez:2000}, examining trade-offs in implementation \cite{yu2006adaptive}
- or exploitation of novel hardware \cite{Huo2011HiPC}. Early work
-focused on well structured Fortran and paid little attention to
-compiler-based detection.  More recent work has attempted to find
-reductions in more complex C based code with partial reduction
-variables \cite{Han2010Speculative}. This approach is  based on update
-chains in the dependence graph and requires hardware speculation support
-to check dependences, but is unable to detect histogram
-reductions. In \cite{Johnson:2012:SSP:2254064.2254107}, a complex system is
-proposed to allow structure privatization, yet it only exploits simple
-scalar reductions.  The difficulty in automatically detecting
-reductions has led to language or annotation based approaches where it
-is the user's responsibility to mark reductions in the
-program \cite{Reddy2016Reduction,ciesko2015scaling}.
+    This chapter develops a new compiler based approach that
+    automatically detects a wide class of generalized reductions. Such
+    reductions can span large sections of code, contain general
+    control-flow, have non-linear access to arrays and include histograms.
 
-In this paper we develop a new compiler based approach that
-automatically detects a wide class of generalized reductions. Such
-reductions can span large sections of code, contain general
-control-flow, have non-linear access to arrays and include histograms.
+    Rather than developing a bespoke detection pass, the methodology is based on
+    the previously introduced CAnDL constraint programming language, which
+    allows easy extensions to cover other idioms and has been implemented as an
+    LLVM \cite{lattner2004llvm} pass after lowering to SSA-form.  
+    This formulation allows us to specify the reduction idiom in a semi-formal
+    way using data flow and control flow constraints.
+    We then develop a customized constraint solver to identify
+    satisfying subsets that constitute a reduction operation.  We use a a careful
+    enumeration strategy to reduce the theoretic combinatorial complexity
+    of detection to  linear time.
 
-Rather than developing a bespoke detection pass, we introduce a novel
-constraint based 
-representation of generalized reductions. This is embedded in a constraint 
-language which allows easy extensions to cover other idioms 
-and has  been implemented as an LLVM \cite{lattner2004llvm}  pass
-after lowering to SSA-form.  
-%% This formulation allows us to specify the
-%% reduction idiom in a semi-formal way using data flow and control flow
-%% constraints.
-We then develop a customized constraint solver to identify
-satisfying subsets that constitute a reduction operation.  We use a a careful
-enumeration strategy to reduce the theoretic combinatorial complexity
-of detection to  linear time.
-%% With the advent of GPUS and heterogeneous systems, reductions can be efficiently
-%% exploited and can lead to significant additional performance improvement over
-%% standard parallelisation. 
+    We applied our approach to C/C++ versions of 3 well known benchmark
+    suites: NAS \cite{seo2011performance},
+    Parboil\cite{stratton2012parboil} and
+    Rodinia \cite{Che2009Rodinia}. These are non-trivial code bases and
+    vary considerably in terms of code structure and complexity. We
+    compared our approach to state of the art polyhedral and data
+    dependence approaches and find 84 scalar reductions and 6
+    histograms. Only our approach finds general histogram reductions.
+    %% In order to further evaluate our approach, we manually profiled and
+    %% examined the code and found that our approach is able to determine xyz\% of 
+    %% all possible reductions.
 
-%Once all candidate reductions have been identified we then use a specialised SAT
-%solver which by a careful enumeration strategy reduces the theoretic
-%combinatorial complexity of detection to linear time in practice.
-
-We applied our approach to C/C++ versions of 3 well known benchmark
- suites: NAS \cite{seo2011performance},
- Parboil\cite{stratton2012parboil} and
- Rodinia \cite{Che2009Rodinia}. These are non-trivial code bases and
- vary considerably in terms of code structure and complexity. We
- compared our approach to state of the art polyhedral and data
- dependence approaches and find 84 scalar reductions and 6
- histograms. Only our approach finds general histogram reductions.
-%% In order to further evaluate our approach, we manually profiled and
-%% examined the code and found that our approach is able to determine xyz\% of 
-%% all possible reductions.
-
-This paper focuses on the detection of reductions and then assumes
- later compiler stages are responsible for mapping to existing tuned
- libraries. However, to illustrate the potential performance of our
- scheme we developed and implemented a code generation pass that
- generates templated parallel pthread reduction code. Using this
- scheme, on those benchmarks where reductions are 
- performance bottleneck we achieve significant  speedups.
- 
+    This paper focuses on the detection of reductions and then assumes
+     later compiler stages are responsible for mapping to existing tuned
+     libraries. However, to illustrate the potential performance of our
+     scheme we developed and implemented a code generation pass that
+     generates templated parallel pthread reduction code. Using this
+     scheme, on those benchmarks where reductions are 
+     performance bottleneck we achieve significant  speedups.
+     
 
  Our constraint based approach can be used for a wide range of optimizations 
 beyond reduction detection. To illustrate this we prototyped a linear algebra kernel detection pass which replaces dense and sparse matrix operations with the appropriate library call leading to significant speedup.
@@ -188,15 +186,15 @@ of the local copies of \texttt{q}.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/nicepicture.png}
+\includegraphics[width=0.9\textwidth]{figures/nicepicture.png}
 \caption{Illustration of Parallel Complex Reduction. Private copies of the reduction variables which accumulate partial results. These are merged after synchronization}
 \label{nice-picture}
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
- \includegraphics[width=0.45\textwidth]{figures/nicepicture2.png}
+ \includegraphics[width=0.9\textwidth]{figures/nicepicture2.png}
  \caption{A subset of the Data Flow, Control Flow and Control Dependences of Figure 2}
  \label{nice-picture2}
  \end{figure}
