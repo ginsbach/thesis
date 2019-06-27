@@ -1,23 +1,59 @@
-    The end of Moores Law and the end of Dennard Scaling have required new
-    approaches in hardware.
-    In response, accelerator processors have become widespread, first in the
-    form of general purpose graphics processing units (GPGPU) and now
-    increasingly with even more deep learning accelerators.
+    For several decades, from the 1970s until the early 2000s, processor
+    development followed Moore's Law and was able to exploit Dennard Scaling.
+    Circuit density approximately doubled every two years, without significantly
+    increasing power consumption.
+    This had important implications for software development: Not only did the
+    performance of computers improve exponentially, but these performance gains
+    were also immediately available to already existing programs.
+    The fundamental contract between software and hardware of mainstream
+    processors - the instruction set architectures - evolved without
+    paradigmatic changes.
+    Software developers and users could trust on ever increasing clock cycles
+    without any intervention
 
-    Heterogeneous computing platforms is the natural and necessary reaction to
-    the scaling limitations of general purpose processors, but they pose a huge
-    challenge to the surrounding software ecosystem.
-    As opposed to microarchitectural improvements, existing software is not able
-    to automatically profit from new acccelerators designs.
+    This seemingly unending progress first broke down around 2006 with the
+    apparent end of Dennard Scaling.
+    The resulting paradigmatic shift toward multi-processing left a deep mark on
+    software development.
+    In recent years, it has become apparent that multi-processing as well has
+    hit a wall and another paradigm shift is looming.
+    With the end of both Dennard Scaling and Moore's Law, the hardware industry
+    turned instead toward architectural innovation, with a trend away from
+    general purpose processors and toward dark silicon and special purpose
+    hardware.
+    Accelerator processors have become widespread, first in the form of general
+    purpose graphics processing units (GPGPU) and now increasingly with deep
+    learning accelerators, that coincide with the meteoric rise of Convolutional
+    Neural Networks and the enormous success of Deep Learning.
 
-    A new hardware software contract is needed instead and heterogeneous
-    hardware should become a responsibility of the compiler.
+    Heterogeneous computing is the natural and necessary reaction to the scaling
+    limitations of general purpose processors, but it poses an enormous
+    challenge to the surrounding software ecosystem and it puts into question
+    many of the achievements in portability and longevity of programs that are
+    taken for granted in modern computing.
+    As opposed to only microarchitectural improvements, existing software is not
+    able to automatically profit from entirely new acccelerators designs.
+    Where previously binary programs could profit immediately from succeeding
+    hardware generations, and compilers were able to achieve portability across
+    platforms, novel accelerators arrive with entirely new and incompatible
+    application interfaces.
+
+    The novel hardware landscape has greatly diminishmed the scope of influence
+    of traditional compilers.
+    Were previously, a standard C/C++ compiler was in orchestrating program
+    execution on the entirely of available computing resources, it is
+    increasingly downgraded to bookeeping, with computational kernels launched
+    as separate programs on heterogeneous cores.
+    In order to reclaim their central position in the software ecosystem,
+    compilers require some fundamentally new approaches.
     While compilers have lagged behind the developments in the hardware domain,
     research into this area can profit from experience with multi-core
     processors.
 
-    Auto-parallelizing compilers have failed to solve the problems and have only
-    had major success for specific kernels and using auto-tuning.
+    Despite immense research efforts, auto-parallelizing compilers have
+    ultimately failed to conclusively solve any of the problems of parallel
+    computing and have only had major success for very specific kernels in
+    combination with auto-tuning.
     Heterogeneous computing is a superset of parallel computing and so an
     approach to fully automatically optimize code is unlikely.
 
