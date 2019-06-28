@@ -52,15 +52,24 @@
 
     Despite immense research efforts, auto-parallelizing compilers have
     ultimately failed to conclusively solve any of the problems of parallel
-    computing and have only had major success for very specific kernels in
-    combination with auto-tuning.
-    Heterogeneous computing is a superset of parallel computing and so an
-    approach to fully automatically optimize code is unlikely.
+    computing and have only had major success for specific small-scale numerical
+    kernels in combination with auto-tuning.
+    Heterogeneous computing adds another dimension of complexity on top of
+    homogeneous parallelism, making a traditional compiler approach appear
+    unfeasable.
+    Instead, compilers need to think out of the box and incorporate novel ideas
+    in order to leverage the know-how that has evolved in the surrounding
+    software ecosystem.
 
-    At the same time, a library and DSL based approach has been successful,
-    however fails to become mainstream due to adoption cost.
-    What is promising therefore is a combination of hand-optimized libraries
-    together with compiler automatisms.
+    Programming models built around libraries and novel domain specific
+    languages have had major succes in the areas that established compilers have
+    been weakest - namely reaching peak performance on rapidly evolving
+    accelerator hardware.
+    At the same time, these approaches are weak where compilers are strong:
+    they have significant adoption cost combined with often uncertain long-term
+    prospects and very limited portability.
+    What is promising therefore is a combination of hand-optimized libraries,
+    domain specific languages together with compiler automatisms.
 
     This requires a disruptive improvement in compiler analysis capabilites.
     The detection of higher level algorithmic structures in compilers has been
