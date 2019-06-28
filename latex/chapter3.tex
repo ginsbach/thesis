@@ -8,29 +8,31 @@
     but semtantically expressive class of SSA compiler intermediate
     representations.
 
-    Traditional abstract syntax tree (AST) pattern matching approaches here turn
-    into more subtle constraint problems.
-    This needs careful consideration to handle search space explosion, but at
-    the same time enables much more powerful detection capabilities and the
-    expression of higher level algorithmic structures that are impossible to
-    define syntactically on programming language level.
+    Constraint formulas on SSA respresentations initially appear to mimic
+    pattern matching approaches, that are established on abstract syntax tree
+    (AST) level.
+    However, they quickly prove themselves to be vastly more expressive.
+    Some consideration is necessary to handle search space explosion, but
+    the reward are much more powerful detection capabilities and the expression
+    of higher level algorithmic structures that are impossible to define
+    syntactically on programming language level.
     Later chapters will evaluate these claims in detail by building a complete
     constraint programming language on top of the theory in this chapter, and
     by then using it to solve real compiler analysis problems.
 
     After defining a mathematical foundation of SSA form and introducing
-    formalisms for the expression of contraint problems on top of it, several
-    standard definitions from compiler theory are then reformulated in the the
-    framework.
-    This includes common graph properties and the domination concepts as well
+    formalisms for the expression of basic contraint problems on top of it,
+    several standard definitions from compiler theory are then reformulated in
+    the framework.
+    This includes common graph properties and the domination concept, as well
     as control flow structures such as single entry single exit blocks.
     All of this lies the foundations for the succeeding chapter.
 
-    As a last part, a practical application of constraint programming to compiler
-    intermediate representation requires efficient solver techniques and a
-    section in the chapter will discuss strategies for limiting compile time
-    explosions and explore analogies of the described model to standard
-    Satisfiability Modulo Theory (SMT) problems.
+    Finally, for a practical application of constraint programming to compiler
+    intermediate representation, efficient solver techniques are required.
+    The final section in the chapter will discuss strategies for limiting
+    compile time explosions and explore analogies of the described model to
+    standard Satisfiability Modulo Theory (SMT) problems.
     This will give further insights into performance improvements and put the
     work into a wider context.
 
