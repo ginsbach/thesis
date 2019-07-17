@@ -9,12 +9,11 @@
     representations.
 
     Constraint formulas on SSA respresentations initially appear to mimic
-    pattern matching approaches, that are established on abstract syntax tree
-    (AST) level.
+    pattern matching approaches on abstract syntax tree (AST) level.
     However, they quickly prove themselves to be vastly more expressive.
     Some consideration is necessary to handle search space explosion, but
     the reward are much more powerful detection capabilities and the expression
-    of higher level algorithmic structures that are impossible to define
+    of higher level algorithmic structures, which are impossible to define
     syntactically on programming language level.
     Later chapters will evaluate these claims in detail by building a complete
     constraint programming language on top of the theory in this chapter, and
@@ -28,17 +27,17 @@
     as control flow structures such as single entry single exit blocks.
     All of this lies the foundations for the succeeding chapter.
 
-    Finally, for a practical application of constraint programming to compiler
+    Finally, for the practical application of constraint programming to compiler
     intermediate representation, efficient solver techniques are required.
-    The final section in the chapter will discuss strategies for limiting
-    compile time explosions and explore analogies of the described model to
+    The last section in this chapter discusses strategies for limiting
+    compile time explosion and explores analogies of the described model to
     standard Satisfiability Modulo Theory (SMT) problems.
-    This will give further insights into performance improvements and put the
-    work into a wider context.
+    This gives further insights into performance improvements and puts the
+    work into a broader theoretical context.
 
 \section{Introduction}
 
-    During compilation, modern compilers for proceedural languages, such as
+    During compilation, modern compilers for procedural languages, such as
     C/C++, Fortran or JavaScript, typically use a range of different
     representations of the user program.
     They can be grouped into categories and reflect the requirements of

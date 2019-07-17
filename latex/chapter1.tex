@@ -1,76 +1,143 @@
-    For several decades, from the 1970s until the early 2000s, processor
-    development followed Moore's Law and was able to exploit Dennard Scaling.
-    Circuit density approximately doubled every two years, without significantly
-    increasing power consumption.
-    This had important implications for software development: Not only did the
-    performance of computers improve exponentially, but these performance gains
-    were also immediately available to already existing programs.
-    The fundamental contract between software and hardware of mainstream
-    processors - the instruction set architectures - evolved without
-    paradigmatic changes.
-    Software developers and users could trust on ever increasing clock cycles
-    without any intervention
+    For several decades, from the 1970s until the early 2000s, Moore's Law and
+    Dennard Scaling accurately described the progress of processor development.
+    The circuit density approximately doubled every two years, yet the power
+    consumption and the accompanying thermal limitations remained relatively
+    stable.
+    This had important implications also for software development.
+    Not only did the performance of computers improve exponentially, but these
+    performance gains were also immediately available to already existing
+    programs.
+    The most fundamental contracts between software and hardware - the
+    instruction set architectures of processors - evolved without paradigmatic
+    changes.
+    Software developers and users could therefore trust on ever increasing
+    performance from hardware progress alone, without any intervention.
+    This is best exemplified by the pervasive x86 instruction set architecture,
+    which evolved without breaking backward compatibility from its original
+    inception in 1978 and still dominates mainstream processors.
 
-    This seemingly unending progress first broke down around 2006 with the
-    apparent end of Dennard Scaling.
+    This seemingly unending progress started breaking down around 2006,
+    with the apparent end of Dennard Scaling.
+    While the shrinking of transistors continued, this did not coincide with
+    increased clock cycles and stable power consumption any longer.
     The resulting paradigmatic shift toward multi-processing left a deep mark on
     software development.
+    New programming paradigms and languages, annotation systems, programming
+    interfaces, libraries and compiler techniques were developed and continue to
+    evolve.
+    Despite immenense progress in the field, parallel computing remains an area
+    of active research and automatic approaches often fell short.
+
     In recent years, it has become apparent that multi-processing as well has
-    hit a wall and another paradigm shift is looming.
+    reached its limits, and another paradigm shift is following.
     With the end of both Dennard Scaling and Moore's Law, the hardware industry
-    turned instead toward architectural innovation, with a trend away from
-    general purpose processors and toward dark silicon and special purpose
-    hardware.
+    turns toward architectural innovation, trending away from general purpose
+    processors and toward the use of dark silicon and specialised hardware.
     Accelerator processors have become widespread, first in the form of general
     purpose graphics processing units (GPGPU) and now increasingly with deep
-    learning accelerators, that coincide with the meteoric rise of Convolutional
-    Neural Networks and the enormous success of Deep Learning.
+    learning accelerators, which coincide with the meteoric rise of
+    Convolutional Neural Networks and the enormous success of Deep Learning.
 
-    Heterogeneous computing is the natural and necessary reaction to the scaling
+    Heterogeneous computing is a natural and necessary reaction to the scaling
     limitations of general purpose processors, but it poses an enormous
-    challenge to the surrounding software ecosystem and it puts into question
+    challenge to the surrounding software ecosystem, and it puts into question
     many of the achievements in portability and longevity of programs that are
     taken for granted in modern computing.
-    As opposed to only microarchitectural improvements, existing software is not
-    able to automatically profit from entirely new acccelerators designs.
-    Where previously binary programs could profit immediately from succeeding
-    hardware generations, and compilers were able to achieve portability across
-    platforms, novel accelerators arrive with entirely new and incompatible
-    application interfaces.
+    Existing software is not able to automatically benefit from entirely new
+    acccelerator designs in the way that it profited from continuous
+    microarchitectural improvements.
+    Where previously, programs performed better on each succeeding hardware
+    generation, with at most a recompilation required, new accelerators arrive
+    with entirely novel and incompatible application interfaces.
 
-    The novel hardware landscape has greatly diminishmed the scope of influence
-    of traditional compilers.
-    Were previously, a standard C/C++ compiler was in orchestrating program
-    execution on the entirely of available computing resources, it is
-    increasingly downgraded to bookeeping, with computational kernels launched
-    as separate programs on heterogeneous cores.
+    In particular, this novel hardware landscape greatly diminishes the
+    scope of responsibilities and impact that traditional compilers for
+    languages like C/C++ and Fortran used to have.
+    Were previously, such compilers were responsible for orchestrating
+    program execution on the entirety of available computing resources, they are
+    increasingly downgraded to merely coordinating the launch of core workloads
+    in the form of computational kernels, which are executed as separate and
+    opaque programs on heterogeneous accelerators.
     In order to reclaim their central position in the software ecosystem,
     compilers require some fundamentally new approaches.
-    While compilers have lagged behind the developments in the hardware domain,
-    research into this area can profit from experience with multi-core
-    processors.
 
-    Despite immense research efforts, auto-parallelizing compilers have
-    ultimately failed to conclusively solve any of the problems of parallel
-    computing and have only had major success for specific small-scale numerical
-    kernels in combination with auto-tuning.
+    An important distinction has to be made between {\em host compilers} and
+    {\em kernel compilers} at this point, as these have developed quite
+    distinctly.
+    In fact, many of the kernel programs that remain opaque to the host compiler
+    are themselved products of specialized kernel compilers.
+    Kernel compilers successfully apply many of the techniques that have had
+    only limited success for host compilers.
+    Most importantly, they reason automatically about parallelism, understand
+    data dependencies at a deeper level and they incorporate iterative
+    compilation.
+    This is made possible by a combination of several factors that apply
+    uniquely to kernel compilers:
+    Smaller programs allow for more expensive compilation techniques;
+    more restrictive languages and intermediate representaions allow for
+    stronger reasoning;
+    and domain knowledge from areas such as image processing can be directly
+    embedded in custom compiler technology, without the need to genrealize to
+    fully generic programs.
+    Furthermore, kernel compilers often run in relatively controlled
+    environments, with less need for predictability, reproducability and
+    stability.
+    The scope of input programs might even be small enough to leave compilation
+    to experts and vendors, which then ship the results in the form of already
+    compiled library functions.
+
+    As host compilers do not operate under these conditions, it is unsurprising
+    that they have lagged behind these developments.
+    Despite immense research efforts, auto-parallelization has ultimately failed
+    to conclusively solve the problems of parallel computing.
     Heterogeneous computing adds another dimension of complexity on top of
     homogeneous parallelism, making a traditional compiler approach appear
     unfeasable.
-    Instead, compilers need to think out of the box and incorporate novel ideas
+    However, research can profit from the experiences with kernel compilers
+    and from understanding the resons why concepts from kernel compilers fail to
+    translate into host compilers.
+
+    \section{Learning from Success Stories}
+
+    Compilers need to think out of the box and incorporate novel ideas
     in order to leverage the know-how that has evolved in the surrounding
     software ecosystem.
 
     Programming models built around libraries and novel domain specific
-    languages have had major succes in the areas that established compilers have
-    been weakest - namely reaching peak performance on rapidly evolving
-    accelerator hardware.
-    At the same time, these approaches are weak where compilers are strong:
-    they have significant adoption cost combined with often uncertain long-term
-    prospects and very limited portability.
+    languages, kernel compilers and library interfaces have had major successes
+    in the areas that established compilers have been weakest - namely reaching
+    peak performance on rapidly evolving and highly parallel accelerator
+    hardware.
+    Two examples stand characteristically for the readth of these successes.
+    Firstly, implementations of the Basic Linear Algera Subprograms (BLAS)
+    interfaces, a standard dating back to the 1970s, are available for most
+    accelerators.
+    They are widely used and offer unrivaled performance, with implementations
+    from hardware vendors and well as from the scientific community.
+    Competing implementations use a plethora of approaches to achieve as close
+    to peak performance as possible.
+    This includes manually written assembly, as well as highly advanced
+    compilation approaches, involving novel program representations, polyhedral
+    compilation techniques, iterative compilation and many more.
+    Secondly, the domain specific language Halide has developed for the domain
+    of image processing.
+    It has demonstrated an immense optimization potential for compiler based
+    optimization under circumstances of highly constrained semantics.
+
+    These success stories, however, still leave many important problems
+    unaddressed.
+    They are weak where approaches based on host compilers are strong:
+    Adoption costs are significant and they are combined with often uncertain
+    long-term prospects and very limited cross-platform portability.
+    Even in the case of mostly agreed upon standards such as BLAS --
+    arguably the best case scenario -- adoption of novel implementations is
+    non-trivial in practice due to even slight differences in the interfaces.
+    For academic-backed approaches like Halide on the other hand, complete
+    rewrites are requires in entirely novel ecosystems with an entirely unclear
+    future of support.
+
     What is promising therefore is a combination of hand-optimized libraries,
     domain specific languages together with compiler automatisms.
-
     This requires a disruptive improvement in compiler analysis capabilites.
     The detection of higher level algorithmic structures in compilers has been
     investigated before, but established approaches cannot scale to what
