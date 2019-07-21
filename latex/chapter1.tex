@@ -5,16 +5,16 @@
     stable.
     This had important implications also for software development.
     Not only did the performance of computers improve exponentially, but these
-    performance gains were also immediately available to already existing
+    performance gains were immediately available to the already existing
     programs.
     The most fundamental contracts between software and hardware - the
     instruction set architectures of processors - evolved without paradigmatic
     changes.
+    This is best exemplified by the pervasive x86 instruction set architecture,
+    which still dominates mainstream processors and retains backward
+    compatibility with its original inception in 1978.
     Software developers and users could therefore trust on ever increasing
     performance from hardware progress alone, without any intervention.
-    This is best exemplified by the pervasive x86 instruction set architecture,
-    which evolved without breaking backward compatibility from its original
-    inception in 1978 and still dominates mainstream processors.
 
     This seemingly unending progress started breaking down around 2006,
     with the apparent end of Dennard Scaling.
@@ -28,14 +28,15 @@
     Despite immenense progress in the field, parallel computing remains an area
     of active research and automatic approaches often fell short.
 
-    In recent years, it has become apparent that multi-processing as well has
-    reached its limits, and another paradigm shift is following.
-    With the end of both Dennard Scaling and Moore's Law, the hardware industry
-    turns toward architectural innovation, trending away from general purpose
-    processors and toward the use of dark silicon and specialised hardware.
+    In recent years, it has become clear that multi-processing as well has
+    reached its limits, and another change in direction is following.
+    With the apparent end of both Dennard Scaling and Moore's Law, the hardware
+    industry turns toward architectural innovation, trending away from general
+    purpose processors and toward the use of dark silicon and specialised
+    hardware.
     Accelerator processors have become widespread, first in the form of general
     purpose graphics processing units (GPGPU) and now increasingly with deep
-    learning accelerators, which coincide with the meteoric rise of
+    learning accelerators, coinciding with the meteoric rise of
     Convolutional Neural Networks and the enormous success of Deep Learning.
 
     Heterogeneous computing is a natural and necessary reaction to the scaling
@@ -50,7 +51,9 @@
     generation, with at most a recompilation required, new accelerators arrive
     with entirely novel and incompatible application interfaces.
 
-    In particular, this novel hardware landscape greatly diminishes the
+    \subsection*{The Diminished Role of Host Compilers}
+
+    In particular, the novel hardware landscape greatly diminishes the
     scope of responsibilities and impact that traditional compilers for
     languages like C/C++ and Fortran used to have.
     Were previously, such compilers were responsible for orchestrating
@@ -78,13 +81,22 @@
     stronger reasoning;
     and domain knowledge from areas such as image processing can be directly
     embedded in custom compiler technology, without the need to genrealize to
-    fully generic programs.
+    generic programs.
     Furthermore, kernel compilers often run in relatively controlled
     environments, with less need for predictability, reproducability and
     stability.
     The scope of input programs might even be small enough to leave compilation
     to experts and vendors, which then ship the results in the form of already
     compiled library functions.
+
+    The distinction between kernel compiler and host compilers is gradual and
+    reflected in the respective programming languages, ranging from
+    very specific approaches such as Halid via more hybrid approaches such as
+    OpenCL and CUDA to the well established host compilers of languages such as
+    C++, Java, Fortran etc.
+    As a rough obervation, the more restricted the programming languages are,
+    the more they can profit from additional domain knowledge and outperform
+    host compilers.
 
     As host compilers do not operate under these conditions, it is unsurprising
     that they have lagged behind these developments.
@@ -97,28 +109,27 @@
     and from understanding the resons why concepts from kernel compilers fail to
     translate into host compilers.
 
-    \section{Learning from Success Stories}
+    \subsection*{Learning from Success Stories}
 
-    Compilers need to think out of the box and incorporate novel ideas
-    in order to leverage the know-how that has evolved in the surrounding
-    software ecosystem.
+    In order to successfully target heterogeneous systems, host compilers need
+    to leverage the know-how that already exists in the surrounding software
+    ecosystem, encapsulated in special purpose libraries and code generators.
 
     Programming models built around libraries and novel domain specific
-    languages, kernel compilers and library interfaces have had major successes
-    in the areas that established compilers have been weakest - namely reaching
-    peak performance on rapidly evolving and highly parallel accelerator
-    hardware.
+    languages, kernel compilers and library interfaces have succeeded in areas
+    where established compilers continue to struggle - reaching peak performance
+    on rapidly evolving and highly parallel hardware.
     Two examples stand characteristically for the readth of these successes.
     Firstly, implementations of the Basic Linear Algera Subprograms (BLAS)
     interfaces, a standard dating back to the 1970s, are available for most
     accelerators.
     They are widely used and offer unrivaled performance, with implementations
-    from hardware vendors and well as from the scientific community.
+    from hardware vendors and from the scientific community.
     Competing implementations use a plethora of approaches to achieve as close
     to peak performance as possible.
-    This includes manually written assembly, as well as highly advanced
-    compilation approaches, involving novel program representations, polyhedral
-    compilation techniques, iterative compilation and many more.
+    This includes manually written assembly code, but also highly advanced
+    compilation techniques, novel program representations, polyhedral
+    compilation, iterative compilation and many more.
     Secondly, the domain specific language Halide has developed for the domain
     of image processing.
     It has demonstrated an immense optimization potential for compiler based
@@ -142,13 +153,39 @@
     The detection of higher level algorithmic structures in compilers has been
     investigated before, but established approaches cannot scale to what
     this challenge requires.
-    Syntactic matching on programming languages has become
+    Syntactic matching directly on programming languages has become
     unviable for the complexities of both modern programming languages and
     complex code bases.
 
     Instead, this thesis develops an entirely novel approach based on concepts
     from constraint solving, building a pragmatic methodology for detecting
     complex algorithmic structures -- computational idioms.
+
+    \subsection*{Leveraging the Existing Knowhow}
+    Kernel compilers and libraries fundamentally can only reach their superior
+    performance and capabilites as opposed to host compilers by leveraging the
+    domain knowledge that they get from operating under constraint conditions.
+    
+    A linear alebra compiler operates under the assumption that the program is
+    linear algbera, and the program representation that is used with not even
+    allow the expression of any other system.
+
+    Conceptually, the availability of dedicated linear algebra code generators
+    means that host compilers should outsource code generation of linear algbera
+    to these tools, because a generic approach will never reach the same level
+    of sophistication.
+    The crucial piece of technology that is missing, is for the compiler to
+    automatically find opportunities to express user code in constraint
+    domains.
+
+    Conceptiully, some of this has been done before.
+    Polyhedral compilers take as input arbitrary code, but they recognise whether
+    parts of code are actually expresible in a much more constraint system.
+    If possible, they reformulate the code into this system and continue
+    optimization with domain knowledge, thus resulting in better code.
+    This work proposes a generalization of this concept.
+
+
 
 \pagebreak
 \section{Structure of the Thesis}
