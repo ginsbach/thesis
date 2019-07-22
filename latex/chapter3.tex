@@ -12,9 +12,9 @@
     pattern matching approaches on abstract syntax tree (AST) level.
     However, they quickly prove themselves to be vastly more expressive.
     Some consideration is necessary to handle search space explosion, but
-    the reward are much more powerful detection capabilities and the expression
-    of higher level algorithmic structures, which are impossible to define
-    syntactically on programming language level.
+    the reward are much more powerful recognition capabilities and the
+    expression of higher level algorithmic structures, which are impossible to
+    define syntactically on programming language level.
     Later chapters will evaluate these claims in detail by building a complete
     constraint programming language on top of the theory in this chapter, and
     by then using it to solve real compiler analysis problems.
@@ -25,7 +25,7 @@
     the framework.
     This includes common graph properties and the domination concept, as well
     as control flow structures such as single entry single exit blocks.
-    All of this lies the foundations for the succeeding chapter.
+    All of this lays the foundations for the succeeding chapter.
 
     Finally, for the practical application of constraint programming to compiler
     intermediate representation, efficient solver techniques are required.
@@ -37,22 +37,26 @@
 
 \section{Introduction}
 
-    During compilation, modern compilers for procedural languages, such as
-    C/C++, Fortran or JavaScript, typically use a range of different
-    representations of the user program.
+    Modern compilers for procedural languages such as
+    C/C++, Fortran or JavaScript typically use a succession of different
+    representations for the program during compilation.
     They can be grouped into categories and reflect the requirements of
     the compilation stages they are used in.
     \linebreak
-    {\bf Front end representations} reflect source language properties,
-    often in the form of an AST, and contain information about syntactic choices
-    of the programmer that are irrelevant to program logic.
-    These representations scale in complexity with the source language and
-    obscure the underlying semantics by not resolving complex language features
-    such as operator overloading.
+    {\bf Front end representations} are close to the source program and
+    naturally reflect the internals of the compiler front end, especially the
+    parser.
+    Typically, they are built on an abstract syntax tree representation with
+    additional annotations, such as type information.
+    In addition to encoding program logic, these representations are rich in
+    information about syntactic and  stylistic choices of the programmer.
+    They scale in complexity with the source language and further obscure the
+    program semantics by not resolving complex language features, such as
+    operator overloading.
     \linebreak
     {\bf Back end representations} are based on a model of the target hardware.
-    These representations typically approach an assembly style format that
-    exposes specific instruction set architectures of the hardware;
+    These representations typically approach an assembly style format,
+    exposing specific instruction set architectures of the hardware.
     Back end representations are concerned with problems that are removed from
     the algorithmic core of the user program, such as register allocation and
     instruction scheduling.
@@ -62,29 +66,29 @@
     applying complex optimizing transformations.
     SSA abstracts away the complexities of both the source language and the
     target architecture, instead focusing on a relatively simple semantic
-    description of the user program in oder to enable reliable analysis and
-    platform independent reasoning.
+    description of the user program that enables reliable analysis and platform
+    independent reasoning.
     It is these properties that also make it the suitable target for expressing
     algorithmic structures.
 
     SSA is not a strictly defined or mathematically codified standard, but
     refers to a group of representations that share important characteristics,
-    the SSA property being only one of those.
-    The precise instruction set, syntax and type systems of the many different
-    static single assignment form intermediate representations vary considerably
-    depending on the requirements of the source languages (static or dynamic)
+    the eponymous SSA property being only one among them.
+    The precise instruction set, syntax and type systems of the different
+    SSA intermediate representations vary considerably, depending on the
+    requirements of the source languages (static or dynamic)
     and the operating constraints (just-in-time or ahead-of-time).
     Some prominent examples of compilers that utilize SSA for their
     optimisation passes include {\bf clang} (LLVM IR), {\bf gcc} (GIMPLE),
     {\bf v8 Crankshaft} (Hydrogen) and {\bf SpiderMonkey} (IonMonkey/MIR).
     Despite their differences, they share the same fundamental paradigmes
-    and we can mostly abstract away the differences as implementation specific
-    details here.
+    and many of the differences can be abstracted away as implementation
+    specific details here.
 
     Fundamentally, a program in single static assignment form is made up of
-    functions, that are represented as sequences of instructions, that are
-    grouped into basic blocks and that operate on virtual registers.
-    Control flow is handled via jump instructions at end of basic blocks.
+    functions, which are represented as sequences of instructions, grouped into
+    basic blocks and operating on virtual registers.
+    The control flow is handled via jump instructions at end of basic blocks.
     The virtual registers, within a function, can be assigned only at a single
     static location each, which we will see later has very useful implications
     and is the eponymous feature of SSA form.
@@ -122,12 +126,13 @@
     Instruction arguments can be registers, constants or globals and branch
     instructions additionally take basic block labels.
     Instructions can write their result into a single output register.
-    Branch instructions are only allowed at the end of a basic block.
+    Branch instructions always terminate a basic block, control flow divergence
+    within basic blocks is not possible.
 
     The static single assignment property stipulates that within a function,
     no register can be written at more than a single static location.
-    This makes the data dependencies between the instructions explicit and
-    means that registers can be identified directly with the instructions that
+    This makes the data dependencies between the instructions explicit, as it
+    implies that registers can be identified directly with the instructions that
     write to them.
     The registers themselves can therefore be considered implicit, with only the
     data flow between instructions required to recover them.
@@ -170,7 +175,8 @@
     As previously discussed, the static single assignment property makes
     registers implicit.
     Not accounting for branch targets, instruction arguments therefore fall into
-    four categories: function parameters, instructions, constants and globals.
+    four categories: function parameters, other instructions (i.e. registers),
+    constants and globals.
     For each function, these sets can be statically determined and are finite,
     as implied by \autoref{not:ssa}, so a single integer is enough to encode
     each instruction argument as an index into the union of those four sets.
