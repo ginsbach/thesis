@@ -1,18 +1,19 @@
-    For several decades, from the 1970s until the early 2000s, Moore's Law and
-    Dennard Scaling accurately described the progress of processor development.
+    For several decades, from the 1970s until the early 2000s, advances in
+    processor development followed Moore's Law and Dennard Scaling.
     The circuit density approximately doubled every two years, yet the power
     consumption and the accompanying thermal limitations remained relatively
     stable.
-    This had important implications also for software development.
+    This hardware progress had major implications also for software
+    development.
     Not only did the performance of computers improve exponentially, but these
     performance gains were immediately available to the already existing
     programs.
-    The most fundamental contracts between software and hardware - the
+    The fundamental contracts between software and hardware - the
     instruction set architectures of processors - evolved without paradigmatic
     changes.
     This is best exemplified by the pervasive x86 instruction set architecture,
-    which still dominates mainstream processors and retains backward
-    compatibility with its original inception in 1978.
+    which still retains backward compatibility with its original inception in
+    1978 and dominates desktop processors to this day.
     Software developers and users could therefore trust on ever increasing
     performance from hardware progress alone, without any intervention.
 
@@ -28,41 +29,43 @@
     Despite immenense progress in the field, parallel computing remains an area
     of active research and automatic approaches often fell short.
 
-    In recent years, it has become clear that multi-processing as well has
-    reached its limits, and another change in direction is following.
-    With the apparent end of both Dennard Scaling and Moore's Law, the hardware
-    industry turns toward architectural innovation, trending away from general
-    purpose processors and toward the use of dark silicon and specialised
-    hardware.
+    In recent years, it has become clear that multi-processing on its own has
+    also reached its limits, and another change in direction is following
+    swiftly.
+    In response to the prevailing breakdown of both Dennard Scaling and Moore's
+    Law, the hardware industry turns toward architectural innovation, trending
+    away from general purpose processors and toward the use of specialised
+    hardware and dark silicon.
     Accelerator processors have become widespread, first in the form of general
-    purpose graphics processing units (GPGPU) and now increasingly with deep
-    learning accelerators, coinciding with the meteoric rise of
-    Convolutional Neural Networks and the enormous success of Deep Learning.
+    purpose graphics processing units and now increasingly as deep learning
+    accelerators, coinciding with the meteoric rise in popularity of
+    convolutional neural networks due to the success of deep learning.
 
-    Heterogeneous computing is a natural and necessary reaction to the scaling
-    limitations of general purpose processors, but it poses an enormous
-    challenge to the surrounding software ecosystem, and it puts into question
-    many of the achievements in portability and longevity of programs that are
-    taken for granted in modern computing.
-    Existing software is not able to automatically benefit from entirely new
+    This arrival of widespread heterogeneous computing is a natural and
+    necessary reaction to the scaling limitations of homogeneous, general
+    purpose processors.
+    However, it poses an enormous challenge to the surrounding software
+    ecosystem, and it puts into question many of the achievements in portability
+    and longevity of programs that are taken for granted in modern computing.
+    Existing software does not automatically benefit from entirely new
     acccelerator designs in the way that it profited from continuous
     microarchitectural improvements.
     Where previously, programs performed better on each succeeding hardware
     generation, with at most a recompilation required, new accelerators arrive
-    with entirely novel and incompatible application interfaces.
+    with entirely novel and incompatible interfaces.
 
     \subsection*{The Diminished Role of Host Compilers}
 
     In particular, the novel hardware landscape greatly diminishes the
     scope of responsibilities and impact that traditional compilers for
-    languages like C/C++ and Fortran used to have.
+    languages such as C, C++ and Fortran used to have.
     Were previously, such compilers were responsible for orchestrating
     program execution on the entirety of available computing resources, they are
     increasingly downgraded to merely coordinating the launch of core workloads
     in the form of computational kernels, which are executed as separate and
     opaque programs on heterogeneous accelerators.
     In order to reclaim their central position in the software ecosystem,
-    compilers require some fundamentally new approaches.
+    compilers require fundamentally new approaches.
 
     An important distinction has to be made between {\em host compilers} and
     {\em kernel compilers} at this point, as these have developed quite
@@ -74,40 +77,39 @@
     Most importantly, they reason automatically about parallelism, understand
     data dependencies at a deeper level and they incorporate iterative
     compilation.
-    This is made possible by a combination of several factors that apply
-    uniquely to kernel compilers:
+    This is made possible by a combination of factors that apply uniquely to
+    kernel compilers.
     Smaller programs allow for more expensive compilation techniques;
     more restrictive languages and intermediate representaions allow for
     stronger reasoning;
     and domain knowledge from areas such as image processing can be directly
-    embedded in custom compiler technology, without the need to genrealize to
-    generic programs.
+    embedded in custom compiler technology, without requiring their validity
+    on generic programs.
     Furthermore, kernel compilers often run in relatively controlled
     environments, with less need for predictability, reproducability and
     stability.
     The scope of input programs might even be small enough to leave compilation
-    to experts and vendors, which then ship the results in the form of already
+    to experts and vendors, which may share the results in the form of already
     compiled library functions.
 
-    The distinction between kernel compiler and host compilers is gradual and
-    reflected in the respective programming languages, ranging from
-    very specific approaches such as Halid via more hybrid approaches such as
-    OpenCL and CUDA to the well established host compilers of languages such as
-    C++, Java, Fortran etc.
-    As a rough obervation, the more restricted the programming languages are,
-    the more they can profit from additional domain knowledge and outperform
+    As host compilers operate under less forgiving conditions, it is
+    unsurprising that they have lagged behind these developments.
+    In particular, auto-parallelization has ultimately failed to conclusively
+    solve the problems of parallel computing despite immense research efforts.
+    This makes a traditional compiler approach to the even more complex
+    problems of heterogeneous parallelism appear unfeasable.
+    However, research can profit from the experiences with kernel compilers
+    and from understanding why concepts from kernel compilers fail in
     host compilers.
 
-    As host compilers do not operate under these conditions, it is unsurprising
-    that they have lagged behind these developments.
-    Despite immense research efforts, auto-parallelization has ultimately failed
-    to conclusively solve the problems of parallel computing.
-    Heterogeneous computing adds another dimension of complexity on top of
-    homogeneous parallelism, making a traditional compiler approach appear
-    unfeasable.
-    However, research can profit from the experiences with kernel compilers
-    and from understanding the resons why concepts from kernel compilers fail to
-    translate into host compilers.
+    The distinction between kernel compiler and host compilers is gradual and
+    reflected directly in the corresponding programming languages.
+    They range from very specific kernel approaches such as Halide over hybrid
+    approaches such as OpenCL and CUDA to the well established host compilers of
+    languages such as C++, Java and Fortran.
+    The more restricted the programming languages are, the more additional
+    domain knowledge the compilers can utilise to outperform host compilers.
+
 
     \subsection*{Learning from Success Stories}
 
@@ -185,6 +187,26 @@
     optimization with domain knowledge, thus resulting in better code.
     This work proposes a generalization of this concept.
 
+    \subsection{Constraints For the Rescue}
+    The core to automatically making code heterogeneous is therefore to specialize it.
+    When the compiler can classify code sections as adhering to a more constraint
+    model than the generic SSA form, it can then apply domain specific optimization techniques.
+
+    In the most extreme interpretation of this model, sections of code are
+    recognised as implementing specific algorithms, like matrix multiplications,
+    that are merely parameterized.
+
+    Next are algorithms that allow parameterization with an operator.
+    For example, stencil kernels of reductions fall into this catefory.
+
+    More generic again are restricted programs that are nonetheless freely
+    programmeable.
+    Polyhedral code sections fall under this domain.
+
+    All of these types of code restrictions can be formulated via constraints.
+    This thesis will develop a framework to enable this, starting from
+    theoretical foundations and resulting in a donain specific programming
+    language. that is evaluated on well established benchmark programs.
 
 
 \pagebreak
