@@ -27,7 +27,7 @@
     interfaces, libraries and compiler techniques were developed and continue to
     evolve.
     Despite immenense progress in the field, parallel computing remains an area
-    of active research and automatic approaches often fell short.
+    of active research and automatic approaches often fall short.
 
     In recent years, it has become clear that multi-processing on its own has
     also reached its limits, and another change in direction is following
@@ -54,29 +54,73 @@
     generation, with at most a recompilation required, new accelerators arrive
     with entirely novel and incompatible interfaces.
 
-    \subsection*{The Diminished Role of Host Compilers}
-
+    \subsection*{Libraries and Domain Specific Languages}
     In particular, the novel hardware landscape greatly diminishes the
     scope of responsibilities and impact that traditional compilers for
     languages such as C, C++ and Fortran used to have.
     Were previously, such compilers were responsible for orchestrating
     program execution on the entirety of available computing resources, they are
-    increasingly downgraded to merely coordinating the launch of core workloads
-    in the form of computational kernels, which are executed as separate and
-    opaque programs on heterogeneous accelerators.
-    In order to reclaim their central position in the software ecosystem,
-    compilers require fundamentally new approaches.
+    now generally limited to only targeting the small homogeneous fraction of
+    processor cores directly.
+    In order to reach peak performance on rapidly evolving and highly parallel
+    hardware, programming models built around libraries and novel domain
+    specific languages are necessary instead.
+    These compilers are therefore increasingly downgraded to merely coordinating
+    the launch of core workloads in the form of computational kernels, which are
+    executed as separate and opaque programs on accelerators.
 
-    An important distinction has to be made between {\em host compilers} and
-    {\em kernel compilers} at this point, as these have developed quite
-    distinctly.
-    In fact, many of the kernel programs that remain opaque to the host compiler
-    are themselved products of specialized kernel compilers.
+    Two examples stand characteristically for the breadth of these approaches
+    based on libraries and domain specific languages.
+    Firstly, Basic Linear Algera Subprograms (BLAS), a standard for library
+    function interfaces dating back to the 1970s, has been implemented for
+    almost all heterogeneous accelerators.
+    These implementations are widely used and offer unrivaled performance, with
+    some of them provided by hardware vendors and some from the scientific
+    community.
+    Competing implementations use a plethora of approaches to achieve as close
+    to peak performance as possible.
+    This includes manually written assembly code, but also highly advanced
+    compilation techniques, novel program representations, polyhedral
+    compilation and many more.
+    Secondly, the domain specific language Halide was developed for the domain
+    of image processing.
+    It has demonstrated an immense potential for compiler based optimization
+    under circumstances of highly constrained semantics.
+
+    These success stories, however, still leave many important problems
+    unaddressed.
+    They are weak where approaches based on compilers are strong:
+    Adoption costs are significant and they are combined with often uncertain
+    long-term prospects and very limited cross-platform portability.
+    Even in the case of the agreed upon BLAS standard -- arguably the best case
+    scenario -- adoption of novel implementations is non-trivial in practice due
+    to even slight differences in the interfaces.
+    For academic-backed approaches like Halide on the other hand, complete
+    rewrites are required in entirely novel ecosystems with an unclear future of
+    support.
+
+    \subsection*{The Decline of Host Compilers and the Rise of Kernel Compilers}
+
+    In order to reclaim some of the benefits of compiler approaches,
+    some introspection is required into the reasons for the current failures of
+    compilers in exploiting heterogeneous hardware.
+    An important initial observation is that the problem arises with a
+    particular class of compilers, namely the aforementioned application
+    compilers for general purpose languages.
+
+    In fact, many of the kernel programs that remain opaque to these compilers
+    are themselves products of other, specialised compilers.
+    This necessitates a distinction between {\em host compilers} and {\em kernel
+    compilers}.
+    This distinction is mirrored of course by the differences between {\em host
+    languages} and {\em kernel languages}.
+    The two classes of compilers have developed quite distinctly.
     Kernel compilers successfully apply many of the techniques that have had
     only limited success for host compilers.
     Most importantly, they reason automatically about parallelism, understand
     data dependencies at a deeper level and they incorporate iterative
     compilation.
+
     This is made possible by a combination of factors that apply uniquely to
     kernel compilers.
     Smaller programs allow for more expensive compilation techniques;
@@ -95,59 +139,26 @@
     As host compilers operate under less forgiving conditions, it is
     unsurprising that they have lagged behind these developments.
     In particular, auto-parallelization has ultimately failed to conclusively
-    solve the problems of parallel computing despite immense research efforts.
+    solve the problems of parallel computing, despite immense research efforts.
     This makes a traditional compiler approach to the even more complex
     problems of heterogeneous parallelism appear unfeasable.
     However, research can profit from the experiences with kernel compilers
     and from understanding why concepts from kernel compilers fail in
     host compilers.
 
-    The distinction between kernel compiler and host compilers is gradual and
+    The distinction between kernel compilers and host compilers is gradual and
     reflected directly in the corresponding programming languages.
     They range from very specific kernel approaches such as Halide over hybrid
-    approaches such as OpenCL and CUDA to the well established host compilers of
-    languages such as C++, Java and Fortran.
+    approaches such as OpenCL to the well established host languages like C++.
+    Taking this perspective to the extreme, it is even possible to categorise
+    numeric libraries such as cuBLAS as a tremendously restricted language, with
+    an overly restricted set of commans, appearing in the previous comparison
+    on the most "kernel" side of things.
     The more restricted the programming languages are, the more additional
     domain knowledge the compilers can utilise to outperform host compilers.
 
+    \subsection*{Leveraging the Existing Knowhow}
 
-    \subsection*{Learning from Success Stories}
-
-    In order to successfully target heterogeneous systems, host compilers need
-    to leverage the know-how that already exists in the surrounding software
-    ecosystem, encapsulated in special purpose libraries and code generators.
-
-    Programming models built around libraries and novel domain specific
-    languages, kernel compilers and library interfaces have succeeded in areas
-    where established compilers continue to struggle - reaching peak performance
-    on rapidly evolving and highly parallel hardware.
-    Two examples stand characteristically for the readth of these successes.
-    Firstly, implementations of the Basic Linear Algera Subprograms (BLAS)
-    interfaces, a standard dating back to the 1970s, are available for most
-    accelerators.
-    They are widely used and offer unrivaled performance, with implementations
-    from hardware vendors and from the scientific community.
-    Competing implementations use a plethora of approaches to achieve as close
-    to peak performance as possible.
-    This includes manually written assembly code, but also highly advanced
-    compilation techniques, novel program representations, polyhedral
-    compilation, iterative compilation and many more.
-    Secondly, the domain specific language Halide has developed for the domain
-    of image processing.
-    It has demonstrated an immense optimization potential for compiler based
-    optimization under circumstances of highly constrained semantics.
-
-    These success stories, however, still leave many important problems
-    unaddressed.
-    They are weak where approaches based on host compilers are strong:
-    Adoption costs are significant and they are combined with often uncertain
-    long-term prospects and very limited cross-platform portability.
-    Even in the case of mostly agreed upon standards such as BLAS --
-    arguably the best case scenario -- adoption of novel implementations is
-    non-trivial in practice due to even slight differences in the interfaces.
-    For academic-backed approaches like Halide on the other hand, complete
-    rewrites are requires in entirely novel ecosystems with an entirely unclear
-    future of support.
 
     What is promising therefore is a combination of hand-optimized libraries,
     domain specific languages together with compiler automatisms.
@@ -163,7 +174,33 @@
     from constraint solving, building a pragmatic methodology for detecting
     complex algorithmic structures -- computational idioms.
 
-    \subsection*{Leveraging the Existing Knowhow}
+
+    In order to successfully target heterogeneous systems, host compilers need
+    to leverage the know-how that already exists in the surrounding software
+    ecosystem, encapsulated in special purpose libraries and code generators.
+
+    The implication of this is that in order to achieve best performance, it is
+    generally best to choose the most specialized tools available.
+    As described above however, this has negative implications for legacy code,
+    portability and vendor lock-in.
+    Therefore, many programs choose to instead not tap this additional
+    performance potential.
+
+    The additional performance is a consequence of operating under more
+    constraint conditions.
+    Clearly, it is possible to write equally specialized code in more general
+    purpose languages, however current compilers remain unaware of the
+    additional constraints that the programmer adhered to and fail to tap into
+    the additional optimization potential.
+
+    The thesis develops a methodology by which compilers can automatically
+    classify code as adhering to additional semantic constraints beyon what is
+    guaranteed by the programming language.
+    Using this classification, the compiler can then translate the code into a
+    more specialized domain and apply the already developed domain specific
+    techniques to achieve full performance.
+
+
     Kernel compilers and libraries fundamentally can only reach their superior
     performance and capabilites as opposed to host compilers by leveraging the
     domain knowledge that they get from operating under constraint conditions.
