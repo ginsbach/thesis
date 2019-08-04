@@ -80,29 +80,28 @@
     Competing implementations use a plethora of approaches to achieve as close
     to peak performance as possible.
     This includes manually written assembly code, but also highly advanced
-    compilation techniques, novel program representations, polyhedral
-    compilation and many more.
+    code generation techniques, novel program representations, polyhedral
+    optimisation and many more.
     Secondly, the domain specific language Halide was developed for the domain
     of image processing.
-    It has demonstrated an immense potential for compiler based optimization
-    under circumstances of highly constrained semantics.
+    It has demonstrated an immense potential for compiler based, domain specific
+    optimisation under circumstances of highly constrained semantics.
 
     These success stories, however, still leave many important problems
     unaddressed.
-    They are weak where approaches based on compilers are strong:
     Adoption costs are significant and they are combined with often uncertain
     long-term prospects and very limited cross-platform portability.
-    Even in the case of the agreed upon BLAS standard -- arguably the best case
-    scenario -- adoption of novel implementations is non-trivial in practice due
-    to even slight differences in the interfaces.
+    Even in the case of the generally agreed upon BLAS standard -- arguably the
+    best case scenario -- adoption of novel implementations is non-trivial in
+    practice due to even slight differences in the interfaces.
     For academic-backed approaches like Halide on the other hand, complete
     rewrites are required in entirely novel ecosystems with an unclear future of
     support.
 
     \subsection*{Host Compilers and Kernel Compilers}
 
-    It may appear obvious that e.g.\ a full C++ compiler is not provided for a
-    typical graphics processor -- after all, most graphics processors have
+    It may appear obvious that e.g.\ a full C++ compiler cannot be provided for
+    a typical graphics processor -- after all, most graphics processors have
     hardware limitations that prevent them from implementing the entire language
     standard, and many accelerators are far from Turing complete.
     However, this should not prevent a partial compiler, offloading suitable
@@ -123,7 +122,7 @@
     Kernel compilers successfully apply many of the techniques that have had
     only limited success for host compilers.
     They reason automatically about parallelism, understand data dependencies at
-    a deeper level and they incorporate iterative compilation.
+    a deeper level, and they incorporate iterative compilation.
 
     This is made possible by a combination of factors that apply uniquely to
     kernel compilers.
@@ -148,7 +147,7 @@
     heterogeneous accelerators, but also because the restricted environment
     makes them intrinsically more powerful and able to generate better code.
 
-    This observation is particularly exemplified by languages that try hybrid a
+    This observation is particularly exemplified by languages that try a hybrid
     approach, such as OpenCL.
     The language is designed to be general purpose and compilers are provided
     for many structurally different heterogeneous platforms.
@@ -161,28 +160,60 @@
     the same shortcomings.
 
     \subsection*{Leveraging the Existing Knowhow}
-
-    The additional performance that libraries and compilers for domain specific
-    languages achieve are a consequence of operating under more constrained
+    The additional performance that libraries and domain specific kernel
+    compilers achieve is a consequence of operating under more constrained
     conditions.
-    These restrictions provide domain knowledge that they can leverage to make
+    These restrictions imply domain knowledge that can be leveraged to make
     stronger assumptions, use more powerful models and generate better code.
-    It is possible to write equally specialized code in more general
-    purpose languages, however, current compilers remain unaware of the
-    additional constraints that the programmer adhered to and fail to tap into
-    the resulting optimization potential.
+    It is possible to write equally specialized code in general purpose
+    languages, however, current compilers remain unaware of the additional
+    constraints that the programmer adhered to and fail to tap into the
+    resulting optimization potential.
 
+    The implication of this is that in order to achieve best performance, it is
+    generally necessary to choose the most tools available.
+    This is contrasted with portability and maintainability considerations,
+    which push programmers in the opposite direction, towards a small number of
+    well established host compilers and traditional languages at the expense of
+    performance.
+    To combine the positive aspects of both these approaches, host compilers
+    need the ability to recognise restricted programming models within general
+    purpose code and to transform adhering code sections into domain specific
+    representations.
+    After these transformations, host compilers would be able to tap into the
+    extensive knowhow that already exists by utilising specialized code
+    generation techniques.
 
-    The thesis develops a methodology by which compilers can automatically
-    classify code as adhering to additional semantic constraints beyon what is
-    guaranteed by the programming language.
-    Using this classification, the compiler can then translate the code into a
-    more specialized domain and apply the already developed domain specific
-    techniques to achieve full performance.
+    As an example, consider the example of linear algbera.
+    The performance gap between spacialized library functions and the code
+    generated from general purpose compilers for a straightforward matrix
+    multiplication is immense.
+    Conceptually, the availability of dedicated linear algebra code generators
+    means that host compilers should outsource code generation of linear algbera
+    to these tools, because a generic approach will never reach the same level
+    of sophistication.
+    The crucial piece of technology that is missing, is for the compiler to
+    automatically find opportunities to express user code in constraint
+    domains.
+    In the case of linear algbera, the domain is quite small and compilers
+    merely have to recognise a finite amount of supported linear algebra
+    optimizations.
 
+    Conceptiully, some of this has been done before.
+    Polyhedral compilers take as input arbitrary code, but they recognise whether
+    parts of code are actually expresible in a much more constraint system.
+    If possible, they reformulate the code into this system and continue
+    optimization with domain knowledge, thus resulting in better code.
+    This work proposes a generalization of this concept.
 
-
-
+    
+    The thesis develops a methodology to generalize this approach, resulting in
+    methods by which compilers can automatically classify code as adhering to
+    additional semantic constraints beyond what is guaranteed by the programming
+    language. Using this classification, the compiler can then translate the
+    code into a more specialized domain and apply the already developed domain
+    specific techniques -- in the simplest case by merely linking to a library
+    -- to achieve full performance.
 
     \subsection*{extra building blocks}
 
@@ -200,36 +231,13 @@
     from constraint solving, building a pragmatic methodology for detecting
     complex algorithmic structures -- computational idioms.
 
-
     In order to successfully target heterogeneous systems, host compilers need
     to leverage the know-how that already exists in the surrounding software
     ecosystem, encapsulated in special purpose libraries and code generators.
 
-    The implication of this is that in order to achieve best performance, it is
-    generally best to choose the most specialized tools available.
-    As described above however, this has negative implications for legacy code,
-    portability and vendor lock-in.
-    Therefore, many programs choose to instead not tap this additional
-    performance potential.
-
     A linear alebra compiler operates under the assumption that the program is
     linear algbera, and the program representation that is used with not even
     allow the expression of any other system.
-
-    Conceptually, the availability of dedicated linear algebra code generators
-    means that host compilers should outsource code generation of linear algbera
-    to these tools, because a generic approach will never reach the same level
-    of sophistication.
-    The crucial piece of technology that is missing, is for the compiler to
-    automatically find opportunities to express user code in constraint
-    domains.
-
-    Conceptiully, some of this has been done before.
-    Polyhedral compilers take as input arbitrary code, but they recognise whether
-    parts of code are actually expresible in a much more constraint system.
-    If possible, they reformulate the code into this system and continue
-    optimization with domain knowledge, thus resulting in better code.
-    This work proposes a generalization of this concept.
 
     \subsection{Constraints For the Rescue}
     The core to automatically making code heterogeneous is therefore to specialize it.
