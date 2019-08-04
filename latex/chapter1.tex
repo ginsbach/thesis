@@ -99,17 +99,22 @@
     rewrites are required in entirely novel ecosystems with an unclear future of
     support.
 
-    \subsection*{The Decline of Host Compilers and the Rise of Kernel Compilers}
+    \subsection*{Host Compilers and Kernel Compilers}
 
-    In order to reclaim some of the benefits of compiler approaches,
-    some introspection is required into the reasons for the current failures of
-    compilers in exploiting heterogeneous hardware.
-    An important initial observation is that the problem arises with a
-    particular class of compilers, namely the aforementioned application
-    compilers for general purpose languages.
+    It may appear obvious that e.g.\ a full C++ compiler is not provided for a
+    typical graphics processor -- after all, most graphics processors have
+    hardware limitations that prevent them from implementing the entire language
+    standard, and many accelerators are far from Turing complete.
+    However, this should not prevent a partial compiler, offloading suitable
+    subprograms, while falling back on homogeneous hardware with a full language
+    implementaiton for the remainder.
+    Despite the obvious convenience of such an approach, there are important
+    reasons why this has not been championed so far.
+    To understand this, an important first observation is that compilers do play
+    an important role in targeting heterogeneous hardware.
 
-    In fact, many of the kernel programs that remain opaque to these compilers
-    are themselves products of other, specialised compilers.
+    In fact, many of the kernel programs that remain opaque to the application
+    compilers are themselves products of other, specialised compilers.
     This necessitates a distinction between {\em host compilers} and {\em kernel
     compilers}.
     This distinction is mirrored of course by the differences between {\em host
@@ -117,9 +122,8 @@
     The two classes of compilers have developed quite distinctly.
     Kernel compilers successfully apply many of the techniques that have had
     only limited success for host compilers.
-    Most importantly, they reason automatically about parallelism, understand
-    data dependencies at a deeper level and they incorporate iterative
-    compilation.
+    They reason automatically about parallelism, understand data dependencies at
+    a deeper level and they incorporate iterative compilation.
 
     This is made possible by a combination of factors that apply uniquely to
     kernel compilers.
@@ -129,36 +133,58 @@
     and domain knowledge from areas such as image processing can be directly
     embedded in custom compiler technology, without requiring their validity
     on generic programs.
-    Furthermore, kernel compilers often run in relatively controlled
-    environments, with less need for predictability, reproducability and
-    stability.
-    The scope of input programs might even be small enough to leave compilation
+    Furthermore, kernel compilers often run in more controlled environments,
+    with less need for predictability, reproducability and stability.
+    The range of input programs might even be small enough to leave compilation
     to experts and vendors, which may share the results in the form of already
     compiled library functions.
 
     As host compilers operate under less forgiving conditions, it is
     unsurprising that they have lagged behind these developments.
-    In particular, auto-parallelization has ultimately failed to conclusively
-    solve the problems of parallel computing, despite immense research efforts.
-    This makes a traditional compiler approach to the even more complex
-    problems of heterogeneous parallelism appear unfeasable.
-    However, research can profit from the experiences with kernel compilers
-    and from understanding why concepts from kernel compilers fail in
-    host compilers.
+    Because they cannot rely on such a restricted environment, host compilers
+    are unable to match the optimisation capabilites of kernel compilers.
+    Domain specific compilers have therefore not been championned simply because
+    the restricted input languages match the capabilites of particular
+    heterogeneous accelerators, but also because the restricted environment
+    makes them intrinsically more powerful and able to generate better code.
 
-    The distinction between kernel compilers and host compilers is gradual and
-    reflected directly in the corresponding programming languages.
-    They range from very specific kernel approaches such as Halide over hybrid
-    approaches such as OpenCL to the well established host languages like C++.
-    Taking this perspective to the extreme, it is even possible to categorise
-    numeric libraries such as cuBLAS as a tremendously restricted language, with
-    an overly restricted set of commans, appearing in the previous comparison
-    on the most "kernel" side of things.
-    The more restricted the programming languages are, the more additional
-    domain knowledge the compilers can utilise to outperform host compilers.
+    This observation is particularly exemplified by languages that try hybrid a
+    approach, such as OpenCL.
+    The language is designed to be general purpose and compilers are provided
+    for many structurally different heterogeneous platforms.
+    However, as a consequence of being a relatively unrestricted langauge, the
+    compilers often underperform.
+    As a consequence, the language is notoriously lacking in performance
+    portability.
+    Partial compilers that require the same kinds of compromises as OpenCL and
+    are unable to utilize the restricted nature of input programs would suffer
+    the same shortcomings.
 
     \subsection*{Leveraging the Existing Knowhow}
 
+    The additional performance that libraries and compilers for domain specific
+    languages achieve are a consequence of operating under more constrained
+    conditions.
+    These restrictions provide domain knowledge that they can leverage to make
+    stronger assumptions, use more powerful models and generate better code.
+    It is possible to write equally specialized code in more general
+    purpose languages, however, current compilers remain unaware of the
+    additional constraints that the programmer adhered to and fail to tap into
+    the resulting optimization potential.
+
+
+    The thesis develops a methodology by which compilers can automatically
+    classify code as adhering to additional semantic constraints beyon what is
+    guaranteed by the programming language.
+    Using this classification, the compiler can then translate the code into a
+    more specialized domain and apply the already developed domain specific
+    techniques to achieve full performance.
+
+
+
+
+
+    \subsection*{extra building blocks}
 
     What is promising therefore is a combination of hand-optimized libraries,
     domain specific languages together with compiler automatisms.
@@ -186,25 +212,6 @@
     Therefore, many programs choose to instead not tap this additional
     performance potential.
 
-    The additional performance is a consequence of operating under more
-    constraint conditions.
-    Clearly, it is possible to write equally specialized code in more general
-    purpose languages, however current compilers remain unaware of the
-    additional constraints that the programmer adhered to and fail to tap into
-    the additional optimization potential.
-
-    The thesis develops a methodology by which compilers can automatically
-    classify code as adhering to additional semantic constraints beyon what is
-    guaranteed by the programming language.
-    Using this classification, the compiler can then translate the code into a
-    more specialized domain and apply the already developed domain specific
-    techniques to achieve full performance.
-
-
-    Kernel compilers and libraries fundamentally can only reach their superior
-    performance and capabilites as opposed to host compilers by leveraging the
-    domain knowledge that they get from operating under constraint conditions.
-    
     A linear alebra compiler operates under the assumption that the program is
     linear algbera, and the program representation that is used with not even
     allow the expression of any other system.
