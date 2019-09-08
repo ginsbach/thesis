@@ -54,17 +54,18 @@
     generation, with at most a recompilation required, new accelerators arrive
     with entirely novel and incompatible interfaces.
 
-    \subsection*{Libraries and Domain Specific Languages}
+\subsection*{Libraries and Domain Specific Languages}
+
     In particular, the novel hardware landscape greatly diminishes the
     scope of responsibilities and impact that traditional compilers for
-    languages such as C, C++ and Fortran used to have.
+    languages such as C, C++ and Fortran can have.
     Were previously, such compilers were responsible for orchestrating
     program execution on the entirety of available computing resources, they are
     now generally limited to only targeting the small homogeneous fraction of
     processor cores directly.
     In order to reach peak performance on rapidly evolving and highly parallel
     hardware, programming models built around libraries and novel domain
-    specific languages are necessary instead.
+    specific languages are have emerged instead.
     These compilers are therefore increasingly downgraded to merely coordinating
     the launch of core workloads in the form of computational kernels, which are
     executed as separate and opaque programs on accelerators.
@@ -89,7 +90,7 @@
 
     These success stories, however, still leave many important problems
     unaddressed.
-    Adoption costs are significant and they are combined with often uncertain
+    Adoption costs are significant and they coincide with often uncertain
     long-term prospects and very limited cross-platform portability.
     Even in the case of the generally agreed upon BLAS standard -- arguably the
     best case scenario -- adoption of novel implementations is non-trivial in
@@ -98,19 +99,25 @@
     rewrites are required in entirely novel ecosystems with an unclear future of
     support.
 
-    \subsection*{Host Compilers and Kernel Compilers}
+\subsection*{Host Compilers and Kernel Compilers}
 
-    It may appear obvious that e.g.\ a full C++ compiler cannot be provided for
-    a typical graphics processor -- after all, most graphics processors have
-    hardware limitations that prevent them from implementing the entire language
-    standard, and many accelerators are far from Turing complete.
+    These problems arise, because compilers are unable to efficiently map
+    existing programs to heterogeneous platforms.
+    It is therefore important to reflect the reasons why such a compiler
+    does not exist.
+    It may appear obvious that e.g.\ a full C++ or Java compiler cannot be
+    provided for a typical graphics processor -- after all, most graphics
+    processors have hardware limitations that prevent them from implementing the
+    entire language standard.
+    Indeed, many accelerators are even further from Turing complete.
     However, this should not prevent a partial compiler, offloading suitable
     subprograms, while falling back on homogeneous hardware with a full language
     implementaiton for the remainder.
     Despite the obvious convenience of such an approach, there are important
     reasons why this has not been championed so far.
-    To understand this, an important first observation is that compilers do play
-    an important role in targeting heterogeneous hardware.
+    To understand this, an important first observation is that a specific class
+    of compilers already plays an important role in targeting heterogeneous
+    hardware.
 
     In fact, many of the kernel programs that remain opaque to the application
     compilers are themselves products of other, specialised compilers.
@@ -159,7 +166,8 @@
     are unable to utilize the restricted nature of input programs would suffer
     the same shortcomings.
 
-    \subsection*{Leveraging the Existing Knowhow}
+\subsection*{Leveraging the Existing Knowhow}
+
     The additional performance that libraries and domain specific kernel
     compilers achieve is a consequence of operating under more constrained
     conditions.
@@ -206,14 +214,60 @@
     optimization with domain knowledge, thus resulting in better code.
     This work proposes a generalization of this concept.
 
-    
     The thesis develops a methodology to generalize this approach, resulting in
     methods by which compilers can automatically classify code as adhering to
     additional semantic constraints beyond what is guaranteed by the programming
-    language. Using this classification, the compiler can then translate the
-    code into a more specialized domain and apply the already developed domain
-    specific techniques -- in the simplest case by merely linking to a library
-    -- to achieve full performance.
+    language.
+    Using this classification, the compiler can then translate the code into a
+    more specialized domain and apply the already developed domain specific
+    techniques -- in the simplest case by merely linking to a library -- to
+    achieve full performance.
+
+\subsection*{Moving Between Models}
+
+    In order to incorporate the advantages of kernel compilers into general
+    purpose host compilers, a technique for automatically specializing the code
+    into domain specific models is required.
+    Firstly, this requires a recognition of how programs are modeled in
+    traditional compilers.
+
+    Program code typically passes through a whole range of representations
+    during compilation with a modern, general purpose compiler.
+    Starting from the textual source code, an abstract syntax tree is typically
+    built, from which a serialized intermdiate representation is constructed,
+    which is then passed on to the compiler back end for code generation.
+    It is the intermediate representation -- typically in static single
+    assignment form -- that is used for the majority of optimising code
+    transformations.
+    This best represents the semantic model, and therefore the set of
+    assumptions and capabilities, that the compiler uses to represent the
+    program.
+
+    Static single assignment forms are quite accessible to mathematical
+    resoning, with most of their interesting properties based on graph
+    structures.
+    With this in mind, structural restrictions on intermediate representation
+    code -- corresponding to restricted, domain specific models -- can be
+    precisely formulated as mathematical constraints.
+    
+    
+
+    In the most extreme interpretation of this model, sections of code are
+    recognised as implementing specific algorithms, like matrix multiplications,
+    that are merely parameterized.
+
+    Next are algorithms that allow parameterization with an operator.
+    For example, stencil kernels of reductions fall into this catefory.
+
+    More generic again are restricted programs that are nonetheless freely
+    programmeable.
+    Polyhedral code sections fall under this domain.
+
+    All of these types of code restrictions can be formulated via constraints.
+    This thesis will develop a framework to enable this, starting from
+    theoretical foundations and resulting in a donain specific programming
+    language. that is evaluated on well established benchmark programs.
+
 
     \subsection*{extra building blocks}
 
@@ -238,27 +292,6 @@
     A linear alebra compiler operates under the assumption that the program is
     linear algbera, and the program representation that is used with not even
     allow the expression of any other system.
-
-    \subsection{Constraints For the Rescue}
-    The core to automatically making code heterogeneous is therefore to specialize it.
-    When the compiler can classify code sections as adhering to a more constraint
-    model than the generic SSA form, it can then apply domain specific optimization techniques.
-
-    In the most extreme interpretation of this model, sections of code are
-    recognised as implementing specific algorithms, like matrix multiplications,
-    that are merely parameterized.
-
-    Next are algorithms that allow parameterization with an operator.
-    For example, stencil kernels of reductions fall into this catefory.
-
-    More generic again are restricted programs that are nonetheless freely
-    programmeable.
-    Polyhedral code sections fall under this domain.
-
-    All of these types of code restrictions can be formulated via constraints.
-    This thesis will develop a framework to enable this, starting from
-    theoretical foundations and resulting in a donain specific programming
-    language. that is evaluated on well established benchmark programs.
 
 
 \pagebreak
