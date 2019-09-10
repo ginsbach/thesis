@@ -145,7 +145,146 @@
 
 \section{Example of Static Single Assignment Form}
 
-    Many of the features of 
+    \autoref{ssaexample} shows many of the key features of static single
+    assignment form and how they naturally emerge from simplification steps of
+    the source code.
+    This is demonstrated on an example function written in C, which appriximates
+    the square root function iteratively using the Babylonian method.
+    
+
+    Starting from the source code at the top of the figure, the function is
+    first simplified by breaking down complex expressions as far as possible.
+    This results in a sequentialisation of the expressions into their most basic
+    operations, introducing several explicit variables that store the previously
+    implicit temporary values.
+    The greatly simplifies and normalises the program, with many of the
+    remaining simple expressions directly mapping to individual processor
+    instructions.
+
+    In a second step, the structured control flow of the program is broken down
+    into individual goto statements that coordinate the control between four
+    basic blocks.
+    While this does not ease the intuitive understanding of the program, it
+    unifies the many different control flow structures provided in the source
+    language into a single mechanism.
+    This makes automatic analysis of the program a less complex task.
+    Importantly, no information is lost by discarding the control flow
+    structures, as they can be entirely reconstructed with straightforward
+    algorithms.
+
+    Lastly, the static single assignment property is introduced.
+    Any variable that is assigned in more than one static place in the program
+    is instead duplicated into multiple variables.
+    These now distinct variables are bound together with $\Phi$ nodes, which
+    cannot be expressed in the C syntax.
+    Instead, their behaviour is spelled out in the comments in lines 8-9.
+    While the impact of the static single assignment property change seems minor
+    at first glance, it has many convenient implications.
+    As variables are written exactly one, the distinction between local variable
+    declarations and definition becomes obsolete.
+    This furthermore implies that it is always known statically which expression
+    yielded the value of each variable.
+    which makes many optimising transformation much less cumbersome to
+    implement.
+    As a trivial example, this property immediately guarantees that the variable
+    $i$ always has the value zero.
+
+    With an understanding of how SSA form emerges during compilation and with,
+    it is now the aim to use the serialised nature of it to contruct a
+    convenient mathematical model.
+    The core observation is that most items in SSA form functions can be easily
+    enumerated and identified with by their index.
+    This includes the function parameters, expressions and variables.
+    After this crucial step, most properties of SSA form functions can be
+    described using integers, making for a convenient and easy mathematical
+    language.
+    
+    
+    
+    
+
+\begin{figure}[p]
+\scriptsize
+    C source function:
+    \begin{lstlisting}[language=C]
+double babylonian_method(double square) {
+  double root = 1.0;
+  for(int i = 0; i < ITER; i++)
+    root = 0.5 * (root + square / root);
+  return root;
+}
+    \end{lstlisting}
+
+    Complex expressions are broken down into individual operations:
+    \begin{lstlisting}[language=C]
+double babylonian_method(double square) {
+  double root = 1.0;
+  for(int i = 0; i < ITER; i++) {
+    double tmp1 = square / root;
+    double tmp2 = root + tmp1;
+    root = 0.5 * tmp2;
+  }
+  return root;
+}
+    \end{lstlisting}
+
+    Structured control flow is expanded into jump statements:
+    \begin{lstlisting}[language=C]
+double babylonian_method(double square) {
+entry:
+  double root = 1.0;
+  int i = 0;
+  goto header;
+
+header:
+  bool test = i < ITER;
+  if(test) goto body; else goto exit;
+
+body:
+  double tmp1 = square / root;
+  double tmp2 = root + tmp1;
+  root = 0.5 * tmp2;
+  i = i+1;
+  goto header;
+
+exit:
+    return root;
+}
+    \end{lstlisting}
+
+    The SSA property is introduced:
+    \begin{lstlisting}[language=C]
+double babylonian_method(double square) {
+entry:
+  double root = 1.0;
+  int i = 0;
+  goto header;
+
+header:
+  int i_2    = /* reached from 5: i, from 18: i_3 */
+  int root_2 = /* reached from 5: root, from 18: root_3 */
+  bool test = i_2 < ITER;
+  if(test) goto body; else goto exit;
+
+body:
+  double tmp1 = square / root_2;
+  double tmp2 = root_2 + tmp1;
+  double root_3 = 0.5 * tmp2;
+  int i_3 = i_2+1;
+  goto header;
+
+exit:
+    return root_2;
+}
+    \end{lstlisting}
+
+    \caption{Static Single Assignment emerges from successive simplification
+             and normalization of source level features.
+             This is demonstrated on an example funtction that approximates the
+             square root function with the babylonian method.}
+    \label{ssaexample}
+\end{figure}
+
 \pagebreak
 
 \section{Deriving a Mathematical Model for SSA}
