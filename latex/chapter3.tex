@@ -15,16 +15,16 @@
     the reward are much more powerful recognition capabilities and the
     expression of higher level algorithmic structures, which are impossible to
     define syntactically on programming language level.
-    Later chapters will evaluate these claims in detail by building a complete
-    constraint programming language on top of the theory in this chapter, and
-    by then using it to solve real compiler analysis problems.
+    Later chapters will explore the power of this approach in detail, by
+    building a complete constraint programming language on top of the theory in
+    this chapter, and by then using it to solve real compiler analysis problems.
 
     After defining a mathematical foundation of SSA form and introducing
     formalisms for the expression of basic contraint problems on top of it,
-    several standard definitions from compiler theory are then reformulated in
-    the framework.
-    This includes common graph properties and the domination concept, as well
-    as control flow structures such as single entry single exit blocks.
+    several standard definitions from compiler theory are reformulated in the
+    framework.
+    This includes common graph properties, including the concept of domination,
+    as well as control flow structures such as single entry single exit blocks.
     All of this lays the foundations for the succeeding chapter.
 
     Finally, for the practical application of constraint programming to compiler
@@ -61,9 +61,9 @@
     the algorithmic core of the user program, such as register allocation and
     instruction scheduling.
     \\
-    {\bf Static single assignment} (SSA) form has emerged as a suitable
+    {\bf Static Single Assignment} (SSA) form has emerged as a suitable
     representation in the middle end, which is traditionally responsible for
-    applying complex optimizing transformations.
+    applying complex optimising transformations.
     SSA abstracts away the complexities of both the source language and the
     target architecture, instead focusing on a relatively simple semantic
     description of the user program that enables reliable analysis and platform
@@ -71,10 +71,11 @@
     It is these properties that also make it the suitable target for expressing
     algorithmic structures.
 
-    SSA is not a strictly defined or mathematically codified standard, but
-    refers to a group of representations that share important characteristics,
+    Static Single Assignment is not a strictly defined or mathematically
+    codified standard, but instead refers to a group of representations that
+    share important characteristics,
     the eponymous SSA property being only one among them.
-    The precise instruction set, syntax and type systems of the different
+    Instruction sets, syntax and type systems of the different
     SSA intermediate representations vary considerably, depending on the
     requirements of the source languages (static or dynamic)
     and the operating constraints (just-in-time or ahead-of-time).
@@ -90,15 +91,12 @@
     basic blocks and operating on virtual registers.
     The control flow is handled via jump instructions at end of basic blocks.
     The virtual registers, within a function, can be assigned only at a single
-    static location each, which we will see later has very useful implications
-    and is the eponymous feature of SSA form.
-    As opposed to syntactic representations, SSA form is thus a heavily
-    searialized program representation, where expressions have been turned into
-    lists of instructions and control flow structures into lists of basic
-    blocks.
-    The following sections will will discuss this in more detail and show how
-    the serial nature and hence the enumerability of SSA makes constraint
-    programming concepts very naturally applicable.
+    static location each, which we will see later has very useful implications.
+    As opposed to syntax-heavy representations, SSA form is thus a searialized
+    program representation, where expressions have been turned into lists of
+    instructions and control flow structures into lists of basic blocks.
+    The following sections explore how this serial nature makes constraint
+    programming concepts naturally applicable.
 
 \subsection{Static Single Assignment Form}
 
@@ -120,9 +118,9 @@
     The individual instructions operate on an abstract machine, which provides
     an unlimited number of identical registers and a well defined instruction
     set.
-    Control flow is expressed as branch instructions, which direct the execution
-    conditionally or unconditionally to other basic blocks, which may be
-    statically identified via labels.
+    The control flow is expressed as branch instructions, which direct the
+    execution conditionally or unconditionally to other basic blocks.
+    Basic blocks may have labels or be identified simply by enumerating them.
     Instruction arguments can be registers, constants or globals and branch
     instructions additionally take basic block labels.
     Instructions can write their result into a single output register.
@@ -145,6 +143,11 @@
     previously executed basic block, i.e.\ depending on the branch from where
     the execution reached the basic block containing the phi node.
 
+\section{Example of Static Single Assignment Form}
+
+    Many of the features of 
+\pagebreak
+
 \section{Deriving a Mathematical Model for SSA}
 
     In order to develop constraint programming on real world SSA programs with
@@ -153,37 +156,43 @@
     It is not the aim here to introduce a formal operational semantics, or more
     generally to derive a model for the execution of SSA programs.
     Instead, the section will investigate the static structure, focusing on
-    clear notation of the commonalities of existing SSA intermediate
+    clear notation of the commonalities of the existing SSA intermediate
     representations.
-    The remainder of this section uses the notation in \autoref{not:ssa}, note
-    that no specific representative of the many different SSA languages is
+    The remainder of this section uses the notation in \autoref{not:ssa}.
+    Note that no specific representative of the many different SSA languages is
     chosen at this point.
 
 \begin{notation}{Static Single Assignment Function}{ssa}
-    Let $\mathcal F$ be a function in SSA form with $n_p$ parameters
-    $par_1,\dots par_{n_p}$.
-    Let $n_i$ the number of instructions in the function and let
-    $ins_1,\dots ins_{n_i}$ the instructions ordered depth first, starting from
-    the execution entry.
-    Let $n_g$ the amount of globals and $n_c$ the amount of constants that are
-    referenced as an argument of any of the instructions and let
-    $cst_1,\dots cst_{n_c}$ and $glb_1,\dots glb_{n_g}$ the corresponding
-    constants and globals in the order of first use by the instructions of
-    $\mathcal F$.
+    For the remainder of this section, some function $\mathcal F$ in SSA form is
+    assumed fixed. 
+    The following identifiers are then used to describe this function.
+
+    \begin{itemize}
+    \item $n_p$ is the number of function arguments $par_1,\dots par_{n_p}$.
+    \item $n_i$ is the number of instructions $ins_1,\dots ins_{n_i}$ in the
+          function, ordered depth first, starting from the execution entry.
+    \item $n_g$ is the number of unique globals $glb_1,\dots glb_{n_g}$ that are
+          referenced as an operand of any of the instructions.
+    \item $n_c$ is the number of unique constants $cst_1,\dots cst_{n_g}$ that
+          are referenced as an operand of any of the instructions.
+    \end{itemize}
 \end{notation}
 
     As previously discussed, the static single assignment property makes
     registers implicit.
-    Not accounting for branch targets, instruction arguments therefore fall into
-    four categories: function parameters, other instructions (i.e. registers),
-    constants and globals.
+    All instruction arguments therefore fall into four categories: function
+    parameters, constants, globals and other instructions.
+    Branching instructions furthermore take basic block labels as brach targets,
+    but they can be treated separately.
+
     For each function, these sets can be statically determined and are finite,
-    as implied by \autoref{not:ssa}, so a single integer is enough to encode
-    each instruction argument as an index into the union of those four sets.
+    as implied by \autoref{not:ssa}.
+    Therefore, a single integer is enough to encode each instruction argument as
+    an index into the union of those four sets.
     Together with the list based representation, this allows for the
     entire argument structure of the instructions in an SSA function to be
     conveniently turned into a labelled multigraph, with edge labels accounting
-    for the argument order.
+    for the positional order of the arguments.
     These observations lead to \autoref{def:dfg}.
 
 \begin{definition}{Data Flow Graph}{dfg}
