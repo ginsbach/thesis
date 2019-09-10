@@ -65,16 +65,12 @@
     processor cores directly.
     In order to reach peak performance on rapidly evolving and highly parallel
     hardware, programming models built around libraries and novel domain
-    specific languages are have emerged instead.
-    These compilers are therefore increasingly downgraded to merely coordinating
-    the launch of core workloads in the form of computational kernels, which are
-    executed as separate and opaque programs on accelerators.
+    specific languages have emerged instead.
 
-    Two examples stand characteristically for the breadth of these approaches
-    based on libraries and domain specific languages.
+    Two examples stand characteristically for the breadth of these approaches.
     Firstly, Basic Linear Algera Subprograms (BLAS), a standard for library
     function interfaces dating back to the 1970s, has been implemented for
-    almost all heterogeneous accelerators.
+    almost all accelerators.
     These implementations are widely used and offer unrivaled performance, with
     some of them provided by hardware vendors and some from the scientific
     community.
@@ -103,6 +99,9 @@
 
     These problems arise, because compilers are unable to efficiently map
     existing programs to heterogeneous platforms.
+%    These compilers are therefore increasingly downgraded to merely coordinating
+%    the launch of core workloads in the form of computational kernels, which are
+%    executed as separate and opaque programs.
     It is therefore important to reflect the reasons why such a compiler
     does not exist.
     It may appear obvious that e.g.\ a full C++ or Java compiler cannot be
