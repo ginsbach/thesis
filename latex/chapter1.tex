@@ -165,7 +165,7 @@
     are unable to utilize the restricted nature of input programs would suffer
     the same shortcomings.
 
-\subsection*{Leveraging the Existing Knowhow}
+\subsection*{Moving Between Abstraction Levels}
 
     The additional performance that libraries and domain specific kernel
     compilers achieve is a consequence of operating under more constrained
@@ -206,29 +206,29 @@
     merely have to recognise a finite amount of supported linear algebra
     optimizations.
 
-    Conceptiully, some of this has been done before.
+    Conceptually, some of this has been done before.
     Polyhedral compilers take as input arbitrary code, but they recognise whether
     parts of code are actually expresible in a much more constraint system.
     If possible, they reformulate the code into this system and continue
     optimization with domain knowledge, thus resulting in better code.
     This work proposes a generalization of this concept.
 
-    The thesis develops a methodology to generalize this approach, resulting in
-    methods by which compilers can automatically classify code as adhering to
-    additional semantic constraints beyond what is guaranteed by the programming
-    language.
-    Using this classification, the compiler can then translate the code into a
-    more specialized domain and apply the already developed domain specific
-    techniques -- in the simplest case by merely linking to a library -- to
-    achieve full performance.
+%    The thesis develops a methodology to generalize this approach, resulting in
+%    methods by which compilers can automatically classify code as adhering to
+%    additional semantic constraints beyond what is guaranteed by the programming
+%    language.
+%    Using this classification, the compiler can then translate the code into a
+%    more specialized domain and apply the already developed domain specific
+%    techniques -- in the simplest case by merely linking to a library -- to
+%    achieve full performance.
 
-\subsection*{Moving Between Models}
+\subsection*{Program Specialization with Constraints}
 
     In order to incorporate the advantages of kernel compilers into general
     purpose host compilers, a technique for automatically specializing the code
     into domain specific models is required.
-    Firstly, this requires a recognition of how programs are modeled in
-    traditional compilers.
+    This can be achieved with constraint programming, tapping into established
+    research into efficient constraint solvers.
 
     Program code typically passes through a whole range of representations
     during compilation with a modern, general purpose compiler.
@@ -248,8 +248,6 @@
     With this in mind, structural restrictions on intermediate representation
     code -- corresponding to restricted, domain specific models -- can be
     precisely formulated as mathematical constraints.
-    
-    
 
     In the most extreme interpretation of this model, sections of code are
     recognised as implementing specific algorithms, like matrix multiplications,
@@ -268,29 +266,29 @@
     language. that is evaluated on well established benchmark programs.
 
 
-    \subsection*{extra building blocks}
+%    \subsection*{extra building blocks}
 
-    What is promising therefore is a combination of hand-optimized libraries,
-    domain specific languages together with compiler automatisms.
-    This requires a disruptive improvement in compiler analysis capabilites.
-    The detection of higher level algorithmic structures in compilers has been
-    investigated before, but established approaches cannot scale to what
-    this challenge requires.
-    Syntactic matching directly on programming languages has become
-    unviable for the complexities of both modern programming languages and
-    complex code bases.
+%    What is promising therefore is a combination of hand-optimized libraries,
+%    domain specific languages together with compiler automatisms.
+%    This requires a disruptive improvement in compiler analysis capabilites.
+%    The detection of higher level algorithmic structures in compilers has been
+%    investigated before, but established approaches cannot scale to what
+%    this challenge requires.
+%    Syntactic matching directly on programming languages has become
+%    unviable for the complexities of both modern programming languages and
+%    complex code bases.
 
-    Instead, this thesis develops an entirely novel approach based on concepts
-    from constraint solving, building a pragmatic methodology for detecting
-    complex algorithmic structures -- computational idioms.
+%    Instead, this thesis develops an entirely novel approach based on concepts
+%    from constraint solving, building a pragmatic methodology for detecting
+%    complex algorithmic structures -- computational idioms.
 
-    In order to successfully target heterogeneous systems, host compilers need
-    to leverage the know-how that already exists in the surrounding software
-    ecosystem, encapsulated in special purpose libraries and code generators.
+%    In order to successfully target heterogeneous systems, host compilers need
+%    to leverage the know-how that already exists in the surrounding software
+%    ecosystem, encapsulated in special purpose libraries and code generators.
 
-    A linear alebra compiler operates under the assumption that the program is
-    linear algbera, and the program representation that is used with not even
-    allow the expression of any other system.
+%    A linear alebra compiler operates under the assumption that the program is
+%    linear algbera, and the program representation that is used with not even
+%    allow the expression of any other system.
 
 
 \pagebreak
