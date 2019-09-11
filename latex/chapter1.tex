@@ -222,6 +222,11 @@
 %    techniques -- in the simplest case by merely linking to a library -- to
 %    achieve full performance.
 
+\begin{figure}
+\includegraphics[width=0.9\textwidth]{figures/DSLgradient}
+\caption{Gradient of Specialization}
+\end{figure}
+
 \subsection*{Program Specialization with Constraints}
 
     In order to incorporate the advantages of kernel compilers into general
@@ -252,10 +257,8 @@
     In the most extreme interpretation of this model, sections of code are
     recognised as implementing specific algorithms, like matrix multiplications,
     that are merely parameterized.
-
     Next are algorithms that allow parameterization with an operator.
     For example, stencil kernels of reductions fall into this catefory.
-
     More generic again are restricted programs that are nonetheless freely
     programmeable.
     Polyhedral code sections fall under this domain.
