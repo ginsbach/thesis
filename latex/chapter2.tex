@@ -5,7 +5,7 @@
     based on a mathematical model of static single assignment form (SSA).
     With the help of this model, concepts that are typically discussed on a
     programming language level are transferred onto the structurally simple,
-    but semtantically expressive class of SSA compiler intermediate
+    yet semtantically expressive class of SSA compiler intermediate
     representations.
 
     Constraint formulas on SSA respresentations initially appear to mimic
@@ -82,7 +82,7 @@
     Some prominent examples of compilers that utilize SSA for their
     optimisation passes include {\bf clang} (LLVM IR), {\bf gcc} (GIMPLE),
     {\bf v8 Crankshaft} (Hydrogen) and {\bf SpiderMonkey} (IonMonkey/MIR).
-    Despite their differences, they share the same fundamental paradigmes
+    Despite many differences, they share the same fundamental paradigms
     and many of the differences can be abstracted away as implementation
     specific details here.
 
@@ -91,8 +91,9 @@
     basic blocks and operating on virtual registers.
     The control flow is handled via jump instructions at end of basic blocks.
     The virtual registers, within a function, can be assigned only at a single
-    static location each, which we will see later has very useful implications.
-    As opposed to syntax-heavy representations, SSA form is thus a searialized
+    static location each, which has very useful implications as we will later
+    see.
+    As opposed to syntax-heavy representations, SSA form is a searialized
     program representation, where expressions have been turned into lists of
     instructions and control flow structures into lists of basic blocks.
     The following sections explore how this serial nature makes constraint
@@ -112,8 +113,8 @@
     SSA representations of programs are highly serialised, as shown in
     \autoref{fig:ssaoverview}:
     Programs are lists of functions, functions are lists of basic blocks,
-    basic blocks are lists of instructions and instructions are lists of
-    arguments.
+    basic blocks are lists of instructions and instructions are most
+    fundamentally lists of arguments.
 
     The individual instructions operate on an abstract machine, which provides
     an unlimited number of identical registers and a well defined instruction
@@ -143,48 +144,57 @@
     previously executed basic block, i.e.\ depending on the branch from where
     the execution reached the basic block containing the phi node.
 
-\section{Example of Static Single Assignment Form}
+\subsection{Example of Static Single Assignment Form}
 
     \autoref{ssaexample} shows many of the key features of static single
     assignment form and how they naturally emerge from simplification steps of
-    the source code.
+    the source code of procedural languages.
     This is demonstrated on an example function written in C, which appriximates
-    the square root function iteratively using the Babylonian method.
-    
+    the square root function iteratively using the Babylonian method as
+    described in \autoref{babylonian_equation}.
 
-    Starting from the source code at the top of the figure, the function is
-    first simplified by breaking down complex expressions as far as possible.
-    This results in a sequentialisation of the expressions into their most basic
-    operations, introducing several explicit variables that store the previously
-    implicit temporary values.
-    The greatly simplifies and normalises the program, with many of the
-    remaining simple expressions directly mapping to individual processor
-    instructions.
+\begin{equation}
+    x_0\approx\sqrt{S},\text{\hspace{1cm}}
+    x_{n+1}=\frac{x_n+\frac{S}{x_n}}{2}\text{\hspace{1cm}}
+    \implies\text{\hspace{1cm}}
+    \lim_{n\rightarrow\infty}x_n=\sqrt{S}
+    \label{babylonian_equation}
+\end{equation}
 
-    In a second step, the structured control flow of the program is broken down
-    into individual goto statements that coordinate the control between four
-    basic blocks.
+    Starting from the source code {\bf a)} at the top left of the figure, the
+    function is first simplified by breaking down complex expressions as far as
+    possible.
+    This results in a sequentialisation of the expressions into their
+    most basic operations, shown at the top right {\bf b)}, introducing
+    explicit variables that store the previously implicit temporary values.
+    This greatly simplifies and normalises the program, with many of the
+    remaining simple expressions directly mapping to processor instructions.
+
+    In a second step, the structured control flow of the program is replaced
+    with goto statements that coordinate the control between basic blocks.
+    This is shown at the bottom left {\bf c)}.
     While this does not ease the intuitive understanding of the program, it
-    unifies the many different control flow structures provided in the source
-    language into a single mechanism.
+    unifies the many control flow structures provided in the source language
+    into a single mechanism.
     This makes automatic analysis of the program a less complex task.
     Importantly, no information is lost by discarding the control flow
-    structures, as they can be entirely reconstructed with straightforward
-    algorithms.
+    structures.
+    They can be entirely reconstructed with straightforward algorithms.
 
     Lastly, the static single assignment property is introduced.
     Any variable that is assigned in more than one static place in the program
     is instead duplicated into multiple variables.
-    These now distinct variables are bound together with $\Phi$ nodes, which
-    cannot be expressed in the C syntax.
-    Instead, their behaviour is spelled out in the comments in lines 8-9.
+    Where necessary, these now distinct variables are bound together with
+    $\Phi$ nodes.
+    This cannot be expressed in the C syntax {\bf d)} at the bottom right.
+    Instead, the behaviour is spelled out in the comments in lines 8-14.
     While the impact of the static single assignment property change seems minor
     at first glance, it has many convenient implications.
     As variables are written exactly one, the distinction between local variable
-    declarations and definition becomes obsolete.
+    declarations and definitions becomes obsolete.
     This furthermore implies that it is always known statically which expression
     yielded the value of each variable.
-    The variable names simply become identifyers of the expressions themselves.
+    The variable names become identifiers of the expressions themselves.
     This makes many optimising transformation much less cumbersome to
     implement.
     As a trivial example, this property immediately guarantees that the variable
@@ -199,89 +209,102 @@
     After this crucial step, most properties of SSA form functions can be
     described using integers, making for a convenient and easy mathematical
     language.
-    
-    
-    
-    
 
 \begin{figure}[p]
-\scriptsize
-    C source function:
+\begin{minipage}{0.48\textwidth}
+    \paragraph*{a)} C source function
     \begin{lstlisting}[language=C]
-double babylonian_method(double square) {
-  double root = 1.0;
-  for(int i = 0; i < ITER; i++)
-    root = 0.5 * (root + square / root);
-  return root;
+double sqrt(double S) {
+  double x = 1.0;
+  for(int i = 0; i < N; i++)
+    x = 0.5 * (x + S / x);
+  return x;
 }
     \end{lstlisting}
-
-    Complex expressions are broken down into individual operations:
+\vspace{1.9cm}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+    \paragraph*{b)} Complex expressions are broken down
     \begin{lstlisting}[language=C]
-double babylonian_method(double square) {
-  double root = 1.0;
-  for(int i = 0; i < ITER; i++) {
-    double tmp1 = square / root;
-    double tmp2 = root + tmp1;
+double sqrt(double S) {
+  double x = 1.0;
+  for(int i = 0; i < N; i++)
+  {
+    double tmp1 = S / x;
+    double tmp2 = x + tmp1;
     root = 0.5 * tmp2;
   }
-  return root;
+  return x;
 }
     \end{lstlisting}
+\end{minipage}
+\vspace{0.5cm}
 
-    Structured control flow is expanded into jump statements:
+\begin{minipage}{0.48\textwidth}
+    \paragraph*{c)} Structured control flow is expanded
     \begin{lstlisting}[language=C]
-double babylonian_method(double square) {
+double sqrt(double S) {
 entry:
-  double root = 1.0;
+  double x = 1.0;
   int i = 0;
   goto header;
 
 header:
-  bool test = i < ITER;
-  if(test) goto body; else goto exit;
+  bool test = i < N;
+  if(test) goto body;
+      else goto exit;
 
 body:
-  double tmp1 = square / root;
-  double tmp2 = root + tmp1;
+  double tmp1 = S / x;
+  double tmp2 = x + tmp1;
   root = 0.5 * tmp2;
   i = i+1;
   goto header;
 
 exit:
-    return root;
+    return x;
 }
     \end{lstlisting}
-
-    The SSA property is introduced:
+\vspace{2.85cm}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+    \paragraph*{d)} The SSA property is introduced
     \begin{lstlisting}[language=C]
-double babylonian_method(double square) {
+double sqrt(double S) {
 entry:
-  double root = 1.0;
+  double x = 1.0;
   int i = 0;
   goto header;
 
 header:
-  int i_2    = /* reached from 5: i, from 18: i_3 */
-  int root_2 = /* reached from 5: root, from 18: root_3 */
-  bool test = i_2 < ITER;
-  if(test) goto body; else goto exit;
+  int i_2 = /* if reached
+    from line  5: i,
+    from line 23: i_3 */
+  int x_2 = /* if reached
+    from line  5: x,
+    from line 23: x_3 */
+  bool test = i_2 < N;
+  if(test) goto body;
+      else goto exit;
 
 body:
-  double tmp1 = square / root_2;
-  double tmp2 = root_2 + tmp1;
-  double root_3 = 0.5 * tmp2;
+  double tmp1 = square / x_2;
+  double tmp2 = x_2 + tmp1;
+  double x_3 = 0.5 * tmp2;
   int i_3 = i_2+1;
   goto header;
 
 exit:
-    return root_2;
+    return x_2;
 }
     \end{lstlisting}
+\end{minipage}
 
     \caption{Static Single Assignment emerges from successive simplification
-             and normalization of source level features.
-             This is demonstrated on an example funtction that approximates the
+             and normalization of source level features: 
+             Demonstration on an example funtction that approximates the
              square root function with the babylonian method.}
     \label{ssaexample}
 \end{figure}
