@@ -1,16 +1,19 @@
-\section{The Rise of Heterogeneous Computing}
+\section{Heterogeneous Computing}
 
     For several decades, from the 1970s until the early 2000s, advances in
     processor development followed Moore's Law and Dennard Scaling.
     The circuit density approximately doubled every two years, yet the power
     consumption and the accompanying thermal limitations remained relatively
     stable.
-    This hardware progress had major implications also for software
-    development.
+    This resulted in ever more powerful machines with rising clock frequencies,
+    capable of running increasingly complex applications.
+
+    These physics-driven advances in hardware design had major implications also
+    for software development.
     Not only did the performance of computers improve exponentially, but these
     performance gains were immediately available to the already existing
     programs.
-    The fundamental contracts between software and hardware - the
+    The most fundamental contracts between software and hardware - the
     instruction set architectures of processors - evolved without paradigmatic
     changes.
     This is best exemplified by the pervasive x86 instruction set architecture,
@@ -25,15 +28,15 @@
     with the apparent end of Dennard Scaling.
     While the shrinking of transistors continued, this did not coincide with
     increased clock cycles and stable power consumption any longer.
-    The resulting paradigmatic shift toward multi-processing left a deep mark on
+    The resulting shift toward multi-processing has left a deep mark on
     software development.
     New programming paradigms and languages, annotation systems, programming
     interfaces, libraries and compiler techniques were developed and continue to
-    evolve.
-    Despite immenense progress in the field, parallel computing remains an area
+    evolve around the challenges of parallel computing.
+    Despite immenense progress in the field, it remains an area
     of active research and automatic approaches often fall short.
 
-    In recent years, it has become clear that multi-processing on its own has
+    In recent years, it has become clear that multi-processing alone has
     also reached its limits, and another change in direction is following
     swiftly.
     In response to the prevailing breakdown of both Dennard Scaling and Moore's
@@ -45,12 +48,12 @@
     accelerators, coinciding with the meteoric rise in popularity of
     convolutional neural networks due to the success of deep learning.
 
-\subsection{The Diminished Role of Traditional Compilers}
+\section{The Diminished Role of Traditional Compilers}
 
     This arrival of widespread heterogeneous computing is a natural and
     necessary reaction to the scaling limitations of homogeneous, general
     purpose processors.
-    However, it poses an enormous challenge to the surrounding software
+    However, it also poses an enormous challenge to the surrounding software
     ecosystem, and it puts into question many of the achievements in portability
     and longevity of programs that are taken for granted in modern computing.
     Existing software does not automatically benefit from entirely new
@@ -71,8 +74,10 @@
 \subsection{Libraries and Domain Specific Languages Fill the Gap}
 
     In order to reach peak performance on rapidly evolving and highly parallel
-    hardware, programming models built around libraries and novel domain
-    specific languages have emerged instead.
+    hardware, novel programming models built around libraries and domain
+    specific languages have emerged.
+    They succeed in utilising heterogeneous hardware in situations where
+    traditional compilers fail.
 
     Two examples stand characteristically for the breadth of these approaches.
     Firstly, Basic Linear Algera Subprograms (BLAS), a standard for library
@@ -86,6 +91,7 @@
     This includes manually written assembly code, but also highly advanced
     code generation techniques, novel program representations, polyhedral
     optimisation and many more.
+
     Secondly, the domain specific language Halide was developed for the domain
     of image processing.
     It has demonstrated an immense potential for compiler based, domain specific
@@ -125,7 +131,7 @@
     of compilers already plays an important role in targeting heterogeneous
     hardware.
 
-\subsection{Host Compilers and Kernel Compilers}
+\section{Host Compilers and Kernel Compilers}
 
     In fact, many of the kernel programs that remain opaque to the application
     compilers are themselves products of other, specialised compilers.
