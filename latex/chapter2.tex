@@ -239,10 +239,10 @@ header:
     from line  5: x,
     from line 23: x_3 */
   bool test = i_2 < N;
-  if(test) goto body;
+  if(test) goto loop;
       else goto exit;
 
-body:
+loop:
   double tmp1 = square / x_2;
   double tmp2 = x_2 + tmp1;
   double x_3 = 0.5 * tmp2;
@@ -281,10 +281,10 @@ entry:
 
 header:
   bool test = i < N;
-  if(test) goto body;
+  if(test) goto loop;
       else goto exit;
 
-body:
+loop:
   double tmp1 = S / x;
   double tmp2 = x + tmp1;
   root = 0.5 * tmp2;
@@ -425,142 +425,225 @@ exit:
     with their value depending on the last executed jump instruction.
     This will be seen later.
 
-\subsection{Putting the Model Together}
+\subsection{DFG, CFG and per-Value Information}
 
     With the control flow and data flow separated into distinct mathematical
     structures, individual instructions are encoded by their opcodes alone.
     This is demonstrated in \autoref{fig:separation}.
-    At the left of the figure is a simple function in an abstract SSA
-    representation that calculates an approximation of the square root of
-    a number using Newton's method.
-    The function has 10 instructions separated into three basic blocks, with the
+    At the top of the figure is a simple function in an abstract SSA
+    representation.
+    It calculates an approximation of the square root of a number using the
+    Babylonian method, as previously introduced in \autoref{ssaexample}.
+    The function has 11 instructions separated into 4 basic blocks, with the
     majority of the instructions in a loop structure that iteratively improves
     the result.
 
-    The entire information that is encoded in this SSA representation can also
-    be recovered from the structures at the right side of the figure:
+    The entire semantic information that is encoded in this SSA representation
+    can be recovered from the structures at the bottom of the figure:
     per-instruction opcode information, lists of the parameters, constants and
     globals used, the data flow graph as in \autoref{def:dfg} and the control
     flow graph as in \autoref{def:cfg}.
+    The information at the bottom left will be further discussed later.
+    It may involve a type system and also the instruction set remains to be
+    specified.
 
-    The only parts of the SSA representation that need to be modeled are the
-    per-instruction information, which in this case is nothing more than a list
+    In order to demonstrate the equivalence in \autoref{fig:separation},
+    consider these reconstruction steps:
+\begin{enumerate}
+    \item The basic block boundaries are reconstructed by identifying all
+          consecutive instructions $A$, $B$ where at least one of the
+    conditions hold:
+    \begin{itemize}
+        \item $A$ does not have exactly one outgoing edge to $B$ or
+        \item $B$ does not have exactly one incoming edge from $A$.
+    \end{itemize}
+    \item Basic block labels as well as register names carry no semantic
+          information and can be chosen arbitrarily.
+    \item The arguments of all operations can be immediately filled in with the 
+          DFG. Similarly, the CFG directly provides the target instructions
+          for goto statements.
+    \item Incoming edges of $\Phi$ nodes are matched with incoming values using
+          the convention that the incoming values are ordered according to the
+          position of the incoming basic blocks.
+\end{enumerate}
+
+    The only part of the SSA representation that still needs to be modeled is
+    the per-value information, which in this case is nothing more than a list
     of opcodes, and the list of constants, paramters and globals.
     The opcodes are specific to different SSA representations, although a wide
     overlap exists (basic arithmetic, phi nodes).
-    For this work, they can simply be modeled as elements of an arbitrary set,
-    e.g. $Opcodes_\text{LLVM}$.
-    Similarly, $Types_\text{LLVM}$.
+    This chapter aims to capture commonalities of SSA representations, the study
+    of instruction sets and type systems is orthogonal to this.
+    Therefore, these structures remain opaque at this point and are modeled as
+    arbitrary sets.
 
-\begin{figure}[t]
-\begin{minipage}{0.39\textwidth}
+\begin{definition}{Set of Used Values}{usedvalues}
+    For a specific member $m$ of the family of SSA representations, there is
+    a set of opcodes $Opcodes_m$ and a set of types $Types_m$.
+\end{definition} 
+
+    For example, each instruction in an LLVM function has an opcode in
+    $Opcodes_\text{LLVM}$ and each function parameter, instruction, global and
+    constant has a type in $Types_\text{LLVM}$.
+
+\begin{figure}[p]
+\centering
+\begin{minipage}{0.42\textwidth}
 \begin{tabular}{|cl|}
 \multicolumn{2}{c}{{\bf function} Sqrt($S$)}\\
 \hline
-{\bf entry} & $\text{goto } loop$\\
+{\bf entry} & $\text{goto } header$\\
 \hline
-\multirow{8}{*}{\bf loop} & $x \leftarrow \Phi(entry:1,loop:x')$\\
-                          & $t_1\leftarrow S/x$\\
+\multirow{4}{*}{\bf header} & $i \leftarrow \Phi(entry:0,loop:i')$\\
+                            & $x \leftarrow \Phi(entry:1,loop:x')$\\
+                            & $c \leftarrow i<N$\\
+                            & $\text{if }c\text{ goto }loop\text{ else }exit$\\
+\hline
+\multirow{5}{*}{\bf loop} & $t_1\leftarrow S/x$\\
                           & $t_2\leftarrow x+t_1$\\
                           & $x'\leftarrow t_2/2$\\
-                          & $i\leftarrow \Phi(entry:0,loop:i')$\\
                           & $i'\leftarrow i+1$\\
-                          & $c\leftarrow i'+N$\\
-                          & $\text{if }c\text{ goto }loop\text{ else }exit$\\
+                          & $\text{ goto }header$\\
 \hline
-{\bf exit} & $\text{return }x'$\\
+{\bf exit} & $\text{return }x$\\
 \hline
 \end{tabular}
 \end{minipage}
-\begin{minipage}{0.04\textwidth}
+
+\vspace{1em}
+{\huge
+$\cong$}
+\vspace{1em}
+
+$\left(
+\begin{minipage}{5cm}
 \centering
-$\cong$
-\end{minipage}
-\begin{minipage}{0.22\textwidth}
 \begin{tabular}{|l|}
-\multicolumn{1}{c}{{\bf function} Sqrt($\square$)}\\
+\multicolumn{1}{p{3cm}}{{\bf parameters:}}\\
+\hline
+$S$\\
+\hline
+\end{tabular}
+\begin{tabular}{|l|}
+\multicolumn{1}{p{3cm}}{{\bf instructions:}}\\
 \hline
 $\text{goto } \square$\\
 $\Phi(\square:\square,\square:\square)$\\
-$\square/\square$\\
-$\square+\square$\\
-$\square/\square$\\
 $\Phi(\square:\square,\square:\square)$\\
-$\square+\square$\\
-$\square+\square$\\
+$\square<\square$\\
 $\text{if }\square\text{ goto }\square\text{ else }\square$\\
+$\square/\square$\\
+$\square+\square$\\
+$\square/\square$\\
+$\square+\square$\\
+$\text{goto } \square$\\
 $\text{return }\square$\\
 \hline
 \end{tabular}
+\begin{tabular}{|l|}
+\multicolumn{1}{p{3cm}}{{\bf globals:}}\\
+\hline
+$N$\\
+\hline
+\end{tabular}
+\begin{tabular}{|l|}
+\multicolumn{1}{p{3cm}}{{\bf constants:}}\\
+\hline
+$1$\\
+$2$\\
+$0$\\
+\hline
+\end{tabular}
 \end{minipage}
-\begin{minipage}{0.04\textwidth}
+\right)\hspace{1em}\text{\huge +}\hspace{1em}\left(
+\begin{minipage}{6cm}
 \centering
-$+$
-\end{minipage}
-\begin{minipage}{0.27\textwidth}
-$par=($`S'$)$\\
-$cst=(1,2,0)$\\
-$glb=($`N'$)$\\
-$CFG=$\\[1pt]{
-\tiny\tt\bf
-\setlength{\tabcolsep}{1pt}
-\renewcommand{\arraystretch}{0.7}
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+$CFG_{\mathcal F}=$\\[1pt]{
+\tt\bf
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.72}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\hphantom{1}&1&&&&&&&&\\[-0.5mm]
+\hphantom{1}&1&&&&&&&&&\\[-0.5mm]
 \hline
-&&1&&&&&&&\\[-0.5mm]
+&&1&&&&&&&&\\[-0.5mm]
 \hline
-&&&1&&&&&&\\[-0.5mm]
+&&&1&&&&&&&\\[-0.5mm]
 \hline
-&&&&1&&&&&\\[-0.5mm]
+&&&&1&&&&&&\\[-0.5mm]
 \hline
-&&&&&1&&&&\\[-0.5mm]
+&&&&&1&&&&&2\\[-0.5mm]
 \hline
-&&&&&&1&&&\\[-0.5mm]
+&&&&&&1&&&&\\[-0.5mm]
 \hline
-&&&&&&&1&&\\[-0.5mm]
+&&&&&&&1&&&\\[-0.5mm]
 \hline
-&&&&&&&&1&\\[-0.5mm]
+&&&&&&&&1&&\\[-0.5mm]
 \hline
-&1&&&&&&&&2\\[-0.5mm]
+&&&&&&&&&1&\\[-0.5mm]
 \hline
-&&&&&&&&&\\
+&1&&&&&&&&&\\[-0.5mm]
 \hline
-\end{tabular}}\\[0.75em]
-$DFG=$\\[1pt]{
-\tiny\tt\bf
-\setlength{\tabcolsep}{1pt}
-\renewcommand{\arraystretch}{0.7}
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c||c||c|c|c||c|}
+&&&&&&&&&&\\
 \hline
-\hphantom{1}&&&\hphantom{1}&&&&&\hphantom{1}&\hphantom{1}&&&&&\\
+\end{tabular}}
+\vspace{1em}
+
+$DFG_{\mathcal F}=$\\[1pt]{
+\tt\bf
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.72}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-2&&&&3&&&&4&&&1&&&\\[-0.5mm]
+\hphantom{1}&&&&&1&&&&\hphantom{1}&\hphantom{1}\\[-0.5mm]
 \hline
-&2&&&&&&&&&1&&&&\\[-0.5mm]
 \hline
-&1&2&&&&&&&&&&&&\\[-0.5mm]
+&&&&&&&&&&\\[-0.5mm]
 \hline
-&&1&&&&&&&&&&2&&\\[-0.5mm]
+&&&1&&&&&1&&\\[-0.5mm]
 \hline
-2&&&&&&3&&4&&&&&1&\\[-0.5mm]
+&&&&&2&1&&&&\\[-0.5mm]
 \hline
-&&&&&1&&&&&&2&&&\\[-0.5mm]
+&&&&1&&&&&&\\[-0.5mm]
 \hline
-&&&&&&1&&&&&&&&2\\[-0.5mm]
+&&&&&&&&&&\\[-0.5mm]
 \hline
-&&&&&&&1&&&&&&&\\[-0.5mm]
+&&&&&&2&&&&\\[-0.5mm]
 \hline
-&&&&1&&&&&&&&&&\\
+&&&&&&&1&&&\\[-0.5mm]
+\hline
+&&2&&&&&&&&\\[-0.5mm]
+\hline
+&2&&&&&&&&&\\[-0.5mm]
+\hline
+&&&&&&&&&&\\[-0.5mm]
+\hline
+&&&&&&&&&&\\[-0.5mm]
+\hline
+\hline
+&&&2&&&&&&&\\[-0.5mm]
+\hline
+\hline
+&&1&&&&&&2&&\\[-0.5mm]
+\hline
+&&&&&&&2&&&\\[-0.5mm]
+\hline
+&1&&&&&&&&&\\
 \hline
 \end{tabular}}
 \end{minipage}
+\right)$
 
-\caption{Example of DFG and CFG for on a function in abstract SSA representation
-         that approximates the square root with the Babylonian method. }
+\caption{SSA representation is decomposed into individual instructions, data
+         flow and control flow.
+         This is an equivalent representation of the function, no semantic
+         information is lost.
+         The example is a rendering of the Babylonian method in
+         \autoref{ssaexample}, abstracting away the C syntax.}
 \label{fig:separation}
 \end{figure}
+
+\subsection{Putting the Model Together}
 
     With separate mathematical models for all the individual concepts that are
     overlayed in SSA representations, it is now possible to create a complete
