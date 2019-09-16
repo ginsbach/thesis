@@ -645,45 +645,69 @@ $DFG_{\mathcal F}=$\\[1pt]{
 
 \subsection{Putting the Model Together}
 
-    With separate mathematical models for all the individual concepts that are
-    overlayed in SSA representations, it is now possible to create a complete
-    model as shown in \autoref{def:ssamodel}.
+    With separate mathematical models in place for all the individual structures
+    that interact in SSA representations, it is now possible to compile a
+    complete model.
 
 \begin{definition}{Mathematical Model of SSA programs}{ssamodel}
-    An {\em SSA model} of the SSA function $\mathcal F$ is a tuple
+    The {\em SSA model} of the function $\mathcal F$ is the tuple
     \begin{align*}
-        (DFG_\mathcal{F}, CFG_\mathcal{F},I_\mathcal{F},T_\mathcal{F},C_\mathcal{F},P_\mathcal{F},G_\mathcal{F}),
+        (DFG_\mathcal{F},
+         CFG_\mathcal{F},
+         I_\mathcal{F},
+         T_\mathcal{F},
+         C_\mathcal{F},
+         P_\mathcal{F},
+         G_\mathcal{F}),
     \end{align*}
-    where $DFG_\mathcal{F}$ and $CFG_\mathcal{F}$ are the data flow and control
-    flow graph as in \autoref{def:dfg} and \autoref{def:cfg}.
+    where
 
-    $I_\mathcal F\subset\mathbb N\times Opcodes$ is the instruction model, defined by the property
-    \begin{align*}
-        (k,op)\in I_\mathcal F\iff 1\leq k\leq n_i\land(ins_k\text{ has opcode }op).
-    \end{align*}
-
-    $I_\mathcal F\subset\mathbb N\times Types$ is the type model, defined by the property
-    \begin{align*}
-        (k,ty)\in T_\mathcal F\iff 1\leq k\leq n_i+n_p+n_c+n_g\land(ins_k\text{ has type }ty).
-    \end{align*}
-
-    Both $Opcodes$ and $Types$ are implementation specific sets that are not
-    further modelled, with elements referred to by name.
-    $C_\mathcal F\subset\mathbb N\times\mathbb R$ is the constant model, defined
-    by the property
-    \begin{align*}
-        (k,r)\in C_\mathcal F\iff 1\leq k-n_i-n_p\leq n_c\land(cst_{k-n_i-n_p}\text{ has numeric value equal to }r).
-    \end{align*}
-
-    Lastly, $P_\mathcal F\subset\mathbb N$ and $G_\mathcal F\subset\mathbb N$
-    are the parameter model and global model that are defined by the properties
-    \begin{align*}
-        k\in P_\mathcal F\iff& 1\leq k-n_i\leq n_p\text{ and}\\
-        k\in G_\mathcal F\iff& 1\leq k-n_i-n_p-n_c\leq n_g.
-    \end{align*}
-
-    The set of SSA models is denoted $\mathcal M$.
+    \begin{itemize}
+    \item $DFG_\mathcal{F}$ and $CFG_\mathcal{F}$ are the data flow and control
+          flow graph.
+    \item $I_\mathcal F\subset\mathbb N\times Opcodes$ is the instruction model,
+          defined by the property
+          \begin{align*}
+              (k,op)\in I_\mathcal F\iff n_p<k\leq n_p+n_i
+                  \mathrel{\land}(ins_{k-n_p}\text{ has opcode }op).
+          \end{align*}
+    \item $T_\mathcal F\subset\mathbb N\times Types$ is the type model, defined
+          by the property
+          \begin{align*}
+              (k,ty)\in T_\mathcal F\iff 1\leq k\leq n_{pigc}
+                  \mathrel{\land}(val_k\text{ has type }ty).
+          \end{align*}
+    \item $C_\mathcal F\subset\mathbb N\times\mathbb R$ is the constant model,
+          defined by the property
+          \begin{align*}
+              (k,x)\in C_\mathcal F\iff{}&n_p+n_i+n_g<k\leq n_{pigc}\\
+                        \mathrel{\land}{}&(cst_{k-n_p-n_i-n_g}
+                        \text{ has numeric value equal to }x).
+          \end{align*}
+    \item $P_\mathcal F\subset\mathbb N$ and $G_\mathcal F\subset\mathbb N$
+          are the parameter model and global model, defined by the properties
+          \begin{align*}
+              k\in P_\mathcal F\iff& 1\leq k\leq n_p\text{ and}\\
+              k\in G_\mathcal F\iff& n_p+n_i<k\leq n_p+n_i+n_g.
+          \end{align*}
+    \end{itemize}
 \end{definition}
+
+    \autoref{def:ssamodel} shows the completed model.
+    Several clarifications are required.
+    Firstly, the parameter model and global model are simply encoding boolean
+    predicates on values.
+    This is because of the per-function nature of the model, where the
+    identifiers of globals and parameters bear no semantic significance.
+
+    Secondly, the type model allows values to have multiple types. This is in
+    order to model simple type hierarchies.
+    For example, a value might be a ``pointer'' and an ``integer pointer'' at
+    at the same time.
+    The same holds for opcodes, where an instruction might be an ``arithmetic''
+    operation and in particular a ``subtraction'' at the same time.
+
+    Thirdly, only numeric constant types are modeled directly.
 
     \autoref{fig:derivemaths} shows how this comes together on an example
     program that is represented in a conrete SSA representation.
