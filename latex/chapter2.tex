@@ -68,8 +68,8 @@
     target architecture, instead focusing on a relatively simple semantic
     description of the user program that enables reliable analysis and platform
     independent reasoning.
-    It is these properties that also make it the suitable target for expressing
-    algorithmic structures.
+    It is these properties that also make it the natural representation for
+    expressing algorithmic structures.
 
     Static Single Assignment is not a strictly defined or mathematically
     codified standard, but instead refers to a group of representations that
@@ -84,7 +84,7 @@
     {\bf v8 Crankshaft} (Hydrogen) and {\bf SpiderMonkey} (IonMonkey/MIR).
     Despite many differences, they share the same fundamental paradigms
     and many of the differences can be abstracted away as implementation
-    specific details here.
+    specific details.
 
     Fundamentally, a program in single static assignment form is made up of
     functions, which are represented as sequences of instructions, grouped into
@@ -149,9 +149,9 @@
     \autoref{ssaexample} shows many of the key features of static single
     assignment form and how they naturally emerge from simplification steps of
     the source code of procedural languages.
-    This is demonstrated on an example function written in C, which appriximates
-    the square root function iteratively using the Babylonian method as
-    described in \autoref{babylonian_equation}.
+    This is demonstrated on an example function ``{\tt sqrt}'' written in C,
+    which  appriximates the square root of a value iteratively using the
+    Babylonian method as described in \autoref{babylonian_equation}.
 
 \begin{equation}
     x_0\approx\sqrt{S},\text{\hspace{1cm}}
@@ -168,7 +168,8 @@
     most basic operations, shown at the top right {\bf b)}, introducing
     explicit variables that store the previously implicit temporary values.
     This greatly simplifies and normalises the program, with many of the
-    remaining simple expressions directly mapping to processor instructions.
+    remaining simple expressions directly mapping to individual processor
+    instructions.
 
     In a second step, the structured control flow of the program is replaced
     with goto statements that coordinate the control between basic blocks.
@@ -177,38 +178,37 @@
     unifies the many control flow structures provided in the source language
     into a single mechanism.
     This makes automatic analysis of the program a less complex task.
-    Importantly, no information is lost by discarding the control flow
+    Importantly, no relevant information is lost by discarding the control flow
     structures.
-    They can be entirely reconstructed with straightforward algorithms.
+    They can be reconstructed algorithmically.
 
     Lastly, the static single assignment property is introduced.
     Any variable that is assigned in more than one static place in the program
     is instead duplicated into multiple variables.
     Where necessary, these now distinct variables are bound together with
     $\Phi$ nodes.
-    This cannot be expressed in the C syntax {\bf d)} at the bottom left.
-    Instead, the behaviour is spelled out in the comments in lines 8-14.
-    While the impact of the static single assignment property change seems minor
-    at first glance, it has many convenient implications.
-    As variables are written exactly one, the distinction between local variable
-    declarations and definitions becomes obsolete.
+    This cannot be directly expressed in the C syntax {\bf d)} at the bottom
+    left.
+    Instead, the behaviour is documented by comments in lines 8-13.
+    The impact of the static single assignment property change seems minor
+    at first, but it has convenient implications.
+    As all local variables are written exactly once, the distinction between
+    their declarations and definitions becomes obsolete.
     This furthermore implies that it is always known statically, which
     expression yielded the value of each variable.
     Variable names become identifiers of the expressions themselves.
-    This makes many optimising transformation much less cumbersome to
-    implement.
-    As a trivial example, this property immediately guarantees that the variable
-    $i$ always has the value zero.
+    This makes many optimising transformation strainghtforward to implement.
+    As a trivial example, it immediately guarantees that the variable $i$ in the
+    example always has the value zero.
 
-    With an understanding of how SSA form emerges during compilation and with,
-    it is now the aim to use the serialised nature of it to contruct a
-    convenient mathematical model.
-    The core observation is that most items in SSA form functions can be easily
-    enumerated and identified with by their index.
+    With an understanding of how SSA form emerges during compilation, it is now
+    the aim to use the serialised nature of it to contruct a convenient
+    mathematical model.
+    The crucial observation is that most items in SSA form functions can be
+    easily enumerated and identified by their index.
     This includes the function parameters, expressions and variables.
-    After this crucial step, most properties of SSA form functions can be
-    described using integers, making for a convenient and easy mathematical
-    language.
+    This means that properties of SSA form functions can be described using
+    integers, making for a convenient and easy mathematical language.
 
 \begin{figure}[p]
     \begin{minipage}{0.48\textwidth}
@@ -299,8 +299,8 @@ exit:
 
     \caption{Static Single Assignment emerges from successive simplification
              and normalisation of source language features: 
-             Demonstration on an example C funtction that approximates the
-             square root of an input value with the babylonian method.
+             Demonstration on an example C function that approximates the
+             square root of an input value with the Babylonian method.
              The transformation results {\bf b)-d)} are redered in C.
              Real compilers typically operate on
              dedicated internal representations instead.}
@@ -347,7 +347,7 @@ exit:
     Secondly, basic block structures are not explicitly encoded.
     Instead, all instructions of the function are listed sequentially in depth
     first order, starting from the function entry.
-    Basic blocks can be reconstructed from the control flow.
+    Basic blocks can be reconstructed from the control flow, as discussed later.
     Thirdly, the argument structure of the instructions is not represented and
     will instead be modeled separately.
 
@@ -360,7 +360,7 @@ exit:
     data flow.
     Instruction arguments fall into four categories: function parameters,
     constants, globals and other instructions.
-    Branching instructions also take basic block labels as brach targets,
+    Branching instructions also take basic block labels as branch targets,
     but they can be treated separately in the control flow graph that is
     introduced later.
     All instruction arguments are therefore taken from the named sets introduced
@@ -422,7 +422,6 @@ exit:
     Instead of attaching them to basic blocks and determining their value
     depending on the incoming basic block, they are modeled as instructions
     with their value depending on the last executed jump instruction.
-    This will be seen later.
 
 \subsection{Identifying Remaining Structure}
 
@@ -456,34 +455,33 @@ exit:
         \item $A$ does not have exactly one outgoing edge to $B$ or
         \item $B$ does not have exactly one incoming edge from $A$.
     \end{itemize}
-    \item Basic block labels as well as register names carry no semantic
-          information and can be chosen arbitrarily.
+    \item Basic block labels and register names can be chosen arbitrarily.
     \item The arguments of all operations can be immediately filled in with the 
           DFG. Similarly, the CFG directly provides the target instructions
           for goto statements.
     \item Incoming edges of $\Phi$ nodes are matched with incoming values using
-          the convention that the incoming values are ordered according to the
-          position of the incoming basic blocks.
+          the convention that the incoming values are ordered (with respect to
+          their labels in the data flow graph) according to the position of the
+          incoming basic blocks in the list of instructions.
 \end{enumerate}
 
+\begin{figure}[b]
+\begin{definition}{Instruction Set and Type System}{isatypes}
+    For a specific member $m$ of the family of SSA representations, there is
+    a set of opcodes $Opcodes_m$ and a set of types $Types_m$.
+\end{definition}
+\end{figure}
+
     The only part of the SSA representation that still needs to be modeled is
-    the per-value information, which in this case is nothing more than a list
-    of opcodes, and the list of constants, paramters and globals.
+    the per-value information at the bottom left of \autoref{fig:separation},
+    which in this case is nothing more than a list of opcodes, and the list of
+    constants, paramters and globals.
     The opcodes are specific to different SSA representations, although a wide
     overlap exists (basic arithmetic, phi nodes).
     This chapter aims to capture commonalities of SSA representations, the study
     of instruction sets and type systems is orthogonal to this.
     Therefore, these structures remain opaque at this point and are modeled as
-    arbitrary sets.
-
-\begin{definition}{Instruction Set and Type System}{isatypes}
-    For a specific member $m$ of the family of SSA representations, there is
-    a set of opcodes $Opcodes_m$ and a set of types $Types_m$.
-\end{definition} 
-
-    For example, each instruction in an LLVM function has an opcode in
-    $Opcodes_\text{LLVM}$ and each function parameter, instruction, global and
-    constant has a type in $Types_\text{LLVM}$.
+    arbitrary sets as in \autoref{def:isatypes}.
 
 \begin{figure}[p]
 \centering
@@ -733,11 +731,11 @@ $DFG_{\mathcal F}=$\\[1pt]{
     Thirdly, the representation as a set makes the encoding in appropriate data
     structures more intuitive and will help in later sections.
 
-    Firstly, the parameter model and global model are essentially encoding
+    Finally, the parameter model and global model are essentially encoding
     boolean predicates on values.
-    The models simply marks all the used values that are parameters or globals.
+    The models simply mark all the used values that are parameters or globals.
     They can therefore only be distinguished and identified by their position
-    in that set.
+    in the list of values.
     This is clearly sufficient for parameters, as they are distinguished by
     their positionality.
     However, from a program-wide perspective, global variable names arguably

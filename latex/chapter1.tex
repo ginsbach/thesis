@@ -1,28 +1,28 @@
-\section{Heterogeneous Computing}
+\section{The Emergence of Heterogeneous Computing}
 
     For several decades, from the 1970s until the early 2000s, advances in
     processor development followed Moore's Law and Dennard Scaling.
     The circuit density approximately doubled every two years, yet the power
     consumption and the accompanying thermal limitations remained relatively
     stable.
-    This resulted in ever more powerful machines with rising clock frequencies,
-    capable of running increasingly complex applications.
+    This resulted in steady hardware improvements mostly by the means of rising
+    clock frequencies, enabling ever faster computations.
 
-    These physics-driven advances in hardware design had major implications also
-    for software development.
+    The physics-driven nature of these advances in hardware design had major
+    implications for software development.
     Not only did the performance of computers improve exponentially, but these
-    performance gains were immediately available to the already existing
-    programs.
-    The most fundamental contracts between software and hardware - the
-    instruction set architectures of processors - evolved without paradigmatic
-    changes.
+    performance gains were in the form of linear speedups, immediately available
+    to all the already existing programs.
+    The fundamental contract between software and hardware - the
+    instruction set architectures of mainstream processors - evolved without
+    paradigmatic changes.
     This is best exemplified by the pervasive x86 instruction set architecture,
     which still retains backward compatibility with its original inception in
     1978 and dominates desktop processors to this day.
     Software developers and users could therefore trust on ever increasing
     performance from hardware progress alone, without any intervention.
 
-\subsection{From Homogeneous Multi-Processing to Heterogeneous Compute}
+\subsection{Via Multi-Processing to Heterogeneous Compute}
 
     This seemingly unending progress started breaking down around 2006,
     with the apparent end of Dennard Scaling.
@@ -33,7 +33,7 @@
     New programming paradigms and languages, annotation systems, programming
     interfaces, libraries and compiler techniques were developed and continue to
     evolve around the challenges of parallel computing.
-    Despite immenense progress in the field, it remains an area
+    Despite immense progress in the field over many years, it remains an area
     of active research and automatic approaches often fall short.
 
     In recent years, it has become clear that multi-processing alone has
@@ -46,7 +46,7 @@
     Accelerator processors have become widespread, first in the form of general
     purpose graphics processing units and now increasingly as deep learning
     accelerators, coinciding with the meteoric rise in popularity of
-    convolutional neural networks due to the success of deep learning.
+    convolutional neural networks and the success of deep learning.
 
 \section{The Diminished Role of Traditional Compilers}
 
@@ -105,26 +105,31 @@
     long-term prospects and very limited cross-platform portability.
     Even in the case of the generally agreed upon BLAS standard -- arguably the
     best case scenario -- adoption of novel implementations is non-trivial in
-    practice due to even slight differences in the interfaces.
+    practice, due to even slight differences in the interfaces.
     For academic-backed approaches like Halide on the other hand, complete
     rewrites are required in entirely novel ecosystems with an unclear future of
     support.
 
     These problems arise, because compilers are unable to efficiently map
     existing programs to heterogeneous platforms.
-%    These compilers are therefore increasingly downgraded to merely coordinating
-%    the launch of core workloads in the form of computational kernels, which are
-%    executed as separate and opaque programs.
-    It is therefore important to reflect the reasons why such a compiler
-    does not exist.
+    They are therefore increasingly downgraded to merely coordinating the launch
+    of core workloads in the form of computational kernels, which are
+    executed as separate and opaque programs.
+    It is important to reflect on an abstract level the reasons why no compiler
+    exists that can efficiently target heterogeneous hardware from legacy
+    programs.
+
     It may appear obvious that e.g.\ a full C++ or Java compiler cannot be
     provided for a typical graphics processor -- after all, most graphics
     processors have hardware limitations that prevent them from implementing the
     entire language standard.
     Indeed, many accelerators are even further from Turing complete.
     However, this should not prevent a partial compiler, offloading suitable
-    subprograms, while falling back on homogeneous hardware with a full language
-    implementaiton for the remainder.
+    subprograms, while falling back on homogeneous hardware providing a full
+    language implementation for the remainder.
+    After all, that is exactly the result achieved with libraries and domain
+    specific languages as well, and likely the desirable outcome.
+
     Despite the obvious convenience of such an approach, there are important
     reasons why this has not been championed so far.
     To understand this, an important first observation is that a specific class
@@ -133,8 +138,8 @@
 
 \section{Host Compilers and Kernel Compilers}
 
-    In fact, many of the kernel programs that remain opaque to the application
-    compilers are themselves products of other, specialised compilers.
+    Many of the kernel programs that remain opaque to the application compilers
+    are themselves products of other, specialised compilers.
     This necessitates a distinction between {\em host compilers} and {\em kernel
     compilers}.
     This distinction is mirrored of course by the differences between {\em host
@@ -309,7 +314,7 @@
 %    allow the expression of any other system.
 
 
-\pagebreak
+\newpage
 \section{Structure of the Thesis}
 
     This PhD thesis is divided into six chapters.
