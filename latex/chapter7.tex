@@ -24,7 +24,6 @@
     Across heterogeneous platforms, applications and data sets we show performance
     improvements of 1.1x to over 10x without any user intervention.
 
-
 \section{Introduction}
 
     Linear algebra is an important component of many compute intensive
@@ -658,13 +657,11 @@ shortcomings, enabling Fortran programs to be managed as easily as C/C++.
     of up such that the standard LLVM \textbf{indvars} pass is unable to merge
     the loop iterators.
 
-
 %\paragraph{Implementation Status} 
 %The LiLAC language, parser and scheme to detect and replace appropriate code
 %with optimized calls to harness functions is fully implemented in the LLVM
 %framework and available in the LLVM-based C/C++ compiler clang.
 %The FORTRAN normalization code is implemented as an LLVM optimization pass.
-
 
 \section{Experimental Setup}
 \label{sec:experimentalsetup}
@@ -902,7 +899,6 @@ of reference implementations.
 This was possible on the NPB and Parboil benchmarks, where expert hand
 crafted version are available that achieve close to peak performance.
 
-
 \autoref{tab:lilac-linesofcode} shows our results from these experiments.
 For context, we also measure application programmer effort for peak performance,
 which is substantial, requiring hundreds of lines of carefully crafted
@@ -945,7 +941,6 @@ We have experimented with simple classifiers for each platform, that dynamically
 select the best library given the data input.
 This was straightforward to achieve for our problem space, but more data is
 needed for a meaningful evaluation, and we leave it to future work.
-
 
 \subsection{Effectiveness of Data Marshaling}
 Our implementation of LiLAC relies on a non-trivial data marshaling system that
@@ -1013,7 +1008,6 @@ Netlib Fortran & CSR & - & parallel dependence \\
     they cannot reason about sparsity and have to assume additional dependencies
     where sparse accesses occur.
 
-
 \section{Conclusion}
 \label{sec:conclusion}
 % Sparse and dense linear algebra are critical workloads for many important
@@ -1048,4 +1042,3 @@ beyond linear algebra.
 In future work, we will investigate how our framework could be adapted to other
 application domains, enabling effort free access to an even larger set of
 accelerator libraries.
-

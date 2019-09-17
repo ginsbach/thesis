@@ -1,3 +1,4 @@
+
     Four areas of research are of particular relevance to this thesis:
     {\bf Constraint programming} is central to the introduced methodology, with
     the relevant literature including the research into constraint programming
@@ -292,7 +293,6 @@
     However, this approach performs a direct translation of the code, without
     optimizing it for the specific performance characteristics of GPUs.
 
-
 %% EArly scalar detection sc
 %Discovering and exploiting scalar reductions in programs has been
 %studied for many years based on dependence analysis and idiom detection
@@ -400,8 +400,6 @@
 %'C' programs.
 %
 
-
-
 \section{Computational Idioms}
 
     The concept of computational idioms has been observed in different contexts
@@ -419,7 +417,6 @@
     design principles.
     The same is true algorithmically and particularly for performance intensive
     applications.
-
 
 \section{CGO related}
 %% EArly scalar detection sc
@@ -449,13 +446,10 @@ generalized reductions. In \cite{kim2012dynamic} they explore the use
 of dynamic analysis further, but state that detecting reductions on arrays is
 challenging.
 
-
-
 %% LLVM out there \cite{lattner2004llvm}
 %% What NAS:\cite{seo2011performance}
 
 %% Vaguely related C;
-
 
 %% New polyhedral approaches
 
@@ -479,8 +473,6 @@ An annotation approach is described in
 \cite{Reddy2016Reduction}, based on the Platform-Neutral Compute Intermediate Language (\cite{baghdadi2015PENCIL}).
 This used the code generator
 in (\cite{Verdoolaege:2013:PPC:2400682.2400713}) to generate CUDA and OpenCL code for multiple compute platforms.
-
-
 
 %% New dynamic approaches
 There has also been recent work following on
@@ -527,4 +519,3 @@ compiler IR and concatenates them to form contiguous sections of KIR.
 Individual examples of diKernels are scalar reductions and irregular
 assignments. It is not clear how such an approach would work on general
 'C' programs.
-
