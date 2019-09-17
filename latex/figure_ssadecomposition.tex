@@ -1,0 +1,146 @@
+\centering
+\begin{minipage}{0.42\textwidth}
+\begin{tabular}{|cl|}
+\multicolumn{2}{c}{{\bf function} Sqrt($S$)}\\
+\hline
+{\bf entry} & $\text{goto } header$\\
+\hline
+\multirow{4}{*}{\bf header} & $i \leftarrow \Phi(entry:0,loop:i')$\\[-2pt]
+                            & $x \leftarrow \Phi(entry:1,loop:x')$\\[-2pt]
+                            & $c \leftarrow i<N$\\[-2pt]
+                            & $\text{if }c\text{ goto }loop\text{ else }exit$\\
+\hline
+\multirow{5}{*}{\bf loop} & $t_1\leftarrow S/x$\\[-2pt]
+                          & $t_2\leftarrow x+t_1$\\[-2pt]
+                          & $x'\leftarrow t_2/2$\\[-2pt]
+                          & $i'\leftarrow i+1$\\[-2pt]
+                          & $\text{goto }header$\\
+\hline
+{\bf exit} & $\text{return }x$\\
+\hline
+\end{tabular}
+\end{minipage}
+
+\vspace{9.58919pt}
+{\huge
+$\cong$}
+\vspace{9.58919pt}
+
+$\left(
+\begin{minipage}{5cm}
+\centering
+\begin{tabular}{|l|}
+\multicolumn{1}{p{3cm}}{{\bf parameters:}}\\
+\hline
+$S$\\
+\hline
+\end{tabular}
+\begin{tabular}{|l|}
+\multicolumn{1}{p{3cm}}{{\bf instructions:}}\\
+\hline
+$\text{goto } \square$\\
+$\Phi(\square:\square,\square:\square)$\\
+$\Phi(\square:\square,\square:\square)$\\
+$\square<\square$\\
+$\text{if }\square\text{ goto }\square\text{ else }\square$\\
+$\square/\square$\\
+$\square+\square$\\
+$\square/\square$\\
+$\square+\square$\\
+$\text{goto } \square$\\
+$\text{return }\square$\\
+\hline
+\end{tabular}
+\begin{tabular}{|l|}
+\multicolumn{1}{p{3cm}}{{\bf globals:}}\\
+\hline
+$N$\\
+\hline
+\end{tabular}
+\begin{tabular}{|l|}
+\multicolumn{1}{p{3cm}}{{\bf constants:}}\\
+\hline
+$1$\\
+$2$\\
+$0$\\
+\hline
+\end{tabular}
+\end{minipage}
+\right)\hspace{1em}\text{\huge +}\hspace{1em}\left(
+\begin{minipage}{6.5cm}
+\centering
+$CFG_{\mathcal F}=$\\[1pt]{
+\tt\bf
+\setlength{\tabcolsep}{3.3pt}
+\renewcommand{\arraystretch}{0.72}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\hphantom{1}&1&&&&&&&&&\\[-0.5mm]
+\hline
+&&1&&&&&&&&\\[-0.5mm]
+\hline
+&&&1&&&&&&&\\[-0.5mm]
+\hline
+&&&&1&&&&&&\\[-0.5mm]
+\hline
+&&&&&1&&&&&2\\[-0.5mm]
+\hline
+&&&&&&1&&&&\\[-0.5mm]
+\hline
+&&&&&&&1&&&\\[-0.5mm]
+\hline
+&&&&&&&&1&&\\[-0.5mm]
+\hline
+&&&&&&&&&1&\\[-0.5mm]
+\hline
+&1&&&&&&&&&\\[-0.5mm]
+\hline
+&&&&&&&&&&\\
+\hline
+\end{tabular}}
+\vspace{1em}
+
+$DFG_{\mathcal F}=$\\[1pt]{
+\tt\bf
+\setlength{\tabcolsep}{3.3pt}
+\renewcommand{\arraystretch}{0.72}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\hphantom{1}&&&&&1&&&&\hphantom{1}&\hphantom{1}\\[-0.5mm]
+\hline
+\hline
+&&&&&&&&&&\\[-0.5mm]
+\hline
+&&&1&&&&&1&&\\[-0.5mm]
+\hline
+&&&&&2&1&&&&\\[-0.5mm]
+\hline
+&&&&1&&&&&&\\[-0.5mm]
+\hline
+&&&&&&&&&&\\[-0.5mm]
+\hline
+&&&&&&2&&&&\\[-0.5mm]
+\hline
+&&&&&&&1&&&\\[-0.5mm]
+\hline
+&&2&&&&&&&&\\[-0.5mm]
+\hline
+&2&&&&&&&&&\\[-0.5mm]
+\hline
+&&&&&&&&&&\\[-0.5mm]
+\hline
+&&&&&&&&&&\\[-0.5mm]
+\hline
+\hline
+&&&2&&&&&&&\\[-0.5mm]
+\hline
+\hline
+&&1&&&&&&2&&\\[-0.5mm]
+\hline
+&&&&&&&2&&&\\[-0.5mm]
+\hline
+&1&&&&&&&&&\\
+\hline
+\end{tabular}}
+\end{minipage}
+\right)$
