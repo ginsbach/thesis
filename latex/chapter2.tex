@@ -307,8 +307,7 @@ exit:
     \label{ssaexample}
 \end{figure}
 
-\pagebreak
-
+\newpage
 \section{Deriving a Mathematical Model for SSA}
 
     In order to develop constraint programming on real world SSA programs with
@@ -815,14 +814,27 @@ $DFG_{\mathcal F}=$\\[1pt]{
 \end{figure}
 
 
-\pagebreak
+\newpage
 \section{Constraint Programming on SSA Programs}
 
     With a mathematical strucure of SSA models in place, properties of SSA form
     programs can now be formulated as constraint problems.
+    For this purpose, \autoref{not:modelrepresentations} is introduced first,
+    followed by the actual definition of {\em SSA constraint problem}s in
+    \autoref{def:cprob}.
+
+\begin{notation}{Set of SSA Models}{modelrepresentations}
+    Given a specific SSA representation (LLVM, Hydrogen, MIR, $\dots$), then
+    denote $F$ the set of all valid functions that can be expressed in it.
+
+    The {\em set of SSA models} $\mathcal M$ is defined as
+    \begin{align*}
+        \mathcal M := \{M\mid\exists\mathcal F\in F\colon M
+                        \text{ is the SSA Model of }\mathcal F\}
+    \end{align*}
+\end{notation}
 
 \begin{definition}{SSA constraint problem}{cprob}
-
     An SSA constraint problem $C=(V,P)$ is made up of a finite set of variables
     $V$ and a boolean predicate
     $P\colon\mathbb N^V\times\mathcal M\mapsto\{\text{true}, \text{false}\}$.
@@ -833,7 +845,30 @@ $DFG_{\mathcal F}=$\\[1pt]{
     \end{align*}
 \end{definition}
 
-    The interesting aspect of this defition is now the structure of $P$.
+    Some intuition is required here.
+    The predicate function $P$ takes two arguments, firstly a tuple of integers
+    and secondly a model of a function.
+    The finite set $V$ identifies the elements withing the tuples, it can be
+    thought of as a set of labels.
+    The tuples of integers in $\mathbb N^V$ correspond to tuples of values
+    within the function.
+    The predicate function determines whether these values stand in a specific
+    relationship to each other.
+    Finally, the set of constraint solutions lists all those tuples, for which
+    the predicate holds.
+
+    The two parameters of $P$ -- integer tuple and model -- should be
+    interpreted as two very different beasts here.
+    The predicate evaluates whether a condition holds for the tuple of integers,
+    the model on the other hand serves as the context for this evaluation.
+    This is reflected in the definition of the set of constraint solutions,
+    which is the set of all {\em true} evaluations given a fixed model.
+    More pointedly, it makes sense to query ``all loops in a given function'',
+    yet to ask for ``all functions with a specific loop'' is meaningless.
+    
+
+    The interesting aspect of this defition is now the structure of predicates
+    $P$.
     This section will concern it self with how meaningful predicates can be
     composed from small building blocks and how the internal structure of the
     predicate can lead to efficient solver approaches.
