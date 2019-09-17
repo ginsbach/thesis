@@ -312,19 +312,19 @@ exit:
 
     In order to develop constraint programming on real world SSA programs with
     mathematical rigour, a sound model is needed first.
-    It is not the aim here to introduce a formal operational semantics, or more
+    The aim here is not to introduce an operational semantics, or more
     generally to derive a model for the execution of SSA programs.
     Instead, the section will investigate the static structure, focusing on
     clear notation of the commonalities of existing SSA intermediate
     representations.
-
-    This requires a naming convention for some of the basic features of
+    This requires naming conventions for some of the basic features of
     SSA programs.
     The remainder of this section adheres to \autoref{not:ssa} when referring to
     these features.
-    Note that no specific representative of the many different SSA languages is
-    chosen at this point.
+    No specific representative of the class of SSA representations is chosen
+    here.
 
+\begin{figure}[h]
 \begin{notation}{Static Single Assignment Function}{ssa}
     For the remainder of this section, some function $\mathcal F$ in SSA form is
     assumed fixed. 
@@ -341,6 +341,7 @@ exit:
           are referenced as an operand of any of the instructions.
     \end{itemize}
 \end{notation}
+\end{figure}
 
     This notation fixes several decisions about the utilised model.
     Firstly, the model captures only a single function.
@@ -376,6 +377,7 @@ exit:
     These observations lead to the definition of the set of used values in
     \autoref{def:usedvalues} and the data flow graph in \autoref{def:dfg}.
 
+\begin{figure}[h]
 \begin{definition}{Set of Used Values}{usedvalues}
     The {\em set of used values} of the SSA function $\mathcal F$ is the tuple
     \begin{align*}
@@ -394,13 +396,16 @@ exit:
         (a,b,n)\in DFG_{\mathcal F}\iff 1\leq a\leq n_{pigc}\mathrel{\land}(val_a\text{ is the $n$th argument of }ins_b).
     \end{align*}
 \end{definition}
+\end{figure}
 
-    Complementing the data flow graph is the control flow graph of the function.
+    Complementing the data flow graph is the control flow graph of the function,
+    as introduced in \autoref{def:cfg}.
     The control flow graph is usually defined on a basic block granularity, but
     here it will be defined directly on instructions, in order to better
     complement the data flow graph.
     The basic block structure is easily recoverable from this representations.
 
+\begin{figure}[h]
 \begin{definition}{Control Flow Graph}{cfg}
     The control flow graph of the SSA function $\mathcal F$ is the set
     $CGF_{\mathcal F}\subset \mathbb N^3$ such that
@@ -410,18 +415,18 @@ exit:
                                         (ins_b\text{ is the first instruction in the}&\text{ $n$th basic block argument of }ins_a)].
     \end{align*}
 \end{definition}
+\end{figure}
 
     The control flow graph in \autoref{def:cfg} is peculiar in its omission of
     basic block structures.
     This is visible in the definition, where edges are of two distinct types:
     They are either an edge within a basic block, or they are an edge between
     the terminator of one basic block and the initial instruction in an another.
-    This apparent loss of information is not substantial, as it is very easy to
-    reconstruct basic blocks.
-    However, it has implications for modeling Phi nodes.
-    Instead of attaching them to basic blocks and determining their value
-    depending on the incoming basic block, they are modeled as instructions
-    with their value depending on the last executed jump instruction.
+    This apparent loss of information is not substantial, the basic blocks can
+    be reconstructed.
+    However, it has implications for modeling $\Phi$ nodes.
+    They are modeled as instructions, with their value depending on the last
+    executed jump instruction.
 
 \subsection{Identifying Remaining Structure}
 
