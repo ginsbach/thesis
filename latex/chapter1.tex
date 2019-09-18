@@ -5,8 +5,8 @@
     The circuit density approximately doubled every two years, yet the power
     consumption and the accompanying thermal limitations remained relatively
     stable.
-    This resulted in steady hardware improvements mostly by the means of rising
-    clock frequencies, enabling ever faster computations.
+    This resulted in steady hardware improvements, primarily by the means of
+    rising clock frequencies, enabling ever faster computations.
 
     The physics-driven nature of these advances in hardware design had major
     implications for software development.
@@ -58,14 +58,14 @@
     and longevity of programs that are taken for granted in modern computing.
     Existing software does not automatically benefit from entirely new
     acccelerator designs in the way that it profited from continuous
-    microarchitectural improvements.
+    improvements of established architectures.
     Where previously, programs performed better on each succeeding hardware
     generation, with at most a recompilation required, new accelerators arrive
-    with entirely novel and incompatible interfaces.
+    with novel and incompatible interfaces.
 
-    In particular, the novel hardware landscape greatly diminishes the
-    scope of responsibilities and impact that traditional compilers for
-    languages such as C, C++ and Fortran can have.
+    In particular, the novel hardware landscape greatly diminishes the scope of
+    responsibilities and impact that traditional compilers for languages such as
+    C, C++ and Fortran can have.
     Were previously, such compilers were responsible for orchestrating
     program execution on the entirety of available computing resources, they are
     now generally limited to only targeting the small homogeneous fraction of
@@ -89,7 +89,7 @@
     Competing implementations use a plethora of approaches to achieve as close
     to peak performance as possible.
     This includes manually written assembly code, but also highly advanced
-    code generation techniques, novel program representations, polyhedral
+    code generation techniques, custom program representations, polyhedral
     optimisation and many more.
 
     Secondly, the domain specific language Halide was developed for the domain
@@ -110,7 +110,7 @@
     rewrites are required in entirely novel ecosystems with an unclear future of
     support.
 
-    These problems arise, because compilers are unable to efficiently map
+    These problems arise because compilers are unable to efficiently map
     existing programs to heterogeneous platforms.
     They are therefore increasingly downgraded to merely coordinating the launch
     of core workloads in the form of computational kernels, which are
@@ -150,11 +150,23 @@
     They reason automatically about parallelism, understand data dependencies at
     a deeper level, and they incorporate iterative compilation.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/DSLgradient}
+\caption{Domain specific languages on a spectrum between general purpose
+         languages and libraries.
+         Decreasing flexibility allows for stronger reasoning and greater
+         optimisation potential.}
+\label{specialgradient}
+\end{figure}
+
     This is made possible by a combination of factors that apply uniquely to
     kernel compilers.
     Smaller programs allow for more expensive compilation techniques;
     more restrictive languages and intermediate representaions allow for
     stronger reasoning;
+    abstractions in kernel compilers can be customised for the exact hardware
+    architecture of accelerators;
     and domain knowledge from areas such as image processing can be directly
     embedded in custom compiler technology, without requiring their validity
     on generic programs.
@@ -168,21 +180,27 @@
     unsurprising that they have lagged behind these developments.
     Because they cannot rely on such a restricted environment, host compilers
     are unable to match the optimisation capabilites of kernel compilers.
-    Domain specific compilers have therefore not been championned simply because
-    the restricted input languages match the capabilites of particular
-    heterogeneous accelerators, but also because the restricted environment
-    makes them intrinsically more powerful and able to generate better code.
+    Domain specific compilers and languages, as well as libraries, have
+    therefore not been championned simply because their restricted program
+    spaces match the capabilites of particular heterogeneous accelerators, but
+    also because the restricted environment makes them intrinsically more
+    powerful and able to generate better code.
 
-    This observation is particularly exemplified by languages that try a hybrid
-    approach, such as OpenCL.
+    This interpretation can be extended to a gradient of specialisation, as in
+    \autoref{specialgradient}.
+    On the very left are general purpose programming languages, 
+    in the middle are domain specific languages, and on the right are libraries.
+    From the left to the right, the provided functionality becomes more rigid,
+    but the specialisation often offers better performance.
+    Hybrid approaches, such as OpenCL, reinforce these observations.
     The language is designed to be general purpose and compilers are provided
     for many structurally different heterogeneous platforms.
     However, as a consequence of being a relatively unrestricted langauge, the
     compilers often underperform.
     As a consequence, the language is notoriously lacking in performance
     portability.
-    Partial compilers that require the same kinds of compromises as OpenCL and
-    are unable to utilize the restricted nature of input programs would suffer
+    Partial compilers that require the same kinds of compromises as OpenCL --
+    unable to utilize the restricted nature of input programs -- would suffer
     the same shortcomings.
 
 \subsection*{Moving Between Abstraction Levels}
@@ -241,11 +259,6 @@
 %    more specialized domain and apply the already developed domain specific
 %    techniques -- in the simplest case by merely linking to a library -- to
 %    achieve full performance.
-
-\begin{figure}
-\includegraphics[width=0.9\textwidth]{figures/DSLgradient}
-\caption{Gradient of Specialization}
-\end{figure}
 
 \subsection*{Program Specialization with Constraints}
 
