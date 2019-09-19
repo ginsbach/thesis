@@ -539,7 +539,7 @@
 \newpage
 \section{Constraint Programming on SSA Programs}
 
-    With a mathematical strucure of SSA models in place, properties of SSA form
+    With a mathematical model of SSA programs in place, properties of such
     programs can now be formulated as constraint problems.
     For this purpose, \autoref{not:modelrepresentations} is introduced first,
     followed by the actual definition of {\em SSA constraint problem}s in
@@ -601,109 +601,75 @@
     Consider the task of detecting in a program all simple loop counters.
     Such loop counters show up in LLVM IR as data flow cycles of a phi node
     and an add instruction.
-    We express the constraint problem $C=(V,P)$ with a set of three variables
-    $V=\{\text{phi}, \text{update}, \text{step}\}$ and the following predicate:
-
-\begin{figure}
-\begin{minipage}{0.4\textwidth}
-    \begin{align*}
-        V=&\{\text{phi}, \text{update}, \text{step}\}\\
-        P(x,\mathcal F)=&(x_\text{phi},x_\text{update})\in DFG_\mathcal{F}^*\land\\
-                        &(x_\text{step},x_\text{update})\in DFG_\mathcal{F}^*\land\\
-                        &(x_\text{phi}, phi)\in I_\mathcal{F}\land\\
-                        &(x_\text{step}, add)\in I_\mathcal{F}\land\\
-                        &(x_\text{step},1)\in C_\mathcal{F}\land\\
-                        &(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*
-    \end{align*}
-\end{minipage}
-\begin{minipage}{0.04\textwidth}
-\centering
-$\cong$
-\end{minipage}
-\begin{minipage}{0.22\textwidth}
-\begin{tabular}{|l|}
-\multicolumn{1}{c}{{\bf function} Sqrt($\square$)}\\
-\hline
-$\text{goto } \square$\\
-$\Phi(\square:\square,\square:\square)$\\
-$\square/\square$\\
-$\square+\square$\\
-$\square/\square$\\
-$\Phi(\square:\square,\square:\square)$\\
-$\square+\square$\\
-$\square+\square$\\
-$\text{if }\square\text{ goto }\square\text{ else }\square$\\
-$\text{return }\square$\\
-\hline
-\end{tabular}
-\end{minipage}
-\begin{minipage}{0.04\textwidth}
-\centering
-$+$
-\end{minipage}
-\begin{minipage}{0.27\textwidth}
-$par=($`S'$)$\\
-$cst=(1,2,0)$\\
-$glb=($`N'$)$\\
-$CFG=$\\[1pt]{
-\tiny\tt\bf
-\setlength{\tabcolsep}{1pt}
-\renewcommand{\arraystretch}{0.7}
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
-\hline
-\hphantom{1}&1&&&&&&&&\\[-0.5mm]
-\hline
-&&1&&&&&&&\\[-0.5mm]
-\hline
-&&&1&&&&&&\\[-0.5mm]
-\hline
-&&&&1&&&&&\\[-0.5mm]
-\hline
-&&&&&1&&&&\\[-0.5mm]
-\hline
-&&&&&&1&&&\\[-0.5mm]
-\hline
-&&&&&&&1&&\\[-0.5mm]
-\hline
-&&&&&&&&1&\\[-0.5mm]
-\hline
-&1&&&&&&&&2\\[-0.5mm]
-\hline
-&&&&&&&&&\\
-\hline
-\end{tabular}}\\[0.75em]
-$DFG=$\\[1pt]{
-\tiny\tt\bf
-\setlength{\tabcolsep}{1pt}
-\renewcommand{\arraystretch}{0.7}
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c||c||c|c|c||c|}
-\hline
-\hphantom{1}&&&\hphantom{1}&&&&&\hphantom{1}&\hphantom{1}&&&&&\\
-\hline
-2&&&&3&&&&4&&&1&&&\\[-0.5mm]
-\hline
-&2&&&&&&&&&1&&&&\\[-0.5mm]
-\hline
-&1&2&&&&&&&&&&&&\\[-0.5mm]
-\hline
-&&1&&&&&&&&&&2&&\\[-0.5mm]
-\hline
-2&&&&&&3&&4&&&&&1&\\[-0.5mm]
-\hline
-&&&&&1&&&&&&2&&&\\[-0.5mm]
-\hline
-&&&&&&1&&&&&&&&2\\[-0.5mm]
-\hline
-&&&&&&&1&&&&&&&\\[-0.5mm]
-\hline
-&&&&1&&&&&&&&&&\\
-\hline
-\end{tabular}}
-\end{minipage}
+    We express this as an SSA constraint problem $C=(V,P)$ with the variables
+    $V=\{\text{phi}, \text{update}, \text{step}\}$ and the predicate
 
 \begin{align*}
-S=\{\{\text{phi}:6,\text{update}:7,\text{step}:12\}\}.
+    P(x,\mathcal F)=&(x_\text{phi},x_\text{update})\in DFG_\mathcal{F}^*\land\\
+                    &(x_\text{step},x_\text{update})\in DFG_\mathcal{F}^*\land\\
+                    &(x_\text{phi}, phi)\in I_\mathcal{F}\land\\
+                    &(x_\text{step}, add)\in I_\mathcal{F}\land\\
+                    &(x_\text{step},1)\in C_\mathcal{F}\land\\
+                    &(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*.
 \end{align*}
+
+    This decomposes the predicate into a logical conjunction of a range of
+    {\em elemt-of} relationships that operate on the structures of the model.
+    With this decomposition, an algorithmic solution to the constraint problem
+    is accessible, and the set of solutions for a given SSA program can be
+    determined.
+    Applied to the {\tt dot} function in \autoref{fig:derivemaths}, the set of
+    constraint solutions contains a single element, corresponding to the loop
+    iterator {\tt i}.
+    This is demonstrated in \autoref{fig:constraintsolution}.
+
+\begin{figure}[h]
+\centering
+$\text{\huge S}\left(\left(
+\begin{minipage}{0.4\textwidth}
+\setlength{\abovedisplayskip}{0pt}
+\begin{align*}
+    V=\{\text{phi}, \text{update}, \text{step}\}
+\end{align*}
+\begin{align*}
+    P(x,\mathcal F)=&(x_\text{phi},x_\text{update})\in DFG_\mathcal{F}^*\land\\
+                    &(x_\text{step},x_\text{update})\in DFG_\mathcal{F}^*\land\\
+                    &(x_\text{phi}, phi)\in I_\mathcal{F}\land\\
+                    &(x_\text{step}, add)\in I_\mathcal{F}\land\\
+                    &(x_\text{step},1)\in C_\mathcal{F}\land\\
+                    &(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*
+\end{align*}
+\end{minipage}
+\right)\text{\huge ,}\left(
+\begin{minipage}{0.4\textwidth}
+\footnotesize
+\setlength{\abovedisplayskip}{0pt}
+\begin{align*}
+DF&G_\mathcal F=\{(1,2,1),(4,5,1),(6,8,2),\\
+&(6,10,2),(6,14,1),(7,13,1),(8,9,1),\\
+&(9,12,1),(10,11,1),(11,12,2),\dots\},\\
+CF&G_\mathcal F=\{(1,2,1),(2,4,1),(2,3,2),\\
+&(3,6,1),(4,5,1),(6,7,1),(7,8,1),\\
+&(8,9,1),(9,10,1),(10,11,1),\dots\},\\
+I_\mathcal F&{}=\{(1,icomp\ eq),(2,cond\ br),\dots\}\\
+T_\mathcal F&{}=\{(1,i1),(4,double),(6,i64),\dots\}\\
+C_\mathcal F&{}=\{(17,0),(18,0),(19,1)\}\\
+P_\mathcal F&{}=\{20,21,22\}\\
+G_\mathcal F&{}=\{\}
+\end{align*}
+\end{minipage}
+\right)\right)$
+
+\vspace{0.5em}
+{\huge =}
+\vspace{0.5em}
+
+{\huge $\{\{\text{phi}:6,\text{update}:14,\text{step}:19\}\}$}
+
+\caption{Example set of constraint solution for the loop detection predicate
+         applied to \autoref{fig:derivemaths}.}
+\label{fig:constraintsolution}
+\end{figure}
 
 \caption{Example constraint problem is applied to SSA model from
          \autoref{fig:separation}.
