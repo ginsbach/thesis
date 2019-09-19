@@ -617,51 +617,28 @@
 
 \subsection{Constraint Program Example}
 
-    Consider the task of detecting in a program all simple loop counters.
-    Such loop counters show up in LLVM IR as data flow cycles of a phi node
-    and an add instruction.
-    We express this as an SSA constraint problem $C=(V,P)$ with the variables
-    $V=\{\text{phi}, \text{update}, \text{step}\}$ and the predicate
-
-\begin{align*}
-    P(x,\mathcal F)=&(x_\text{phi},x_\text{update})\in DFG_\mathcal{F}^*\land\\
-                    &(x_\text{step},x_\text{update})\in DFG_\mathcal{F}^*\land\\
-                    &(x_\text{phi}, phi)\in I_\mathcal{F}\land\\
-                    &(x_\text{step}, add)\in I_\mathcal{F}\land\\
-                    &(x_\text{step},1)\in C_\mathcal{F}\land\\
-                    &(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*.
-\end{align*}
-
-    This decomposes the predicate into logical conjunctions of a range of
-    {\em elemt-of} relationships that operate on the structures of the model.
-    With this decomposition, an algorithmic solution to the constraint problem
-    is accessible, and the set of solutions for a given SSA program can be
-    determined.
-    Applied to the {\tt dot} function in \autoref{fig:derivemaths}, the set of
-    constraint solutions contains a single element, corresponding to the loop
-    iterator {\tt i}.
-    This is demonstrated in \autoref{fig:constraintsolution}.
-
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
+{\huge $S\left(C,M\right)=$}
+\vspace{0.5em}
+
 $\text{\huge S}\left(\left(
-\begin{minipage}{0.4\textwidth}
+\begin{minipage}{0.3\textwidth}
 \setlength{\abovedisplayskip}{0pt}
 \begin{align*}
-    V=\{\text{phi}, \text{update}, \text{step}\}
+    V=\{\text{phi}, \text{update}, \text{step}\},
 \end{align*}
 \begin{align*}
-    P(x,\mathcal F)=&(x_\text{phi},x_\text{update})\in DFG_\mathcal{F}^*\land\\
-                    &(x_\text{step},x_\text{update})\in DFG_\mathcal{F}^*\land\\
-                    &(x_\text{phi}, phi)\in I_\mathcal{F}\land\\
-                    &(x_\text{step}, add)\in I_\mathcal{F}\land\\
-                    &(x_\text{step},1)\in C_\mathcal{F}\land\\
-                    &(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*
+    P&(x,\mathcal F)=\left((x_\text{step},1)\in C_\mathcal{F}\right.\\
+    &\land(x_\text{phi},x_\text{update})\in DFG_\mathcal{F}^*\\
+    &\land(x_\text{step},x_\text{update})\in DFG_\mathcal{F}^*\\
+    &\land(x_\text{phi}, phi)\in I_\mathcal{F}\\
+    &\land(x_\text{step}, add)\in I_\mathcal{F}\\
+    &\left.\land(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*\right)
 \end{align*}
 \end{minipage}
 \right)\text{\huge ,}\left(
-\begin{minipage}{0.4\textwidth}
-\footnotesize
+\begin{minipage}{0.5\textwidth}
 \setlength{\abovedisplayskip}{0pt}
 \begin{align*}
 DF&G_\mathcal F=\{(1,2,1),(4,5,1),(6,8,2),\\
@@ -680,17 +657,43 @@ G_\mathcal F&{}=\{\}
 \right)\right)$
 
 \vspace{0.5em}
-{\huge =}
-\vspace{0.5em}
+{\huge$=\{\{\text{phi}:6,\text{update}:14,\text{step}:19\}\}\subset\mathbb N^V$}
 
-{\huge $\{\{\text{phi}:6,\text{update}:14,\text{step}:19\}\}$}
-
-\caption{Example set of constraint solution for the loop detection predicate
-         applied to \autoref{fig:derivemaths}.
-         There is only one simple loop conter in the program, corresponding to
-         the loop interator, shown at the bottom.}
+\caption{Simple loop iterators are identified in the model from
+         \autoref{fig:derivemaths}.
+         On the left is the formulation of loop iterators as a predicate
+         composed of six statements over three variables.
+         Applied to the model on the right, one solution corresponding to
+         the source variable {\tt i} is found.}
 \label{fig:constraintsolution}
 \end{figure}
+
+    Consider the task of detecting in a program all simple loop counters.
+    Such loop counters show up in LLVM IR as data flow cycles of a phi node
+    and an add instruction.
+    This is expressed as an SSA constraint problem on the left side of
+    \autoref{fig:constraintsolution}, with the variables
+    $V=\{\text{phi}, \text{update}, \text{step}\}$ and a predicate $P$ that
+    describes the conditions that the variables have to adhere to.
+
+    This decomposes the predicate into logical conjunctions of a range of
+    {\em elemt-of} relationships that operate on the structures of the model.
+    With this decomposition, an algorithmic solution to the constraint problem
+    is accessible, and the set of solutions for a given SSA program can be
+    determined.
+    This SSA constraint problem is applied to the {\tt dot} function in
+    \autoref{fig:derivemaths}, as visible on the right side of the figure.
+
+    The set of constraint solutions contains a single element, the tuple
+    $\{\text{phi}:6,\text{update}:14,\text{step}:19\}$.
+    This solution can be mapped back onto the LLVM IR code shown at the top of
+    \autoref{fig:derivemaths}, from which the model was derived.
+    The value {\tt phi} maps to the $\Phi$ node $\%9$, the value {\tt update}
+    maps to $\%14$ and the value {\tt step} maps to the constan $1$.
+    These are of course the instructions generated from the loop structure of
+    the original program.
+    Furthermore, this is indeed the only loop to be detected.
+    
 
 \subsection{Solving of SSA Constraint Problems}
 
