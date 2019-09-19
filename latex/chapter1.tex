@@ -150,16 +150,6 @@
     They reason automatically about parallelism, understand data dependencies at
     a deeper level, and they incorporate iterative compilation.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\textwidth]{figures/DSLgradient}
-\caption{Domain specific languages on a spectrum between general purpose
-         languages and libraries.
-         Decreasing flexibility allows for stronger reasoning and greater
-         optimisation potential.}
-\label{specialgradient}
-\end{figure}
-
     This is made possible by a combination of factors that apply uniquely to
     kernel compilers.
     Smaller programs allow for more expensive compilation techniques;
@@ -181,111 +171,115 @@
     Because they cannot rely on such a restricted environment, host compilers
     are unable to match the optimisation capabilites of kernel compilers.
     Domain specific compilers and languages, as well as libraries, have
-    therefore not been championned simply because their restricted program
+    therefore not been championned only because their restricted program
     spaces match the capabilites of particular heterogeneous accelerators, but
     also because the restricted environment makes them intrinsically more
     powerful and able to generate better code.
 
-    This interpretation can be extended to a gradient of specialisation, as in
-    \autoref{specialgradient}.
-    On the very left are general purpose programming languages, 
-    in the middle are domain specific languages, and on the right are libraries.
-    From the left to the right, the provided functionality becomes more rigid,
-    but the specialisation often offers better performance.
     Hybrid approaches, such as OpenCL, reinforce these observations.
-    The language is designed to be general purpose and compilers are provided
-    for many structurally different heterogeneous platforms.
-    However, as a consequence of being a relatively unrestricted langauge, the
-    compilers often underperform.
-    As a consequence, the language is notoriously lacking in performance
-    portability.
+    The language is domain specific only in its expression of parallelism, but
+    otherwise designed to be general purpose.
+    Compilers are provided for many structurally different processors.
+    However, as a consequence of being a relatively unrestricted language, the
+    compilers often underperform and the language is notoriously lacking in
+    performance portability.
     Partial compilers that require the same kinds of compromises as OpenCL --
     unable to utilize the restricted nature of input programs -- would suffer
     the same shortcomings.
 
-\subsection*{Moving Between Abstraction Levels}
+\subsection{The Spectrum of Specialisation}
+
+    General purpose programming languages, domain specific languages and
+    accelerator libraries exist on a spectrum of specialisation.
+    \autoref{specialgradient} gives some intuition about this spectrum.
+    On the left are the most versatile general purpose languages.
+    Moving to the right, flexibility is lost, with BLAS libraries at the end
+    providing only fixed-function computations.
+    At the same time however, the restricted semantics allow for greater 
+    optimisation capabilities.
+
+    It is important to clarify here what is meant by optimisation potential in
+    this context and how it differes from raw performance.
+    C++ is of course very suitable for manual optimisation.
+    However, it is difficult for compilers to automatically perform deep
+    structural changes to the program.
+    Maintaining the semantics of BLAS routines, on the other hand, is viable
+    with many structurally different implementation approaches.
+    C++ is fast because of its low overhead and because programmers write
+    efficient programs to begin with, BLAS is fast because the semantics are so
+    constrained that implementations can be tuned to perfection.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/DSLgradient}
+\caption{Domain specific languages on a spectrum between general purpose
+         languages and libraries.
+         Decreasing flexibility allows for stronger reasoning and greater
+         optimisation potential.}
+\label{specialgradient}
+\end{figure}
 
     The additional performance that libraries and domain specific kernel
-    compilers achieve is a consequence of operating under more constrained
-    conditions.
-    These restrictions imply domain knowledge that can be leveraged to make
-    stronger assumptions, use more powerful models and generate better code.
-    It is possible to write equally specialized code in general purpose
-    languages, however, current compilers remain unaware of the additional
-    constraints that the programmer adhered to and fail to tap into the
-    resulting optimization potential.
+    compilers achieve on suitable applications is a consequence of operating
+    under more constrained conditions.
+    While expert programmers can often apply this domain knowledge themselves
+    when using general purpose languages, this potential is automatically
+    uncovered with specialised tools.
+    The restrictions imply domain knowledge that are leveraged to make stronger
+    assumptions, use more powerful models and generate better code.
 
-    The implication of this is that in order to achieve best performance, it is
-    generally necessary to choose the most tools available.
-    This is contrasted with portability and maintainability considerations,
-    which push programmers in the opposite direction, towards a small number of
-    well established host compilers and traditional languages at the expense of
-    performance.
-    To combine the positive aspects of both these approaches, host compilers
-    need the ability to recognise restricted programming models within general
-    purpose code and to transform adhering code sections into domain specific
-    representations.
+    {\bf
+    When compilers operate on more constrained models, they have more
+    optimisation opportunities and they achieve higher performance and better
+    portability.
+    The models that compilers use are mostly a reflection of the input
+    programming language.
+    However, if host compiler could recognise program parts that adhere
+    to a stronger model with more restrictions, their disadvantage against
+    kernel compilers and libraries should vanish.
+    }
+
+\section{Moving Between Abstraction Levels}
+
+    To combine the positive features on both ends of the spectrum in
+    \autoref{specialgradient}, host compilers need the ability to recognise
+    restricted programming models within general purpose code and to transform
+    adhering code sections into domain specific representations.
     After these transformations, host compilers would be able to tap into the
-    extensive knowhow that already exists by utilising specialized code
+    extensive knowhow that already exists by utilising specialised code
     generation techniques.
 
-    As an example, consider the example of linear algbera.
-    The performance gap between spacialized library functions and the code
-    generated from general purpose compilers for a straightforward matrix
-    multiplication is immense.
-    Conceptually, the availability of dedicated linear algebra code generators
-    means that host compilers should outsource code generation of linear algbera
-    to these tools, because a generic approach will never reach the same level
-    of sophistication.
-    The crucial piece of technology that is missing, is for the compiler to
-    automatically find opportunities to express user code in constraint
-    domains.
-    In the case of linear algbera, the domain is quite small and compilers
-    merely have to recognise a finite amount of supported linear algebra
-    optimizations.
-
-    Conceptually, some of this has been done before.
-    Polyhedral compilers take as input arbitrary code, but they recognise whether
-    parts of code are actually expresible in a much more constraint system.
+    Conceptually, this approach has been applied in specific domains before.
+    Some polyhedral compilers take as input arbitrary code, but they recognise
+    whether parts of code are actually expressible in the much more restricted
+    polyhedral model.
     If possible, they reformulate the code into this system and continue
     optimization with domain knowledge, thus resulting in better code.
-    This work proposes a generalization of this concept.
+    This thesis will develop a broad generalization of this concept, extending
+    far beyond polyhedral code regions and encompassing a methodology that
+    needs no commitment to one specific model.
 
-%    The thesis develops a methodology to generalize this approach, resulting in
-%    methods by which compilers can automatically classify code as adhering to
-%    additional semantic constraints beyond what is guaranteed by the programming
-%    language.
-%    Using this classification, the compiler can then translate the code into a
-%    more specialized domain and apply the already developed domain specific
-%    techniques -- in the simplest case by merely linking to a library -- to
-%    achieve full performance.
-
-\subsection*{Program Specialization with Constraints}
-
-    In order to incorporate the advantages of kernel compilers into general
-    purpose host compilers, a technique for automatically specializing the code
-    into domain specific models is required.
-    This can be achieved with constraint programming, tapping into established
-    research into efficient constraint solvers.
+\subsection{Program Specialization with Constraints}
 
     Program code typically passes through a whole range of representations
     during compilation with a modern, general purpose compiler.
-    Starting from the textual source code, an abstract syntax tree is typically
-    built, from which a serialized intermdiate representation is constructed,
+    Starting from the textual source code, an abstract syntax tree is built,
+    from which a serialized intermdiate representation is constructed,
     which is then passed on to the compiler back end for code generation.
-    It is the intermediate representation -- typically in static single
-    assignment form -- that is used for the majority of optimising code
-    transformations.
+    The intermediate representation -- typically in static single assignment
+    form -- that is used for the majority of optimising code transformations.
     This best represents the semantic model, and therefore the set of
     assumptions and capabilities, that the compiler uses to represent the
     program.
 
     Static single assignment forms are quite accessible to mathematical
-    resoning, with most of their interesting properties based on graph
+    resoning, with most of their interesting properties based on graph and list
     structures.
     With this in mind, structural restrictions on intermediate representation
     code -- corresponding to restricted, domain specific models -- can be
     precisely formulated as mathematical constraints.
+    This enables the expression of specialised representations as constraint
+    programs, tapping into established methods around constraint solvers.
 
     In the most extreme interpretation of this model, sections of code are
     recognised as implementing specific algorithms, like matrix multiplications,
@@ -302,6 +296,26 @@
     language. that is evaluated on well established benchmark programs.
 
 %    \subsection*{extra building blocks}
+
+
+
+%    The thesis develops a methodology to generalize this approach, resulting in
+%    methods by which compilers can automatically classify code as adhering to
+%    additional semantic constraints beyond what is guaranteed by the programming
+%    language.
+%    Using this classification, the compiler can then translate the code into a
+%    more specialized domain and apply the already developed domain specific
+%    techniques -- in the simplest case by merely linking to a library -- to
+%    achieve full performance.
+
+
+%    The implication of this is that in order to achieve best performance, it is
+%    generally advisable to choose the most specialised tools available.
+%    However, considerations of portability and maintainability push programmers
+%    in the opposite direction, towards a small number of well established host
+%    compilers and traditional languages at the expense of performance.
+
+
 
 %    What is promising therefore is a combination of hand-optimized libraries,
 %    domain specific languages together with compiler automatisms.
