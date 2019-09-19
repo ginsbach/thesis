@@ -462,6 +462,8 @@
 
     Additional notation is introduced in \autoref{not:convenience} for
     convenience.
+    The representation of data flow and control flow as labeled multigraphs
+    often contains more information than required.
     The presented graph projection allow different ways of reducing the
     dimensionality of the model structures that will be useful in later
     sections.
@@ -477,7 +479,10 @@
     models.
     For example, $C_\mathcal F^*$ discards the value information and gives a
     simple poolean predicate, akin to the global and parameter model.
-    On the other hand $C_mathcal F^0$ contains all the zero-valued constants.
+    On the other hand $C_\mathcal F^0$ contains all the zero-valued constants.
+
+    These different simplifications will enable the easier formulation of
+    constraint programs later.
 
 \subsection{Application to LLVM}
 
@@ -491,10 +496,24 @@
 
     LLVM is a compiler infrastructure built around a central intermediate
     representation LLVM IR.
-    The name was originally an antony for ``Low Level Virtual Machine''.
-    The project has been a huge success, front ends exist for a diverse set of
-    langauges including C/C++, Haskell, Julia, Objective-C, Rust, Scala and
+    The name was originally an acronym for ``Low Level Virtual Machine'',
+    conceptualising the intermediate representation as a typed assembly style
+    language of a virtual machine.
+    The instruction set is vaguely aligned to C semantics, however the project
+    has matured beyond this background.
+    It is now a widely influential framework, front ends exist for a diverse set
+    of langauges including C/C++, Haskell, Julia, Objective-C, Rust, Scala and
     CUDA.
+
+    Other mainstream compilers, particularly the gcc project, in effect utilise
+    very similar representations internally.
+    However, LLVM is unique in its insistence n LLVM IR being a well documented
+    language, as opposed to an obscure internal abstraction.
+    This makes it uniquely suitable for research implementations.
+    While the theory of this work is developed independenyly from LLVM and
+    applies in general, LLVM will the the language of choice for all
+    implementations.
+    Therefore, a detailed example is required.
 
 \paragraph*{Detailed Example}
     \autoref{fig:derivemaths} shows how the model is used on an an example
@@ -526,6 +545,7 @@
     The labeled multigraphs for the control flow and data flow graphs are
     represented as sets of $3$-tuples of integers.
 
+
 \begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth,height=1.5\textwidth]{figures/ssamathmodel.pdf}\\[9.3319pt]
@@ -536,7 +556,6 @@
 \label{fig:derivemaths}
 \end{figure}
 
-\newpage
 \section{Constraint Programming on SSA Programs}
 
     With a mathematical model of SSA programs in place, properties of such
@@ -613,7 +632,7 @@
                     &(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*.
 \end{align*}
 
-    This decomposes the predicate into a logical conjunction of a range of
+    This decomposes the predicate into logical conjunctions of a range of
     {\em elemt-of} relationships that operate on the structures of the model.
     With this decomposition, an algorithmic solution to the constraint problem
     is accessible, and the set of solutions for a given SSA program can be
@@ -667,14 +686,10 @@ G_\mathcal F&{}=\{\}
 {\huge $\{\{\text{phi}:6,\text{update}:14,\text{step}:19\}\}$}
 
 \caption{Example set of constraint solution for the loop detection predicate
-         applied to \autoref{fig:derivemaths}.}
-\label{fig:constraintsolution}
-\end{figure}
-
-\caption{Example constraint problem is applied to SSA model from
-         \autoref{fig:separation}.
+         applied to \autoref{fig:derivemaths}.
          There is only one simple loop conter in the program, corresponding to
          the loop interator, shown at the bottom.}
+\label{fig:constraintsolution}
 \end{figure}
 
 \subsection{Solving of SSA Constraint Problems}

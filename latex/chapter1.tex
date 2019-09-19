@@ -101,14 +101,17 @@
 
     These success stories, however, still leave many important problems
     unaddressed.
-    Adoption costs are significant and they coincide with often uncertain
-    long-term prospects and very limited cross-platform portability.
+    Adoption costs are significant, requiring application rewrites for
+    accelerators.
+    This coincides with often uncertain long-term prospects and very limited
+    cross-platform portability.
     Even in the case of the generally agreed upon BLAS standard -- arguably the
     best case scenario -- adoption of novel implementations is non-trivial in
-    practice, due to even slight differences in the interfaces.
+    practice, due to interface extensions for device handlers and memory
+    synchronisation.
     For academic-backed approaches like Halide on the other hand, complete
-    rewrites are required in entirely novel ecosystems with an unclear future of
-    support.
+    rewrites are required in entirely novel ecosystems, with an unclear future
+    of support.
 
     These problems arise because compilers are unable to efficiently map
     existing programs to heterogeneous platforms.
@@ -172,9 +175,9 @@
     are unable to match the optimisation capabilites of kernel compilers.
     Domain specific compilers and languages, as well as libraries, have
     therefore not been championned only because their restricted program
-    spaces match the capabilites of particular heterogeneous accelerators, but
-    also because the restricted environment makes them intrinsically more
-    powerful and able to generate better code.
+    spaces match the capabilites of particular heterogeneous accelerators.
+    The restricted environment also makes them intrinsically more powerful and
+    able to generate better code.
 
     Hybrid approaches, such as OpenCL, reinforce these observations.
     The language is domain specific only in its expression of parallelism, but
@@ -272,9 +275,9 @@
     assumptions and capabilities, that the compiler uses to represent the
     program.
 
-    Static single assignment form representations are quite accessible to
-    mathematical resoning, with most of their interesting properties based on
-    graph and list structures.
+    Static single assignment form representations are accessible to mathematical
+    resoning, with most of their interesting properties based on graph and list
+    structures.
     With this in mind, structural restrictions on intermediate representation
     code -- corresponding to restricted, domain specific models -- can be
     precisely formulated as mathematical constraints.
@@ -292,7 +295,7 @@
     restrictions.
     Polyhedral code sections fall under this domain.
 
-\subsection{Conclusion}
+\section{Conclusion}
 
     This thesis develops a framework to formulate a wide range of restricted
     program models using constraints.
