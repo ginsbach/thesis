@@ -272,28 +272,50 @@
     assumptions and capabilities, that the compiler uses to represent the
     program.
 
-    Static single assignment forms are quite accessible to mathematical
-    resoning, with most of their interesting properties based on graph and list
-    structures.
+    Static single assignment form representations are quite accessible to
+    mathematical resoning, with most of their interesting properties based on
+    graph and list structures.
     With this in mind, structural restrictions on intermediate representation
     code -- corresponding to restricted, domain specific models -- can be
     precisely formulated as mathematical constraints.
-    This enables the expression of specialised representations as constraint
-    programs, tapping into established methods around constraint solvers.
+    Established methods around constraint solvers then make an automatic
+    detection of adhering code regions feasible.
 
-    In the most extreme interpretation of this model, sections of code are
-    recognised as implementing specific algorithms, like matrix multiplications,
-    that are merely parameterized.
+    This constraint programming methodology needs to capture the spectrum from
+    \autoref{specialgradient}.
+    On one extreme, sections of code should be recognised as implementing
+    specific algorithms, like matrix multiplications, that are merely
+    parameterised with numbers.
     Next are algorithms that allow parameterization with an operator.
-    For example, stencil kernels of reductions fall into this catefory.
-    More generic again are restricted programs that are nonetheless freely
-    programmeable.
+    Stencil kernels or reductions fall into this catefory.
+    More generic again are programs that merely follow specific structural
+    restrictions.
     Polyhedral code sections fall under this domain.
 
-    All of these types of code restrictions can be formulated via constraints.
-    This thesis will develop a framework to enable this, starting from
-    theoretical foundations and resulting in a donain specific programming
-    language. that is evaluated on well established benchmark programs.
+\subsection{Conclusion}
+
+    This thesis develops a framework to formulate a wide range of restricted
+    program models using constraints.
+    For this purpose, a custom constraint programming language is introduced
+    and successively extended.
+    Starting from theoretical foundations, the methodology is developed into
+    a complete system, implemented as part of the mature clang C/C++ compiler.
+
+    In the later chapters, this core system is then applied in combination
+    with other techniques in a range of different contexts.
+    This includes the rapid prototyping of compiler optimisations, the
+    automatic parallelisation of program structures with indirect memory
+    accesses, a new formulation of the polyhedral model and the detection of
+    computational structures that cover important bottlenecks in typical
+    scientific programs.
+    
+    Eventually, the techniques are combined with memory synchronisation
+    approaches to result in a fully integrated, extensible compiler tool for
+    efficiently mapping sequential programs onto heterogeneous systems.
+    This develops the thesis all the way from theoretical discussions of
+    constraint programming approaches in compilers to the evaluation of real
+    performance improvements on established benchmark suites and scientific
+    applications.
 
 %    \subsection*{extra building blocks}
 
