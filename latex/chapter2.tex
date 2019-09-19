@@ -556,6 +556,69 @@
 \label{fig:derivemaths}
 \end{figure}
 
+\begin{figure}[p]
+\centering
+
+
+\begin{blackbox}{Textual Representation}
+\includegraphics[width=\columnwidth]{figures/model_representations_textual}
+\end{blackbox}
+\begin{blackbox}{Data Structure Representation}
+\includegraphics[width=\columnwidth]{figures/model_representations_structure}
+\end{blackbox}
+
+\begin{blackbox}{Mathematical Representation}
+    \centering
+    \begin{minipage}{0.329\textwidth}
+        \begin{graybox}
+            \scriptsize
+            \begin{align*}
+                T_\mathcal F=\{(1,i1),(4,double),(6,i64),\dots\}\\
+            \end{align*}
+        \end{graybox}
+    \end{minipage}
+    \begin{minipage}{0.329\textwidth}
+        \begin{graybox}
+            \scriptsize
+            \begin{align*}
+                T_\mathcal F=\{(1,i1),(4,double),(6,i64),\dots\}\\
+            \end{align*}
+        \end{graybox}
+    \end{minipage}
+    \begin{minipage}{0.329\textwidth}
+        \begin{graybox}
+            \scriptsize
+            \begin{align*}
+                T_\mathcal F=\{(1,i1),(4,double),(6,i64),\dots\}\\
+            \end{align*}
+        \end{graybox}
+    \end{minipage}
+
+    \begin{minipage}{0.5\textwidth}
+        \begin{graybox}
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \begin{align*}
+                \mathcal F = (DFG_\mathcal{F},
+                 CFG_\mathcal{F},
+                 I_\mathcal{F},
+                 T_\mathcal{F},
+                 C_\mathcal{F},
+                 P_\mathcal{F},
+                 G_\mathcal{F}),
+            \end{align*}
+        \end{graybox}
+    \end{minipage}
+    
+\end{blackbox}
+
+\vspace{3cm}
+\caption{Compiler-generated SSA code is first decomposed into data flow, control
+         flow and per-value attributes.
+         Mathematical representations of the data are then introduced with
+         notation.}
+\end{figure}
+
 \section{Constraint Programming on SSA Programs}
 
     With a mathematical model of SSA programs in place, properties of such
@@ -693,7 +756,6 @@ G_\mathcal F&{}=\{\}
     These are of course the instructions generated from the loop structure of
     the original program.
     Furthermore, this is indeed the only loop to be detected.
-    
 
 \subsection{Solving of SSA Constraint Problems}
 

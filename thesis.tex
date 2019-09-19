@@ -54,6 +54,30 @@ colframe=black,
 fonttitle=\bfseries,
 title={Definition \thetcbcounter}}{not}
 
+\newtcolorbox{blackbox}[1]{
+top=0mm,
+bottom=0mm,
+left=0mm,
+right=0mm,
+boxsep=0mm,
+toptitle=1mm,
+bottomtitle=1mm,
+colback=black,
+colframe=black,
+fonttitle=\centering\bfseries,
+title=#1}
+
+\newtcolorbox{graybox}[0]{
+top=0mm,
+bottom=0mm,
+left=0mm,
+right=0mm,
+colback=white!90!black,
+colbacktitle=white!90!black,
+colframe=white!50!black,
+lower separated=false
+}
+
 \definecolor{sh_comment}{rgb}{0.65, 0.00, 0.00 }
 \definecolor{sh_keyword}{rgb}{0.15, 0.25, 0.25}
 \definecolor{sh_string}{rgb}{0.08, 0.69, 0.08}
