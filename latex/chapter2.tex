@@ -308,7 +308,8 @@
     The {\em data flow graph} of the SSA function $\mathcal F$ is the set
     $DGF_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (a,b,n)\in DFG_{\mathcal F}\iff 1\leq a\leq n_{pigc}\mathrel{\land}(val_a\text{ is the $n$th argument of }ins_b).
+        (a,b,n)\in DFG_{\mathcal F}\iff 1\leq a\leq n_{pigc}
+            \mathrel{\land}(val_a\text{ is the $n$th argument of }ins_b).
     \end{align*}
 \end{definition}
 \end{figure}
@@ -322,12 +323,15 @@
 
 \begin{figure}[h]
 \begin{definition}{Control Flow Graph}{cfg}
-    The control flow graph of the SSA function $\mathcal F$ is the set
+    The {\em control flow graph} of the SSA function $\mathcal F$ is the set
     $CGF_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (a,b,n)\in CFG_{\mathcal F}\iff[n=1\land a+1=b\land&(ins_a,ins_b\text{ are in the same basic block})] \\
-                                   \lor[(ins_a\text{ terminates a basic block})\land&\\
-                                        (ins_b\text{ is the first instruction in the}&\text{ $n$th basic block argument of }ins_a)].
+        (a,b,n)&{}\in CFG_{\mathcal F}\iff n_p<a,b\leq n_p+n_i\mathrel{\land}\\
+               &\left(\begin{aligned}[c]
+                                    (\neg (ins_{a-n_p}\text{ terminates basic block})\mathrel{\land}{}&b=a+1\mathrel{\land}n=1)\\
+                      \mathrel{\lor}(\phantom{\neg}(ins_{a-n_p}\text{ terminates basic block})\mathrel{\land}{}&ins_{b-n_p}\text{ first instruction in}\text{ $n$th}\\[-0.5em]
+                                                   &\text{target basic block of }ins_{a-n_p})
+        \end{aligned}\right).
     \end{align*}
 \end{definition}
 \end{figure}
@@ -547,10 +551,10 @@
 
 \begin{figure}[p]
 \input{latex/figure_derivemaths}
-\caption{Compiler-generated SSA code is first decomposed into data flow, control
+\caption{Compiler-generated LLVM IR code is decomposed into data flow, control
          flow and per-value attributes.
-         Mathematical representations of the data are then introduced with
-         notation.}
+         Mathematical notations of the three components are shown at the
+         bottom.}
 \label{fig:derivemaths}
 \end{figure}
 

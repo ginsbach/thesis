@@ -3,11 +3,11 @@
     \begin{align*}
         (DFG_\mathcal{F},
          CFG_\mathcal{F},
-         I_\mathcal{F},
          T_\mathcal{F},
-         C_\mathcal{F},
          P_\mathcal{F},
-         G_\mathcal{F}),
+         I_\mathcal{F},
+         G_\mathcal{F},
+         C_\mathcal{F}),
     \end{align*}
     where
 
@@ -15,17 +15,23 @@
     \item $DFG_\mathcal{F}\subset\mathbb N^3$ and
           $CFG_\mathcal{F}\subset\mathbb N^3$ are the data flow and control
           flow graph.
-    \item $I_\mathcal F\subset\mathbb N\times Opcodes$ is the instruction model,
-          defined by the property
-          \begin{align*}
-              (k,op)\in I_\mathcal F\iff n_p<k\leq n_p+n_i
-                  \mathrel{\land}(ins_{k-n_p}\text{ has opcode }op).
-          \end{align*}
     \item $T_\mathcal F\subset\mathbb N\times Types$ is the type model, defined
           by the property
           \begin{align*}
               (k,ty)\in T_\mathcal F\iff 1\leq k\leq n_{pigc}
                   \mathrel{\land}(val_k\text{ has type }ty).
+          \end{align*}
+    \item $P_\mathcal F\subset\mathbb N$ and $G_\mathcal F\subset\mathbb N$
+          are the parameter model and global model, defined by the properties
+          \begin{align*}
+              k\in P_\mathcal F\iff& 1\leq k\leq n_p\text{ and}\\
+              k\in G_\mathcal F\iff& n_p+n_i<k\leq n_p+n_i+n_g.
+          \end{align*}
+    \item $I_\mathcal F\subset\mathbb N\times Opcodes$ is the instruction model,
+          defined by the property
+          \begin{align*}
+              (k,op)\in I_\mathcal F\iff n_p<k\leq n_p+n_i
+                  \mathrel{\land}(ins_{k-n_p}\text{ has opcode }op).
           \end{align*}
     \item $C_\mathcal F\subset\mathbb N\times\mathbb R$ is the constant model,
           defined by the property
@@ -33,12 +39,6 @@
               (k,x)\in C_\mathcal F\iff{}&n_p+n_i+n_g<k\leq n_{pigc}\\
                         \mathrel{\land}{}&(cst_{k-n_p-n_i-n_g}
                         \text{ has numeric value equal to }x).
-          \end{align*}
-    \item $P_\mathcal F\subset\mathbb N$ and $G_\mathcal F\subset\mathbb N$
-          are the parameter model and global model, defined by the properties
-          \begin{align*}
-              k\in P_\mathcal F\iff& 1\leq k\leq n_p\text{ and}\\
-              k\in G_\mathcal F\iff& n_p+n_i<k\leq n_p+n_i+n_g.
           \end{align*}
     \end{itemize}
 \end{definition}

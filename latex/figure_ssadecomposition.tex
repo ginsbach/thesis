@@ -27,13 +27,33 @@ $\cong$}
 \vspace{9.58919pt}
 
 $\left(
-\begin{minipage}{5cm}
+\begin{minipage}{5.5cm}
 \centering
+\hspace{-2em}
+\begin{tabular}{r}
+\phantom{00}\\
+1:
+\end{tabular}
 \begin{tabular}{|l|}
 \multicolumn{1}{p{3cm}}{{\bf parameters:}}\\
 \hline
 $S$\\
 \hline
+\end{tabular}\\
+\hspace{-2em}
+\begin{tabular}{r}
+\phantom{88}\\
+2:\\
+3:\\
+4:\\
+5:\\
+6:\\
+7:\\
+8:\\
+9:\\
+10:\\
+11:\\
+12:
 \end{tabular}
 \begin{tabular}{|l|}
 \multicolumn{1}{p{3cm}}{{\bf instructions:}}\\
@@ -50,12 +70,24 @@ $\square+\square$\\
 $\text{goto } \square$\\
 $\text{return }\square$\\
 \hline
+\end{tabular}\\
+\hspace{-2em}
+\begin{tabular}{r}
+\phantom{88}\\
+13:
 \end{tabular}
 \begin{tabular}{|l|}
 \multicolumn{1}{p{3cm}}{{\bf globals:}}\\
 \hline
 $N$\\
 \hline
+\end{tabular}\\
+\hspace{-2em}
+\begin{tabular}{r}
+\phantom{88}\\
+14:\\
+15:\\
+16:
 \end{tabular}
 \begin{tabular}{|l|}
 \multicolumn{1}{p{3cm}}{{\bf constants:}}\\
@@ -67,80 +99,33 @@ $0$\\
 \end{tabular}
 \end{minipage}
 \right)\hspace{1em}\text{\huge +}\hspace{1em}\left(
-\begin{minipage}{6.5cm}
+\begin{minipage}{5.5cm}
 \centering
-$CFG_{\mathcal F}=$\\[1pt]{
-\tt\bf
-\setlength{\tabcolsep}{3.3pt}
-\renewcommand{\arraystretch}{0.72}
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
-\hline
-\hphantom{1}&1&&&&&&&&&\\[-0.5mm]
-\hline
-&&1&&&&&&&&\\[-0.5mm]
-\hline
-&&&1&&&&&&&\\[-0.5mm]
-\hline
-&&&&1&&&&&&\\[-0.5mm]
-\hline
-&&&&&1&&&&&2\\[-0.5mm]
-\hline
-&&&&&&1&&&&\\[-0.5mm]
-\hline
-&&&&&&&1&&&\\[-0.5mm]
-\hline
-&&&&&&&&1&&\\[-0.5mm]
-\hline
-&&&&&&&&&1&\\[-0.5mm]
-\hline
-&1&&&&&&&&&\\[-0.5mm]
-\hline
-&&&&&&&&&&\\
-\hline
-\end{tabular}}
-\vspace{1em}
-
-$DFG_{\mathcal F}=$\\[1pt]{
-\tt\bf
-\setlength{\tabcolsep}{3.3pt}
-\renewcommand{\arraystretch}{0.72}
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
-\hline
-\hphantom{1}&&&&&1&&&&\hphantom{1}&\hphantom{1}\\[-0.5mm]
-\hline
-\hline
-&&&&&&&&&&\\[-0.5mm]
-\hline
-&&&1&&&&&1&&\\[-0.5mm]
-\hline
-&&&&&2&1&&&&\\[-0.5mm]
-\hline
-&&&&1&&&&&&\\[-0.5mm]
-\hline
-&&&&&&&&&&\\[-0.5mm]
-\hline
-&&&&&&2&&&&\\[-0.5mm]
-\hline
-&&&&&&&1&&&\\[-0.5mm]
-\hline
-&&2&&&&&&&&\\[-0.5mm]
-\hline
-&2&&&&&&&&&\\[-0.5mm]
-\hline
-&&&&&&&&&&\\[-0.5mm]
-\hline
-&&&&&&&&&&\\[-0.5mm]
-\hline
-\hline
-&&&2&&&&&&&\\[-0.5mm]
-\hline
-\hline
-&&1&&&&&&2&&\\[-0.5mm]
-\hline
-&&&&&&&2&&&\\[-0.5mm]
-\hline
-&1&&&&&&&&&\\
-\hline
-\end{tabular}}
+\setlength{\abovedisplayskip}{0pt}
+\setlength{\belowdisplayskip}{0pt}
+\vspace{-0.5em}
+\begin{align*}
+DFG_\mathcal F=\{
+&10\xrightarrow{2}3,\ 16\xrightarrow{1}3,\\[-0.15em]
+&9\xrightarrow{2}4,\ 14\xrightarrow{1}4,\\[-0.15em]
+&3\xrightarrow{1}5,\ 13\xrightarrow{2}5,\\[-0.15em]
+&5\xrightarrow{1}6\\[-0.15em]
+&1\xrightarrow{1}7,\ 4\xrightarrow{2}7,\\[-0.15em]
+&4\xrightarrow{1}8,\ 7\xrightarrow{2}8\\[-0.15em]
+&8\xrightarrow{1}9,\ 15\xrightarrow{2}9\\[-0.15em]
+&3\xrightarrow{1}10,\ 14\xrightarrow{2}10,\\[-0.15em]
+&4\xrightarrow{1}12\}\\
+CFG_\mathcal F=\{
+&2\xrightarrow{1}3,\\[-0.15em]
+&3\xrightarrow{1}4,\\[-0.15em]
+&4\xrightarrow{1}5,\\[-0.15em]
+&5\xrightarrow{1}6,\\[-0.15em]
+&6\xrightarrow{1}7,\ 6\xrightarrow{2}12,\\[-0.15em]
+&7\xrightarrow{1}8,\\[-0.15em]
+&8\xrightarrow{1}9,\\[-0.15em]
+&9\xrightarrow{1}10,\\[-0.15em]
+&10\xrightarrow{1}11,\\[-0.15em]
+&11\xrightarrow{1}3\}
+\end{align*}
 \end{minipage}
 \right)$
