@@ -545,78 +545,104 @@
     The labeled multigraphs for the control flow and data flow graphs are
     represented as sets of $3$-tuples of integers.
 
-
 \begin{figure}[p]
 \centering
-\includegraphics[width=\textwidth,height=1.5\textwidth]{figures/ssamathmodel.pdf}\\[9.3319pt]
-\caption{Compiler-generated SSA code is first decomposed into data flow, control
-         flow and per-value attributes.
-         Mathematical representations of the data are then introduced with
-         notation.}
-\label{fig:derivemaths}
-\end{figure}
-
-\begin{figure}[p]
-\centering
-
 
 \begin{blackbox}{Textual Representation}
 \includegraphics[width=\columnwidth]{figures/model_representations_textual}
 \end{blackbox}
+
+\includegraphics[width=\columnwidth]{figures/model_arrows_upper}
+
 \begin{blackbox}{Data Structure Representation}
 \includegraphics[width=\columnwidth]{figures/model_representations_structure}
 \end{blackbox}
+
+\includegraphics[width=\columnwidth]{figures/model_arrows_lower}
 
 \begin{blackbox}{Mathematical Representation}
     \centering
     \begin{minipage}{0.329\textwidth}
         \begin{graybox}
             \scriptsize
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
             \begin{align*}
-                T_\mathcal F=\{(1,i1),(4,double),(6,i64),\dots\}\\
+                DF&G_\mathcal F=\{(1,2,1),(4,5,1),(6,8,2),\\[-0.5em]
+                  &(6,10,2),(6,14,1),(7,13,1),\\[-0.5em]
+                  &(8,9,1),(9,12,1),(10,11,1),\\[-0.5em]
+                  &(11,12,2),(12,13,2),(13,4,1),\\[-0.5em]
+                  &(13,7,1),(14,6,1),(14,15,1),\\[-0.5em]
+                  &(15,16,1),(17,1,1),(17,6,1),\\[-0.5em]
+                  &(18,4,1),(18,7,2),(19,14,2),\\[-0.5em]
+                  &(20,8,1),(21,10,1),(22,1,1),\\[-0.5em]
+                  &(22,15,2)\}\subset\mathbb N^3
             \end{align*}
         \end{graybox}
     \end{minipage}
     \begin{minipage}{0.329\textwidth}
         \begin{graybox}
             \scriptsize
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
             \begin{align*}
-                T_\mathcal F=\{(1,i1),(4,double),(6,i64),\dots\}\\
+                CF&G_\mathcal F=\{(1,2,1),(2,4,1),(2,3,2),\\[-0.5em]
+                  &(3,6,1),(4,5,1),(6,7,1),(7,8,1),\\[-0.5em]
+                  &(8,9,1),(9,10,1),(10,11,1),\\[-0.5em]
+                  &(11,12,1),(12,13,1),(13,14,1),\\[-0.5em]
+                  &(14,15,1),(15,16,1),(16,4,1),\\[-0.5em]
+                  &(16,6,2)\}\subset\mathbb N^3
             \end{align*}
+
+            \vspace{4.36em}
         \end{graybox}
     \end{minipage}
     \begin{minipage}{0.329\textwidth}
+        \centering
         \begin{graybox}
             \scriptsize
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
             \begin{align*}
-                T_\mathcal F=\{(1,i1),(4,double),(6,i64),\dots\}\\
+                T_\mathcal F={}&\{(1,i1),(4,double),(6,i64),\dots\}\\[-0.5em]
+                      \subset{}&\mathbb N\times Types_\text{LLVM}\\[-0.25em]
+                I_\mathcal F={}&\{(i,icmp\ eq),(2,cond\ br),\dots\}\\[-0.5em]
+                      \subset{}&\mathbb N\times Opcodes_\text{LLVM}\\[-0.25em]
+                C_\mathcal F={}&\{(17,0),(18,0),(19,1)\}\\[-0.5em]
+                      \subset{}&\mathbb N\times\mathbb R\\[-0.25em]
+                P_\mathcal F={}&\{17,18,19\}\subset\mathbb N\\[-0.25em]
+                G_\mathcal F={}&\{\}\subset\mathbb N
             \end{align*}
+
+            \vspace{0.45em}
         \end{graybox}
     \end{minipage}
 
-    \begin{minipage}{0.5\textwidth}
+    \begin{minipage}{14.4cm}
         \begin{graybox}
             \setlength{\abovedisplayskip}{0pt}
             \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
             \begin{align*}
-                \mathcal F = (DFG_\mathcal{F},
+                (DFG_\mathcal{F},
                  CFG_\mathcal{F},
                  I_\mathcal{F},
                  T_\mathcal{F},
                  C_\mathcal{F},
                  P_\mathcal{F},
-                 G_\mathcal{F}),
+                 G_\mathcal{F})
             \end{align*}
         \end{graybox}
     \end{minipage}
-    
 \end{blackbox}
-
-\vspace{3cm}
 \caption{Compiler-generated SSA code is first decomposed into data flow, control
          flow and per-value attributes.
          Mathematical representations of the data are then introduced with
          notation.}
+\label{fig:derivemaths}
 \end{figure}
 
 \section{Constraint Programming on SSA Programs}
