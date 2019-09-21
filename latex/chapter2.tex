@@ -664,12 +664,9 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \begin{figure}[p]
     \input{latex/figure_solutionexample}
-\caption{Simple loop iterators are identified in the model from
-         \autoref{fig:derivemaths}.
-         On the left is the formulation of loop iterators as a predicate
-         composed of six statements over three variables.
-         Applied to the model on the right, one solution corresponding to
-         the source variable {\tt i} is found.}
+\caption{Detection of simple loop iterators is formulated as a constraint
+         problem and applied to the SSA model from \autoref{fig:derivemaths}.
+         One solution corresponding to the source variable {\tt i} is found.}
 \label{fig:constraintsolution}
 \end{figure}
 
