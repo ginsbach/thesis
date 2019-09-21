@@ -687,6 +687,9 @@ define double @dot(double* %0, double* %1, i64 %2) {
     The predicate is decomposed with logical conjunctions (``$\land$'') into
     several {\em elemt-of} relationships that have to hold simultaneously on the
     structures of the model.
+    Explicit control flow constraints for establishing the loop strucure are not
+    required, as the data flow with the $\Phi$ node already implies the presence
+    of a loop structure.
     Below the predicate formulation is the SSA model from
     \autoref{fig:derivemaths}.
 
@@ -713,8 +716,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     With a detailed derivation of the SSA model completed and some intuition
     about the nature of constraint problems, only the solver $S$ in
-    \autoref{fig:constraintsolution} remains a black box so far.
-    The next sections derive in detail, how a backtracking solver approach can
+    \autoref{fig:constraintsolution} remains a black box.
+    The next sections derive how a backtracking solver can
     be used to efficiently compute the set of solutions.
 
 \subsection{Solving of SSA Constraint Problems}
