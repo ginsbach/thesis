@@ -489,36 +489,61 @@
     These different simplifications will enable the easier formulation of
     constraint programs later.
 
-\subsection{Application to LLVM}
+\subsection{The LLVM Compiler Framework}
 
-    The previously introduced mathematical model of SSA programs is independent
-    of the chosen SSA representation.
-    However, the specialisation to concrete compiler problems is the aim of this
-    work.
-    Arguably the most prevalent SSA compiler intermediate representation is
-    LLVM IR, therefore it will be the main vessel for demonstration in this
-    thesis.
+    The previously introduced mathematical model is generic and does not
+    presuppose a specific language from the family of SSA representations.
+    In order to apply the methodology on real compiler problems, however, the
+    application of the model to concrete compiler intermediate representations
+    is required.
+    Arguably one of the most prevalent such SSA representations is LLVM IR.
+    It will be used throughout the thesis for demonstration and evaluation
+    purposes.
 
-    LLVM is a compiler infrastructure built around a central intermediate
-    representation LLVM IR.
-    The name was originally an acronym for ``Low Level Virtual Machine'',
-    conceptualising the intermediate representation as a typed assembly style
-    language of a virtual machine.
+    LLVM is a comprehensive compiler infrastructure project, with the the LLVM
+    intermediate representation as its central component.
+    The name of the project was originally an acronym for
+    ``Low Level Virtual Machine''.
+    The intermediate representation was hence conceptualised as a typed assembly
+    style language of a virtual machine.
     The instruction set is vaguely aligned to C semantics, however the project
     has matured beyond this background.
-    It is now a widely influential framework, front ends exist for a diverse set
-    of langauges including C/C++, Haskell, Julia, Objective-C, Rust, Scala and
-    CUDA.
+    It is now a widely influential framework, with compiler front ends existing
+    for a diverse set of langauges including C/C++, Haskell, Julia, Objective-C,
+    Rust, Scala and CUDA.
 
-    Other mainstream compilers, particularly the gcc project, in effect utilise
-    very similar representations internally.
-    However, LLVM is unique in its insistence n LLVM IR being a well documented
-    language, as opposed to an obscure internal abstraction.
+    Many other mainstream compilers, particularly the gcc project, in effect
+    utilise very similar representations internally.
+    However, LLVM is particular in its understanding of the intermediate
+    representation as an advertised and well documented interface within the
+    toolchain, as opposed to an obscure internal abstraction.
     This makes it uniquely suitable for research implementations.
-    While the theory of this work is developed independenyly from LLVM and
-    applies in general, LLVM will the the language of choice for all
-    implementations.
-    Therefore, a detailed example is required.
+
+\subsection{LLVM Example}
+
+    LLVM IR is a complex language, and it is cannot be the aim to introduce it
+    here in its entirety.
+    Instead, some crucial features for the context of this thesis are
+    demonstrated on an example function.
+
+    Consider \autoref{llvmirexample}.
+    At the top {\bf a)} of the figure, a dot product is implemented as a
+    function in C.
+    The function receives as arguments two pointers {\tt a,b} to arrays of
+    double precision floating point values, representing the input vectors, as
+    well as an unsigned integer $n$ that gives the size of the vectors.
+    Within a single loop in lines $4$--$5$, the dot product is accumulated in
+    the variable {\tt d}, which is eventually returned as the function result in
+    the penultimate line $6$.
+
+    At the bottom {\bf b)} of the figure is the corresponding LLVM intermediate
+    code, captured after optimisations from the mid end of the LLVM-based clang
+    compiler.
+    LLVM IR maintains the concept of functions from C, with an essentially
+    identical interface in line $1$ and a corresponding return statement in
+    line $8$.
+    The logic within the function is in SSA form.
+
 
 
 \begin{figure}[p]
