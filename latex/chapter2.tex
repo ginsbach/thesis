@@ -760,31 +760,91 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \subsection{Solving of SSA Constraint Problems}
 
     The aim of a solver for SSA constraint problems is to compute the set of
-    solutions $S(C,M)$ for some concrete values of $C$ and $M$.
+    solutions $S(C,M)$ for some concrete $C$ and $M$.
     This is fundamentally a search problem: the space of $\mathbb N^V$ has to be
     searched for values satisfying $P$.
     The size of $\mathbb N^V$, wich is countable but infinite, requires
     non-trivial computational approaches to this problem, even when the direct
-    evaluation of $P$ can be efficiently performed.
+    evaluation of $P$ can be performed efficiently.
+    The solver therefore uses the structure of the boolean predicate and
+    backtracking.
 
-    On top of that, an algorithmic solution requires an intelligent way to
-    encode the boolean predicate.
-    It is intuitive and well established in literature to use backtracking for
-    solving constraint problems, so firstly this will be reformulated
-    recursively as follows.
-    The finite set of $V$ can be enumerated $V=\{v_0,v_1,\dots,v_n\}$.
+\begin{figure*}[p]
+    \begin{definition}{Partial Constraint Problems}{partconstr}
+        Assume an enumeration $V=\{v_1,\dots,v_n\}$.
 
-    Then consider $C_k=(V_k,P_k)$, where $P_k$ is defined as
+        Then the {\em partial set of varibles} $V_k$ is
+        defined as
+        \begin{align*}
+            V_0:={}&\{\}\quad\\
+            V_k:={}&\{v_1,\dots,v_k\}\quad\text{ for }k=1,\dots,n
+        \end{align*}
+
+        and the {\em restricted constraint predicate}
+        $R_k:\mathbb N^{V_k}\times\mathcal M\rightarrow\{true, false\}$ is
+        defined as
+        \begin{align*}
+            R_0(\{\},M):={}&true\\
+            R_k(\{x_{v_1},\dots,x_{v_k}\},M):={}&\left\{\begin{array}{l}
+                    true\quad \text{if }P(\{x_{v_1},\dots,x_{v_n}\},M)=true\text{ for some }x_{v_{k+1}},\dots,x_{v_n}\\
+                    false\quad \text{otherwise}.
+                \end{array}\right.\\
+            R_n:={}&P
+        \end{align*}
+
+        Finally, the {\em partial constraint problem} $C_k=(V_k,P_k)$ is defined
+        by the predicate $P_k$ with
+        \begin{align*}
+            P_0:={}&R_0\\
+            P_k(\{x_{v_1},\dots,x_{v_k}\},M):={}&\left\{\begin{array}{l}
+                                true\quad \text{if }R_k(\{x_{v_1},\dots,x_{v_k}\},M)=true\\
+                       \phantom{true\quad \text{}}\mathrel{\lor}R_{k-1}(\{x_{v_1},\dots,x_{v_{k-1}}\},M)=false\\
+                                false\quad \text{otherwise}
+                            \end{array}\right.
+        \end{align*}
+    \end{definition}
+    \begin{definition}{Approximate Partial Constraint Problems}{approxconstr}
+        An {\em approximate partial constraint problem}
+        $\tilde C_k=(V_k,\tilde P_k)$ is a constraint problem, for which the
+        predicate fulfills the following property.
+        \begin{align*}
+            P_k(x,M)=true\implies\tilde P_k(x,M)=true
+        \end{align*}
+
+        The approximation error is defines as the number of $x\in\mathbb N^V$
+        such that
+        \begin{align*}
+            \tilde P_k(x,M)=true\mathrel\land P_k(x,M)=false.
+        \end{align*}
+    \end{definition}
+\end{figure*}
+
+    In order to formulate the backtracking algorithm, the concept of
+    {\em partial constraint problems} from \autoref{def:partconstr} is used.
+    This allows the constraint problems to be decomposed into multiple
+    constraint problems on partial solutions, as demonstrated in the following
+    equation:
+
     \begin{align*}
-        P_k(x)=\left\{\begin{array}{l}\text{true} if P(x,y)=true for some y\\
-                                      \text{false} otherwise\end{array}\right.
+        x\in S(C,M)&{}\iff P(\{x_{v_1},\dots,x_{v_n}\},M)=true
+                      \iff R_n(\{x_{v_1},\dots,x_{v_n}\},M)=true\\
+                   &{}\iff P_n(\{x_{v_1},\dots,x_{v_n}\},M)=true\mathrel{\land}
+                           R_{n-1}(\{x_{v_1},\dots,x_{v_{n-1}}\},M)=true\\
+                   &{}\iff \forall_{1\leq k\leq n}\colon P_k(\{x_{v_1},\dots,x_{v_k}\},M\}=true
     \end{align*}
 
-    Consider the following purely algebraic reformulation.
+    This directly suggests an algorithm for solving SSA constraint problems by
+    incrementally solving $C_0$, then $C_1$, etc.
+    However, even when the original predicate $P$ was straighforward to verify,
+    it is not clear that the same would hold for the partial constraint
+    problems.
+    \autoref{def:approxconstr} therefore introduces a generalisation of the
+    concept with a weaker condition, the
+    {\em approximate partial constraint problem}.
+    The following implication clearly still holds, with only the reverse no
+    longer guaranteed:
     \begin{align*}
-        S_k=\{\emptyset\}\\
-        S_{k+1}(C,\mathcal F)=&\{s\in\mathbb N^V_k\mid P(s,\mathcal F)=\text{true}\}\\
-                             =&\{
+        x\in S(C,M)\implies\forall_{1\leq k\leq n}\colon\tilde P_k(\{x_{v_1},\dots,x_{v_k}\},M\}=true
     \end{align*}
 
 \subsection{Structure of SSA Constraint Problems}
