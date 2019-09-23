@@ -524,14 +524,14 @@
     LLVM IR is a complex language, and it is cannot be the aim to introduce it
     here in its entirety.
     Instead, some crucial features for the context of this thesis are
-    demonstrated on an example function.
+    demonstrated on an example.
 
     Consider \autoref{llvmirexample}.
     At the top {\bf a)} of the figure, a dot product is implemented as a
     function in C.
     The function receives as arguments two pointers {\tt a,b} to arrays of
     double precision floating point values, representing the input vectors, as
-    well as an unsigned integer $n$ that gives the size of the vectors.
+    well as an unsigned integer $n$ that gives the size of the arrays.
     Within a single loop in lines $4$--$5$, the dot product is accumulated in
     the variable {\tt d}, which is eventually returned as the function result in
     the penultimate line $6$.
@@ -539,11 +539,22 @@
     At the bottom {\bf b)} of the figure is the corresponding LLVM intermediate
     code, captured after optimisations from the mid end of the LLVM-based clang
     compiler.
+    Additional comments were inserted manually.
     LLVM IR maintains the concept of functions from C, with an essentially
     identical interface in line $1$ and a corresponding return statement in
     line $8$.
-    The logic within the function is in SSA form.
+    The logic within the function is in SSA form: C expressions are translated
+    into lists of instructions, and the control flow appears in the form of
+    jumps between four basic blocks.
 
+    Lines 2--4 are the result of an optimisation.
+    If the array is empty, the loop is skipped entirely and the program returns
+    zero via lines 6--8.
+    Otherwise, the loop in lines 13--24 is entered via the basic block in lines
+    10--11, which exists for normalisation purposes as the dedicated loop entry
+    block.
+    The comments in lines 16--17 explain the formulation of memory access in
+    arrays.
 
 
 \begin{figure}[p]
@@ -559,14 +570,14 @@ double dot(double* a, double *b, size_t n)
 \end{lstlisting}
 
 \paragraph*{b)} LLVM IR representation of the same {\tt dot} product function
-\begin{lstlisting}[language=LLVM]
+\begin{lstlisting}[language=LLVM,breaklines=true]
 define double @dot(double* %0, double* %1, i64 %2) {
 ; <label>:3:
-  %4 = icmp eq i64 %2, 0
-  br i1 %4, label %5, label %7
+  %4 = icmp eq i64 %2, 0  ; integer (i) comparison (cmp): check if register %2 is equal (eq) to constant zero
+  br i1 %4, label %5, label %7 ; jump to line 6 if the comparison held, otherwise jump to line 10 instead
 
 ; <label>:5:
-  %6 = phi double [ 0.0, %3 ], [ %16, %8 ]
+  %6 = phi double [ 0.0, %3 ], [ %16, %8 ] ; result is 0 if the phi node was reached from line 4, otherwise it was reached from line 24 and the result is taken from %16
   ret double %6
 
 ; <label>:7:
@@ -575,8 +586,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
 ; <label>:8:
   %9 = phi i64 [ %17, %8 ], [ 0, %7 ]
   %10 = phi double [ %16, %8 ], [ 0.0, %7 ]
-  %11 = getelementptr double, double* %0, i64 %9
-  %12 = load double, double* %11
+  %11 = getelementptr double, double* %0, i64 %9 ; getelementpointer calculates memory addresses, here it computes the address of the %9-th value in the array %0
+  %12 = load double, double* %11 ; loads a double precision floating point value from the calculated address
   %13 = getelementptr double, double* %1, i64 %9
   %14 = load double, double* %13
   %15 = fmul double %12, %14
