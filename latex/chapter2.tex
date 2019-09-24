@@ -769,55 +769,77 @@ define double @dot(double* %0, double* %1, i64 %2) {
     The solver therefore uses the structure of the boolean predicate and
     backtracking.
 
-\begin{figure*}[p]
-    \begin{definition}{Partial Constraint Problems}{partconstr}
-        Assume an enumeration $V=\{v_1,\dots,v_n\}$.
-
-        Then the {\em partial set of varibles} $V_k$ is
-        defined as
+\begin{figure}[p]
+    \begin{definition}{Partial Constraint Problem}{partconstr}
+        Given a constraint problem $C=(V,P)$ and some order
+        $V=\{v_1,\dots,v_n\}$ of the variables, the
+        {\em $k$-th partial set of varibles} $V_k$ is defined as $V_0:=\{\}$ and
         \begin{align*}
-            V_0:={}&\{\}\quad\\
-            V_k:={}&\{v_1,\dots,v_k\}\quad\text{ for }k=1,\dots,n
+            V_k:={}&\{v_1,\dots,v_k\}\quad\text{ for }k=1,\dots,n.
         \end{align*}
 
-        and the {\em restricted constraint predicate}
+        The {\em $k$-th restricted constraint predicate}
         $R_k:\mathbb N^{V_k}\times\mathcal M\rightarrow\{true, false\}$ is
-        defined as
+        defined by
         \begin{align*}
-            R_0(\{\},M):={}&true\\
             R_k(\{x_{v_1},\dots,x_{v_k}\},M):={}&\left\{\begin{array}{l}
                     true\quad \text{if }P(\{x_{v_1},\dots,x_{v_n}\},M)=true\text{ for some }x_{v_{k+1}},\dots,x_{v_n}\\
                     false\quad \text{otherwise}.
-                \end{array}\right.\\
-            R_n:={}&P
+                \end{array}\right.
         \end{align*}
 
-        Finally, the {\em partial constraint problem} $C_k=(V_k,P_k)$ is defined
-        by the predicate $P_k$ with
+        Finally, the {\em $k$-th partial constraint problem} $C_k=(V_k,P_k)$ is
+        defined by the predicate $P_k$ with $P_0:=R_0$ and
         \begin{align*}
-            P_0:={}&R_0\\
             P_k(\{x_{v_1},\dots,x_{v_k}\},M):={}&\left\{\begin{array}{l}
                                 true\quad \text{if }R_k(\{x_{v_1},\dots,x_{v_k}\},M)=true\\
                        \phantom{true\quad \text{}}\mathrel{\lor}R_{k-1}(\{x_{v_1},\dots,x_{v_{k-1}}\},M)=false\\
-                                false\quad \text{otherwise}
+                                false\quad \text{otherwise}.
                             \end{array}\right.
         \end{align*}
     \end{definition}
-    \begin{definition}{Approximate Partial Constraint Problems}{approxconstr}
-        An {\em approximate partial constraint problem}
-        $\tilde C_k=(V_k,\tilde P_k)$ is a constraint problem, for which the
-        predicate fulfills the following property.
+    \vspace{-0.5em}
+\end{figure}
+\begin{figure}[p]
+    \begin{definition}{Approximate Partial Constraint Problem}{approxconstr}
+        Given a constraint problem $C=(V,P)$ and some order
+        $V=\{v_1,\dots,v_n\}$ of the variables, 
+        $\tilde C_k=(V_k,\tilde P_k)$ are called
+        {\em approximate partial constraint problem}s if the predicates fulfill
+        the following property
         \begin{align*}
-            P_k(x,M)=true\implies\tilde P_k(x,M)=true
-        \end{align*}
-
-        The approximation error is defines as the number of $x\in\mathbb N^V$
-        such that
-        \begin{align*}
-            \tilde P_k(x,M)=true\mathrel\land P_k(x,M)=false.
+            [P_k(x,M)=true&{}\implies\tilde P_k(x,M)=true]\text{ for all }k=1,\dots,n\\
+            [P_k(x,M)=false&{}\implies\exists k\leq k'\leq n\colon P_{k'}(x,M)=false]\text{ for all }k<1,\dots,n
         \end{align*}
     \end{definition}
-\end{figure*}
+    \vspace{-0.25em}
+\end{figure}
+\begin{algorithm}[p]
+    \caption{Basic backtracking algorithm}
+    \begin{algorithmic}[1]
+        \Procedure{Detect}{$\mathcal F$, $k\gets 0$, $x\gets\emptyset$}\vspace{-0.33em}
+            \State $k\gets1$,\quad$x_{v_k}\gets1$\vspace{-0.33em}
+            \While{$true$}\vspace{-0.33em}
+                \State $x_{v_k}\gets min\{y\in\mathbb N\mid y\geq x_{v_k}\mathrel\land\tilde P_k(\{x_{v_1},\dots,x_{v_{k-1}},y\},M)=true\}$\vspace{-0.33em}
+                \If{$x_{v_k}<\infty$}\vspace{-0.33em}
+                    \If{$k=n$}\vspace{-0.33em}
+                        \State {\bf yield} $x$,\quad$x_{v_k}\gets x_{v_k}+1$\vspace{-0.33em}
+                    \Else\vspace{-0.33em}
+                        \State $k\gets k+1$,\quad$x_{v_k}\gets1$\vspace{-0.33em}
+                    \EndIf
+                \Else
+                    \State $k\gets k-1$\vspace{-0.33em}
+                    \If{$k\geq1$}\vspace{-0.33em}
+                        \State$x_{v_k}\gets x_{v_k}+1$\vspace{-0.33em}
+                    \Else\vspace{-0.33em}
+                        \State {\bf exit}
+                    \EndIf
+                \EndIf
+            \EndWhile
+        \EndProcedure
+    \end{algorithmic}
+    \label{backtrackalg}
+\end{algorithm}
 
     In order to formulate the backtracking algorithm, the concept of
     {\em partial constraint problems} from \autoref{def:partconstr} is used.
@@ -830,7 +852,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
                       \iff R_n(\{x_{v_1},\dots,x_{v_n}\},M)=true\\
                    &{}\iff P_n(\{x_{v_1},\dots,x_{v_n}\},M)=true\mathrel{\land}
                            R_{n-1}(\{x_{v_1},\dots,x_{v_{n-1}}\},M)=true\\
-                   &{}\iff \forall_{1\leq k\leq n}\colon P_k(\{x_{v_1},\dots,x_{v_k}\},M\}=true
+                   &{}\iff \forall{1\leq k\leq n}\colon P_k(\{x_{v_1},\dots,x_{v_k}\},M\}=true
     \end{align*}
 
     This directly suggests an algorithm for solving SSA constraint problems by
@@ -841,13 +863,30 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \autoref{def:approxconstr} therefore introduces a generalisation of the
     concept with a weaker condition, the
     {\em approximate partial constraint problem}.
-    The following implication clearly still holds, with only the reverse no
-    longer guaranteed:
+    The following implication clearly still holds for this property.
     \begin{align*}
-        x\in S(C,M)\implies\forall_{1\leq k\leq n}\colon\tilde P_k(\{x_{v_1},\dots,x_{v_k}\},M\}=true
+        x\in S(C,M)\iff\forall{1\leq k\leq n}\colon\tilde P_k(\{x_{v_1},\dots,x_{v_k}\},M\}=true
     \end{align*}
 
+    This gives the basic backtracking algorithm for implementing a solver in
+    \autoref{backtrackalg}.
+    The variable $k$ is initialised as $1$ in line 2 and increases with the size
+    of the partial solution in the loop spanning lines 3--15.
+    In each iteration, the algorithm tries to assign a valid value to the latest
+    element in the partial solution in line 4.
+    If this fails, the algorithm backtracks in lines 10--15.
+    Otherwise, the solution is either complete, or the algorithm increases $k$
+    in line $9$ and continues the search in the next iteration.
+    
+    In order to implement this algorithm, the set in line $4$ has to be
+    available.
+    This requires the study of the structure of SSA constraint programs.
+
+\newpage
 \subsection{Structure of SSA Constraint Problems}
+
+    The first class of SSA constraint problems relevant to this thesis are
+    conjunctions of element-of
 
     Predicates for useful SSA constraint problems are composed by logical
     connectors from a limited set of {\em atomic} predicates, that cannot
