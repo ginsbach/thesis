@@ -883,7 +883,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     This requires the study of the structure of SSA constraint programs.
 
 \newpage
-\subsection{Structure of SSA Constraint Problems}
+\subsection{Structure of Basic SSA Constraint Problems}
 
     This section defines the building blocks that are necessary to construct a
     large class of useful SSA constraint problems.
@@ -968,30 +968,27 @@ define double @dot(double* %0, double* %1, i64 %2) {
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
         \begin{align*}
-            V_1&{}=\{\text{phi}\}\\
-            \tilde P_1(v,M)&{}=
-                      \left(         (v_\text{phi},v_\text{update})
-                                     \in DFG_\mathcal{F}^*\right.\\
-                     &\mathrel{\land}(v_\text{phi}, phi)
-                                     \in I_\mathcal{F}\\
-               &\left.\mathrel{\land}(v_\text{update},v_\text{phi})
-                                     \in DFG_\mathcal{F}^*\right)\\[1em]
-            V_2&{}=\{\text{phi}, \text{update}\}\\
-            \tilde P_2(v,M)&{}=
-                      \left(         (v_\text{phi},v_\text{update})
-                                     \in DFG_\mathcal{F}^*\right.\\
-                     &\mathrel{\land}(v_\text{step},v_\text{update})
-                                     \in DFG_\mathcal{F}^*
-                      \mathrel{\land}(v_\text{update}, add)
-                                     \in I_\mathcal{F}\\
-               &\left.\mathrel{\land}(v_\text{update},v_\text{phi})
-                                     \in DFG_\mathcal{F}^*\right)\\[1em]
-            V_3&{}=\{\text{phi}, \text{update}, \text{step}\}\\
-            \tilde P_3(v,M)&{}=
-                      \left(         (v_\text{step},1)
-                                     \in C_\mathcal{F}
-                      \mathrel{\land}(v_\text{step},v_\text{update})
-                                     \in DFG_\mathcal{F}^*\right)
+            V_1={}&\{\text{phi}\}\\
+            \tilde P_1(v,M)=({}&v_\text{phi}
+                               \in\{x_1\mid x\in DFG_\mathcal{F}\}\\
+                \mathrel\land{}&v_\text{phi}
+                               \in\{x_1\mid x\in I_\mathcal{F}, x_2=phi\}\\
+                \mathrel\land{}&v_\text{phi}
+                               \in\{x_2\mid x\in DFG_\mathcal{F}\})\\[1em]
+            V_2={}&\{\text{phi}, \text{update}\}\\
+            \tilde P_2(v,M)=({}&v_\text{update}
+                               \in\{x_2\mid x\in DFG_\mathcal{F},x_1=v_{phi}\}\\
+                \mathrel\land{}&v_\text{update}
+                               \in\{x_2\mid x\in DFG_\mathcal{F}\}\\
+                \mathrel\land{}&v_\text{update}
+                               \in\{x_1\mid x\in I_\mathcal{F},x_2=add\}\\
+                \mathrel\land{}&v_\text{update}
+                               \in\{x_2\mid x\in DFG_\mathcal{F},x_2=v_{phi}\})\\[1em]
+            V_3={}&\{\text{phi}, \text{update}, \text{step}\}\\
+            \tilde P_3(v,M)=({}&v_\text{step}
+                               \in\{x_1\mid x\in C_\mathcal{F}, x_2=1\}\\
+                \mathrel\land{}&v_\text{step}
+                               \in\{x_1\mid x\in DFG_\mathcal{F}, x_2=v_{update}\})
         \end{align*}
     \end{blackwhitebox}
     \vspace{10cm}
