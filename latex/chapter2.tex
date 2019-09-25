@@ -885,8 +885,117 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \newpage
 \subsection{Structure of SSA Constraint Problems}
 
-    The first class of SSA constraint problems relevant to this thesis are
-    conjunctions of element-of
+    This section defines the building blocks that are necessary to construct a
+    large class of useful SSA constraint problems.
+    It also derives construction rules for corresponding approximate
+    partial constraint problems that allow the implementation of efficient
+    solvers.
+    The most basic construction rules are the element-of constraint
+    problem in \autoref{def:elementofconstr}, the conjunction and disjunction
+    constraint problems in \autoref{def:conjconstr} and the extension of
+    constraint problems in \autoref{def:constrext}.
+
+\begin{figure}[h]
+    \begin{definition}{Element-of Constraint Problem}{elementofconstr}
+        For a set of tuples $S\subset\mathbb N^V$, the element-of
+        constraint problem $C^S:=(V,P)$ is given by
+        \begin{align*}
+            P(x,M)=true\iff x \in S.
+        \end{align*}
+    \end{definition}
+
+    \begin{definition}{Conjunction and Disjunction Constraint}{conjconstr}
+        For two constraint problems $C=(V,P)$ and $C'=(V,P')$, the
+        conjunction constraint $C\mathrel\land C':=(V,P\mathrel\land P')$ is
+        given by
+        \begin{align*}
+            P\mathrel\land P'(x,M):=P(x, M)\mathrel\land P'(x,M).
+        \end{align*}
+
+        Accordingly, the conjunction constraint
+        $C\mathrel\lor C':=(V,\mathrel\lor )$ is given by
+        \begin{align*}
+            P\mathrel\lor P'(x,M):=P(x, M)\mathrel\lor P'(x,M).
+        \end{align*}
+    \end{definition}
+
+    \begin{definition}{Extension of Constraint Problems}{constrext}
+        For an SSA constraint problem $C=(V,P)$ and an injection
+        $i:V\hookrightarrow W$, the extension $C\circ p$ of the constraint problem
+        is defined as $C\circ i:=(W,P\circ (i\times id))$.
+    \end{definition}
+\end{figure}
+
+    Corresponding tho these three classes of SSA constraint problems, there
+    are rules to form approximate partial constraint problems.
+
+\begin{figure}[h]
+    \begin{tabular}{|c|c|}
+        \hline
+        original & approximate partial constraint problem\\
+        \hline\hline
+        $C^S$               & $C_k^S$\\
+        $C\mathrel\land C'$ & $\tilde C\mathrel\land \tilde C'$\\
+        $C\mathrel\lor C'$  & $\tilde C\mathrel\lor \tilde C'$\\
+        $C\circ p$          & true for $x\notin V$ otherwise P(x)\\
+        \hline
+    \end{tabular}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{blackwhitebox}{Original SSA constraint problem}
+        \setlength{\abovedisplayskip}{0pt}
+        \setlength{\belowdisplayskip}{0pt}
+        \vspace{-0.5em}
+        \begin{align*}
+            V&{}=\{\text{phi}, \text{update}, \text{step}\}\\
+            P(v,M)&{}=\left(         (v_\text{step},1)
+                                     \in C_\mathcal{F}
+                      \mathrel{\land}(v_\text{phi},v_\text{update})
+                                     \in DFG_\mathcal{F}^*\right.\\
+                     &\mathrel{\land}(v_\text{step},v_\text{update})
+                                     \in DFG_\mathcal{F}^*
+                      \mathrel{\land}(v_\text{phi}, phi)
+                                     \in I_\mathcal{F}\\
+               &\left.\mathrel{\land}(v_\text{update}, add)
+                                     \in I_\mathcal{F}
+                      \mathrel{\land}(v_\text{update},v_\text{phi})
+                                     \in DFG_\mathcal{F}^*\right)
+        \end{align*}
+    \end{blackwhitebox}
+    \begin{blackwhitebox}{Approximate Partial Constraint problems}
+        \setlength{\abovedisplayskip}{0pt}
+        \setlength{\belowdisplayskip}{0pt}
+        \vspace{-0.5em}
+        \begin{align*}
+            V_1&{}=\{\text{phi}\}\\
+            \tilde P_1(v,M)&{}=
+                      \left(         (v_\text{phi},v_\text{update})
+                                     \in DFG_\mathcal{F}^*\right.\\
+                     &\mathrel{\land}(v_\text{phi}, phi)
+                                     \in I_\mathcal{F}\\
+               &\left.\mathrel{\land}(v_\text{update},v_\text{phi})
+                                     \in DFG_\mathcal{F}^*\right)\\[1em]
+            V_2&{}=\{\text{phi}, \text{update}\}\\
+            \tilde P_2(v,M)&{}=
+                      \left(         (v_\text{phi},v_\text{update})
+                                     \in DFG_\mathcal{F}^*\right.\\
+                     &\mathrel{\land}(v_\text{step},v_\text{update})
+                                     \in DFG_\mathcal{F}^*
+                      \mathrel{\land}(v_\text{update}, add)
+                                     \in I_\mathcal{F}\\
+               &\left.\mathrel{\land}(v_\text{update},v_\text{phi})
+                                     \in DFG_\mathcal{F}^*\right)\\[1em]
+            V_3&{}=\{\text{phi}, \text{update}, \text{step}\}\\
+            \tilde P_3(v,M)&{}=
+                      \left(         (v_\text{step},1)
+                                     \in C_\mathcal{F}
+                      \mathrel{\land}(v_\text{step},v_\text{update})
+                                     \in DFG_\mathcal{F}^*\right)
+        \end{align*}
+    \end{blackwhitebox}
+    \vspace{10cm}
+\end{figure}
 
     Predicates for useful SSA constraint problems are composed by logical
     connectors from a limited set of {\em atomic} predicates, that cannot
