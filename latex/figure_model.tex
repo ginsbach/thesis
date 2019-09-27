@@ -18,26 +18,26 @@
     \item $T_\mathcal F\subset\mathbb N\times Types$ is the type model, defined
           by the property
           \begin{align*}
-              (k,ty)\in T_\mathcal F\iff 1\leq k\leq n_{pigc}
+              (k,ty)\in T_\mathcal F\iff 1\leq k\leq |val|
                   \mathrel{\land}(val_k\text{ has type }ty).
           \end{align*}
     \item $P_\mathcal F\subset\mathbb N$ and $G_\mathcal F\subset\mathbb N$
           are the parameter model and global model, defined by the properties
           \begin{align*}
-              k\in P_\mathcal F\iff& 1\leq k\leq n_p\text{ and}\\
-              k\in G_\mathcal F\iff& n_p+n_i<k\leq n_p+n_i+n_g.
+              k\in P_\mathcal F\iff& 1\leq k\leq |par|\text{ and}\\
+              k\in G_\mathcal F\iff& |par|+|ins|<k\leq |par|+|ins|+|glb|.
           \end{align*}
     \item $I_\mathcal F\subset\mathbb N\times Opcodes$ is the instruction model,
           defined by the property
           \begin{align*}
-              (k,op)\in I_\mathcal F\iff n_p<k\leq n_p+n_i
-                  \mathrel{\land}(ins_{k-n_p}\text{ has opcode }op).
+              (k,op)\in I_\mathcal F\iff |par|<k\leq |par|+|ins|
+                  \mathrel{\land}(ins_{k-|par|}\text{ has opcode }op).
           \end{align*}
     \item $C_\mathcal F\subset\mathbb N\times\mathbb R$ is the constant model,
           defined by the property
           \begin{align*}
-              (k,x)\in C_\mathcal F\iff{}&n_p+n_i+n_g<k\leq n_{pigc}\\
-                        \mathrel{\land}{}&(cst_{k-n_p-n_i-n_g}
+              (k,x)\in C_\mathcal F\iff{}&|par|+|ins|+|glb|<k\leq |par|+|ins|+|glb|+|cst|\\
+                        \mathrel{\land}{}&(cst_{k-|par|-|ins|-|glb|}
                         \text{ has numeric value equal to }x).
           \end{align*}
     \end{itemize}

@@ -248,13 +248,14 @@
     function.
 
     \begin{itemize}
-    \item $n_p$ is the number of function parameters $par_1,\dots par_{n_p}$.
-    \item $n_i$ is the number of instructions $ins_1,\dots ins_{n_i}$ in the
+    \item $|par|$ is the number of function parameters
+          $par_1,\dots par_{|par|}$.
+    \item $|ins|$ is the number of instructions $ins_1,\dots ins_{|ins|}$ in the
           function, ordered depth first, starting from the execution entry.
-    \item $n_g$ is the number of unique globals $glb_1,\dots glb_{n_g}$ that are
-          referenced as an operand of any of the instructions.
-    \item $n_c$ is the number of unique constants $cst_1,\dots cst_{n_g}$ that
+    \item $|glb|$ is the number of unique globals $glb_1,\dots glb_{|glb|}$ that
           are referenced as an operand of any of the instructions.
+    \item $|cst|$ is the number of unique constants $cst_1,\dots cst_{|cst|}$
+          that are referenced as an operand of any of the instructions.
     \end{itemize}
 \end{notation}
 \end{figure}
@@ -297,19 +298,20 @@
 \begin{definition}{Set of Used Values}{usedvalues}
     The {\em set of used values} of the SSA function $\mathcal F$ is the tuple
     \begin{align*}
-       val_1,\dots,val_{n_{pigc}} := par_1,\dots par_{n_p},
-                                     ins_1,\dots ins_{n_i},
-                                     glb_1,\dots glb_{n_g},
-                                     cst_1,\dots cst_{n_g}.
+       val_1,\dots,val_{|val|} := par_1,\dots par_{|par|},
+                                  ins_1,\dots ins_{|ins|},
+                                  glb_1,\dots glb_{|glb|},
+                                  cst_1,\dots cst_{|cst|}.
     \end{align*}
-    The value $n_{pigc}:=n_p+n_i+n_g+n_c$ is the {\em number of used values}.
+    The value $|val|:=|par|+|ins|+|glb|+|cst|$ is the
+    {\em number of used values}.
 \end{definition}
 
 \begin{definition}{Data Flow Graph}{dfg}
     The {\em data flow graph} of the SSA function $\mathcal F$ is the set
     $DGF_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (a,b,n)\in DFG_{\mathcal F}\iff 1\leq a\leq n_{pigc}
+        (a,b,n)\in DFG_{\mathcal F}\iff 1\leq a\leq |val|
             \mathrel{\land}(val_a\text{ is the $n$th argument of }ins_b).
     \end{align*}
 \end{definition}
@@ -327,26 +329,26 @@
     The {\em control flow graph} of the SSA function $\mathcal F$ is the set
     $CGF_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (a,b,n)&{}\in CFG_{\mathcal F}\iff n_p<a,b\leq n_p+n_i\mathrel{\land}\\
+        (a,b,n)&{}\in CFG_{\mathcal F}\iff |par|<a,b\leq |par|+|ins|\mathrel{\land}\\
                &\left(\begin{aligned}[c]
-                                    (\neg (ins_{a-n_p}\text{ terminates basic block})\mathrel{\land}{}&b=a+1\mathrel{\land}n=1)\\
-                      \mathrel{\lor}(\phantom{\neg}(ins_{a-n_p}\text{ terminates basic block})\mathrel{\land}{}&ins_{b-n_p}\text{ first instruction in}\text{ $n$th}\\[-0.5em]
-                                                   &\text{target basic block of }ins_{a-n_p})
+                                    (\neg (ins_{a-|par|}\text{ terminates basic block})\mathrel{\land}{}&b=a+1\mathrel{\land}n=1)\\
+                      \mathrel{\lor}(\phantom{\neg}(ins_{a-|par|}\text{ terminates basic block})\mathrel{\land}{}&ins_{b-|par|}\text{ first instruction in}\text{ $n$th}\\[-0.5em]
+                                                   &\text{target basic block of }ins_{a-|par|})
         \end{aligned}\right).
     \end{align*}
 \end{definition}
 \end{figure}
 
-    The control flow graph in \autoref{def:cfg} is peculiar in its omission of
-    basic block structures.
-    This is visible in the definition, where edges are of two distinct types:
+    The control flow graph in \autoref{def:cfg} is defined using individual
+    instructions, not basic blocks.
+    Edges are therefore of two distinct types:
     They are either an edge within a basic block, or they are an edge between
-    the terminator of one basic block and the initial instruction in an another.
-    This apparent loss of information is not substantial, the basic blocks can
-    be reconstructed.
-    However, it has implications for modeling $\Phi$ nodes.
-    They are modeled as instructions, with their value depending on the last
-    executed jump instruction.
+    the last instruction of one basic block and the initial instruction of an
+    another.
+    This has implications for modeling $\Phi$ nodes, which are naturally
+    attached to basic blocks.
+    They are instead modeled as instructions, with their value depending on the
+    last executed jump instruction.
 
 \subsection{Identifying Remaining Structure}
 
