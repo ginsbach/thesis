@@ -761,15 +761,16 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \subsection{Solving of SSA Constraint Problems}
 
-    The aim of a solver for SSA constraint problems is to compute the set of
-    solutions $S_M(V,C)$ for some concrete $(V,C)$ and $M$.
-    This is fundamentally a search problem: the space of $\mathbb N^V$ has to be
-    searched for values satisfying $C$.
-    The size of $\mathbb N^V$, wich is countable but infinite, requires
-    non-trivial computational approaches to this problem, even when the direct
-    evaluation of $C$ can be performed efficiently.
-    The solver therefore uses the structure of the boolean predicate and
-    backtracking.
+    The objective of solvers for SSA constraint problems is to efficiently
+    compute $S_M(V,C)$ for some concrete $(V,C)$ and $M$.
+    This is fundamentally a search problem:
+    The space of $\mathbb N^V$ has to be searched for values satisfying $C$.
+    $\mathbb N^V$ is countable but infinite, so this requires non-trivial
+    computational approaches, even when the direct evaluation of $C$ for any
+    potential solution can be performed efficiently.
+    The solver therefore uses the structure of the boolean predicate to find
+    partial solutions in smaller search spaces, which are incrementally
+    extended.
 
 \begin{figure}[p]
     \begin{definition}{Partial Constraint Problem}{partconstr}
@@ -781,7 +782,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
             V_k:={}&\{v_1,\dots,v_k\}\quad\text{ for }k=1,\dots,n.
         \end{align*}
 
-        The {\em $k$-th restricted constraint predicate}
+        The {\em $k$-th partial constraint predicate}
         $R_k[C]:\mathbb N^{V_k}\times\mathcal M\rightarrow\{1,0\}$ is defined by
         \begin{align*}
             R_k[C](\{x_{v_1},\dots,x_{v_k}\},M):={}&\left\{\begin{array}{l}
@@ -789,29 +790,17 @@ define double @dot(double* %0, double* %1, i64 %2) {
                     0\quad \text{otherwise}.
                 \end{array}\right.
         \end{align*}
-
-        Finally, the {\em $k$-th partial constraint problem} $(V_k,P_k[C])$ is
-        defined using the {\em $k$-th partial constraint predicate}
-        $P_k[C]:\mathbb N^{V_k}\times\mathcal M\rightarrow\{1,0\}$, given by
-        $P_1[C]:=R_1[C]$ and
-        \begin{align*}
-            P_k[C](\{x_{v_1},\dots,x_{v_k}\},M):={}&\left\{\begin{array}{l}
-                                1\quad \text{if }R_k(\{x_{v_1},\dots,x_{v_k}\},M)=1\\
-                       \phantom{1\quad \text{}}\mathrel{\lor}R_{k-1}(\{x_{v_1},\dots,x_{v_{k-1}}\},M)=0\\
-                                0\quad \text{otherwise}.
-                            \end{array}\right.
-        \end{align*}
     \end{definition}
     \vspace{-0.6em}
 \end{figure}
 \begin{figure}[p]
     \begin{definition}{Partition of Constraint Problem}{approxconstr}
         Given an SSA constraint problem $(V,C)$ and partial sets of variables
-        $V_k$, a collection of predicates $(C'_k)_{k=1\dots n}$ is a
+        $V_k$, a collection of predicates $(C_k)_{k=1\dots n}$ is a
         {\em partition} of $C$ if
         \begin{align*}
-            [P_k[C](x,M)=1&{}\implies C'_k(x,M)=1]\text{ for all }k=1,\dots,n\\
-            [P_k[C](x,M)=0&{}\implies\exists k\leq k'\leq n\colon C'_{k'}(x,M)=0]\text{ for all }k<1,\dots,n
+            [R_k[C](x,M)=1&{}\implies C_k(x,M)=1]\text{ for all }k=1,\dots,n\\
+            [R_k[C](x,M)=0&{}\implies\exists k'\colon C_{k'}(x,M)=0]\text{ for all }k<1,\dots,n
         \end{align*}
     \end{definition}
     \vspace{-0.25em}
@@ -822,7 +811,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
         \Procedure{Detect}{$M,(v_k)_{k=1\dots n},(C_k)_{k=1\dots n}$}\vspace{-0.33em}
             \State $k\gets1$,\quad$x_{v_k}\gets1$\vspace{-0.33em}
             \While{$true$}\vspace{-0.33em}
-                \State $x_{v_k}\gets min\{y\in\mathbb N\mid y\geq x_{v_k}\mathrel\land C_k(\{x_{v_1},\dots,x_{v_{k-1}},y\},M)=true\}$\vspace{-0.33em}
+                \State $x_{v_k}\gets min\{y\in\mathbb N\mid y\geq x_{v_k}\mathrel\land C_k(\{x_{v_1},\dots,x_{v_{k-1}},y\},M)=1\}$\vspace{-0.33em}
                 \If{$x_{v_k}<\infty$}\vspace{-0.33em}
                     \If{$k=n$}\vspace{-0.33em}
                         \State {\bf yield} $x$,\quad$x_{v_k}\gets x_{v_k}+1$\vspace{-0.33em}
@@ -843,97 +832,128 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \label{backtrackalg}
 \end{algorithm}
 
-    In order to formulate the backtracking algorithm, any
-    {\em constraint problem partition} as in \autoref{def:partconstr} can be
-    used.
-    This allows the constraint problems to be decomposed into multiple
-    constraint problems on partial solutions, as demonstrated in the following
-    equation:
-
+    \autoref{def:partconstr} introduces notation for SSA constraint problems,
+    which is used to define partitions of SSA constraint problems in
+    \autoref{def:approxconstr}.
+    This definition is the foundation that allows backtracking on SSA constraint
+    problems, due to the following equivalence:
     \begin{align*}
-        x\in S_M(V,C)\implies{}&R_k[C](x,M)=1\text{ for all }k
-                     \implies P_k[C](x,M)=1\text{ for all }k\\
-                     \implies{}&C'_k(x,M)=1\text{ for all }k\\[1em]
+        x\in S_M(V,C)\implies{}&R_k[C](\{x_{v_1},\dots,x_{v_k}\},M)=1\text{ for all }k\\
+                     \implies{}&C_k(\{x_{v_1},\dots,x_{v_k}\},M)=1\text{ for all }k\\[1em]
         x\notin S_M(V,C)\implies{}&R_n[C](x,M)=0\\
-                        \implies{}&R_1[C](x,M)=0\text{ or }\exists k_{min}>1\text{ minimal with }R_{k_{min}}[C](x,M)=0\\
-                        \implies{}&P_1[C](x,M)=0\text{ or }\exists k>1:P_k[C](x,M)=0\\
-                        \implies{}&C'_k(x,M)=0\text{ for some }k
+                        \implies{}&C_k(\{x_{v_1},\dots,x_{v_k}\},M)=0\text{ for some }k
     \end{align*}
 
-    Therefore, $x\in S_M(V,C)\iff C'_k(x,M)=1\text{ for all }k$.
-    This justifies the basic backtracking algorithm for implementing a solver in
-    \autoref{backtrackalg}.
-    The variable $k$ is initialised as $1$ in line 2 and increases with the size
-    of the partial solution in the loop spanning lines 3--15.
+    Therefore,
+    $(x\in S_M(V,C)\iff C_k(\{x_{v_1},\dots,x_{v_k}\},M)=1\text{ for all }k)$
+    holds for any partition $(V_k,C'_k)_{k=1\dots n}$ of an SSA constraint
+    problem $(V,C)$.
+    This means that the solutions to the original constraint problem can be
+    identified by incrementally solving
+    $(V_1,C'_1),(V_2,C'_2),\dots,(V_n,C'_n)$, extending the partial solutions
+    one dimension at a time.
+
+    This justifies the backtracking approach in \autoref{backtrackalg}.
+    The variable $x$ iterates over $\mathbb N^V$ in order to find
+    solutions, while the variable $k$ tracks the dimensions of this partial
+    solution that have been verified so far.
+    Both are initialised at the beginning of the algorithm in line 2 and are
+    then manipulated during the execution of the loop spanning lines 3--15.
     In each iteration, the algorithm tries to assign a valid value to the latest
     element in the partial solution in line 4.
     If this fails, the algorithm backtracks in lines 10--15.
-    Otherwise, the solution is either complete, or the algorithm increases $k$
-    in line $9$ and continues the search in the next iteration.
+    Otherwise, the solution is either complete (lines 6--7), or the algorithm
+    increases the size of the partial solution in line $9$ and continues the
+    search for the next element of $x$ in the following iteration.
     
     In order to implement this algorithm, the set in line $4$ has to be
-    available.
-    This requires the study of the structure of SSA constraint programs.
+    available in each iteration.
+    It is computed from the parition of the SSA constraint program that is given
+    to the algorithm as a parameter.
+    The next section derives a large class of useful SSA constraint problems,
+    for which this set can be efficiently computed.
 
 \newpage
 \subsection{Structure of Basic SSA Constraint Problems}
 
-    This section defines the building blocks that are necessary to construct a
-    large class of useful SSA constraint problems.
-    It also derives construction rules for corresponding approximate
-    partial constraint problems that allow the implementation of efficient
-    solvers.
-    The most basic construction rules are the element-of constraint
-    problem in \autoref{def:elementofconstr}, the conjunction and disjunction
-    constraint problems in \autoref{def:conjconstr} and the extension of
-    constraint problems in \autoref{def:constrext}.
+    The most basic construction rules for SSA constraint problems are the
+    element-of constraint problem introduced in \autoref{def:elementofconstr}
+    and the conjunction and disjunction constraint problems in
+    \autoref{def:conjconstr}.
+    These already allow the formulation of interesting SSA constraint problems
+    in their own, as previously seen.
+    Implicitly, this often requires the definition of constraint problems on a
+    larger set of variables, as introduced in \autoref{def:constrext}.
 
-\begin{figure}[h]
+    For SSA constraint problems that are constructed according to these rules,
+    partitions can be easily constructed as in \autoref{def:canonpart}.
+    For element-of constraints, the actual partial constraint problems are used.
+    This is viable, because the set $S$ is explicitly given with the asumption
+    that it is relatively small.
+    The canonical partition for conjunctions is given my conjunction of the
+    individual canonical partitions.
+    It is not obvious that this satisfies the properties in
+    \autoref{def:approxconstr}, but consider the following:
+    \begin{align*}
+        P_k[C]\mathrel\land\hat R_k[C'](x,M)=0
+
+
+        P_k[C\mathrel\land C']&(x,M)=1\\
+                        \iff{}&R_k[C\mathref\land C'](\{x_{v_1},\dots,x_{v_k}\},M)=1\\
+                \mathrel\lor{}&R_{k-1}[C\mathref\land C'](\{x_{v_1},\dots,x_{v_{k-1}}\},M)=0\\
+                    \implies{}&(R_k[C](\{x_{v_1},\dots,x_{v_k}\},M)=1\mathrel\land R_k[C'](\{x_{v_1},\dots,x_{v_k}\},M)=1)\\
+                \mathrel\lor{}&R_{k-1}[C\mathref\land C'](\{x_{v_1},\dots,x_{v_{k-1}}\},M)=0\\
+        P_k[C]\mathrel\land\hat P_k[C'](x,M)=1
+    \end{align*}
+    
+
+\begin{figure}[p]
     \begin{definition}{Element-of Constraint Problem}{elementofconstr}
         For a set of tuples $S\subset\mathbb N^V$, the element-of
-        constraint problem $C^S:=(V,P)$ is given by
+        constraint problem $(V,E_S)$ is given by
         \begin{align*}
-            P(x,M)=true\iff x \in S.
+            E_S(x,M)=\left\{\begin{array}{l}
+                                1\text{\quad if }x \in S\\
+                                0\text{\quad otherwise}.
+                            \end{array}\right.
         \end{align*}
     \end{definition}
 
     \begin{definition}{Conjunction and Disjunction Constraint}{conjconstr}
-        For two constraint problems $C=(V,P)$ and $C'=(V,P')$, the
-        conjunction constraint $C\mathrel\land C':=(V,P\mathrel\land P')$ is
-        given by
+        For two constraint problems $(V,C)$ and $(V,C')$, the
+        conjunction constraint $(V,C\mathrel\land C')$ and the
+        disjunction constraint $(V,C\mathrel\lor C')$ are given by
         \begin{align*}
-            P\mathrel\land P'(x,M):=P(x, M)\mathrel\land P'(x,M).
-        \end{align*}
-
-        Accordingly, the conjunction constraint
-        $C\mathrel\lor C':=(V,\mathrel\lor )$ is given by
-        \begin{align*}
-            P\mathrel\lor P'(x,M):=P(x, M)\mathrel\lor P'(x,M).
+            &C\mathrel\land C'(x,M):=C(x, M)\mathrel\land C'(x,M)\\
+            &C\mathrel\lor  C'(x,M):=C(x, M)\mathrel\lor C'(x,M).\\
         \end{align*}
     \end{definition}
 
     \begin{definition}{Extension of Constraint Problems}{constrext}
-        For an SSA constraint problem $C=(V,P)$ and an injection
-        $i:V\hookrightarrow W$, the extension $C\circ p$ of the constraint problem
-        is defined as $C\circ i:=(W,P\circ (i\times id))$.
+        For an SSA constraint problem $(V,C)$ and an injection
+        $i:V\hookrightarrow W$, the constraint problem $(W,C^W)$ is given by
+        \begin{align*}
+            C^W(x,M):=C(\{x_{i(v)}\}_{v\in V},M).
+        \end{align*}
+    \end{definition}
+
+    \begin{definition}{Canonical Partition}{canonpart}
+        For constraint problems that are constructed according to the previous
+        rules, the following {\em canonical partitions} are  defined
+        \begin{align*}
+            P_k[E_S]:={}&R_k[E_S]\\
+            P_k[C\mathrel\land C']:={}&P_k[C]\mathrel\land P_k[C']\\
+            P_k[C\mathrel\lor C'] :={}&(P_1[C]^V\lathrel\land\dots\mathrel\land P_k[C])\mathrel\lor(P_1[C']^V\lathrel\land\dots\mathrel\land P_k[C'])\\
+            P_k[C^W]:={}&\left\{\begin{array}{ll}
+                                         P_k[C]^W&\text{ if }v_k\in W\\
+                                         \equiv 1&\text{  otherwise}.
+                                     \end{array}\right.
+        \end{align*}
     \end{definition}
 \end{figure}
 
-    Corresponding tho these three classes of SSA constraint problems, there
-    are rules to form approximate partial constraint problems.
-
-\begin{figure}[h]
-    \begin{tabular}{|c|c|}
-        \hline
-        original & approximate partial constraint problem\\
-        \hline\hline
-        $C^S$               & $C_k^S$\\
-        $C\mathrel\land C'$ & $\tilde C\mathrel\land \tilde C'$\\
-        $C\mathrel\lor C'$  & $\tilde C\mathrel\lor \tilde C'$\\
-        $C\circ p$          & true for $x\notin V$ otherwise P(x)\\
-        \hline
-    \end{tabular}
-\end{figure}
+\newpage
+\subsection{Example}
 
 \begin{figure}[p]
     \begin{blackwhitebox}{Original SSA constraint problem}
