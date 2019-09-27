@@ -6,7 +6,7 @@
 {\LARGE$\underbrace{\text{Detect\vphantom{p}}}
                   _{\text{solver }S}
       \ \underbrace{\text{simple loop iterators}}
-                  _{\text{constraint problem }C_{iter}}
+                  _{\text{constraint problem }(V,C_{iter})}
                   \ \text{in}
       \ \underbrace{\text{dot product function}}
                   _{\text{SSA model }M_{dot}}
@@ -19,27 +19,27 @@
 \fontsize{60}{0}$S{}$\fontsize{20}{0}$\left(
 \begin{minipage}{0.8\textwidth}
     \normalsize
-    \begin{blackwhitebox}{\Large$C_{iter}$}
+    \begin{blackwhitebox}{\Large SSA constraint problem}
         \setlength{\abovedisplayskip}{0pt}
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
         \begin{align*}
             V&{}=\{\text{phi}, \text{update}, \text{step}\}\\
-            P(v,M)&{}=\left(         (v_\text{step},1)
-                                     \in C_\mathcal{F}
-                      \mathrel{\land}(v_\text{phi},v_\text{update})
-                                     \in DFG_\mathcal{F}^*\right.\\
-                     &\mathrel{\land}(v_\text{step},v_\text{update})
-                                     \in DFG_\mathcal{F}^*
-                      \mathrel{\land}(v_\text{phi}, phi)
-                                     \in I_\mathcal{F}\\
-               &\left.\mathrel{\land}(v_\text{update}, add)
-                                     \in I_\mathcal{F}
-                      \mathrel{\land}(v_\text{update},v_\text{phi})
-                                     \in DFG_\mathcal{F}^*\right)
+            C_{iter}(v,M)&{}=\left((v_\text{step},1)
+                                   \in C_\mathcal{F}
+                    \mathrel{\land}(v_\text{phi},v_\text{update})
+                                   \in DFG_\mathcal{F}^*\right.\\
+                   &\mathrel{\land}(v_\text{step},v_\text{update})
+                                   \in DFG_\mathcal{F}^*
+                    \mathrel{\land}(v_\text{phi}, phi)
+                                   \in I_\mathcal{F}\\
+             &\left.\mathrel{\land}(v_\text{update}, add)
+                                   \in I_\mathcal{F}
+                    \mathrel{\land}(v_\text{update},v_\text{phi})
+                                   \in DFG_\mathcal{F}^*\right)
         \end{align*}
     \end{blackwhitebox}
-    \begin{blackwhitebox}{\Large$M_{dot}$}
+    \begin{blackwhitebox}{\Large SSA model}
         \setlength{\abovedisplayskip}{0pt}
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
@@ -68,6 +68,6 @@
 \paragraph*{c)} Resulting set of constraint solutions\\[1em]
 
 \centering
-{\LARGE$S(C_{iter},M_{dot})=\{\{\text{phi}:9,
-                                \text{update}:17,
-                                \text{step}:22\}\}\subset\mathbb N^V$}
+{\LARGE$S_{M_{dot}}(V,C_{iter})=\{\{\text{phi}:9,
+                                    \text{update}:17,
+                                    \text{step}:22\}\}\subset\mathbb N^V$}

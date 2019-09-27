@@ -659,19 +659,19 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \end{notation}
 
 \begin{definition}{SSA constraint problem}{cprob}
-    An SSA constraint problem $C=(V,P)$ is made up of a finite set of variables
+    An SSA constraint problem $(V,C)$ is made up of a finite set of variables
     $V$ and a boolean predicate
-    $P\colon\mathbb N^V\times\mathcal M\mapsto\{\text{true}, \text{false}\}$.
+    $C\colon\mathbb N^V\times\mathcal M\mapsto\{1,0\}$.
     The set of {\em constraint solutions} for a given constraint problem and a
     specific SSA model $M\in\mathcal M$ is given as
     \begin{align*}
-        S(C,M) = \{s\in\mathbb N^V\mid P(s,M)=\text{true}\}.
+        S_M(V,C) = \{s\in\mathbb N^V\mid C(s,M)=1\}.
     \end{align*}
 \end{definition}
 \end{figure}
 
     Some intuition is required here.
-    The predicate function $P$ takes two arguments, firstly a tuple of integers
+    The predicate function $C$ takes two arguments, firstly a tuple of integers
     and secondly a model of a function.
     The finite set $V$ identifies the elements withing the tuples, it can be
     thought of as a set of labels.
@@ -682,7 +682,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     Finally, the set of constraint solutions lists all those tuples, for which
     the predicate holds.
 
-    The two parameters of $P$ -- integer tuple and model -- should be
+    The two parameters of $C$ -- integer tuple and model -- should be
     interpreted as two very different beasts here.
     The predicate evaluates whether a condition holds for the tuple of integers,
     the model on the other hand serves as the context for this evaluation.
@@ -692,7 +692,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     yet to ask for ``all functions with a specific loop'' is meaningless.
 
     The interesting aspect of this defition is now the structure of predicates
-    $P$.
+    $C$.
     This section will concern it self with how meaningful predicates can be
     composed from small building blocks and how the internal structure of the
     predicate can lead to efficient solver approaches.
@@ -762,56 +762,56 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \subsection{Solving of SSA Constraint Problems}
 
     The aim of a solver for SSA constraint problems is to compute the set of
-    solutions $S(C,M)$ for some concrete $C$ and $M$.
+    solutions $S_M(V,C)$ for some concrete $(V,C)$ and $M$.
     This is fundamentally a search problem: the space of $\mathbb N^V$ has to be
-    searched for values satisfying $P$.
+    searched for values satisfying $C$.
     The size of $\mathbb N^V$, wich is countable but infinite, requires
     non-trivial computational approaches to this problem, even when the direct
-    evaluation of $P$ can be performed efficiently.
+    evaluation of $C$ can be performed efficiently.
     The solver therefore uses the structure of the boolean predicate and
     backtracking.
 
 \begin{figure}[p]
     \begin{definition}{Partial Constraint Problem}{partconstr}
-        Given a constraint problem $C=(V,P)$ and some order
+        Given a constraint problem $(V,C)$ and some order
         $V=\{v_1,\dots,v_n\}$ of the variables, the
-        {\em $k$-th partial set of varibles} $V_k$ is defined as $V_0:=\{\}$ and
+        {\em $k$-th partial set of varibles} $V_k$ is defined as $V_0:=\{\}$
+        and
         \begin{align*}
             V_k:={}&\{v_1,\dots,v_k\}\quad\text{ for }k=1,\dots,n.
         \end{align*}
 
         The {\em $k$-th restricted constraint predicate}
-        $R_k:\mathbb N^{V_k}\times\mathcal M\rightarrow\{true, false\}$ is
-        defined by
+        $R_k[C]:\mathbb N^{V_k}\times\mathcal M\rightarrow\{1,0\}$ is defined by
         \begin{align*}
-            R_k(\{x_{v_1},\dots,x_{v_k}\},M):={}&\left\{\begin{array}{l}
-                    true\quad \text{if }P(\{x_{v_1},\dots,x_{v_n}\},M)=true\text{ for some }x_{v_{k+1}},\dots,x_{v_n}\\
-                    false\quad \text{otherwise}.
+            R_k[C](\{x_{v_1},\dots,x_{v_k}\},M):={}&\left\{\begin{array}{l}
+                    1\quad \text{if }C(\{x_{v_1},\dots,x_{v_n}\},M)=1\text{ for some }x_{v_{k+1}},\dots,x_{v_n}\\
+                    0\quad \text{otherwise}.
                 \end{array}\right.
         \end{align*}
 
-        Finally, the {\em $k$-th partial constraint problem} $C_k=(V_k,P_k)$ is
-        defined by the predicate $P_k$ with $P_0:=R_0$ and
+        Finally, the {\em $k$-th partial constraint problem} $(V_k,P_k[C])$ is
+        defined using the {\em $k$-th partial constraint predicate}
+        $P_k[C]:\mathbb N^{V_k}\times\mathcal M\rightarrow\{1,0\}$, given by
+        $P_1[C]:=R_1[C]$ and
         \begin{align*}
-            P_k(\{x_{v_1},\dots,x_{v_k}\},M):={}&\left\{\begin{array}{l}
-                                true\quad \text{if }R_k(\{x_{v_1},\dots,x_{v_k}\},M)=true\\
-                       \phantom{true\quad \text{}}\mathrel{\lor}R_{k-1}(\{x_{v_1},\dots,x_{v_{k-1}}\},M)=false\\
-                                false\quad \text{otherwise}.
+            P_k[C](\{x_{v_1},\dots,x_{v_k}\},M):={}&\left\{\begin{array}{l}
+                                1\quad \text{if }R_k(\{x_{v_1},\dots,x_{v_k}\},M)=1\\
+                       \phantom{1\quad \text{}}\mathrel{\lor}R_{k-1}(\{x_{v_1},\dots,x_{v_{k-1}}\},M)=0\\
+                                0\quad \text{otherwise}.
                             \end{array}\right.
         \end{align*}
     \end{definition}
-    \vspace{-0.5em}
+    \vspace{-0.6em}
 \end{figure}
 \begin{figure}[p]
-    \begin{definition}{Approximate Partial Constraint Problem}{approxconstr}
-        Given a constraint problem $C=(V,P)$ and some order
-        $V=\{v_1,\dots,v_n\}$ of the variables, 
-        $\tilde C_k=(V_k,\tilde P_k)$ are called
-        {\em approximate partial constraint problem}s if the predicates fulfill
-        the following property
+    \begin{definition}{Partition of Constraint Problem}{approxconstr}
+        Given an SSA constraint problem $(V,C)$ and partial sets of variables
+        $V_k$, a collection of predicates $(C'_k)_{k=1\dots n}$ is a
+        {\em partition} of $C$ if
         \begin{align*}
-            [P_k(x,M)=true&{}\implies\tilde P_k(x,M)=true]\text{ for all }k=1,\dots,n\\
-            [P_k(x,M)=false&{}\implies\exists k\leq k'\leq n\colon P_{k'}(x,M)=false]\text{ for all }k<1,\dots,n
+            [P_k[C](x,M)=1&{}\implies C'_k(x,M)=1]\text{ for all }k=1,\dots,n\\
+            [P_k[C](x,M)=0&{}\implies\exists k\leq k'\leq n\colon C'_{k'}(x,M)=0]\text{ for all }k<1,\dots,n
         \end{align*}
     \end{definition}
     \vspace{-0.25em}
@@ -819,10 +819,10 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \begin{algorithm}[p]
     \caption{Basic backtracking algorithm}
     \begin{algorithmic}[1]
-        \Procedure{Detect}{$\mathcal F$, $k\gets 0$, $x\gets\emptyset$}\vspace{-0.33em}
+        \Procedure{Detect}{$M,(v_k)_{k=1\dots n},(C_k)_{k=1\dots n}$}\vspace{-0.33em}
             \State $k\gets1$,\quad$x_{v_k}\gets1$\vspace{-0.33em}
             \While{$true$}\vspace{-0.33em}
-                \State $x_{v_k}\gets min\{y\in\mathbb N\mid y\geq x_{v_k}\mathrel\land\tilde P_k(\{x_{v_1},\dots,x_{v_{k-1}},y\},M)=true\}$\vspace{-0.33em}
+                \State $x_{v_k}\gets min\{y\in\mathbb N\mid y\geq x_{v_k}\mathrel\land C_k(\{x_{v_1},\dots,x_{v_{k-1}},y\},M)=true\}$\vspace{-0.33em}
                 \If{$x_{v_k}<\infty$}\vspace{-0.33em}
                     \If{$k=n$}\vspace{-0.33em}
                         \State {\bf yield} $x$,\quad$x_{v_k}\gets x_{v_k}+1$\vspace{-0.33em}
@@ -843,34 +843,25 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \label{backtrackalg}
 \end{algorithm}
 
-    In order to formulate the backtracking algorithm, the concept of
-    {\em partial constraint problems} from \autoref{def:partconstr} is used.
+    In order to formulate the backtracking algorithm, any
+    {\em constraint problem partition} as in \autoref{def:partconstr} can be
+    used.
     This allows the constraint problems to be decomposed into multiple
     constraint problems on partial solutions, as demonstrated in the following
     equation:
 
     \begin{align*}
-        x\in S(C,M)&{}\iff P(\{x_{v_1},\dots,x_{v_n}\},M)=true
-                      \iff R_n(\{x_{v_1},\dots,x_{v_n}\},M)=true\\
-                   &{}\iff P_n(\{x_{v_1},\dots,x_{v_n}\},M)=true\mathrel{\land}
-                           R_{n-1}(\{x_{v_1},\dots,x_{v_{n-1}}\},M)=true\\
-                   &{}\iff \forall{1\leq k\leq n}\colon P_k(\{x_{v_1},\dots,x_{v_k}\},M\}=true
+        x\in S_M(V,C)\implies{}&R_k[C](x,M)=1\text{ for all }k
+                     \implies P_k[C](x,M)=1\text{ for all }k\\
+                     \implies{}&C'_k(x,M)=1\text{ for all }k\\[1em]
+        x\notin S_M(V,C)\implies{}&R_n[C](x,M)=0\\
+                        \implies{}&R_1[C](x,M)=0\text{ or }\exists k_{min}>1\text{ minimal with }R_{k_{min}}[C](x,M)=0\\
+                        \implies{}&P_1[C](x,M)=0\text{ or }\exists k>1:P_k[C](x,M)=0\\
+                        \implies{}&C'_k(x,M)=0\text{ for some }k
     \end{align*}
 
-    This directly suggests an algorithm for solving SSA constraint problems by
-    incrementally solving $C_0$, then $C_1$, etc.
-    However, even when the original predicate $P$ was straighforward to verify,
-    it is not clear that the same would hold for the partial constraint
-    problems.
-    \autoref{def:approxconstr} therefore introduces a generalisation of the
-    concept with a weaker condition, the
-    {\em approximate partial constraint problem}.
-    The following implication clearly still holds for this property.
-    \begin{align*}
-        x\in S(C,M)\iff\forall{1\leq k\leq n}\colon\tilde P_k(\{x_{v_1},\dots,x_{v_k}\},M\}=true
-    \end{align*}
-
-    This gives the basic backtracking algorithm for implementing a solver in
+    Therefore, $x\in S_M(V,C)\iff C'_k(x,M)=1\text{ for all }k$.
+    This justifies the basic backtracking algorithm for implementing a solver in
     \autoref{backtrackalg}.
     The variable $k$ is initialised as $1$ in line 2 and increases with the size
     of the partial solution in the loop spanning lines 3--15.
