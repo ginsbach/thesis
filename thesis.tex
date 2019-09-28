@@ -33,6 +33,10 @@
 \hyphenpenalty=100000
 
 \makeatletter
+\newcommand{\tcb@cnt@theoremautorefname}{Theorem}
+\makeatother
+
+\makeatletter
 \newcommand{\tcb@cnt@definitionautorefname}{Definition}
 \makeatother
 
@@ -43,6 +47,13 @@
 \makeatletter
 \newcommand{\algorithmautorefname}{Algorithm}
 \makeatother
+
+\newtcbtheorem[auto counter,number within=chapter]{theorem}{Theorem}{
+label type=theorem,
+colback=white,
+colframe=black,
+fonttitle=\bfseries,
+title={Theorem \thetcbcounter}}{theo}
 
 \newtcbtheorem[auto counter,number within=chapter]{definition}{Definition}{
 label type=definition,
