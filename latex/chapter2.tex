@@ -761,16 +761,17 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \subsection{Solving of SSA Constraint Problems}
 
-    The objective of solvers for SSA constraint problems is to efficiently
-    compute $S_M(V,C)$ for some concrete $(V,C)$ and $M$.
-    This is fundamentally a search problem:
-    The space of $\mathbb N^V$ has to be searched for values satisfying $C$.
-    $\mathbb N^V$ is countable but infinite, so this requires non-trivial
+    A solver for SSA constraint problems needs to efficiently compute $S_M(V,C)$
+    for some concrete $(V,C)$ and $M$.
+    This is a search problem:
+    All values in $\mathbb N^V$ that satisfy $C$ with the context $M$ need to
+    be identified.
+    $\mathbb N^V$ is infinitely large, so this requires non-trivial
     computational approaches, even when the direct evaluation of $C$ for any
     potential solution can be performed efficiently.
-    The solver therefore uses the structure of the boolean predicate to find
-    partial solutions in smaller search spaces, which are incrementally
-    extended.
+    However, backtracking can be used to find partial solutions, which are
+    incrementally extended.
+    This effectively prunes the search space.
 
 \begin{figure}[h]
     \begin{definition}{Backtracking Solution of Constraint Problems}{backtracking}
@@ -787,13 +788,14 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \end{definition}
 \end{figure}
 
-    With \autoref{def:backtracking}, the backtracking search in
+    Using \autoref{def:backtracking}, the backtracking search shown in
     \autoref{backtrackalg} can be implemented.
-    The variable $x$ iterates over $\mathbb N^n$ in order to find
-    solutions, while the variable $k$ tracks the dimensions of this partial
-    solution that have been verified so far.
-    Both are initialised at the beginning of the algorithm in line 2 and are
-    then manipulated during the execution of the loop spanning lines 3--17.
+    The variable $x$ iterates over $\mathbb N^n$
+    (which is identified with $\mathbb N^V$ in line 7), while the variable $k$
+    tracks the number of currently considered dimensions of this partial
+    solution.
+    After initialisation in line 2, a single loop spans the remainder of the
+    algorithm.
     In each iteration, the algorithm tries to assign a valid value to the latest
     element in the partial solution in line 4.
     If this fails, the algorithm backtracks in lines 12--17.
@@ -830,11 +832,13 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \label{backtrackalg}
 \end{algorithm}
 
+    
     In order to implement this algorithm, the set in line $4$ has to be
     available in each iteration.
+    Even when assuming that the direct evaluation of $C$ is possible in an
+    efficient manner, this is not obviously true.
     Fortunately, there is a large class of useful SSA constraint problems, for
     which this set can be efficiently computed.
-    This will be demonstrated in the next section.
 
 \subsection{Structure of Basic SSA Constraint Problems}
 
@@ -843,14 +847,15 @@ define double @dot(double* %0, double* %1, i64 %2) {
     and the conjunction and disjunction constraint problems in
     \autoref{def:conjconstr}.
     These already allow the formulation of interesting SSA constraint problems
-    in their own, as previously seen.
-    Implicitly, this often requires the definition of constraint problems on a
+    in their own, as previously seen in \autoref{fig:constraintsolution}.
+    Implicitly, this requires the definition of constraint problems on a
     larger set of variables, as introduced in \autoref{def:constrext}.
 
 \begin{figure}[h]
     \begin{definition}{Element-of Constraint Problem}{elementofconstr}
         For a set of tuples $S(M)\subset\mathbb N^V$ that is potentially
-        dependent on the SSA model $M\in\mathcal M$ (i.e.\ $DFG_\mathcal F^*$),
+        dependent on the SSA model $M\in\mathcal M$
+        (i.e.\ $S(M):=DFG_\mathcal F^*$),
         the element-of constraint problem $(V,E_S)$ is given by
         \begin{align*}
             E_S(M,x)=\left\{\begin{array}{l}
@@ -865,8 +870,16 @@ define double @dot(double* %0, double* %1, i64 %2) {
         conjunction constraint $(V,C\mathrel\land C')$ and the
         disjunction constraint $(V,C\mathrel\lor C')$ are given by
         \begin{align*}
-            &C\mathrel\land C'(M,x):=C(M,x)\mathrel\land C'(M,x)\\
-            &C\mathrel\lor  C'(M,x):=C(M,x)\mathrel\lor C'(M,x).
+            &C\mathrel\land C'(M,x):=\left\{
+                \begin{array}{l}
+                    1\text{\quad if }C(M,x)=1\mathrel\land C'(M,x)=1\\
+                    0\text{\quad otherwise}
+                \end{array}\right.\\
+            &C\mathrel\lor C'(M,x):=\left\{
+                \begin{array}{l}
+                    1\text{\quad if }C(M,x)=1\mathrel\lor C'(M,x)=1\\
+                    0\text{\quad otherwise}.
+                \end{array}\right.
         \end{align*}
     \end{definition}
 
@@ -880,15 +893,12 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \end{figure}
 
     For SSA constraint problems that are constructed according to these rules,
-    backtracking solutions can be directly constructed.
-    For all the rules aside from the disjunction, this is straightforward as
-    shown in \autoref{theo:theo1}, \autoref{theo:theo2} and
-    \autoref{theo:theo3}.
-    For the disjunction, the situation is only slightly more complicated, as
-    demonstrated in \autoref{theo:theo4}.
-
-    With these backtracking solutions available, an example can easily be
-    computed.
+    backtracking solutions can be directly constructed as shown in
+    \autoref{theo:theo1}, \autoref{theo:theo2}, \autoref{theo:theo3} and
+    \autoref{theo:theo4}.
+    Note that this appears mostly tautological at first, but there are some
+    pitfalls.
+    For the disjunction rule, the backtracking solution is not the obvious one.
 
 \begin{figure}[p]
     \begin{theorem}{Backtracking Solution for Element-of Constraint Problems}{theo1}
@@ -897,47 +907,62 @@ define double @dot(double* %0, double* %1, i64 %2) {
         \begin{align*}
             P_k[E_S](M,x,y):=\left\{
                 \begin{array}{ll}
-                    1&\text{if }y\in\{s_{v_k}\mid s\in S(M),s_{v_1}=x_1,\dots,s_{v_{k-1}}=x_{k-1}\}\\
-                    0&\text{otherwise}.
+                    1&\text{if }y\in R_k(M,x)\\
+                    0&\text{otherwise},
                 \end{array}\right.
         \end{align*}
-        give a backtracking solution of $(V,E_S)$.
-        \tcblower
-        \paragraph*{Proof:} The equivalence from \autoref{def:backtracking}
-                            holds in both directions:
+        give a backtracking solution of $(V,E_S)$, where $R_k(M,x)$ is given by
         \begin{align*}
-            C(M,x)=1\iff{}& x\in S(M)\implies P_k[E_S](M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }k\\
-                \implies{}& P_n[E_S](M,(x_{v_1},\dots,x_{v_{n-1}}),x_{v_n})=1\\
-                \implies{}& x\in S(M)\iff C(M,x)=1.
+            R_k(M,x)=\{s_{v_k}\mid s\in S(M),s_{v_1}=x_1,\dots,s_{v_{k-1}}=x_{k-1}\}.
         \end{align*}
+        \tcblower
+        \paragraph*{Proof:} The definition of $E_S$ gives 
+        \begin{align*}
+            E_S(M,x)=1\iff x\in S(M).
+        \end{align*}
+        Directly from the definition of $R_k$ then follows
+        \begin{align*}
+            x\in S(M)\iff x_{v_k}\in R_k(M,\{x_{v_1},\dots,x_{v_{k-1}}\})\text{ for all }k.
+        \end{align*}
+        Therefore, the equivalence from \autoref{def:backtracking} holds.
     \end{theorem}
     \begin{theorem}{Backtracking Solution for Conjunction Constraint problems}{theo2}
         For SSA constraint problems $(V,C)$ and $(V,C')$ with backtracking
         solutions $(P_k)_{k=1\dots n}$ and $(P'_k)_{k=1\dots n}$, the
         predicates $(P_k[C\mathrel\land C'])_{k=1\dots n}$ defined by
         \begin{align*}
-            P_k[C\mathrel\land C'](M,x,y):=P_k(M,x,y)\mathrel\land P'_k(M,x,y)
+            P_k[C\mathrel\land C'](M,x,y):=\left\{
+                \begin{array}{ll}
+                    1&\text{if }P_k(M,x,y)=1\mathrel\land P'_k(M,x,y)=1\\
+                    0&\text{otherwise},
+                \end{array}\right.
         \end{align*}
         give a backtracking solution of $(V,C\mathrel\land C')$.
         \tcblower
-        \paragraph*{Proof:} The equivalence from \autoref{def:backtracking}
-                            holds in both directions:
+        \paragraph*{Proof:}
+        The definition of $(V,C\mathrel\land C')$ together with the
+        assumption that \autoref{def:backtracking} holds for the two given
+        backtracking solutions gives
         \begin{align*}
-            C(M,x)=1\mathrel\land C'(M,x)=1\iff{}& P_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})\text{ for all }k\\
-                                  \mathrel\land{}& P'_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})\text{ for all }k\\
-                                           \iff P_k[C\mathrel\land C']&(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})\text{ for all }k
+            C\mathrel\land C'(M,x)=1\iff{}& P_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }k\\
+                                  \mathrel\land{}& P'_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }k.
         \end{align*}
+        With the definition of $P_k[C\mathrel\land C']$, this immediately gives
+        \begin{align*}
+            C\mathrel\land C'(M,x)=1\iff P_k[C\mathrel\land C']&(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})\text{ for all }k.
+        \end{align*}
+        Therefore, the equivalence from \autoref{def:backtracking} holds.
     \end{theorem}
 \end{figure}
 
 \begin{figure}[p]
     \begin{theorem}{Backtracking Solution for Extensions of Constraint Problems}{theo3}
         For an SSA constraint problem $(V,C)$ with a backtracking
-        solution $(P_k)_{k=1\dots n}$, a set $W$ with an injection
+        solution $(P_k)_{k=1\dots n}$ and a set $W$ with an injection
         $i:V\hookrightarrow W$ and an order $W=\{w_1,\dots,w_n\}$ that is
-        compatible with the order on $V$ such that $v_k=w_{t(k)}$ with
-        $t:\mathbb N\rightarrow\mathbb N$ strictly increasing, the predicates
-        $(P_k[C^W])_{k=1\dots |W|}$ defined by
+        compatible with the order on $V$ in the sense that $v_k=w_{t(k)}$ with
+        some $t:\mathbb N\rightarrow\mathbb N$ strictly increasing, the
+        predicates $(P_k[C^W])_{k=1\dots |W|}$ defined by
         \begin{align*}
             P_k[C^W](M,x,y):=\left\{
                 \begin{array}{ll}
@@ -954,28 +979,36 @@ define double @dot(double* %0, double* %1, i64 %2) {
         solutions $(P_k)_{k=1\dots n}$ and $(P'_k)_{k=1\dots n}$, the
         predicates $(P_k[C\mathrel\lor C'])_{k=1\dots n}$ defined by
         \begin{align*}
-            P_k[C\mathrel\lor C'](M,x,y):={}&\left(P_l(M,(x_1,\dots,x_{l-1}),x_l)\text{ for }l=1\dots k-1\mathrel\land P_k(M,x,y)\right)\\
-                              \mathrel\lor{}&\left(P'_l(M,(x_1,\dots,x_{l-1}),x_l)\text{ for }l=1\dots k-1\mathrel\land P'_k(M,x,y)\right)\\
+            P_k[C\mathrel\lor C'](M,x,y):={}&\left(R_{k,1}(M,x,y)\mathrel\land P_k(M,x,y)\right)\\
+                              \mathrel\lor{}&\left(R_{k,2}(M,x,y)\mathrel\land P'_k(M,x,y)\right)
         \end{align*}
-        give a backtracking solution of $(V,C\mathrel\lor C')$.
+        give a backtracking solution of $(V,C\mathrel\lor C')$, were $R_k(M,x)\in\{0,1\}^2$
+        is given by 
+        \begin{align*}
+            R_0=\{1,1\}&&
+            R_k(M,x)=\left(
+                \begin{array}{l}
+                    R_{k-1,1}(M,x)\mathrel\land P_k(M,(x_1,\dots,x_{k-2}),x_{k-1})\\
+                    R_{k-1,2}(M,x)\mathrel\land P'_k(M,(x_1,\dots,x_{k-2}),x_{k-1})
+                \end{array}\right)
+        \end{align*}
         \tcblower
         \paragraph*{Proof:} The equivalence from \autoref{def:backtracking}
                             holds by assumption for the backtracking solutions
                             of $(V,C)$ and $(V,C')$, therefore
         \begin{align*}
-            C(M,x)=1\mathrel\lor C'(M,x)=1\iff{}& P_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }k\\
-                                  \mathrel\lor{}& P'_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }k.
+            C\mathrel\lor C'(M,x)=1\iff{}& P_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }k\\
+                                  \mathrel\lor{}& P'_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }k
         \end{align*}
-        With the definition of $P_k[C\mathrel\lor C']$, this gives
+        By definition of $P_k[C\mathrel\lor C']$ this gives
         \begin{align*}
-            C\mathrel\lor C'(M,x)=1\implies P_k[C\mathrel\lor C']&(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }k=1,\dots,n.
+            C\mathrel\lor C'(M,x)=1\iff{}P_n[C\mathrel\lor C'](M,(x_{v_1},\dots,x_{v_{n-1}}),x_{v_n})=1.
         \end{align*}
-        The other direction is clear due to
+        This is sufficient for the equivalence from \autoref{def:backtracking}
+        in both directions, due to
         \begin{align*}
-            P_n[C\mathrel\lor C']&(M,(x_{v_1},\dots,x_{v_{n-1}}),x_{v_n})=1\implies C\mathrel\lor C'(M,x)=1.
+            P_n[C\mathrel\lor C'](M,x,y)\implies P_k[C\mathrel\lor C'](M,(x_1,\dots,x_{k-1}),x_k)\text{ for all }k.
         \end{align*}
-        The equivalence from \autoref{def:backtracking} therefore holds in both
-        directions.
     \end{theorem}
 \end{figure}
 
