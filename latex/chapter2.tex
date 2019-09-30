@@ -907,13 +907,15 @@ define double @dot(double* %0, double* %1, i64 %2) {
         \begin{align*}
             P_k[E_S](M,x,y):=\left\{
                 \begin{array}{ll}
-                    1&\text{if }y\in R_k(M,x)\\
+                    1&\text{if }y\in \{s_1\mid s\in R_k(M,x)\}\\
                     0&\text{otherwise},
                 \end{array}\right.
         \end{align*}
-        give a backtracking solution of $(V,E_S)$, where $R_k(M,x)$ is given by
+        give a backtracking solution of $(V,E_S)$, where
+        $R_k(M,x)\subset\mathbb N^{n-k+1}$ is given by
         \begin{align*}
-            R_k(M,x)=\{s_{v_k}\mid s\in S(M),s_{v_1}=x_1,\dots,s_{v_{k-1}}=x_{k-1}\}.
+            R_1(M)={}&\{s\mid s\in S(M)\}\\
+            R_{k+1}(M,x))={}&\{(s_2,\dots,s_{n-k+1})\mid s\in R_k(M,(x_1,\dots,x_{k-1})), s_1=x_k\}.
         \end{align*}
         \tcblower
         \paragraph*{Proof:} The definition of $E_S$ gives 
@@ -922,7 +924,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
         \end{align*}
         Directly from the definition of $R_k$ then follows
         \begin{align*}
-            x\in S(M)\iff x_{v_k}\in R_k(M,\{x_{v_1},\dots,x_{v_{k-1}}\})\text{ for all }k.
+            x\in S(M)\iff{}&(x_{v_k},\dots,x_{v_n})\in R_k(M,(x_{v_1},\dots,x_{v_{k-1}}))\text{ for all }k\\
+                     \iff{}&P_k[E_S](M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})\text{ for all }k.
         \end{align*}
         Therefore, the equivalence from \autoref{def:backtracking} holds.
     \end{theorem}
@@ -985,7 +988,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
         give a backtracking solution of $(V,C\mathrel\lor C')$, were $R_k(M,x)\in\{0,1\}^2$
         is given by 
         \begin{align*}
-            R_0=\{1,1\}&&
+            R_0(M)=\{1,1\}&&
             R_k(M,x)=\left(
                 \begin{array}{l}
                     R_{k-1,1}(M,x)\mathrel\land P_k(M,(x_1,\dots,x_{k-2}),x_{k-1})\\
@@ -1076,6 +1079,12 @@ define double @dot(double* %0, double* %1, i64 %2) {
     With the theorems from the previous section, a backtracking solution can
     be found for the previous example, as shown on the right.
 
+
+\subsection{Implementation, Data Structures and Complexity}
+
+    In order to implement this
+
+\subsection{Satifiability Modulo Theory}
 %
 %\section{Implementation of Constraint Predicates}
 %
