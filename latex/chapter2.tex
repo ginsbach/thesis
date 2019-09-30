@@ -908,6 +908,122 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \input{latex/figure_theorems2}
 \end{figure}
 
+\subsection{Implementation, Data Structures and Complexity}
+
+\begin{figure}[p]
+    \begin{lstlisting}[language=C++]
+class BacktrackingPart {
+public:
+  virtual SkipResult skip_invalid(unsigned& c) const;
+{
+  virtual void begin();
+  virtual void fixate(unsigned c);
+  virtual void resume();
+};
+
+void yield(const vector<int>& solution);
+
+void solver(vector<BacktrackingPart*> P) {
+    int         k = 0;
+    vector<int> x(P.size(), 0);
+    while(true) {
+        SkipResult result = P[k]->skip_invalid(x[k]);
+
+        if(result == SkipResult::AMBIGUOUS)
+            contintue;
+        if(result != SkipResult::FAIL) {
+            if(k + 1 == P.size())
+            {
+                yield(x);
+                P[k]->resume();
+                x[k]++;
+            }
+            else {
+                P[k]->fixate(x[k]);
+                k++;
+                P[k]->begin();
+                x[k] = 0;
+            }
+        }
+        else {
+            if(k > 0) {
+                k = k - 1;
+                P[k]->resume();
+                x[k] = x[k] + 1;
+            }
+            else return {};
+        }
+    }
+}
+    \end{lstlisting}
+    \caption{Backtracking Solver as implemented in C++.}
+    \label{cppsolver}
+\end{figure}
+
+    With the derivation of backtracking solutions in \autoref{theo:theo1},
+    \autoref{theo:theo2}, \autoref{theo:theo3} and \autoref{theo:theo4},
+    good data structures for implementing SSA constraint problems
+    can be identified.
+    \autoref{cppsolver} shows how the backtracking solver that was introduced
+    in \autoref{def:backtracking} is implemented as a concrete C++ function.
+    Most of the \texttt{solver} function in lines 12--43 directly maps to
+    the algorithm and needs no further explanation.
+    However, there are some crucial details that are made explicit here, which
+    need elaboration.
+
+    \texttt{BacktrackingPart} corresponds to the backtracking solution in
+    \autoref{def:backtracking}.
+    The class provides four member functions.
+    Most importantly, \texttt{skip\_invalid} implements the evaluation of
+    $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
+    in line 4 of \autoref{backtrackalg}.
+    It increases the argument reference to the smallest value that cannot be
+    efficiently ruled out as being part of a valid solution.
+    For optimisation reasons that will be discussed in more detail later,
+    it may return \texttt{AMBIGUOUS}.
+    This indicates that the original value was invalid and was increased, but
+    the new value is not necessarily valid and nees to be checked again.
+
+    The three other member function of \texttt{BacktrackingPart} manipulate
+    state that is shared by the individual \texttt{BacktrackingPart} objects.
+    This allows computations that would otherwise be performed repeatedly by
+    the \texttt{skip\_invalid} function to instead of performed ahead of time.
+    More specifically, this corresponds directly to $R_k(M,x)$ in both
+    \autoref{theo:theo1} and \autoref{theo:theo4}.
+    Crucially, this distribution of the computation allows all previously
+    discussed types of SSA constraint problems to be implemented efficiently as
+    follows.
+    \begin{itemize}
+    \item For element-of constraint problems, $R_k(M,x)$ is implemented as a
+          sorted array of type
+          \begin{lstlisting}[language=C++]
+template<unsigned k> class R_;
+template<>      using R_<1>   = vector<int>;
+template<int k> using R_<k+1> = vector<pair<int,R_<k>>
+          \end{lstlisting}
+          The \texttt{BacktrackingPart} object contains an iterator into this
+          array that is initialised via \texttt{begin} and then incremented in
+          \texttt{skip\_invalid} until either hitting the end or
+          finding a value $\geq$ to the function argument \texttt{c}.
+          Finally, \texttt{resume} does nothing, and \texttt{fixate} simply
+          dereferences the iterator that is already in position from the
+          previous \texttt{skip\_invalid} call.
+    \item For conjunction constraint problems, \texttt{begin}, \texttt{fixate}
+          and \texttt{resume} call the corresponding members of the underlying
+          \texttt{BacktrackingPart} objects, and \texttt{skip\_invalid}
+          alternates between them until a fixpoint is reached or
+          either of them fail.
+    \item For disjunction constraints, $R_k(M,x)$ is simply a pair of booleans.
+          Calls to \texttt{skip\_invalid} assed passed on to those underlying
+          \texttt{BacktrackingPart} objects for which $R_k$ is $true$.
+          The smallest resulting value is chosen if any succeeded.
+          The value of $R_k$ is updated in \texttt{fixate} by checking
+          \texttt{skip\_invalid} of the underlying objects.
+          The \texttt{begin}, \texttt{fixate} and \texttt{resume} member
+          calls are also passed on to underlying objects
+          that are enabled in $R_k$.
+    \end{itemize}
+
 \subsection{Backtracking Example}
 
 \begin{figure}[p]
@@ -971,124 +1087,6 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     With the theorems from the previous section, a backtracking solution can
     be found for the previous example, as shown on the right.
-
-\newpage
-\subsection{Implementation, Data Structures and Complexity}
-
-\begin{figure}[p]
-    \begin{lstlisting}[language=C++]
-class BacktrackingPart {
-public:
-  virtual SkipResult skip_invalid(unsigned& c) const;
-{
-  virtual void begin();
-  virtual void fixate(unsigned c);
-  virtual void resume();
-};
-
-void yield(const vector<int>& solution);
-
-void solver(vector<BacktrackingPart*> P) {
-    int         k = 0;
-    vector<int> x(P.size(), 0);
-    while(true) {
-        SkipResult result = P[k]->skip_invalid(x[k]);
-
-        if(result == SkipResult::AMBIGUOUS)
-            contintue;
-        if(result != SkipResult::FAIL) {
-            if(k + 1 == P.size())
-            {
-                yield(x);
-                P[k]->resume();
-                x[k]++;
-            }
-            else {
-                P[k]->fixate(x[k]);
-                k++;
-                P[k]->begin();
-                x[k] = 0;
-            }
-        }
-        else {
-            if(k > 0) {
-                k = k - 1;
-                P[k]->resume();
-                x[k] = x[k] + 1;
-            }
-            else return {};
-        }
-    }
-}
-    \end{lstlisting}
-    \caption{Backtracking Solver as implemented in C++.}
-    \label{cppsolver}
-\end{figure}
-
-    With the derivation of backtracking solutions in \autoref{theo:theo1},
-    \autoref{theo:theo2}, \autoref{theo:theo3} and \autoref{theo:theo4},
-    good data structures for implementing SSA constraint problems
-    can be identified.
-
-    \autoref{cppsolver} shows how the backtracking solver that was introduced
-    in \autoref{def:backtracking} is implemented as a concrete C++ function.
-    Most of the \texttt{solver} function in lines 12--43 directly maps to
-    the algorithm and needs no further explanation.
-    However, there are some crucial details that are made explicit here, which
-    need elaboration.
-
-    \texttt{BacktrackingPart} corresponds to the backtracking solution in
-    \autoref{def:backtracking}.
-    The class provides four member functions.
-    Most importantly, \texttt{skip\_invalid} implements the evaluation of
-    $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
-    in line 4 of \autoref{backtrackalg}.
-    It increases the argument reference to the smallest value that cannot be
-    efficiently ruled out as being part of a valid solution.
-    For optimisation reasons that will be discussed in more detail later,
-    it may return \texttt{AMBIGUOUS}.
-    This indicates that the original value was invalid and was increased, but
-    the new value is not necessarily valid and nees to be checked again.
-
-    The three other member function of \texttt{BacktrackingPart} manipulate
-    state that is shared by the individual \texttt{BacktrackingPart} objects.
-    This allows computations that would otherwise be performed repeatedly by
-    the \texttt{skip\_invalid} function to instead of performed ahead of time.
-    More specifically, this corresponds directly to $R_k(M,x)$ in both
-    \autoref{theo:theo1} and \autoref{theo:theo4}.
-    Crucially, this distribution of the computation allows all previously
-    discussed types of SSA constraint problems to be implemented efficiently as
-    follows.
-    \begin{itemize}
-    \item For element-of constraint problems, $R_k(M,x)$ is implemented as a
-          sorted array of type
-          \begin{lstlisting}[language=C++]
-template<unsigned k> class R_;
-template<>      using R_<1>   = vector<int>;
-template<int k> using R_<k+1> = vector<pair<int,R_<k>>
-          \end{lstlisting}
-          The \texttt{BacktrackingPart} object contains an iterator into this
-          array that is initialised via \texttt{begin} and then incremented in
-          \texttt{skip\_invalid} until either hitting the end or
-          finding a value $\geq$ to the function argument \texttt{c}.
-          Finally, \texttt{resume} does nothing, and \texttt{fixate} simply
-          dereferences the iterator that is already in position from the
-          previous \texttt{skip\_invalid} call.
-    \item For conjunction constraint problems, \texttt{begin}, \texttt{fixate}
-          and \texttt{resume} call the corresponding members of the underlying
-          \texttt{BacktrackingPart} objects, and \texttt{skip\_invalid}
-          alternates between them until a fixpoint is reached or
-          either of them fail.
-    \item For disjunction constraints, $R_k(M,x)$ is simply a pair of booleans.
-          Calls to \texttt{skip\_invalid} assed passed on to those underlying
-          \texttt{BacktrackingPart} objects for which $R_k$ is $true$.
-          The smallest resulting value is chosen if any succeeded.
-          The value of $R_k$ is updated in \texttt{fixate} by checking
-          \texttt{skip\_invalid} of the underlying objects.
-          The \texttt{begin}, \texttt{fixate} and \texttt{resume} member
-          calls are also passed on to underlying objects
-          that are enabled in $R_k$.
-    \end{itemize}
 
 \subsection{Satifiability Modulo Theory}
 

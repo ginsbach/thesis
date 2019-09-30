@@ -11,20 +11,24 @@
     give a backtracking solution of $(V,E_S)$, where
     $R_k(M,x)\subset\mathbb N^{n-k+1}$ is given by
     \begin{align*}
-        R_1(M)={}&\{s\mid s\in S(M)\}\\
+        R_1(M)={}&\{(s_{v_1},\dots,s_{v_n})\mid s\in S(M)\}\\
         R_{k+1}(M,x))={}&\{(s_2,\dots,s_{n-k+1})\mid s\in R_k(M,(x_1,\dots,x_{k-1})), s_1=x_k\}.
     \end{align*}
     \tcblower
-    \paragraph*{Proof:} The definition of $E_S$ gives 
+    \paragraph*{Proof:} By definition, $E_S(M,x)=1\iff x\in S(M)$.
+    For all $1\leq k\leq n$ holds
     \begin{align*}
-        E_S(M,x)=1\iff x\in S(M).
+        x\in S(M)\iff(x_{v_k},\dots,x_{v_n})\in{}&\{(s_{v_k},\dots,s_{v_n})\mid s\in S(M),s_{v_1}=x_{v_1},\dots,s_{v_{k-1}}=x_{v_{k-1}})\\
+                            \implies x_{v_k}\in{}&\{\phantom{(}s_{v_k}\phantom{,\dots,s_{v_n})}\mid s\in S(M),s_{v_1}=x_{v_1},\dots,s_{v_{k-1}}=x_{v_{k-1}})\\
+                                                 &=\{s_1\mid s\in R_k(M,(x_{v_1},\dots,x_{v_{k-1}}))\}.
     \end{align*}
-    Directly from the definition of $R_k$ then follows
+
+    This gives ``$\implies$'' for the equation in \autoref{def:backtracking}.
+    The reverse is true for $k=n$, as
     \begin{align*}
-        x\in S(M)\iff{}&(x_{v_k},\dots,x_{v_n})\in R_k(M,(x_{v_1},\dots,x_{v_{k-1}}))\text{ for all }k\\
-                 \iff{}&P_k[E_S](M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})\text{ for all }k.
+        x_{v_n}\in{}&\{s_{v_n}\mid s\in S(M),s_{v_1}=x_{v_1},\dots,s_{v_{k-1}}=x_{v_{n-1}})\implies x\in S(M).
     \end{align*}
-    Therefore, the equivalence from \autoref{def:backtracking} holds.
+    Therefore, the equivalence from \autoref{def:backtracking} holds in both directions.
 \end{theorem}
 \begin{theorem}{Backtracking Solution for Conjunction Constraint problems}{theo2}
     For SSA constraint problems $(V,C)$ and $(V,C')$ with backtracking
@@ -44,12 +48,11 @@
     assumption that \autoref{def:backtracking} holds for the two given
     backtracking solutions gives
     \begin{align*}
-        C\mathrel\land C'(M,x)=1\iff{}& P_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }k\\
-                              \mathrel\land{}& P'_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }k.
+        C\mathrel\land C'(M,x)=1\iff{}& P_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }1\leq k\leq n\\
+                              \mathrel\land{}& P'_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }1\leq k\leq n.
     \end{align*}
     With the definition of $P_k[C\mathrel\land C']$, this immediately gives
     \begin{align*}
-        C\mathrel\land C'(M,x)=1\iff P_k[C\mathrel\land C']&(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})\text{ for all }k.
+        C\mathrel\land C'(M,x)=1\iff P_k[C\mathrel\land C']&(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})\text{ for all }1\leq k\leq n.
     \end{align*}
-    Therefore, the equivalence from \autoref{def:backtracking} holds.
 \end{theorem}
