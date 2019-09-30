@@ -1045,33 +1045,33 @@ define double @dot(double* %0, double* %1, i64 %2) {
         \begin{align*}
             v_1={}&\text{phi}\\
             P_1[C](M,y)=      (&1
-                \mathrel\land   y\in\{s_1\mid s\in DFG_\mathcal{F}\}\\
+                \mathrel\land   y\in\{s_1\mid s\in DFG_\mathcal{F}^*\}\\
                 \mathrel\land{}&1
                 \mathrel\land   y\in\{s_1\mid s\in I_\mathcal{F}, s_2=phi\}\\
                 \mathrel\land{}&1
-                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F}\})\\[1em]
-                       =      (&y\in\{s_1\mid s\in DFG_\mathcal{F}\}\\
+                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F}^*\})\\[1em]
+                       =      (&y\in\{s_1\mid s\in DFG_\mathcal{F}^*\}\\
                 \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F}, s_2=phi\}\\
-                \mathrel\land{}&y\in\{s_2\mid s\in DFG_\mathcal{F}\})\\[1em]
+                \mathrel\land{}&y\in\{s_2\mid s\in DFG_\mathcal{F}^*\})\\[1em]
             v_2={}&\text{update}\\
             P_2[C](M,x,y)=    (&1
-                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F},s_1=x_1\}\\
-                \mathrel\land{}&y\in\{s_2\mid s\in DFG_\mathcal{F}\}
+                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
+                \mathrel\land{}&y\in\{s_2\mid s\in DFG_\mathcal{F}^*\}
                 \mathrel\land   1\\
                 \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}
-                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F},s_2=x_1\})\\[1em]
-                         =    (&y\in\{s_2\mid s\in DFG_\mathcal{F},s_1=x_1\}\\
+                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\[1em]
+                         =    (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
                 \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}
-                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F},s_2=x_1\})\\[1em]
+                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\[1em]
             v_3={}&\text{step}\\
             P_3[C](M,x,y)=  ({}&y\in\{x_1\mid x\in C_\mathcal{F}, x_2=1\}
                 \mathrel\land   1\\
-                \mathrel\land{}&y\in\{x_1\mid x\in DFG_\mathcal{F}, x_2=v_{update}\})
+                \mathrel\land{}&y\in\{x_1\mid x\in DFG_\mathcal{F}^*, x_2=v_{update}\})
                 \mathrel\land   1\\
                 \mathrel\land{}&1
                 \mathrel\land   1\\[1em]
                          =  ({}&y\in\{x_1\mid x\in C_\mathcal{F}, x_2=1\}\\
-                \mathrel\land{}&y\in\{x_1\mid x\in DFG_\mathcal{F}, x_2=v_{update}\})
+                \mathrel\land{}&y\in\{x_1\mid x\in DFG_\mathcal{F}^*, x_2=v_{update}\})
         \end{align*}
     \end{blackwhitebox}
 \end{figure}
@@ -1082,9 +1082,16 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \subsection{Implementation, Data Structures and Complexity}
 
-    In order to implement this
+    With the derivation of backtracking solution in \autoref{theo:theo1},
+    \autoref{theo:theo2}, \autoref{theo:theo3} and  \autoref{theo:theo4},
+    appropriate data structures for implementing SSA constraint problems
+    can be identified.
 
 \subsection{Satifiability Modulo Theory}
+
+    SSA constraint problems can be interpreted as an unconventional type of
+    satisfiability modulo theory (SMT).
+    
 %
 %\section{Implementation of Constraint Predicates}
 %
