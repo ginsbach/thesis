@@ -4,22 +4,22 @@
     \begin{align*}
         P_k[E_S](M,x,y):=\left\{
             \begin{array}{ll}
-                1&\text{if }y\in \{s_1\mid s\in R_k(M,x)\}\\
+                1&\text{if }y\in \{s_1\mid s\in R_k(M,x)\}\\[-0.15em]
                 0&\text{otherwise},
             \end{array}\right.
     \end{align*}
     give a backtracking solution of $(V,E_S)$, where
     $R_k(M,x)\subset\mathbb N^{n-k+1}$ is given by
     \begin{align*}
-        R_1(M)={}&\{(s_{v_1},\dots,s_{v_n})\mid s\in S(M)\}\\
+        R_1(M)={}&\{(s_{v_1},\dots,s_{v_n})\mid s\in S(M)\}\\[-0.15em]
         R_{k+1}(M,x))={}&\{(s_2,\dots,s_{n-k+1})\mid s\in R_k(M,(x_1,\dots,x_{k-1})), s_1=x_k\}.
     \end{align*}
     \tcblower
     \paragraph*{Proof:} By definition, $E_S(M,x)=1\iff x\in S(M)$.
     For all $1\leq k\leq n$ holds
     \begin{align*}
-        x\in S(M)\iff(x_{v_k},\dots,x_{v_n})\in{}&\{(s_{v_k},\dots,s_{v_n})\mid s\in S(M),s_{v_1}=x_{v_1},\dots,s_{v_{k-1}}=x_{v_{k-1}})\\
-                            \implies x_{v_k}\in{}&\{\phantom{(}s_{v_k}\phantom{,\dots,s_{v_n})}\mid s\in S(M),s_{v_1}=x_{v_1},\dots,s_{v_{k-1}}=x_{v_{k-1}})\\
+        x\in S(M)\iff(x_{v_k},\dots,x_{v_n})\in{}&\{(s_{v_k},\dots,s_{v_n})\mid s\in S(M),s_{v_1}=x_{v_1},\dots,s_{v_{k-1}}=x_{v_{k-1}})\\[-0.15em]
+                            \implies x_{v_k}\in{}&\{\phantom{(}s_{v_k}\phantom{,\dots,s_{v_n})}\mid s\in S(M),s_{v_1}=x_{v_1},\dots,s_{v_{k-1}}=x_{v_{k-1}})\\[-0.15em]
                                                  &=\{s_1\mid s\in R_k(M,(x_{v_1},\dots,x_{v_{k-1}}))\}.
     \end{align*}
 
@@ -37,7 +37,7 @@
     \begin{align*}
         P_k[C\mathrel\land C'](M,x,y):=\left\{
             \begin{array}{ll}
-                1&\text{if }P_k(M,x,y)=1\mathrel\land P'_k(M,x,y)=1\\
+                1&\text{if }P_k(M,x,y)=1\mathrel\land P'_k(M,x,y)=1\\[-0.15em]
                 0&\text{otherwise},
             \end{array}\right.
     \end{align*}
@@ -48,7 +48,7 @@
     assumption that \autoref{def:backtracking} holds for the two given
     backtracking solutions gives
     \begin{align*}
-        C\mathrel\land C'(M,x)=1\iff{}& P_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }1\leq k\leq n\\
+        C\mathrel\land C'(M,x)=1\iff{}& P_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }1\leq k\leq n\\[-0.15em]
                               \mathrel\land{}& P'_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }1\leq k\leq n.
     \end{align*}
     With the definition of $P_k[C\mathrel\land C']$, this immediately gives
