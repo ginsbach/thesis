@@ -1,0 +1,45 @@
+    \begin{lstlisting}[language=C++]
+class BacktrackingPart {
+public:
+  virtual SkipResult skip_invalid(unsigned& c) const;
+{
+  virtual void begin();
+  virtual void fixate(unsigned c);
+  virtual void resume();
+};
+
+void yield(const vector<int>& solution);
+
+void solver(vector<BacktrackingPart*> P) {
+    int         k = 0;
+    vector<int> x(P.size(), 0);
+    while(true) {
+        SkipResult result = P[k]->skip_invalid(x[k]);
+
+        if(result == SkipResult::AMBIGUOUS)
+            contintue;
+        if(result != SkipResult::FAIL) {
+            if(k + 1 == P.size())
+            {
+                yield(x);
+                P[k]->resume();
+                x[k]++;
+            }
+            else {
+                P[k]->fixate(x[k]);
+                k++;
+                P[k]->begin();
+                x[k] = 0;
+            }
+        }
+        else {
+            if(k > 0) {
+                k = k - 1;
+                P[k]->resume();
+                x[k] = x[k] + 1;
+            }
+            else return {};
+        }
+    }
+}
+    \end{lstlisting}

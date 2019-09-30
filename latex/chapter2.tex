@@ -911,51 +911,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \subsection{Implementation, Data Structures and Complexity}
 
 \begin{figure}[p]
-    \begin{lstlisting}[language=C++]
-class BacktrackingPart {
-public:
-  virtual SkipResult skip_invalid(unsigned& c) const;
-{
-  virtual void begin();
-  virtual void fixate(unsigned c);
-  virtual void resume();
-};
-
-void yield(const vector<int>& solution);
-
-void solver(vector<BacktrackingPart*> P) {
-    int         k = 0;
-    vector<int> x(P.size(), 0);
-    while(true) {
-        SkipResult result = P[k]->skip_invalid(x[k]);
-
-        if(result == SkipResult::AMBIGUOUS)
-            contintue;
-        if(result != SkipResult::FAIL) {
-            if(k + 1 == P.size())
-            {
-                yield(x);
-                P[k]->resume();
-                x[k]++;
-            }
-            else {
-                P[k]->fixate(x[k]);
-                k++;
-                P[k]->begin();
-                x[k] = 0;
-            }
-        }
-        else {
-            if(k > 0) {
-                k = k - 1;
-                P[k]->resume();
-                x[k] = x[k] + 1;
-            }
-            else return {};
-        }
-    }
-}
-    \end{lstlisting}
+    \input{latex/figure_backtrackingcpp}
     \caption{Backtracking Solver as implemented in C++.}
     \label{cppsolver}
 \end{figure}
@@ -994,31 +950,30 @@ void solver(vector<BacktrackingPart*> P) {
     discussed types of SSA constraint problems to be implemented efficiently as
     follows.
     \begin{itemize}
-    \item For element-of constraint problems, $R_k(M,x)$ is implemented as a
-          sorted array of type
+    \item For element-of constraint problems, $R_k$ can be implemented as a
+          tree structure, built around a sorted array of pairs.
+          Each subtree in the array corresponds to a potential $R_{k+1}$.
           \begin{lstlisting}[language=C++]
-template<unsigned k> class R_;
-template<>      using R_<1>   = vector<int>;
-template<int k> using R_<k+1> = vector<pair<int,R_<k>>
+struct Tree { vector<pair<int,Tree>> s; };
           \end{lstlisting}
-          The \texttt{BacktrackingPart} object contains an iterator into this
-          array that is initialised via \texttt{begin} and then incremented in
-          \texttt{skip\_invalid} until either hitting the end or
-          finding a value $\geq$ to the function argument \texttt{c}.
+          The \texttt{BacktrackingPart} implementation keeps an index into
+          the array, which \texttt{begin} initialises.
+          Each time \texttt{skip\_invalid} is called, the index is incremented
+          until it either points to an entry $\geq$ the lower bound \texttt{c}
+          or hits the end of the array.
           Finally, \texttt{resume} does nothing, and \texttt{fixate} simply
-          dereferences the iterator that is already in position from the
-          previous \texttt{skip\_invalid} call.
+          accesses the array at the current index for the subtree $R_{k+1}$.
     \item For conjunction constraint problems, \texttt{begin}, \texttt{fixate}
           and \texttt{resume} call the corresponding members of the underlying
           \texttt{BacktrackingPart} objects, and \texttt{skip\_invalid}
           alternates between them until a fixpoint is reached or
           either of them fail.
-    \item For disjunction constraints, $R_k(M,x)$ is simply a pair of booleans.
-          Calls to \texttt{skip\_invalid} assed passed on to those underlying
-          \texttt{BacktrackingPart} objects for which $R_k$ is $true$.
-          The smallest resulting value is chosen if any succeeded.
-          The value of $R_k$ is updated in \texttt{fixate} by checking
-          \texttt{skip\_invalid} of the underlying objects.
+    \item For disjunction constraints, $R_k$ is a pair of booleans.
+          Calls to \texttt{skip\_invalid} are passed on to those underlying
+          \texttt{BacktrackingPart} objects that are not disabled via $R_k$.
+          If any succeeded, then the smallest resulting value is chosen.
+          $R_k$ is updated in \texttt{fixate}, using the \texttt{skip\_invalid}
+          results from before.
           The \texttt{begin}, \texttt{fixate} and \texttt{resume} member
           calls are also passed on to underlying objects
           that are enabled in $R_k$.
