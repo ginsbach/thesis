@@ -1,15 +1,15 @@
-    \begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=C++,,basicstyle=\linespread{0.9784}\ttfamily]
+// This class corresponds to Definition 2.7.
 class BacktrackingPart {
 public:
   virtual SkipResult skip_invalid(unsigned& c) const;
-{
   virtual void begin();
   virtual void fixate(unsigned c);
   virtual void resume();
 };
 
 void yield(const vector<int>& solution);
-
+// The solver function corresponds to Algorithm 1.
 void solver(vector<BacktrackingPart*> P) {
     int         k = 0;
     vector<int> x(P.size(), 0);
@@ -42,4 +42,4 @@ void solver(vector<BacktrackingPart*> P) {
         }
     }
 }
-    \end{lstlisting}
+\end{lstlisting}

@@ -848,8 +848,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \autoref{def:conjconstr}.
     These already allow the formulation of interesting SSA constraint problems
     in their own, as previously seen in \autoref{fig:constraintsolution}.
-    Implicitly, this requires the definition of constraint problems on a
-    larger set of variables, as introduced in \autoref{def:constrext}.
+    Implicitly, this uses the definition of constraint problems on an
+    extended set of variables, as introduced in \autoref{def:constrext}.
 
 \begin{figure}[h]
     \begin{definition}{Element-of Constraint Problem}{elementofconstr}
@@ -912,7 +912,14 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \begin{figure}[p]
     \input{latex/figure_backtrackingcpp}
-    \caption{Backtracking Solver as implemented in C++.}
+    \caption{Complete C++ implementation of \autoref{backtrackalg}.
+             The if-else statements in lines 20--41 precisely correspond
+             to those in lines 5--17 of that algorithm.
+             The \texttt{BacktrackingPart} class provides
+             $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
+             via \texttt{skip\_invalid}.
+             The remaining member functions precompute structures that
+             are used in \texttt{skip\_invalid} for quick evaluation.}
     \label{cppsolver}
 \end{figure}
 
