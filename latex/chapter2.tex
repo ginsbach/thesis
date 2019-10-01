@@ -986,6 +986,121 @@ struct Tree { vector<pair<int,Tree>> s; };
           that are enabled in $R_k$.
     \end{itemize}
 
+\subsection{Additional SSA Constraint Problems}
+
+    There are a number of additional construction rules for SSA constraint
+    problems that are used in this thesis.
+    Some of them less intuitive than the previously introduced definition, but
+    allow for powerful compiler analysis.
+
+    Firstly, there are a number of very simple SSA constraint problems that
+    operate directly on the integer values, without interpreting them as indizes
+    into the value list of the SSA model.
+    These are listed in \autoref{def:auxconstr}.
+    $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$ are defined in the
+    obvious way, forcing equality/inequality.
+    Finally, there is $(\{a\}, C^{unused})$.
+    The value $|val|+1$ is the smallest integer that can no longer be
+    interpreted as a value in the SSA model.
+    Therefore, it is used by convention to signal that no value from the SSA
+    model was assigned.
+
+    Generalised graph domination constraint problems as in
+    \autoref{def:domconstr} are versatile tools for analysing SSA models.
+    The special case of $|V_1|=|V_2|=|V_2|=1$ and $V_1=\{v_1\}$,
+    with $v_1$ the control origin of the function, turns this definition into
+    the usual control flow dominance concept that is established in compiler
+    theory.
+    However, the generalisation that is used here encompasses a much larger
+    set of interesting properties.
+    Importantly, this can be applied also to data flow, which will be useful in
+    \autoref{chapter:reductions}.
+    The backtracking solution of generalised graph domination constraint
+    problems is brute force, with $P_k[D_G]\equiv 1$ for all $1\leq k<n$.
+    The checking of the condition in $P_n[D_G]$ is typically preformed in
+    $O(|val|)$ time, therefore this is a computationally expensive constraint.
+
+    Finally, collect-all constraint problem are introduced in
+    \autoref{def:collectconstr}.
+    Given a constraint problem $(V,C)$, the variables $V$ is divided into
+    two subsets.
+    The collect-all constraint problem identifies all possible solutions over
+    one of the variable subsets, given that the other variable subset is fixed.
+    The parameter $N$ gives an upper limit to the number of these solutions.
+    Collect-all constraint problems are used to approximate logical quantifiers.
+    This is discussed in more detail in \autoref{chapter:candl}.
+
+    In order to calculate a backtracking solution of collect-all constraint
+    problems, the order on $W$ needs to satisfy the property
+    $w_a\in U,w_b\notin U\implies a<b$.
+    For values in $U$, the backtracking solution simply passes through to the
+    underlying constraint.
+    Whenever a partial solution is determined over all values in $U$, a nested
+    call to the solver is performed in order to identify all possible partial
+    solutions over $V\setminus U$.
+    The remaining steps of the backtracking solution then simply enforce this
+    precomputed list of solutions.
+
+\begin{figure}[p]
+    \begin{definition}{Simple Integer Constraint Problems}{auxconstr}
+        The SSA constraint problems $(\{a,b\}, C^=)$, $(\{a,b\}, C^{\neq})$
+        and $(\{a\}, C^{unused})$ are given by
+        \begin{align*}
+        C^=(M,x)=1\iff{}&x_a=x_b\\
+        C^{\neq}(M,x)=1\iff{}&x_a\neq x_b\\
+        C^{unused}(M,x)=1\iff{}&x_a=|val|+1.
+        \end{align*}
+    \end{definition}
+    \begin{definition}{Generalised Graph Domination Constraint Problems}{domconstr}
+        For a graph $G(M)\subset\mathbb N^$ and a set $V=V_1\cup V_2\cup V_3$,
+        the {\em generalised graph domination constraint problem}
+        $(V,D_G)$ is defined by
+        \begin{align*}
+            D_G(M,x)=1\iff R_{\infty}(S_1(x),\{(a,b)\in G(M)\mid b\notin S_2(x)\}\cap S_3(x)=\emptyset,
+        \end{align*}
+        where $S_k(x):=\{x_v\mid v\in V_k, x_v\neq |val|+1\}\subset\mathbb N$
+        and where $R_k(A,G)$, the set of vertices reachable from $A$ within $k$
+        steps through $G$, is defined as
+        \begin{align*}
+            R_0(A,G):={}&A\subset\mathbb N\\
+            R_{k+1}(A,G):={}&R_k(A,G)\cup\{b\mid a\in A, (a,b)\in G(M)\}\subset\mathbb N\\
+            R_\infty(A,G):={}&\lim_{k\rightarrow\infty}R_k(A,G)\subset\mathbb N.
+        \end{align*}
+    \end{definition}
+    \begin{definition}{Collect-all Constraint Problem}{collectconstr}
+        For a constraint problem $(V,C)$, a subset $U\subset V$ with
+        $U=\{u_1,\dots,u_m\}$, and some $N>1$, the
+        {\em collect-all constraint problem} $(W, C^{N[U]})$, where
+        $W:=V\setminus U\cup\{1,\dots,N\}\times U$, is uniquely defined
+        as satisfying for all $s\in S_M(W,C^{N[U]})$ the following conditions
+        \begin{enumerate}
+        \item $((s_{1,u_1},\dots s_{1,u_m}),\dots,(s_{N,u_1},\dots s_{N,u_m}))$ is an ordered tuple of tuples in $\mathbb N^U$.
+              If there are any duplicates, they have to be of the form $(|val|+1,\dots,|val|+1)\in\mathbb N^U$.
+        \item The sets $A$ and $B$ satisfy either $A=B$ or $(A=\emptyset\mathrel\land |B|>N)$, where\\
+              $A:=\{(s_{k,u})_{u\in U}\mid 1\leq k\leq N, s_{k,u}\neq|val|+1\text{ for some }u\in U\}\subset N^U$ and\\
+              $B:=\{(x_u)_{u\in U}\mid x\in S_M(V,C), x_v=z_v\text{ for all }v\in X\}\subset N^U$.
+        \end{enumerate}
+    \end{definition}
+%    \begin{theorem}{Backtracking Solution for Collect-all Constraint Problems}{theo5}
+%        For a constraint problem $(V,C)$ with a backtracking solution
+%        $(P_k)_{k=1\dots n}$, a subset $U\subset V$ with
+%        $U=\{v_1,\dots,v_m\}$, and some $N>1$, the predicates
+%        $(P_k[C^{N[U]}])_{k=1\dots n}$ defined by
+%        \begin{align*}
+%            P_k[C^{N[U]}](M,x,y):={}&P_k(M,x,y)&\text{for }1\leq k\leq m\\
+%            P_k[C^{N[U]}](M,x,y):={}&\left\{
+%                \begin{array}{ll}
+%                    1&\text{if }y = R(M,(x_1,\dots,x_m))_{1+k-m}\\
+%                    0&\text{otherwise}
+%                \end{array}\right.&\text{for }m<k\leq n
+%        \end{align*}
+%        give a backtracking solution of $(W,C^{N[U]})$, where
+%        $W:=V\setminus U\cup\{1,\dots,N\}\times U$ and
+%        $R(M,x)\subset\mathbb N^{(n-m)N}$ is given by
+%    \end{theorem}
+\end{figure}
+
+\newpage
 \subsection{Backtracking Example}
 
 \begin{figure}[p]
@@ -1055,73 +1170,6 @@ struct Tree { vector<pair<int,Tree>> s; };
     SSA constraint problems can be interpreted as an unconventional type of
     satisfiability modulo theory (SMT).
 
-\newpage
-\subsection{Additional SSA Constraint Problems}
-
-    There are a number of additional construction rules for SSA constraint
-    problems that are used in this thesis.
-    Some of them less intuitive than the previously introduced definition, but
-    allow for powerful compiler analysis.
-
-    Firstly, there are a number of very simple SSA constraint problems that
-    operate directly on the integer values, without interpreting them as indizes
-    into the value list of the SSA model.
-    These are listed in \autoref{def:auxconstr}.
-    $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$ are defined in the
-    obvious way, forcing equality/inequality.
-    Finally, there is $(\{a\}, C^{unused})$.
-    The value $|val|+1$ is the smallest integer that can no longer be
-    interpreted as a value in the SSA model.
-    Therefore, it is used by convention to signal that no value from the SSA
-    model was assigned.
-
-    Collect-all constraint problem are introduced in
-    \autoref{def:collectconstr}.
-    Given any constraint problem $(V,C)$, the variables $V$ can be divided into
-    two sets.
-    The collect-all constraint problem identifies all possible solutions over
-    one of the variable subsets, given that the other variable subset is fixed.
-    The parameter $N$ gives an upper limit to the number of these solutions.
-
-    In order to calculate a backtracking solution of collect-all constraint
-    problems, the order on $W$ needs to satisfy the property
-    $w_a\in U,w_b\notin U\implies a<b$.
-    For values in $U$, the backtracking solution simply passes through to the
-    underlying constraint.
-    Whenever a partial solution is determined over all values in $U$, a nested
-    call to the solver is performed in order to identify all possible partial
-    solutions over $V\setminus U$.
-    The remaining steps of the backtracking solution then simply enforce this
-    precomputed list of solutions.
-
-
-
-\begin{figure}[p]
-    \begin{definition}{Simple Integer Constraint Problems}{auxconstr}
-        The SSA constraint problems $(\{a,b\}, C^=)$, $(\{a,b\}, C^{\neq})$
-        and $(\{a\}, C^{unused})$ are given by
-        \begin{align*}
-        C^=(M,x)=1\iff{}&x_a=x_b\\
-        C^{\neq}(M,x)=1\iff{}&x_a\neq x_b\\
-        C^{unused}(M,x)=1\iff{}&x_a=|val|+1.
-        \end{align*}
-    \end{definition}
-    \begin{definition}{Collect-all Constraint Problems}{collectconstr}
-        For a constraint problem $(V,C)$, a subset $U\subset V$ with
-        $U=\{u_1,\dots,u_m\}$, and some $N>1$, the
-        {\em collect-all constraint problem} $(W, C^{N[U]})$, where
-        $W:=V\setminus U\cup\{1,\dots,N\}\times U$, is uniquely defined
-        as satisfying for all $s\in S_M(W,C^{N[U]})$ the following conditions
-        \begin{enumerate}
-        \item $((s_{1,u_1},\dots s_{1,u_m}),\dots,(s_{N,u_1},\dots s_{N,u_m}))$ is an ordered tuple of tuples in $\mathbb N^U$.
-              If there are any duplicates, they have to be of the form $(|val|+1,\dots,|val|+1)\in\mathbb N^U$.
-        \item The sets $A$ and $B$ satisfy either $A=B$ or $(A=\emptyset\mathrel\land |B|>N)$, where\\
-              $A:=\{(s_{k,u})_{u\in U}\mid 1\leq k\leq N, s_{k,u}\neq|val|+1\text{ for some }u\in U\}\subset N^U$ and\\
-              $B:=\{(x_u)_{u\in U}\mid x\in S_M(V,C), x_v=z_v\text{ for all }v\in X\}\subset N^U$.
-        \end{enumerate}
-    \end{definition}
-
-\end{figure}
 
 %
 %\section{Implementation of Constraint Predicates}
