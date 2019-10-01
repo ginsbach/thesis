@@ -1054,7 +1054,75 @@ struct Tree { vector<pair<int,Tree>> s; };
 
     SSA constraint problems can be interpreted as an unconventional type of
     satisfiability modulo theory (SMT).
-    
+
+\newpage
+\subsection{Additional SSA Constraint Problems}
+
+    There are a number of additional construction rules for SSA constraint
+    problems that are used in this thesis.
+    Some of them less intuitive than the previously introduced definition, but
+    allow for powerful compiler analysis.
+
+    Firstly, there are a number of very simple SSA constraint problems that
+    operate directly on the integer values, without interpreting them as indizes
+    into the value list of the SSA model.
+    These are listed in \autoref{def:auxconstr}.
+    $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$ are defined in the
+    obvious way, forcing equality/inequality.
+    Finally, there is $(\{a\}, C^{unused})$.
+    The value $|val|+1$ is the smallest integer that can no longer be
+    interpreted as a value in the SSA model.
+    Therefore, it is used by convention to signal that no value from the SSA
+    model was assigned.
+
+    Collect-all constraint problem are introduced in
+    \autoref{def:collectconstr}.
+    Given any constraint problem $(V,C)$, the variables $V$ can be divided into
+    two sets.
+    The collect-all constraint problem identifies all possible solutions over
+    one of the variable subsets, given that the other variable subset is fixed.
+    The parameter $N$ gives an upper limit to the number of these solutions.
+
+    In order to calculate a backtracking solution of collect-all constraint
+    problems, the order on $W$ needs to satisfy the property
+    $w_a\in U,w_b\notin U\implies a<b$.
+    For values in $U$, the backtracking solution simply passes through to the
+    underlying constraint.
+    Whenever a partial solution is determined over all values in $U$, a nested
+    call to the solver is performed in order to identify all possible partial
+    solutions over $V\setminus U$.
+    The remaining steps of the backtracking solution then simply enforce this
+    precomputed list of solutions.
+
+
+
+\begin{figure}[p]
+    \begin{definition}{Simple Integer Constraint Problems}{auxconstr}
+        The SSA constraint problems $(\{a,b\}, C^=)$, $(\{a,b\}, C^{\neq})$
+        and $(\{a\}, C^{unused})$ are given by
+        \begin{align*}
+        C^=(M,x)=1\iff{}&x_a=x_b\\
+        C^{\neq}(M,x)=1\iff{}&x_a\neq x_b\\
+        C^{unused}(M,x)=1\iff{}&x_a=|val|+1.
+        \end{align*}
+    \end{definition}
+    \begin{definition}{Collect-all Constraint Problems}{collectconstr}
+        For a constraint problem $(V,C)$, a subset $U\subset V$ with
+        $U=\{u_1,\dots,u_m\}$, and some $N>1$, the
+        {\em collect-all constraint problem} $(W, C^{N[U]})$, where
+        $W:=V\setminus U\cup\{1,\dots,N\}\times U$, is uniquely defined
+        as satisfying for all $s\in S_M(W,C^{N[U]})$ the following conditions
+        \begin{enumerate}
+        \item $((s_{1,u_1},\dots s_{1,u_m}),\dots,(s_{N,u_1},\dots s_{N,u_m}))$ is an ordered tuple of tuples in $\mathbb N^U$.
+              If there are any duplicates, they have to be of the form $(|val|+1,\dots,|val|+1)\in\mathbb N^U$.
+        \item The sets $A$ and $B$ satisfy either $A=B$ or $(A=\emptyset\mathrel\land |B|>N)$, where\\
+              $A:=\{(s_{k,u})_{u\in U}\mid 1\leq k\leq N, s_{k,u}\neq|val|+1\text{ for some }u\in U\}\subset N^U$ and\\
+              $B:=\{(x_u)_{u\in U}\mid x\in S_M(V,C), x_v=z_v\text{ for all }v\in X\}\subset N^U$.
+        \end{enumerate}
+    \end{definition}
+
+\end{figure}
+
 %
 %\section{Implementation of Constraint Predicates}
 %
