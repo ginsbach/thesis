@@ -143,50 +143,37 @@ morekeywords = [3]{ out, in, size },
 morecomment  = [s]{"}{"}
 }
 
-\title{Compiler Analysis as Constraint Programming\\
-       for Idiomatic Heterogeneous Code Acceleration}
+\title{From Constraint Programming\\to Heterogeneous Parallelism}
 \author{Philip Ginsbach}
 
 \abstract{
-    The end of Moores Law and the end of Dennard Scaling have required new
-    approaches in hardware.
-    In response, accelerator processors have become widespread, first in the
-    form of general purpose graphics processing units (GPGPU) and now
-    increasingly with even more deep learning accelerators.
+    The scaling limitations of homogeneous processing make it necesary for
+    many applications to utilise heterogeneous paralellism.
+    This includes graphics processors and increasingly also deep learning
+    accelerators.
+    However, where compilers are able to map programs onto homogeneous
+    processors efficiently, heterogeneous acceleration is often only accessible
+    via libraries and domain specific languages.
+    This requires application rewrites, and the constantly changing hardware
+    landscape puts into question many of the achievements in portability
+    and longevity of programs that are taken for granted in modern computing.
 
-    Heterogeneous computing platforms is the natural and necessary reaction to
-    the scaling limitations of general purpose processors, but they pose a huge
-    challenge to the surrounding software ecosystem.
-    As opposed to microarchitectural improvements, existing software is not able
-    to automatically profit from new acccelerators designs.
+    Libraries and domain specific languages are able to efficiently target
+    accelerators, because they provide narrower interfaces.
+    The more restrictive semantics of domain specific languages give their
+    compilers more powerful models to analyse the program, making to possible to
+    apply domain specific optimisations.
+    Furthermore, they can be specialised to specific hardware and might use
+    autotuning capabilites.
+    The same is true for Libraries, which can be thought of as particularly
+    restrictive domain specific languages.
 
-    A new hardware software contract is needed instead and heterogeneous
-    hardware should become a responsibility of the compiler.
-    While compilers have lagged behind the developments in the hardware domain,
-    research into this area can profit from experience with multi-core
-    processors.
-
-    Auto-parallelizing compilers have failed to solve the problems and have only
-    had major success for specific kernels and using auto-tuning.
-    Heterogeneous computing is a superset of parallel computing and so an
-    approach to fully automatically optimize code is unlikely.
-
-    At the same time, a library and DSL based approach has been successful,
-    however fails to become mainstream due to adoption cost.
-    What is promising therefore is a combination of hand-optimized libraries
-    together with compiler automatisms.
-
-    This requires a disruptive improvement in compiler analysis capabilites.
-    The detection of higher level algorithmic structures in compilers has been
-    investigated before, but established approaches cannot scale to what
-    this challenge requires.
-    Syntactic matching on programming languages has become
-    unviable for the complexities of both modern programming languages and
-    complex code bases.
-
-    Instead, this thesis develops an entirely novel approach based on concepts
-    from constraint solving, building a pragmatic methodology for detecting
-    complex algorithmic structures -- computational idioms.
+    This thesis develops a constraint programming methodology to recognise
+    narrow interfaces within programs that are written general purpose
+    programming languages such as C++.
+    Such narrow interfaces may be parts of the program that adhere to the
+    polyhedral model, implement linear algebra routines, or fall within a large
+    class of other algorithmic structures.
 }
 
 \begin{document}
