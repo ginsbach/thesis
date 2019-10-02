@@ -304,7 +304,7 @@ End
     The individual classes of atomic constraints will be introduced next,
     followed the the higher level constructs.
 
-\subsection{Basic Atomic Constraints}
+\subsection{Atomic Constraints}
 
     Based on the mathematical model description in \autoref{chapter:theory},
     CAnDL provides a wide range of atomic constraints.
@@ -375,8 +375,8 @@ End
     \hline
     \hline
     \multirow{2}{*}{$\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \Phi\ \text{\it variable}$}
-        & $(z,phi)\in I_\mathcal F\mathrel\land (y,z)\in m(CFG_\mathcal F^*)\mathrel\land$ \\
-        & $\exists n: (x,z,n)\in DFG_\mathcal F\mathrel\land n=|\{y'\leq y\mid (y',z)\in m(CFG_\mathcal F^*)\}|$\\
+        & $(z,phi)\in I_\mathcal F\mathrel\land (y,z)\in m(CFG_\mathcal F^*)\mathrel\land$ \exists n: \\
+        & $(x,z,n)\in DFG_\mathcal F\mathrel\land n=|\{y'\leq y\mid (y',z)\in m(CFG_\mathcal F^*)\}|$\\
     \hline
   \end{tabular}
   \caption{CAnDL exposes Phi nodes with a dedicated atomic constraint.
@@ -385,10 +385,8 @@ End
   \label{phiatomic}
 \end{figure}
 
-\subsection{Graph Theoretic Atomic Constraints}
-
     On top of the atomic constraints that operate immediately on the sets of
-    the mathematical model, there are a list of more sophisticated constraints
+    the mathematical model, there are a list of constraints that are based on
     based on graph properties.
     These include reachability as well as dominance relationships in the data
     flow and control flow graphs.
@@ -443,19 +441,18 @@ End
   \label{rangeconstraints}
 \end{figure}
 
-    \noindent
-    These constructs allow the replication of a constraint formula according to
-    a range of indices.
+    These constructs allow the replication of a constraint formula over a range
+    of indices.
     This is demonstrated in \autoref{fig:forall}, which shows two equivalent
     CAnDL programs, the first one formulated with \texttt{foreach} and the
     second one without.
     In both cases, the program specifies an array of five variables with data
     flow from each element to the next.
-    We can see how the \texttt{foreach} loop can be expanded similar to loop
-    unrolling, with a logical conjunction ($\land$) binding the replicas of the formula
-    together.
-    Otherwise identical, the \texttt{forany} construct invokes a logical
-    disjunction ($\lor$) instead.
+    This shows how \texttt{foreach} can be expanded by duplicating the contained
+    formula, with logical conjunctions ($\land$) binding the replicas of the
+    formula together.
+    Otherwise identical, the \texttt{forany} construct invokes logical
+    disjunctions ($\lor$) instead.
 
 \begin{figure}[ht]
 \begin{lstlisting}[language=CAnDL]
@@ -481,7 +478,7 @@ End
     Although variable identifiers are black boxes to atomic constraints, their
     syntactic structure is relevant to range constructs, when indices are
     evaluated at CAnDL compile time.
-    The syntactic structure of variables is given in \autoref{varsyntax}.
+    \autoref{varsyntax} gives the syntactic structure of variables.
 
 \begin{figure}[b]
   \centering
@@ -492,7 +489,7 @@ End
     \hline
   \end{tabular}
   \caption{Variables in CAnDL can contain simple index calculations to support
-           the range constructs as well as an hierarchical structure.
+           the range constructs as, well as a hierarchical structure.
            The syntax aligns closely to C/C++ conventions.}
   \label{varsyntax}
 \end{figure}
