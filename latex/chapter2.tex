@@ -1103,7 +1103,8 @@ struct Tree { vector<pair<int,Tree>> s; };
 \subsection{Backtracking Example}
 
 \begin{figure}[p]
-    \begin{blackwhitebox}{Original SSA constraint problem}
+    \centering
+    \begin{blackwhitebox}{Original SSA Constraint Problem}
         \setlength{\abovedisplayskip}{0pt}
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
@@ -1123,46 +1124,154 @@ struct Tree { vector<pair<int,Tree>> s; };
                                  \in DFG_\mathcal{F}^*)
         \end{align*}
     \end{blackwhitebox}
-    \begin{blackwhitebox}{Backtracking Solution}
-        \setlength{\abovedisplayskip}{0pt}
-        \setlength{\belowdisplayskip}{0pt}
-        \vspace{-0.5em}
-        \begin{align*}
-            v_1={}&\text{phi}\\
-            P_1[C](M,y)=      (&1
-                \mathrel\land   y\in\{s_1\mid s\in DFG_\mathcal{F}^*\}\\
-                \mathrel\land{}&1
-                \mathrel\land   y\in\{s_1\mid s\in I_\mathcal{F}, s_2=phi\}\\
-                \mathrel\land{}&1
-                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F}^*\})\\[1em]
-                       =      (&y\in\{s_1\mid s\in DFG_\mathcal{F}^*\}\\
-                \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F}, s_2=phi\}\\
-                \mathrel\land{}&y\in\{s_2\mid s\in DFG_\mathcal{F}^*\})\\[1em]
-            v_2={}&\text{update}\\
-            P_2[C](M,x,y)=    (&1
-                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
-                \mathrel\land{}&y\in\{s_2\mid s\in DFG_\mathcal{F}^*\}
-                \mathrel\land   1\\
-                \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}
-                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\[1em]
-                         =    (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
-                \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}
-                \mathrel\land   y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\[1em]
-            v_3={}&\text{step}\\
-            P_3[C](M,x,y)=  ({}&y\in\{x_1\mid x\in C_\mathcal{F}, x_2=1\}
-                \mathrel\land   1\\
-                \mathrel\land{}&y\in\{x_1\mid x\in DFG_\mathcal{F}^*, x_2=v_{update}\})
-                \mathrel\land   1\\
-                \mathrel\land{}&1
-                \mathrel\land   1\\[1em]
-                         =  ({}&y\in\{x_1\mid x\in C_\mathcal{F}, x_2=1\}\\
-                \mathrel\land{}&y\in\{x_1\mid x\in DFG_\mathcal{F}^*, x_2=v_{update}\})
-        \end{align*}
-    \end{blackwhitebox}
+
+    \vspace{0.25cm}
+    {\Large\bf Backtracking Solution:}
+    \vspace{0.2cm}
+
+    \begin{minipage}{6cm}
+        \centering{\large $x=()$}
+        \begin{graybox}
+            \footnotesize
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
+            \begin{align*}
+                v_1={}&\text{phi}\\
+                P_1[C]&(M,y)=\\
+                  (&y\in\{s_1\mid s\in DFG_\mathcal{F}^*\}\\
+                    \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F}, s_2=phi\}\\
+                    \mathrel\land{}&y\in\{s_2\mid s\in DFG_\mathcal{F}^*\})\\
+                   ={}&y\in\{6,9,10\}
+            \end{align*}
+        \end{graybox}
+        \phantom{\large $\implies$ backtrack}
+    \end{minipage}
+
+    \begin{minipage}{4.75cm}
+        \centering{\large $x=(6)$}
+        \begin{graybox}
+            \footnotesize
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
+            \begin{align*}
+                v_2&{}=\text{update}\\
+                P_2&{}[C](M,x,y)=\\
+                  (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
+                    \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}\\
+                    \mathrel\land{}&y\in\{s_1\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\
+                   ={}&y\in\{\}
+            \end{align*}
+        \end{graybox}
+        {\large $\implies$ backtrack}
+    \end{minipage}
+    \begin{minipage}{4.75cm}
+        \centering
+        {\large $x=(9)$}
+        \begin{graybox}
+            \footnotesize
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
+            \begin{align*}
+                v_2&{}=\text{update}\\
+                P_2&{}[C](M,x,y)=\\
+                  (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
+                    \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}\\
+                    \mathrel\land{}&y\in\{s_1\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\
+                   ={}&y\in\{17\}
+            \end{align*}
+        \end{graybox}
+        \phantom{\large $\implies$ backtrack}
+    \end{minipage}
+    \begin{minipage}{4.75cm}
+        \centering{\large $x=(10)$}
+        \begin{graybox}
+            \footnotesize
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
+            \begin{align*}
+                v_2&{}=\text{update}\\
+                P_2&{}[C](M,x,y)=\\
+                  (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
+                    \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}\\
+                    \mathrel\land{}&y\in\{s_1\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\
+                   ={}&y\in\{\}
+            \end{align*}
+        \end{graybox}
+        {\large $\implies$ backtrack}
+    \end{minipage}
+
+    \begin{minipage}{6cm}
+        \centering{\large $x=(9,17)$}
+        \begin{graybox}
+            \footnotesize
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
+            \begin{align*}
+                v_3={}&\text{step}\\
+                P_3[C]&(M,x,y)=\\
+                  (&y\in\{x_1\mid x\in C_\mathcal{F}, x_2=1\}\\
+                    \mathrel\land{}&y\in\{x_1\mid x\in DFG_\mathcal{F}^*, x_2=v_{update}\})\\
+                   ={}&y\in\{22\}
+            \end{align*}
+        \end{graybox}
+        {\large $\implies$ yield $\{\text{phi}\mapsto9,
+                                \text{update}\mapsto17,
+                                \text{step}\mapsto22\}$}
+    \end{minipage}
+    \caption{Backtracking is used to find the single solution of the SSA
+             constraint problem from \autoref{fig:constraintsolution}.
+             The partial solution is extended in three steps from top to bottom.
+             The backtracking solution $(P_k[C])_{k=1\dots3}$ is contructed
+             according to \autoref{theo:theo1}, \autoref{theo:theo2} and
+             \autoref{theo:theo4}.}
+    \label{fig:backtracsol}
 \end{figure}
 
-    With the theorems from the previous section, a backtracking solution can
-    be found for the previous example, as shown on the right.
+    \autoref{fig:backtracsol} shows how backtracking is used to algorithmically
+    determine the solution of the SSA constraint problem that was introduced in
+    \autoref{fig:constraintsolution}.
+    The original SSA constraint problem is again shown at the top of the figure.
+    It is entirely constructed via conjunctions of element-of constraint
+    problems.
+    The constraint problem can therefore be expressed entirely according to
+    \autoref{def:elementofconstr}, \autoref{def:conjconstr} and
+    \autoref{def:constrext}.
+
+    \autoref{theo:theo1}, \autoref{theo:theo2} and \autoref{theo:theo4} are
+    used to construct a backtracking solution $(P_k[C])_{k=1\dots3}$ of the
+    constraint problem.
+    The lower part of the figure demonstrates how this backtracking solution is
+    used to determine the solution.
+
+    Starting from the top with an empty partial solution, candidates for $x_1$
+    are determined, corresponding to {\em phi}.
+    The SSA model contains three phi nodes, all of which also satisfy the other
+    conditions of being the source and target of some edge in the data flow
+    graph.
+    Therefore, the algorithm continues with the partial solutions $x=(6)$,
+    $x=(9)$ and $x=(10)$ on row further down in the figure.
+
+    For $k=2$, the backtracking solution requires $x_2$ to form a data flow
+    loop with $x_1$, and it requires it to be an $add$ instruction.
+    The partial solution $(6)$ corresponds to a phi node that is not part of
+    any data flow loop, therefore the algorithm backtracks.
+    For the partial solution $(10)$, the phi node is part of a data flow loop
+    with the value $16$, but that value is an $fadd$ instruction.
+    The partial solution $(9)$, however, can be extended according to the
+    backtracking solution with the value $17$.
+
+    The algorithm then continues to the bottom row of the figure with
+    $x=(9,17)$.
+    In order to complete this partial solution, $P_3[C]$ requires the value for
+    $step$ to be a constant of value $1$ that is used as an argument to
+    $update$.
+    Both of these conditions hold for the value $22$, yielding a complete
+    solution atthe bottom of the figure.
 
 \subsection{Satifiability Modulo Theory}
 
