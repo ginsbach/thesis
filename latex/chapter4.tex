@@ -1,9 +1,9 @@
 
-    In \autoref{chapter:theory}, a mathematical theory for contraint programming
-    on SSA compiler intermediate representation was derived.
-    Building on that theoretical framework, this chapter develops a
-    domain specific contraint programming language and presents an
-    implementation of this language in the production quality LLVM compiler
+    In \autoref{chapter:theory}, the underlying theory for contraint
+    programming on SSA compiler intermediate representation was derived.
+    Building on that framework, this chapter develops a domain specific
+    contraint programming language and presents an implementation of this
+    language as an extension to the production quality LLVM compiler
     infrastructure.
 
     The Compiler Analysis Description Language (CAnDL) automatically generates
@@ -11,9 +11,9 @@
     manually.
     This fills an important niche in compiler development:
     Optimizing compilers have to use elaborate program transformations to exploit
-    increasingly complex hardware, and implementing required analysis
-    functionality for such optimizations to be safely applied is a time
-    consuming and error prone activity.
+    increasingly complex hardware.
+    Implementing the required analysis functionality for such optimizations to
+    be safely applied is a time consuming and error prone activity.
     For example, tens of thousands of lines of code are required in the LLVM
     code base to detect the appropriate places to apply peephole optimizations,
     and bugs in this functionality can result in corrupted user programs.
@@ -43,7 +43,7 @@
     through several compilation stages to eventually produce a binary program.
     In order to generate fast programs, modern compilers rely on a complex mid
     end, in which program optimisations are applied to the user program after
-    parsing and before code genreation.
+    parsing and before code genereation.
     In this mid end, user code is typically represented in a static single
     assignment intermediate representation and is optimised by successively
     applying a wide range of optimization passes.
@@ -157,11 +157,10 @@ End
     which is easier to follow, has no interaction with other optimisations and
     is much less verbose.
     This is shown in \autoref{fig:candlspec}.
-    The specification is given the identifier \texttt{SqrtOfSquare} in the
-    first line of the program and then defined by the interaction of seven
-    atomic constraint statements that have to hold simultaneously hold on the
-    values of \texttt{sqrt\_call}, \texttt{sqrt\_fn}, \texttt{square} and
-    \texttt{a}.
+    The first line of the program assigns a name to the specification, which is
+    then defined by the interaction of seven atomic constraint statements that
+    have to hold simultaneously on the values of \texttt{sqrt\_call},
+    \texttt{sqrt\_fn}, \texttt{square} and \texttt{a}.
     The lines 2-8 each stipulate one of these constraints and they are joined
     together with the logical conjunction operator ``$\land$''.
 
@@ -263,13 +262,14 @@ End
 
 \subsection{High Level Structure of CAnDL Programs}
 
-    For the description of CAnDL syntax we use these notational conventions:
+    The following notational conventions are used for the description of CAnDL
+    syntax in this section:
     terminal symbols are {\bf bold}, non-terminals are {\it italic},
     $\left<\text{\bf s}\right>$ is an identifier (alphanumeric string) and
     $\left<\text{\bf n}\right>$ is an integer literal.
     An individual CAnDL program contains constraint formulas that are
     bound to identifiers.
-    As we already saw in \autoref{fig:candlexample}, the syntax for this is as
+    As previously shown in \autoref{fig:candlspec}, the syntax for this is as
     follows:
 \begin{figure}[H]
 \centering
@@ -281,8 +281,8 @@ End
 \end{figure}
 
     \noindent
-    We furthermore saw in \autoref{fig:candlexample} that logical conjunctions
-    can be used to combine {\it formula}s.
+    Furthermore, \autoref{fig:candlspec} already demonstrated that logical
+    conjunctions are be used to combine simpler {\it formula}s.
     More generally, a {\it formula} can be any of the following:
 \begin{figure}[H]
 \centering
@@ -308,17 +308,23 @@ End
 
     Based on the mathematical model description in \autoref{chapter:theory},
     CAnDL provides a wide range of atomic constraints.
-    The most simple group of atomic constraints are those that operate on only
-    a single variable.
+    The most simple group are those that operate on only a single variable.
     They are listed in \autoref{onevaratomics} and operate immediately on the
     underlying mathematical structures, testing element-of properties of the
     sets in order to constraint data types, instrution opcodes etc.
+
+    Next are atomic constraints based on the data flow and
+    control flow graphs, checking for element-of properties of pairs of
+    variables, as well as shallow comparison constraints.
+    These are listed in \autoref{twovaratomics}.
+    There is also an atomic constraint for Phi nodes as shown in
+    \autoref{phiatomic}.
 
 \begin{figure}[h]
   \centering
   \begin{tabular}{|c|c|}
     \hline
-    syntax & mathematical equivalent \\
+    syntax & SSA model formulation \\
     \hline
     \hline
     $\text{\bf data\_type}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ &  $(x,s)\in T_\mathcal F$\\
@@ -329,28 +335,20 @@ End
     \hline
     $\text{\bf opcode}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(x,s)\in I_\mathcal F$\\
     \hline
-    $\text{\bf function\_name}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $PROBLEM$\\
+    $\text{\bf function\_name}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(x,\text{!name=}s)\in T_\mathcal F$\\
     \hline
   \end{tabular}
   \caption{The simplest atomic constraints operate on a single variable and
-           check element-of properties for the different unerlying sets
-           in the SSA model.}
+           check element-of properties for the different sets in the SSA model.
+           Function names are accommodated in $T_\mathcal F$.}
   \label{onevaratomics}
 \end{figure}
-
-    \noindent
-    Next are atomic constraints based on the data flow and
-    control flow graphs, checking for element-of properties of pairs of
-    variables, as well as shallow ordering constraints.
-    These are listed in \autoref{twovaratomics}.
-    There is also an atomic constraint for Phi nodes as shown in
-    \autoref{phiatomic}.
 
 \begin{figure}[h]
   \centering
   \begin{tabular}{|c|c|}
     \hline
-    syntax & mathematical equivalent \\
+    syntax & SSA model formulation \\
     \hline
     \hline
     $\text{\it variable}\ \text{\bf =}\ \text{\it variable}$ & $x=y$\\
@@ -373,14 +371,17 @@ End
   \centering
   \begin{tabular}{|c|c|}
     \hline
-    syntax & mathematical equivalent \\
+    syntax & SSA model formulation \\
     \hline
     \hline
-    \multirow{2}{*}{$\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \Phi\ \text{\it variable}$} & $(z,phi)\in I_\mathcal F\land$ \\
-                                                                                                       & $\exists i\colon [(x,z,2i-1)\in DFG_\mathcal F\land (y,z,2i)\in DFG_\mathcal F)]$\\
+    \multirow{2}{*}{$\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \Phi\ \text{\it variable}$}
+        & $(z,phi)\in I_\mathcal F\mathrel\land (y,z)\in m(CFG_\mathcal F^*)\mathrel\land$ \\
+        & $\exists n: (x,z,n)\in DFG_\mathcal F\mathrel\land n=|\{y'\leq y\mid (y',z)\in m(CFG_\mathcal F^*)\}|$\\
     \hline
   \end{tabular}
-  \caption{CAnDL exposes phi nodes with a dedicated atomic constraint.}
+  \caption{CAnDL exposes Phi nodes with a dedicated atomic constraint.
+           The modified control flow graph $m(CFG_\mathcal F^*)$ duplicates
+           control flow edges into basic blocks with multiple Phi nodes.}
   \label{phiatomic}
 \end{figure}
 
