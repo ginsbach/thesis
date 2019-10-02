@@ -1145,11 +1145,16 @@ struct Tree { vector<pair<int,Tree>> s; };
                    ={}&y\in\{6,9,10\}
             \end{align*}
         \end{graybox}
-        \phantom{\large $\implies$ backtrack}
+        \vspace{-0.75em}
+        {\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
+        \hspace{1.8cm}
+        {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
+        \hspace{1.8cm}
+        {\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
     \end{minipage}
 
     \begin{minipage}{4.75cm}
-        \centering{\large $x=(6)$}
+        \centering{\large\hspace{3cm} $x=(6)$}
         \begin{graybox}
             \footnotesize
             \setlength{\abovedisplayskip}{0pt}
@@ -1168,7 +1173,7 @@ struct Tree { vector<pair<int,Tree>> s; };
     \end{minipage}
     \begin{minipage}{4.75cm}
         \centering
-        {\large $x=(9)$}
+        {\large\phantom{$(9)$}$x=(9)$\phantom{$x$}}
         \begin{graybox}
             \footnotesize
             \setlength{\abovedisplayskip}{0pt}
@@ -1183,10 +1188,15 @@ struct Tree { vector<pair<int,Tree>> s; };
                    ={}&y\in\{17\}
             \end{align*}
         \end{graybox}
-        \phantom{\large $\implies$ backtrack}
+        \vspace{-0.75em}
+        \phantom{\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
+        \hspace{1cm}
+        {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
+        \hspace{1cm}
+        \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
     \end{minipage}
     \begin{minipage}{4.75cm}
-        \centering{\large $x=(10)$}
+        \centering{\large $x=(10)$ \hspace{2.75cm}}
         \begin{graybox}
             \footnotesize
             \setlength{\abovedisplayskip}{0pt}
@@ -1205,7 +1215,7 @@ struct Tree { vector<pair<int,Tree>> s; };
     \end{minipage}
 
     \begin{minipage}{6cm}
-        \centering{\large $x=(9,17)$}
+        \centering{\large \phantom{$(9,17)$}$x=(9,17)$\phantom{$x$}}
         \begin{graybox}
             \footnotesize
             \setlength{\abovedisplayskip}{0pt}
@@ -1219,10 +1229,16 @@ struct Tree { vector<pair<int,Tree>> s; };
                    ={}&y\in\{22\}
             \end{align*}
         \end{graybox}
-        {\large $\implies$ yield $\{\text{phi}\mapsto9,
-                                \text{update}\mapsto17,
-                                \text{step}\mapsto22\}$}
+        \vspace{-0.75em}
+        \phantom{\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
+        \hspace{1cm}
+        {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
+        \hspace{1cm}
+        \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
     \end{minipage}
+
+    {\large \phantom{$(9,17,22)$}$x=(9,17,22)$\phantom{$x$}}
+
     \caption{Backtracking is used to find the single solution of the SSA
              constraint problem from \autoref{fig:constraintsolution}.
              The partial solution is extended in three steps from top to bottom.
