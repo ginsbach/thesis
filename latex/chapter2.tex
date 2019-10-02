@@ -653,8 +653,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     The {\em set of SSA models} $\mathcal M$ is defined as
     \begin{align*}
-        \mathcal M := \{M\mid\exists\mathcal F\in F\colon M
-                        \text{ is the SSA Model of }\mathcal F\}
+        \mathcal M := \{M\mid M \text{ is the SSA Model of some }\mathcal F\in F\}
     \end{align*}
 \end{notation}
 
@@ -783,7 +782,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
         is a {\em backtracking solution} of $(V,C)$ if and only if the
         following is satisfied or all $x\in\mathbb N^V$:
         \begin{align}
-            C(M,x)=1\iff P_k(M,(x_{v_l})_{l=1\dots k-1},x_{v_k})=1\text{ for all }1\leq k\leq n.
+            C(M,x)=1\iff P_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }1\leq k\leq n.
         \end{align}
     \end{definition}
 \end{figure}
@@ -1052,7 +1051,7 @@ struct Tree { vector<pair<int,Tree>> s; };
         \end{align*}
     \end{definition}
     \begin{definition}{Generalised Graph Domination Constraint Problems}{domconstr}
-        For a graph $G(M)\subset\mathbb N^$ and a set $V=V_1\cup V_2\cup V_3$,
+        For a graph $G(M)\subset\mathbb N^2$ and a set $V=V_1\cup V_2\cup V_3$,
         the {\em generalised graph domination constraint problem}
         $(V,D_G)$ is defined by
         \begin{align*}
