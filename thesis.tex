@@ -147,33 +147,40 @@ morecomment  = [s]{"}{"}
 \author{Philip Ginsbach}
 
 \abstract{
-    The scaling limitations of homogeneous processing make it necesary for
-    many applications to utilise heterogeneous paralellism.
-    This includes graphics processors and increasingly also deep learning
-    accelerators.
-    However, where compilers are able to map programs onto homogeneous
-    processors efficiently, heterogeneous acceleration is often only accessible
-    via libraries and domain specific languages.
+    The scaling limitations of homogeneous processing make it necessary for
+    many applications to utilise heterogeneous paralellism, including
+    graphics processors and increasingly also deep learning accelerators.
+    This is a challenge for existing software ecosystems.
+    Compilers can map programs onto homogeneous processors efficiently, but
+    heterogeneous acceleration is often only accessible via libraries and domain
+    specific languages.
     This requires application rewrites, and the constantly changing hardware
-    landscape puts into question many of the achievements in portability
-    and longevity of programs that are taken for granted in modern computing.
+    landscape challenges the achievements in portability  and longevity of
+    programs that are taken for granted in modern computing.
 
     Libraries and domain specific languages are able to efficiently target
-    accelerators, because they provide narrower interfaces.
+    accelerators because they provide narrower interfaces.
     The more restrictive semantics of domain specific languages give their
     compilers more powerful models to analyse the program, making to possible to
     apply domain specific optimisations.
     Furthermore, they can be specialised to specific hardware and might use
     autotuning capabilites.
-    The same is true for Libraries, which can be thought of as particularly
+    The same is true for libraries, which can be thought of as particularly
     restrictive domain specific languages.
 
-    This thesis develops a constraint programming methodology to recognise
-    narrow interfaces within programs that are written general purpose
-    programming languages such as C++.
+    The contribution of this thesis is a constraint programming methodology to
+    define and then automatically detect algorithmic structure in compiler
+    intermediate representaiton.
+    This can be used to recognise narrow interfaces within programs that are
+    written in general purpose programming languages such as C++.
     Such narrow interfaces may be parts of the program that adhere to the
     polyhedral model, implement linear algebra routines, or fall within a large
     class of other algorithmic structures.
+    Once a part of a program has been specialised, the general purpose compiler
+    can reformulate it in a more restrictive model and pass it on to specialised
+    tools for code generation.
+    This allows for the automatic heterogeneous acceleration of previously
+    sequential codes, without any need for manual source code changes.
 }
 
 \begin{document}
