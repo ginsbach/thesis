@@ -907,7 +907,91 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \input{latex/figure_theorems2}
 \end{figure}
 
+\subsection{Backtracking Example}
+
+\begin{figure}[p]
+    \input{latex/figure_backtrackexample}
+    \caption{Backtracking is used to find the single solution of the SSA
+             constraint problem from \autoref{fig:constraintsolution}.
+             The partial solution is extended in three steps from top to bottom.
+             The backtracking solution $(P_k[C])_{k=1\dots3}$ is contructed
+             according to \autoref{theo:theo1}, \autoref{theo:theo2} and
+             \autoref{theo:theo4}.}
+    \label{fig:backtracsol}
+\end{figure}
+
+    \autoref{fig:backtracsol} shows how backtracking is used to algorithmically
+    determine the solution of the SSA constraint problem that was introduced in
+    \autoref{fig:constraintsolution}.
+    The original SSA constraint problem is shown again at the top of the figure.
+    It is entirely constructed via conjunctions of element-of constraint
+    problems.
+    The constraint problem can therefore be expressed entirely according to
+    \autoref{def:elementofconstr}, \autoref{def:conjconstr} and
+    \autoref{def:constrext}.
+
+    This means that \autoref{theo:theo1}, \autoref{theo:theo2} and
+    \autoref{theo:theo4} can be used to construct a backtracking solution
+    $(P_k[C])_{k=1\dots3}$ of the constraint problem.
+    The lower part of the figure demonstrates how this backtracking solution is
+    used to determine the solution.
+
+    Starting from the top with an empty partial solution, candidates for $x_1$
+    are determined, corresponding to the variable {\em phi}.
+    The SSA model contains three phi nodes, all of which also satisfy the other
+    conditions of being the source and target of some edge in the data flow
+    graph.
+    Therefore, the algorithm continues with the partial solutions $x=(6)$,
+    $x=(9)$ and $x=(10)$ one level further down in the figure.
+
+    For $k=2$, which corresponds to the variable {\em update}, the backtracking
+    solution requires $x_2$ to form a data flow loop with $x_1$.
+    Futhermore, it requires it to be an $add$ instruction.
+    The partial solution $(6)$ corresponds to a phi node that is not part of
+    any data flow loop, therefore the algorithm backtracks.
+    For the partial solution $(10)$, the phi node is part of a data flow loop
+    only with the value $16$, but that value is an $fadd$ instruction.
+    The partial solution $(9)$, however, can be extended according to the
+    backtracking solution with the value $17$.
+    Therefore, the algorithm continues at the bottom of the figure with only
+    this single partial solution $(9,17)$.
+
+    In order to complete this partial solution, $P_3[C]$ requires the value for
+    the $step$ variable to be a constant of value $1$.
+    Furthermore, is needs to be used as an argument to $x_2$, i.e.\ the
+    $update$ variable.
+    Both of these conditions hold for the value $22$, yielding a complete
+    solution at the bottom of the figure.
+
 \subsection{Implementation, Data Structures and Complexity}
+
+    With the concrete backtracking solutions that were derived in
+    \autoref{theo:theo1}, \autoref{theo:theo2}, \autoref{theo:theo3} and
+    \autoref{theo:theo4}, it is possible to identify suitable data structures
+    and algorithmic decisions for efficiently implementing the corresponding
+    functionality in real code.
+    This first requires a revisiting of the backtracking algorithm first
+    introduced in \autoref{backtrackalg}.
+    \autoref{cppsolver} shows how this backtracking solver can be implemented as
+    a C++ function.
+    Most of the \texttt{solver} function in lines 12--43 maps directly onto
+    \autoref{backtrackalg}, and needs no further explanation.
+    However, there are some crucial details that are made explicit here, which
+    need elaboration.
+    They mostly relate to the calculation of
+    $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
+    in line 4 of \autoref{backtrackalg}, which was previously left as a black
+    box.
+
+    \texttt{BacktrackingPart} corresponds to the backtracking solution in
+    \autoref{def:backtracking}.
+    The class provides four member functions.
+    Most importantly, \texttt{skip\_invalid} is used for implementing the
+    evaluation of
+    $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
+    in line 4 of \autoref{backtrackalg}.
+    More precisely, it increases the argument to the smallest value that is
+    part of a valid partial solution.
 
 \begin{figure}[p]
     \input{latex/figure_backtrackingcpp}
@@ -921,30 +1005,6 @@ define double @dot(double* %0, double* %1, i64 %2) {
              are used in \texttt{skip\_invalid} for quick evaluation.}
     \label{cppsolver}
 \end{figure}
-
-    With the derivation of backtracking solutions in \autoref{theo:theo1},
-    \autoref{theo:theo2}, \autoref{theo:theo3} and \autoref{theo:theo4},
-    good data structures for implementing SSA constraint problems
-    can be identified.
-    \autoref{cppsolver} shows how the backtracking solver that was introduced
-    in \autoref{def:backtracking} is implemented as a concrete C++ function.
-    Most of the \texttt{solver} function in lines 12--43 directly maps to
-    the algorithm and needs no further explanation.
-    However, there are some crucial details that are made explicit here, which
-    need elaboration.
-
-    \texttt{BacktrackingPart} corresponds to the backtracking solution in
-    \autoref{def:backtracking}.
-    The class provides four member functions.
-    Most importantly, \texttt{skip\_invalid} implements the evaluation of
-    $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
-    in line 4 of \autoref{backtrackalg}.
-    It increases the argument reference to the smallest value that cannot be
-    efficiently ruled out as being part of a valid solution.
-    For optimisation reasons that will be discussed in more detail later,
-    it may return \texttt{AMBIGUOUS}.
-    This indicates that the original value was invalid and was increased, but
-    the new value is not necessarily valid and nees to be checked again.
 
     The three other member function of \texttt{BacktrackingPart} manipulate
     state that is shared by the individual \texttt{BacktrackingPart} objects.
@@ -1098,196 +1158,6 @@ struct Tree { vector<pair<int,Tree>> s; };
 %        $R(M,x)\subset\mathbb N^{(n-m)N}$ is given by
 %    \end{theorem}
 \end{figure}
-
-\newpage
-\subsection{Backtracking Example}
-
-\begin{figure}[p]
-    \centering
-    \begin{blackwhitebox}{Original SSA Constraint Problem}
-        \setlength{\abovedisplayskip}{0pt}
-        \setlength{\belowdisplayskip}{0pt}
-        \vspace{-0.5em}
-        \begin{align*}
-            V&{}=\{\text{phi}, \text{update}, \text{step}\}\\
-            C(M,v)=         ({}&(v_\text{step},1)
-                                 \in C_\mathcal{F}
-                \mathrel\land   (v_\text{phi},v_\text{update})
-                                 \in DFG_\mathcal{F}^*\\
-                \mathrel\land{}&(v_\text{step},v_\text{update})
-                                 \in DFG_\mathcal{F}^*
-                \mathrel\land   (v_\text{phi}, phi)
-                                 \in I_\mathcal{F}\\
-                \mathrel\land{}&(v_\text{update}, add)
-                                 \in I_\mathcal{F}
-                \mathrel\land   (v_\text{update},v_\text{phi})
-                                 \in DFG_\mathcal{F}^*)
-        \end{align*}
-    \end{blackwhitebox}
-
-    \vspace{0.25cm}
-    {\Large\bf Backtracking Solution:}
-    \vspace{0.2cm}
-
-    \begin{minipage}{6cm}
-        \centering{\large $x=()$}
-        \begin{graybox}
-            \footnotesize
-            \setlength{\abovedisplayskip}{0pt}
-            \setlength{\belowdisplayskip}{0pt}
-            \vspace{-0.5em}
-            \begin{align*}
-                v_1={}&\text{phi}\\
-                P_1[C]&(M,y)=\\
-                  (&y\in\{s_1\mid s\in DFG_\mathcal{F}^*\}\\
-                    \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F}, s_2=phi\}\\
-                    \mathrel\land{}&y\in\{s_2\mid s\in DFG_\mathcal{F}^*\})\\
-                   ={}&y\in\{6,9,10\}
-            \end{align*}
-        \end{graybox}
-        \vspace{-0.75em}
-        {\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
-        \hspace{1.8cm}
-        {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
-        \hspace{1.8cm}
-        {\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
-    \end{minipage}
-
-    \begin{minipage}{4.75cm}
-        \centering{\large\hspace{3cm} $x=(6)$}
-        \begin{graybox}
-            \footnotesize
-            \setlength{\abovedisplayskip}{0pt}
-            \setlength{\belowdisplayskip}{0pt}
-            \vspace{-0.5em}
-            \begin{align*}
-                v_2&{}=\text{update}\\
-                P_2&{}[C](M,x,y)=\\
-                  (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
-                    \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}\\
-                    \mathrel\land{}&y\in\{s_1\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\
-                   ={}&y\in\{\}
-            \end{align*}
-        \end{graybox}
-        {\large $\implies$ backtrack}
-    \end{minipage}
-    \begin{minipage}{4.75cm}
-        \centering
-        {\large\phantom{$(9)$}$x=(9)$\phantom{$x$}}
-        \begin{graybox}
-            \footnotesize
-            \setlength{\abovedisplayskip}{0pt}
-            \setlength{\belowdisplayskip}{0pt}
-            \vspace{-0.5em}
-            \begin{align*}
-                v_2&{}=\text{update}\\
-                P_2&{}[C](M,x,y)=\\
-                  (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
-                    \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}\\
-                    \mathrel\land{}&y\in\{s_1\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\
-                   ={}&y\in\{17\}
-            \end{align*}
-        \end{graybox}
-        \vspace{-0.75em}
-        \phantom{\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
-        \hspace{1cm}
-        {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
-        \hspace{1cm}
-        \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
-    \end{minipage}
-    \begin{minipage}{4.75cm}
-        \centering{\large $x=(10)$ \hspace{2.75cm}}
-        \begin{graybox}
-            \footnotesize
-            \setlength{\abovedisplayskip}{0pt}
-            \setlength{\belowdisplayskip}{0pt}
-            \vspace{-0.5em}
-            \begin{align*}
-                v_2&{}=\text{update}\\
-                P_2&{}[C](M,x,y)=\\
-                  (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
-                    \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}\\
-                    \mathrel\land{}&y\in\{s_1\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\
-                   ={}&y\in\{\}
-            \end{align*}
-        \end{graybox}
-        {\large $\implies$ backtrack}
-    \end{minipage}
-
-    \begin{minipage}{6cm}
-        \centering{\large \phantom{$(9,17)$}$x=(9,17)$\phantom{$x$}}
-        \begin{graybox}
-            \footnotesize
-            \setlength{\abovedisplayskip}{0pt}
-            \setlength{\belowdisplayskip}{0pt}
-            \vspace{-0.5em}
-            \begin{align*}
-                v_3={}&\text{step}\\
-                P_3[C]&(M,x,y)=\\
-                  (&y\in\{x_1\mid x\in C_\mathcal{F}, x_2=1\}\\
-                    \mathrel\land{}&y\in\{x_1\mid x\in DFG_\mathcal{F}^*, x_2=v_{update}\})\\
-                   ={}&y\in\{22\}
-            \end{align*}
-        \end{graybox}
-        \vspace{-0.75em}
-        \phantom{\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
-        \hspace{1cm}
-        {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
-        \hspace{1cm}
-        \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
-    \end{minipage}
-
-    {\large \phantom{$(9,17,22)$}$x=(9,17,22)$\phantom{$x$}}
-
-    \caption{Backtracking is used to find the single solution of the SSA
-             constraint problem from \autoref{fig:constraintsolution}.
-             The partial solution is extended in three steps from top to bottom.
-             The backtracking solution $(P_k[C])_{k=1\dots3}$ is contructed
-             according to \autoref{theo:theo1}, \autoref{theo:theo2} and
-             \autoref{theo:theo4}.}
-    \label{fig:backtracsol}
-\end{figure}
-
-    \autoref{fig:backtracsol} shows how backtracking is used to algorithmically
-    determine the solution of the SSA constraint problem that was introduced in
-    \autoref{fig:constraintsolution}.
-    The original SSA constraint problem is again shown at the top of the figure.
-    It is entirely constructed via conjunctions of element-of constraint
-    problems.
-    The constraint problem can therefore be expressed entirely according to
-    \autoref{def:elementofconstr}, \autoref{def:conjconstr} and
-    \autoref{def:constrext}.
-
-    \autoref{theo:theo1}, \autoref{theo:theo2} and \autoref{theo:theo4} are
-    used to construct a backtracking solution $(P_k[C])_{k=1\dots3}$ of the
-    constraint problem.
-    The lower part of the figure demonstrates how this backtracking solution is
-    used to determine the solution.
-
-    Starting from the top with an empty partial solution, candidates for $x_1$
-    are determined, corresponding to {\em phi}.
-    The SSA model contains three phi nodes, all of which also satisfy the other
-    conditions of being the source and target of some edge in the data flow
-    graph.
-    Therefore, the algorithm continues with the partial solutions $x=(6)$,
-    $x=(9)$ and $x=(10)$ on row further down in the figure.
-
-    For $k=2$, the backtracking solution requires $x_2$ to form a data flow
-    loop with $x_1$, and it requires it to be an $add$ instruction.
-    The partial solution $(6)$ corresponds to a phi node that is not part of
-    any data flow loop, therefore the algorithm backtracks.
-    For the partial solution $(10)$, the phi node is part of a data flow loop
-    with the value $16$, but that value is an $fadd$ instruction.
-    The partial solution $(9)$, however, can be extended according to the
-    backtracking solution with the value $17$.
-
-    The algorithm then continues to the bottom row of the figure with
-    $x=(9,17)$.
-    In order to complete this partial solution, $P_3[C]$ requires the value for
-    $step$ to be a constant of value $1$ that is used as an argument to
-    $update$.
-    Both of these conditions hold for the value $22$, yielding a complete
-    solution atthe bottom of the figure.
 
 \subsection{Satifiability Modulo Theory}
 

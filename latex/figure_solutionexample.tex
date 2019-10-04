@@ -24,19 +24,19 @@
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
         \begin{align*}
-            V&{}=\{\text{phi}, \text{update}, \text{step}\}\\
-            C(M,v)=         ({}&(v_\text{step},1)
-                                 \in C_\mathcal{F}
-                \mathrel\land   (v_\text{phi},v_\text{update})
-                                 \in DFG_\mathcal{F}^*\\
-                \mathrel\land{}&(v_\text{step},v_\text{update})
-                                 \in DFG_\mathcal{F}^*
-                \mathrel\land   (v_\text{phi}, phi)
-                                 \in I_\mathcal{F}\\
-                \mathrel\land{}&(v_\text{update}, add)
-                                 \in I_\mathcal{F}
-                \mathrel\land   (v_\text{update},v_\text{phi})
-                                 \in DFG_\mathcal{F}^*)
+            V={}&\{\text{phi}, \text{update}, \text{step}\}\\
+            C(M,x)={}&    ((x_\text{step},1)
+                            \in C_\mathcal{F}\mathrel\land
+                           (x_\text{phi},x_\text{update})
+                            \in DFG_\mathcal{F}^*\mathrel\land\\
+               &\phantom{(}(x_\text{step},x_\text{update})
+                            \in DFG_\mathcal{F}^* \mathrel\land
+                           (x_\text{phi}, phi)
+                            \in I_\mathcal{F}\mathrel\land\\
+               &\phantom{(}(x_\text{update}, add)
+                            \in I_\mathcal{F}\mathrel\land
+                           (x_\text{update},x_\text{phi})
+                            \in DFG_\mathcal{F}^*)
         \end{align*}
     \end{blackwhitebox}
     \begin{blackwhitebox}{\Large SSA model}

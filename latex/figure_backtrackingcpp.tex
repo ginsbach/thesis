@@ -9,6 +9,7 @@ public:
 };
 
 void yield(const vector<int>& solution);
+
 // The solver function corresponds to Algorithm 1.
 void solver(vector<BacktrackingPart*> P) {
     int         k = 0;
@@ -16,8 +17,6 @@ void solver(vector<BacktrackingPart*> P) {
     while(true) {
         SkipResult result = P[k]->skip_invalid(x[k]);
 
-        if(result == SkipResult::AMBIGUOUS)
-            contintue;
         if(result != SkipResult::FAIL) {
             if(k + 1 == P.size())
             {
@@ -38,7 +37,8 @@ void solver(vector<BacktrackingPart*> P) {
                 P[k]->resume();
                 x[k] = x[k] + 1;
             }
-            else return {};
+            else
+                return {};
         }
     }
 }
