@@ -991,7 +991,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
     in line 4 of \autoref{backtrackalg}.
     More precisely, it increases the argument to the smallest value that is
-    part of a valid partial solution.
+    part of a partial solution.
 
 \begin{figure}[p]
     \input{latex/figure_backtrackingcpp}
@@ -1044,6 +1044,23 @@ struct Tree { vector<pair<int,Tree>> s; };
           calls are also passed on to underlying objects
           that are enabled in $R_k$.
     \end{itemize}
+
+    While the chosen data structures allow for very efficient implementations
+    of the individual functions that are used to search for solutions, no
+    meaningful limits can be put on computational complexity in general.
+    This is due to the following observation:
+    SSA constraint problems are a generalisation of the subgraph isomorphism
+    problem, which is known to be NP-hard.
+
+    However, this is not an impediment due to the nature of the use case.
+    In practice, the nature of SSA constraint problems mean that a solver is
+    going to solve the same limited set formulas repeatedly -- only in the
+    context of different SSA models.
+    This means that is it viable to craft the formulas in such a way to be
+    efficiently solvable, in particular by choosing a good order in which to
+    iterate over the variables.
+    For specific SSA constraint problems, it can then be possible to give
+    complexity assumptions.
 
 \subsection{Additional SSA Constraint Problems}
 
@@ -1161,8 +1178,14 @@ struct Tree { vector<pair<int,Tree>> s; };
 
 \subsection{Satifiability Modulo Theory}
 
-    SSA constraint problems can be interpreted as an unconventional type of
-    satisfiability modulo theory (SMT).
+    SSA constraint problems can to an extent be interpreted as an unconventional
+    instance of Satisfiability Modulo Theory (SMT) problems.
+    Howeverm, where typical SMT problems might operate on the
+    {\em theory of linear arithmetic} or the {\em theory of bit-vectors},
+    SSA constraint problems operate on the {\em theory of SSA values in the
+    context of a function}.
+    This of course is not an established mathematical construct, therefore
+    off-the-shelve SMT solvers are of limited use for solving them.
 
 
 %
