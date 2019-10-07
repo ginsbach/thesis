@@ -500,36 +500,7 @@ End
 
 \subsection{Range Constraints}
 
-    Building on top of atomics and the fundamental conjunction and disjunction
-    constructs, there are range based versions that operate on arrays of
-    variables, as shown in \autoref{rangeconstraints}.
-\begin{figure}[h]
-  \centering
-  \begin{tabular}{|c|}
-    \hline
-    $foreach ::= \text{\it formula}\ \text{\bf foreach}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}$\\
-    $forany ::= \text{\it formula}\ \text{\bf forany}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}$\\
-    \hline
-  \end{tabular}
-  \caption{There are two range constructs in CAnDL that apply formulas to
-           arrays of variables.}
-  \label{rangeconstraints}
-\end{figure}
-
-    These constructs allow the replication of a constraint formula over a range
-    of indices.
-    This is demonstrated in \autoref{fig:forall}, which shows two equivalent
-    CAnDL programs, the first one formulated with \texttt{foreach} and the
-    second one without.
-    In both cases, the program specifies an array of five variables with data
-    flow from each element to the next.
-    This shows how \texttt{foreach} can be expanded by duplicating the contained
-    formula, with logical conjunctions ($\land$) binding the replicas of the
-    formula together.
-    Otherwise identical, the \texttt{forany} construct invokes logical
-    disjunctions ($\lor$) instead.
-
-\begin{figure}[ht]
+\begin{figure}[t]
 \begin{lstlisting}[language=CAnDL]
 Constraint ValueChain
  {element[i] ([$\tt \in$]) {element[i+1]}.args foreach i=0..4
@@ -550,12 +521,39 @@ End
 \label{fig:forall}
 \end{figure}
 
+
+    Building on top of atomics and the fundamental conjunction and disjunction
+    constructs, there are range based versions that operate on arrays of
+    variables:
+\begin{figure}[h]
+  \centering
+  \begin{tabular}{|c|}
+    \hline
+    $foreach ::= \text{\it formula}\ \text{\bf foreach}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}$\\
+    $forany ::= \text{\it formula}\ \text{\bf forany}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}$\\
+    \hline
+  \end{tabular}
+\end{figure}
+
+    \noindent
+    These constructs allow the replication of a constraint formula over a range
+    of indices.
+    This is demonstrated in \autoref{fig:forall}, which shows two equivalent
+    CAnDL programs, the first one formulated with \texttt{foreach} and the
+    second one without.
+    In both cases, the program specifies an array of five variables with data
+    flow from each element to the next.
+    This shows how \texttt{foreach} can be expanded by duplicating the contained
+    formula, with logical conjunctions ($\land$) binding the replicas of the
+    formula together.
+    Otherwise identical, the \texttt{forany} construct invokes logical
+    disjunctions ($\lor$) instead.
+
     Although variable identifiers are black boxes to atomic constraints, their
     syntactic structure is relevant to range constructs, when indices are
     evaluated at CAnDL compile time.
-    \autoref{varsyntax} gives the syntactic structure of variables.
 
-\begin{figure}[b]
+\begin{figure}[h]
   \centering
   \begin{tabular}{|c|}
     \hline
@@ -563,22 +561,32 @@ End
     $calculation ::= \left<\text{\bf s}\right>\mid\left<\text{\bf n}\right>\mid\text{\it calculation}\ \text{\bf+}\ \text{\it calculation}\mid\text{\it calculation}\ \text{\bf-}\ \text{\it calculation}$\\
     \hline
   \end{tabular}
-  \caption{Variables in CAnDL can contain simple index calculations to support
-           the range constructs as, well as a hierarchical structure.
-           The syntax aligns closely to C/C++ conventions.}
-  \label{varsyntax}
 \end{figure}
 
-\subsubsection{Modularity}
-    \label{sec:modularity}
+    \noindent
+    The syntax of variable identifiers in CAnDL aligns closely to C/C++
+    conventions.
+    They can contain simple index calculations to support the range constructs,
+    as well as a hierarchical structure.
+    This hierarchical structure corresponds to the modularity capabilities of
+    CAnDL that ar eintroduced in the next section.
 
-    Modularity is central to the CAnDL programming language, and it is achieved
-    using the {\it include} construct.
-    \begin{align*}
-        \text{\bf include}\ &\left<\text{\bf s}\right>\\
-                            &[\text{\bf (}\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \{\text{\bf ,}\ \text{\it variable}\ \text{\bf ->}\ \text{\it variable}\}\text{\bf )}]\\
-                            &[\text{\bf @}\ \text{\it variable}]
-    \end{align*}
+\subsection{Modularity}
+
+    Modularity is central to CAnDL, and it is achieved using the {\it include}
+    construct.
+    \begin{figure}[h]
+        \centering
+        \begin{tabular}{|c|}
+            \hline
+            $\text{\bf include}\ \left<\text{\bf s}\right>
+                                [\text{\bf (}\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \{\text{\bf ,}\ \text{\it variable}\ \text{\bf ->}\ \text{\it variable}\}\text{\bf )}]
+                                [\text{\bf @}\ \text{\it variable}]$\\
+            \hline
+        \end{tabular}
+    \end{figure}
+
+    \noindent
     Note that the syntax in square brackets is optional and the syntax in curly
     brackets can be repeated.
     The basic version of \texttt{\it include}, without the optional structures,
