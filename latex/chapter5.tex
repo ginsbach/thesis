@@ -22,6 +22,63 @@
     are achieved on several important programs.
 
 \newpage
+
+    To enable the capture of higher order functions such as stencils or
+    reduction operations, we need to handle arbitrary kernel functions.
+    Kernel functions are sections of code that are side-effect free and
+    can be separated out. Identifying side-effect free code is useful in
+    many types of compiler optimization.  It can be expressed in CAnDL, as
+    shown in \autoref{fig:kernel}.
+
+\begin{figure}[ht]
+\begin{lstlisting}[language=CAnDL]
+Constraint KernelFunction
+( collect i N
+([$\tt \land$]) ( include LocalConst({outer}->{begin}*@*{closure[i]}
+  ([$\tt \land$]) ir_type{closure[i].value} != literal
+  ([$\tt \land$]) {closure[i].use} ([$\tt \in$]) {closure[i].value}.args
+  ([$\tt \land$]) domination({inner}, {closure[i].use}))
+([$\tt \land$]) collect i N data_origin{tainted1[i]}
+([$\tt \land$]) collect i N
+([$\tt \land$]) ( domination({outer}, {tainted2[i]})
+  ([$\tt \land$]) strict_domination({tainted2[i]}, {inner}))
+([$\tt \land$]) calculated_from(
+   {tainted1[0..N],tainted2[0..N]},
+   {origin[0..N],closure[0..N].value,input[0..N]},
+   {output}))
+End
+\end{lstlisting}
+\vspace{-0.3cm}
+\caption{CAnDL Formulation of Kernel Functions}
+\label{fig:kernel}
+\end{figure}
+
+    Essentially, this set of contraints captures the computation of a
+    single \texttt{output} value from a set of specified \texttt{input}
+    values as well as a set of automatically captured \texttt{closure}
+    variables.  The computation for \texttt{output} should be such that it
+    can be replaced with a function call that is free of side effects and
+    takes only the \texttt{input} and \texttt{closure} variables as
+    arguments.
+
+    In addition to these variables, there are two non-obvious additional
+    variables involved: \texttt{outer} and \texttt{inner}.
+    These set boundaries in the control flow as follows: Closure values have to
+    be computed before \texttt{outer} and the computation that results in outer
+    is performed after \texttt{inner}.
+    Usually these will be derived from loops nests, where \texttt{outer} is the
+    entry to the outermost loop and \texttt{inner} is the entry to the innermost
+    loop.
+    The actual core constraint is then a generalized dominance relationship in
+    the program dependence graph.
+
+    The use of the sets \texttt{tainted1} and \texttt{tainted2} makes sure that
+    no impure functions are used in computing \texttt{output} and the entire
+    computation is performed after \texttt{inner} (ruling out e.g.\ loop carried
+    variabls from outer loops).
+
+
+\newpage
 \section{Introduction}
 
     Reductions occurs widely in numerical applications

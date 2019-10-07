@@ -39,44 +39,44 @@
 
 \section{Introduction}
 
-    Compilers are complex pieces of software, which transform input source code
-    through several compilation stages to eventually produce a binary program.
+    Compilers are complex pieces of software responsible for the generation of
+    efficient code.
+    They transform input source code through several compilation stages,
+    resulting in a binary program.
     In order to generate fast programs, modern compilers rely on a complex mid
-    end, in which program optimisations are applied to the user program after
-    parsing and before code genereation.
-    In this mid end, user code is typically represented in a static single
-    assignment intermediate representation and is optimised by successively
-    applying a wide range of optimization passes.
-    Compilers are limited here by their increasing code complexity and by the
-    necessity to reason at each stage about the soundness of the performed
-    operations.
+    end.
+    In this mid end, user code typically takes the form of a static single
+    assignment intermediate representation and it is optimised by successively
+    applying a wide range of optimisation passes.
+
+    Most compiler optimisations require two components:
+    analysis and transformation.
+    First, analysis routines find candidate sections in user programs that
+    enable specific transformations.
+    They furthermore verify that all conditions are satisfied to legally apply
+    them.
     It is crucial that optimisations retain the semantics of the original
     program, as otherwise the resulting binary might be corrupted.
+    Transformations are then applied to the analysis results in a second step.
+    This often also involves heuristic cost models to gauge the effect on
+    runtime, code size and other metrics.
 
-    Implementations of compiler optimizations generally require two components:
-    analysis and transformation.
-    Analysis routines find candidate sections in user programs that could profit
-    from specific transformations and verify that all conditions are satisfied
-    in order to legally apply them.
-    Transformations are then applied to the analysis results, often after
-    consulting heuristic cost models to gauge the effect on runtime, code size
-    and other metrics.
-
-    The analysis often contains much of the code complexity.
-    For example, simple peephole optimizations in the LLVM {\tt instcombine}
+    The complexity of the necessary analysis is an impediment to
+    the implementation of new compiler passes, preventing the rapid
+    prototyping of new ideas.
+    For example, simple peephole optimisations in the LLVM {\tt instcombine}
     pass contain approximately 30000 lines of complex C++ code, despite the
     transformations being simple.
-    This impedes the implementation of new compiler passes, preventing the rapid
-    prototyping of new ideas.
     Furthermore, this is an important source of bugs, and bugs in this stage of
-    the compiler are particularly pernicious, as they tamper with the user
-    programs, but can remain unnoticed and only trigger in corner cases.
+    the compiler are particularly pernicious.
+    They tamper with the user programs, but can remain unnoticed and often only
+    trigger in corner cases.
     Ideally, we would like a simpler way of implementing such analysis that
     reduces boiler-plate code and opens the way for new compiler optimisation
     innovation.
 
-    This chapter presents CAnDL, a domain specific language for compiler
-    analysis.
+    This chapter presents the Compiler Analysis Description Language (CAnDL), a
+    domain specific language for compiler analysis.
     It is a constraint programming language that operates on the static single
     assignment intermediate representation of the LLVM compiler infrastructure
     (LLVM IR).
@@ -90,12 +90,15 @@
     It has a strong emphasis on modularity, which enables debugging and the
     formulation of highly readable code.
 
-    The implementation of CAnDL is based on the constraint programming
-    methodology that was introduced in \autoref{chapter:theory}, using a solver
-    that is integrated directly into the LLVM code base.
-    On top of this solver, a complete working system is provided, including a
-    full parser and code generator for CAnDL as a full-fledged programming
-    langauge.
+    CAnDL is based on the constraint programming methodology introduced in
+    \autoref{chapter:theory}.
+    It uses a solver that is integrated into the LLVM code base.
+    CAnDL is developed as a complete programming language, with a full parser
+    and code generator.
+    The system is evaluated on a range of use cases from
+    different domains, including: standard LLVM optimisation passes,
+    custom optimisations for graphics shader programs and the detection static
+    control flow regions for polyhedral program transformations.
 
 \section{Motivating Example}
 
@@ -625,9 +628,16 @@ End
     For example, it can be used to guarantee that all memory accesses in a loop
     use affine index computations.
     The grammar is simple but the semantics require some elaboration.
-    \begin{align*}
-        \text{\bf collect}\ \left<\text{\bf s}\right>\ \text{\it index}\ \text{\it formula}
-    \end{align*}
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{|c|}
+        \hline
+        $\text{\bf collect}\ \left<\text{\bf s}\right>\ \text{\it index}\ \text{\it formula}$\\
+        \hline
+    \end{tabular}
+\end{figure}
+
+    \noindent
     In \autoref{fig:simplecollect}, the variables \texttt{arg[0],\dots,arg[N-1]}
     are constraint to contain all of the data dependences of \texttt{ins}.
     The first argument of \text{\it collect} specifies the name of an index
@@ -660,16 +670,15 @@ End
         \forall v\colon\ v\in I.\text{args}\implies\text{data\_type}(v)=\text{float}
     \label{fig:implication}
     \end{align}
-    We can rewrite this to an equivalent formulation on sets.
+    We can rewrite this to an equivalent formulation on sets:
     \begin{align*}
-        S_1:= \{v\mid v\in I.\text{args}\}\subset S_2:={}\{v\mid\text{data\_type}(v)=\text{float}\}
+        S_1:= \{v\mid v\in I.\text{args}\}\subset S_2:={}\{v\mid\text{data\_type}(v)=\text{float}\}.
     \end{align*}
     Now we can apply the following equivalences:
     \begin{align*}
-        &S_1\subset S_2\Leftrightarrow{}S_1 = S_1\cap S_2\\
-        \Leftrightarrow{}&\exists S\colon S=S_1\land S=S_1\cap S_2
+        S_1\subset S_2\iff S_1 = S_1\cap S_2\iff S=S_1\land S=S_1\cap S_2\text{ for some set }S.
     \end{align*}
-    This means that if we constraint a set $S$ to be equal to both $S_1$ and
+    This means that if we constrain a set $S$ to be equal to both $S_1$ and
     $S_1\cap S_2$ at the same time, the constraints are satisfiable if and only
     if the implication in \autoref{fig:implication} holds.
 
@@ -698,9 +707,9 @@ End
 \end{figure}
 
     The exact same approach can be used to e.g. restrict all array accesses in a
-    loop to be affine in the loop iterators.
-    This can be achieved by first {\it collect}ing all memory accesses
-    (i.e.\ all \texttt{load} and \texttt{store} instrutions) and then using
+    loop to be affine in the loop iterators:
+    First {\it collect} all memory accesses
+    (i.e.\ all \texttt{load} and \texttt{store} instrutions) and then use
     another {\it collect} statement to stipulate affine calculations for the
     indices.
 
@@ -708,7 +717,7 @@ End
 
     The modularity of CAnDL allows the creation of a library of building blocks
     that are shared by multiple CAnDL programs.
-    We will now give an overview about how these can be defined with CAnDL.
+    This section will give an overview of how these can be defined with CAnDL.
 
     Important building blocks include control flow structures such as single
     entry single exit regions and loops.
@@ -747,60 +756,6 @@ End
     order to avoid pointer chases.
     The index computation can then be described using the data flow and
     instruction opcode restrictions.
-
-    To enable the capture of higher order functions such as stencils or
-    reduction operations, we need to handle arbitrary kernel functions.
-    Kernel functions are sections of code that are side-effect free and
-    can be separated out. Identifying side-effect free code is useful in
-    many types of compiler optimization.  It can be expressed in CAnDL, as
-    shown in \autoref{fig:kernel}.
-
-\begin{figure}[ht]
-\begin{lstlisting}[language=CAnDL]
-Constraint KernelFunction
-( collect i N
-([$\tt \land$]) ( include LocalConst({outer}->{begin}*@*{closure[i]}
-  ([$\tt \land$]) ir_type{closure[i].value} != literal
-  ([$\tt \land$]) {closure[i].use} ([$\tt \in$]) {closure[i].value}.args
-  ([$\tt \land$]) domination({inner}, {closure[i].use}))
-([$\tt \land$]) collect i N data_origin{tainted1[i]}
-([$\tt \land$]) collect i N
-([$\tt \land$]) ( domination({outer}, {tainted2[i]})
-  ([$\tt \land$]) strict_domination({tainted2[i]}, {inner}))
-([$\tt \land$]) calculated_from(
-   {tainted1[0..N],tainted2[0..N]},
-   {origin[0..N],closure[0..N].value,input[0..N]},
-   {output}))
-End
-\end{lstlisting}
-\vspace{-0.3cm}
-\caption{CAnDL Formulation of Kernel Functions}
-\label{fig:kernel}
-\end{figure}
-
-    Essentially, this set of contraints captures the computation of a
-    single \texttt{output} value from a set of specified \texttt{input}
-    values as well as a set of automatically captured \texttt{closure}
-    variables.  The computation for \texttt{output} should be such that it
-    can be replaced with a function call that is free of side effects and
-    takes only the \texttt{input} and \texttt{closure} variables as
-    arguments.
-
-    In addition to these variables, there are two non-obvious additional
-    variables involved: \texttt{outer} and \texttt{inner}.
-    These set boundaries in the control flow as follows: Closure values have to
-    be computed before \texttt{outer} and the computation that results in outer
-    is performed after \texttt{inner}.
-    Usually these will be derived from loops nests, where \texttt{outer} is the
-    entry to the outermost loop and \texttt{inner} is the entry to the innermost
-    loop.
-    The actual core constraint is then a generalized dominance relationship in
-    the program dependence graph.
-
-    The use of the sets \texttt{tainted1} and \texttt{tainted2} makes sure that
-    no impure functions are used in computing \texttt{output} and the entire
-    computation is performed after \texttt{inner} (ruling out e.g.\ loop carried
-    variabls from outer loops).
 
 \section{Implementation}
 
