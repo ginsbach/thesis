@@ -235,19 +235,21 @@ End
 
 \section{Language Specification}
 
-    The Compiler Analysis Description Language (CAnDL) is a domain specific
+    The Compiler Analysis Description Language is a domain specific
     programming language for the specification of compiler analysis problems. 
-    Individual CAnDL programs define computational structures in user programs
-    that can be exploited by code transformations in optimising compilers.
-    These structures are specified as constraint programs on static single
+    Individual CAnDL programs define specific computational structures that
+    exist in user programs and that can be exploited by applying code
+    transformations.
+    These structures are specified as constraint programs on single static
     assignment (SSA) form representation of user code in LLVM IR.
-    CAnDL could also easily be ported to different SSA representations with the
-    background from \autoref{chapter:theory}.
+    CAnDL could also easily be ported to different SSA representations using the
+    underlying theory from \autoref{chapter:theory}.
 
     The expressed structures can scale from simple instruction patterns that are
-    suited for peephole optimizations over basic control flow structures such as
-    loops to complex algorithmic concepts such as stencil codes with arbitrary
-    kernel functions or code regions suitable for polyhedral analysis.
+    suited for peephole optimizations, over basic control flow structures such
+    as loops, to complex algorithmic concepts such as stencil codes with
+    arbitrary kernel functions or code regions suitable for polyhedral code
+    analysis.
 
     Like traditional constraint programs, CAnDL programs have two
     fundamental features: \textbf{variables} and \textbf{constraints}.
@@ -255,7 +257,7 @@ End
     tools, such as constraints on data and control flow, data types and
     instruction opcodes.
     These are composed with logical connectors and several higher level language
-    features, such as loops, with finally with a system of modularity and
+    features, such as loops, with finally a system of modularity and
     extensability on top.
     This section will introduce the language features,
     starting from the overall program structure.
@@ -267,6 +269,8 @@ End
     terminal symbols are {\bf bold}, non-terminals are {\it italic},
     $\left<\text{\bf s}\right>$ is an identifier (alphanumeric string) and
     $\left<\text{\bf n}\right>$ is an integer literal.
+    CAnDL uses unicode characters such as ``$\land$'', ``$\in$'', ``$\Phi$'' and
+    is typically encoded as UTF-8.
     An individual CAnDL program contains constraint formulas that are
     bound to identifiers.
     As previously shown in \autoref{fig:candlspec}, the syntax for this is as
@@ -295,32 +299,20 @@ End
 
     \noindent
     The basis of every CAnDL program are {\it atomic} constraints, which are
-    bound together by logical connectives $\land$ and $\lor$
-    ({\it conjunction} and {\it disjunction}) and other higher level constructs.
-    These include two kinds of loop structures ({\it foreach}, {\it forany}), as
-    well as a system for modularity (\texttt{include}).
+    bound together by logical connectives ``$\land$'' and ``$\lor$''
+    ({\it conjunction} and {\it disjunction}), as well as other higher level
+    constructs.
+    These include two kinds of loop structures ({\it foreach}, {\it forany}),
+    and a system for modularity (\texttt{include}).
     Lastly, the {\it collect} construct allows for the formulation of more
     complex constraints that require the $\forall$ quantifier.
     The individual classes of atomic constraints will be introduced next,
-    followed the the higher level constructs.
+    followed by the higher level constructs.
 
 \subsection{Atomic Constraints}
 
-    Based on the mathematical model description in \autoref{chapter:theory},
-    CAnDL provides a wide range of atomic constraints.
-    The most simple group are those that operate on only a single variable.
-    They are listed in \autoref{onevaratomics} and operate immediately on the
-    underlying mathematical structures, testing element-of properties of the
-    sets in order to constraint data types, instrution opcodes etc.
 
-    Next are atomic constraints based on the data flow and
-    control flow graphs, checking for element-of properties of pairs of
-    variables, as well as shallow comparison constraints.
-    These are listed in \autoref{twovaratomics}.
-    There is also an atomic constraint for Phi nodes as shown in
-    \autoref{phiatomic}.
-
-\begin{figure}[h]
+\begin{figure}[t]
   \centering
   \begin{tabular}{|c|c|}
     \hline
@@ -344,15 +336,12 @@ End
   \label{onevaratomics}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[t]
   \centering
   \begin{tabular}{|c|c|}
     \hline
     syntax & SSA model formulation \\
     \hline
-    \hline
-    $\text{\it variable}\ \text{\bf =}\ \text{\it variable}$ & $x=y$\\
-    $\text{\it variable}\ \text{\bf !=}\ \text{\it variable}$ & $x\neq y$\\
     \hline
     $\text{\it variable}\text{\bf.args[}\left<\text{\bf n}\right>\text{\bf]}\ \text{\bf =}\ \text{\it variable}$ & $(y,x,n)\in DFG_\mathcal F$\\
     $\text{\it variable}\ \text{\bf $\in$}\ \text{\it variable}\text{\bf .args}$ & $(x,y)\in DFG_\mathcal F^*$\\
@@ -360,69 +349,155 @@ End
     $\text{\it variable}\text{\bf.successors[}\left<\text{\bf n}\right>\text{\bf]}\ \text{\bf =}\ \text{\it variable}$ & $(x,y,n)\in CFG_\mathcal F$\\
     $\text{\it variable}\ \text{\bf $\in$}\ \text{\it variable}\text{\bf .successors}$ & $(y,x)\in CFG_\mathcal F^*$\\
     \hline
+    $\text{\it variable}\ \text{\bf =}\ \text{\it variable}$ & $x=y$\\
+    $\text{\it variable}\ \text{\bf !=}\ \text{\it variable}$ & $x\neq y$\\
+    \hline
   \end{tabular}
-  \caption{The second class of atomic constraints checks for graph edges in the
-           data flow and control low graphs, or simply check for shallow
-           equivalence of two variables.}
+  \caption{The second class of atomic constraints operate on pairs of variables.
+           The constraints check for graph edges in the
+           data flow and control low graphs, or simply for shallow equivalence.}
   \label{twovaratomics}
 \end{figure}
 
-\begin{figure}[h]
-  \centering
-  \begin{tabular}{|c|c|}
-    \hline
-    syntax & SSA model formulation \\
-    \hline
-    \hline
-    \multirow{2}{*}{$\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \Phi\ \text{\it variable}$}
-        & $(z,phi)\in I_\mathcal F\mathrel\land (y,z)\in m(CFG_\mathcal F^*)\mathrel\land$ \exists n: \\
-        & $(x,z,n)\in DFG_\mathcal F\mathrel\land n=|\{y'\leq y\mid (y',z)\in m(CFG_\mathcal F^*)\}|$\\
-    \hline
-  \end{tabular}
-  \caption{CAnDL exposes Phi nodes with a dedicated atomic constraint.
-           The modified control flow graph $m(CFG_\mathcal F^*)$ duplicates
-           control flow edges into basic blocks with multiple Phi nodes.}
-  \label{phiatomic}
-\end{figure}
+    Based on the model from \autoref{chapter:theory}, CAnDL provides a wide
+    range of atomic constraints.
+    The most simple group are those that operate on only a single variable,
+    listed in \autoref{onevaratomics}.
+    They operate immediately on the underlying mathematical structures, testing
+    element-of properties of the sets in order to constrain data types,
+    instrution opcodes etc.
+    At the bottom of the list is the {\bf function\_name} constraint,
+    which is particular.
+    Function names are not a fundamental component of the SSA model from
+    \autoref{chapter:theory}.
+    However, they are easily accommodated within the type information
+    $T_\mathcal F$.
+    The same data structure can also be used to capture all kinds of LLVM
+    specific metadata.
+
+    There are additional atomic constraint that operate on pairs of variables.
+    These are listed in \autoref{twovaratomics}.
+    These most importantly check for edges in the control flow and data flow
+    graphs.
+    Furthermore, two constraints are available for shallow comparisons of
+    variables.
+
+
+%\begin{figure}[h]
+%  \centering
+%  \begin{tabular}{|c|c|}
+%    \hline
+%    syntax & SSA model formulation \\
+%    \hline
+%    \hline
+%    \multirow{2}{*}{$\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \Phi\ \text{\it variable}$}
+%        & $(z,phi)\in I_\mathcal F\mathrel\land (y,z)\in m(CFG_\mathcal F^*)\mathrel\land$ \exists n: \\
+%        & $(x,z,n)\in DFG_\mathcal F\mathrel\land n=|\{y'\leq y\mid (y',z)\in m(CFG_\mathcal F^*)\}|$\\
+%    \hline
+%  \end{tabular}
+%  \caption{CAnDL exposes Phi nodes with a dedicated atomic constraint.
+%           The modified control flow graph $m(CFG_\mathcal F^*)$ duplicates
+%           control flow edges into basic blocks with multiple Phi nodes.}
+%  \label{phiatomic}
+%\end{figure}
 
     On top of the atomic constraints that operate immediately on the sets of
     the mathematical model, there are a list of constraints that are based on
     based on graph properties.
-    These include reachability as well as dominance relationships in the data
-    flow and control flow graphs.
+    These include dominance relationships and the interaction of data flow and
+    control flow in $\Phi$ nodes.
 
-    \begin{align*}
-        \text{\bf control\_origin}&\ \text{\it variable}\\
-        \text{\bf data\_origin}&\ \text{\it variable}
-    \end{align*}
-    The value is an origin of control (function entry) or data (function argument, {\tt load} instruction, inpure function call).
-    \begin{align*}
-        \text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \Phi\ \text{\it variable}
-    \end{align*}
-    The left value has to reach the right value, which is a phi node, via the middle value, which is a jump instruction.
-    \begin{align*}
-        \text{\bf domination(}\text{\it variable}\text{\bf,} \text{\it variable}\text{\bf)}&\\
-        \text{\bf strict\_domination(}\text{\it variable}\text{\bf,} \text{\it variable}\text{\bf)}&
-    \end{align*}
-    Both values have to be instructions and the first dominates the second in the control flow graph.
-    \begin{align*}
-        \text{\bf calculated\_from(}\text{\it varlist}\text{\bf,}\text{\it varlist}\text{\bf,}\text{\it variable}\text{\bf)}
-    \end{align*}
-    {\it Varlist} is a set of one or multiple {\it variables}.
-    Any path from one of the entries in the first {\it varlist} to the single
-    {\it variable} argument has to pass through at least one of the entries in
-    the second {\it varlist}.
-    All paths in the union of the data flow and control dependence graph are
-    considered.
-    We will see later how this is useful to specify kernel functions for
-    e.g.\ stencil calculations.
+%    \begin{align*}
+%        \text{\bf control\_origin}&\ \text{\it variable}\\
+%        \text{\bf data\_origin}&\ \text{\it variable}
+%    \end{align*}
+%    The value is an origin of control (function entry) or data (function argument, {\tt load} instruction, inpure function call).
 
-    There are some {\it atomic}s that we omit for space reasons.
+\subsubsection*{Phi Nodes}
+
+    The following syntax is used to express the condition that a value reaches a
+    $\Phi$ node via a specific jump instruction:
+\begin{figure}[h]
+    \centering
+    \begin{tabular}{|c|}
+        \hline
+        $\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \Phi\ \text{\it variable}$\\
+        \hline
+    \end{tabular}
+\end{figure}
+
+    \noindent
+    More precisely, the expression $\{A\}\text{\bf ->}\{B\}\Phi\{C\}$ means that
+    the value of $C$ is $A$ if $B$ was the last branch taken before $C$ was
+    reached.
+    Using the SSA model, this is equivalent to the following:
+    \begin{align*}
+        (C,phi)\in I_\mathcal F\mathrel\land{}&(B,h(C))\in CFG_\mathcal F\mathrel\land(A,C,n)\in DFG_\mathcal F,\\
+            \text{where }h(C):={}&min\{c\mid (x,phi)\in I_\mathcal F\text{ for all }c\leq x\leq C\}\\
+            \text{and }n:={}&\{b\leq B\mid (b,h(C))\in CFG_\mathcal F\}.
+    \end{align*}
+    Firstly, $C$ is a $\Phi$ node.
+    Secondly, $B$ has a control flow edge to the basic block that $C$ is in.
+    The first instruction of this basic block is identified as $h(C)$, to
+    account for the possibility of more than one $\Phi$ node in the block.
+    Thirdly, $A$ is the $n$-th argument of $C$, where $n$ is the index of $B$ in
+    the list of jump instructions targeting $h(C)$.
+
+\subsubsection*{Graph Domination}
+
+    In order to express domination in the control flow graph, the following
+    syntax is used:
+\begin{figure}[h]
+    \centering
+    \begin{tabular}{|c|}
+        \hline
+        $\text{\bf domination(}\text{\it variable}\text{\bf,} \text{\it variable}\text{\bf)}$\\
+        $\text{\bf strict\_domination(}\text{\it variable}\text{\bf,} \text{\it variable}\text{\bf)}$\\
+        \hline
+    \end{tabular}
+\end{figure}
+
+    \noindent
+    For both these constraints, the values are implicitly limited to
+    instructions.
+    The expression ``{\bf domination}(\{A\},\{B\})'' means that $A$ is a
+    dominator of $B$, i.e.\ any path through the control flow graph from the
+    entry node to $B$ must go through $A$.
+    Strict domination additionally requires that $A$ and $B$ are distinct.
+
+    Another generalised graph domination is given by the following:
+\begin{figure}[h]
+    \centering
+    \begin{tabular}{|c|}
+        \hline
+        ${\bf all}\ {\bf control}\ {\bf flow}\ {\bf from}\ variable\ {\bf to}\ variable\ {\bf passes}\ {\bf through}\ variable$\\
+        \hline
+    \end{tabular}
+\end{figure}
+
+    \noindent
+    This constraint is similar to a standard control flow domination, but
+    instead of taking paths from the control flow origin, a third variable is
+    used for parameterisation. 
+%    \begin{align*}
+%        \text{\bf calculated\_from(}\text{\it varlist}\text{\bf,}\text{\it varlist}\text{\bf,}\text{\it variable}\text{\bf)}
+%    \end{align*}
+%    {\it Varlist} is a set of one or multiple {\it variables}.
+%    Any path from one of the entries in the first {\it varlist} to the single
+%    {\it variable} argument has to pass through at least one of the entries in
+%    the second {\it varlist}.
+%    All paths in the union of the data flow and control dependence graph are
+%    considered.
+%    We will see later how this is useful to specify kernel functions for
+%    e.g.\ stencil calculations.
+
+\subsubsection*{Additional Atomic Constraints}
+
     The set of {\it atomic}s that CAnDL supports is easily extensible.
+    This will be further explored in later chapters.
     Possible additions include constraints on function attributes, value
     constraints on literals etc.
 
-\newpage
 \subsection{Range Constraints}
 
     Building on top of atomics and the fundamental conjunction and disjunction
