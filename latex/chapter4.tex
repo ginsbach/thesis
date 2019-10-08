@@ -826,16 +826,18 @@ Constraint SimpleAddition
 End
 \end{lstlisting}
 \begin{lstlisting}[language=C++]
-auto constr0 = AddInstruction(context);
-auto constr1 = make_shared<FirstArgument>(context);
-auto constr2 = make_shared<SecondArgument>(context);
-auto constr3 = And(constr0, select<1>(constr1),
-                            select<1>(constr2));
+auto constr0 = make_shared<AddInstruction>(model);
+auto constr1 = make_shared<FirstArgument> (model);
+auto constr2 = make_shared<SecondArgument>(model);
+auto constr3 = make_shared<Conjunction>(
+                   constr0,
+                   select<0>(constr1),
+                   select<0>(constr2));
 
-vector<pair<string,BacktrackingPart>> result(3);
-result.emplace_back("addition", constr3);
-result.emplace_back("left", select<0>(constr1));
-result.emplace_back("right", select<0>(constr2));
+vector<pair<string,shared_ptr<BacktrackingPart>>> result(3);
+result[0] = make_pair("addition", constr3);
+result[1] = make_pair("left",     select<1>(constr1));
+result[2] = make_pair("right",    select<1>(constr2));
 \end{lstlisting}
 \vspace{-0.3cm}
 \caption{C++ source code generation}
@@ -848,158 +850,37 @@ result.emplace_back("right", select<0>(constr2));
     an object of a corresponding class:
     In this case, the three involved atomic constraints are implemented by
     \texttt{AddInstruction}, \texttt{FirstArgument} and \texttt{SecondArgument}.
-    For constraints that involve more than one variable, these objects are
-    instantiated as shared pointers.
+    For constraints that 
+    These objects are instantiated as shared pointers.
 
     The compiler then generates similar objects for the
     \texttt{conjunction}, \texttt{disjunction} and the \texttt{collect} structures.
     In our example, this only affects the variable \texttt{addition}, which is
     part of a \texttt{conjunction} clause.
     This results in an additional object construction that instantiates the
-    \texttt{And} class corresponding to the {\bf $\land$} operator in CAnDL.
-    The \texttt{select} function is used here to specify which variable of a
-    constraint is being operated on.
-    In this case, \texttt{addition} is the second variable in lines 3-4 of the
-    CAnDL program, so \texttt{select<1>} is used.
+    \texttt{Conjunction} class corresponding to the ``$\land$'' operator
+    in CAnDL.
+
+    Those constraint classes that implement constraints on a single variable
+    directly implement the \texttt{BacktrackingPart} interface introduced in
+    \autoref{cppsolver}.
+    In this example, this is true for \texttt{AddInstruction} and
+    \texttt{Conjunction}.
+    For more complex constraints, the \texttt{select<n>} template is used to
+    specify which variable of a constraint is being considered.
+    In lines 6--7, this is used to extract the parts of backtracking solutions
+    referring to the \texttt{addition} variable, and to then pass them as
+    arguments to the conjunction.
 
     Finally, the generated objects are inserted into a vector together with the
     corresponding variable names.
-    This vector is then passed to the solver.
-
-\newpage
-\subsection{The Solver}
-
-    The solver takes  LLVM IR code and a graph representation of the constraint
-    problem as constructed by the generated code.
-    We saw in \autoref{fig:codegen} that this representation comes in the form
-    of a vector of labeled instances of a class called
-    \texttt{SolverAtomContainer}.
-    This class wraps around the class \texttt{BacktrackingPart} that is defined in
-    \autoref{lst:solveratom}.
-
-\begin{figure}[ht]
-\begin{lstlisting}
-class BacktrackingPart {
-public:
-  virtual SkipResult skip_invalid(unsigned& c)const;
-
-  virtual void begin();
-  virtual void fixate(unsigned c);
-  virtual void resume();
-};
-\end{lstlisting}
-\vspace{-0.3cm}
-\caption{The BacktrackingPart interface.}
-\label{lst:solveratom}
-\end{figure}
-
-    The motivation for this interface is as follows:
-    The solver operates on unsigned integers, using the \texttt{skip\_invalid}
-    method to search for partial solutions.
-    The corresponding LLVM values are numbered consecutively and the unsigned
-    integers simply represent indices into that enumeration.
-    When \texttt{skip\_invalid} returns \texttt{FAIL}, the solver backtracks.
-    The other member functions \texttt{begin}, \texttt{fixate} and
-    \texttt{resume} allow implementations of \texttt{BacktrackingPart}
-    to do bookkeeping.
-
-    Pseudocode for the backtracking constraint solver is shown in
-    \autoref{fig:solver}.
-    The array of \texttt{BacktrackingPart}s is named \texttt{atom}, \texttt{solution}
-    is an array of integers that is incrementally filled with a solution to the
-    constraint problem.
-    In line 3, we can see that the \texttt{skip\_invalid} method is used to find
-    the next candidate solution for the \texttt{i}th element of the solution,
-    taking into account all the previously established elements
-    \texttt{solution[0..i-1]}.
-    The candidate solution is directly stored in \texttt{solution[i]}, which is
-    passed by reference as shown in \autoref{lst:solveratom}.
-    If the step was successful, then the solver either returns the solution if
-    it is complete or it moves on the the next element (line 11), otherwise it
-    backtracks (line 16).
-    The member function \texttt{fixate}, \texttt{begin} and \texttt{resume} are
-    called appropriately in lines 6, 12 and 17.
-
-\begin{figure}[t]
-\begin{lstlisting}
-i := 0
-while i >= 0:
-    result := atom[i].skip_invalid(solution[i])
-
-    if result = SkipResult::PASS:
-        atom[i].fixate(solution[i])
-
-        if i+1 = N:
-            return solution
-        else:
-            i := i+1
-            solver_atom[i].begin()
-            solution[i] := 0
-
-    if result = SkipResult::FAIL:
-        i := i-1
-        atom[i]->resume()
-        solution[i] := solution[i]+1
-\end{lstlisting}
-\vspace{-0.3cm}
-\caption{Pseudocode of the backtracking solver}
-\label{fig:solver}
-\end{figure}
-
-    We can see that the solver is generic and requires no knowledge of LLVM or
-    the structure of variable names in CAnDL.
-    Furthermore, the solver is unaware not only of the underlying LLVM structure
-    and the corresponding atomic constraints, but also of the
-    \texttt{conjunction} and \texttt{disjunction}, as well as the
-    \texttt{collect} constructs.
-
-    The complexity of the solving process lies almost entirely in the
-    implementation of the \texttt{BacktrackingPart} interface for the different atomic
-    constraints and their interactions.
-    For constraints like the \textbf{is an add instruction} statement,
-    this is straightforward.
-    The member function \texttt{skip\_invalid} only has to test whether
-    the value at \mbox{index n} in the function is an add instruction or not.
-    This can be implemented as shown in \autoref{lst:solveratomadd}.
-
-\begin{figure}[ht]
-\begin{lstlisting}
-class AddInstruction : public BacktrackingPart {
-public:
-  AddInstruction(Context&) { ... }
-
-  SkipResult skip_invalid(unsigned& c) const
-  {
-      if(c >= value_list->size())
-        return SkipResult::FAIL;
-
-      if(auto inst = dyn_cast<Instruction>
-                       ((*value_list)[c]))
-      {
-        if(inst->getOpcode() == Instruction::Add)
-          return SkipResult::PASS;
-      }
-
-      c=c+1;
-      return SkipResult::CHANGE;
-  }
-
-  void begin() {}
-  void fixate(unsigned c) {}
-  void resume() {}
-
-private:
-  shared_ptr<vector<Value*>> value_list;
-};
-\end{lstlisting}
-\vspace{-0.3cm}
-\caption{BacktrackingPart for additions}
-\label{lst:solveratomadd}
-\end{figure}
+    This vector corresponds to the backtracking solution of the entire
+    constraint problem and is then passed to the solver, which is implemented
+    as in \autoref{cppsolver}.
 
 \begin{figure*}[ht]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/visual_gui2.png}
+\includegraphics[width=\textwidth]{figures/visual_gui2.png}
 \caption{Interactive CAnDL test tool}
 \medskip
 \small
@@ -1015,13 +896,13 @@ Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show t
     It is important to keep in mind that CAnDL is targeted at expert compiler
     developers.
 
-    In order to make debugging of CAnDL programs more feasible, we developed
-    supporting tools.
+    In order to make debugging of CAnDL programs more feasible, several
+    supporting tools can be used.
     Most importantly, this includes an interactive gui, where developers can
     test out corner cases of CAnDL programs to find false positives and false
     negatives.
     This gui is shown in \autoref{fig:gui}, the example is from one of the use
-    cases presented in a \autoref{sec:casestudies}.
+    cases presented in \autoref{sec:casestudies}.
 
     In the left column, we can see part of a C program from the PolyBench
     benchmark suite, which implements a two-dimensional Jacobi stencil.
@@ -1043,11 +924,11 @@ Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show t
 \section{Case Studies}
 \label{sec:casestudies}
 
-    We evaluate the usefulness of CAnDL on three real life use cases.
-    We first use it  for  simple peephole optimizations.
-    We then apply CAnDL to graphics shader code optimization.
-    Finally, we demonstrate the detection of static control flow parts (SCoPs)
-    for polyhedral code analysis.
+    The usefulness of CAnDL is evaluated on three real life use cases.
+    First, it is used for simple peephole optimizations.
+    Secondly, CAnDL is applied to graphics shader code optimisation.
+    Finally, the detection of static control flow parts (SCoPs) for polyhedral
+    code analysis is demonstrated.
     Where possible, we compare the number of lines of CAnDL code, the achieved
     program coverage and performance against prior approaches.
 
