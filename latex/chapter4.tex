@@ -929,8 +929,8 @@ Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show t
     Secondly, CAnDL is applied to graphics shader code optimisation.
     Finally, the detection of static control flow parts (SCoPs) for polyhedral
     code analysis is demonstrated.
-    Where possible, we compare the number of lines of CAnDL code, the achieved
-    program coverage and performance against prior approaches.
+    Where possible, the evaluation compares the number of lines of CAnDL code,
+    the achieved program coverage and performance against prior approaches.
 
 \subsection{Simple Optimizations}
 
@@ -949,7 +949,7 @@ Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show t
     This analysis problem can be formulated in CAnDL as shown in
     \autoref{fig:facopport}.
     The CAnDL program even captures a much larger class of opportunities for
-    factorization than \texttt{instcombine}, which require to first apply
+    factorization than \texttt{instcombine}, which requires to first apply
     associative and commutative laws to reorder the values.
     This is for example needed in the case of \autoref{fig:factorization2} and
     only partially supported by LLVM with the additional \texttt{reassociate}
@@ -979,22 +979,23 @@ End
 \label{fig:facopport}
 \end{figure}
 
-    We evaluated the program in \autoref{fig:facopport} against the default
-    factorization optimization in LLVM's \texttt{instcombine} on three benchmark
+\subsubsection{Setup}
+
+    The program in \autoref{fig:facopport} was evaluated against the default
+    factorisation optimisation in LLVM's \texttt{instcombine} on three benchmark
     suites: the sequential C versions of NPB, the C versions of Parboil and the
     OpenMP C/C++ versions of Rodinia.
-    We extended the existing LLVM \texttt{instcombine} pass such that it
+    The existing LLVM \texttt{instcombine} pass was extended such that it
     automatically reports every time that it successfully applies the
     \texttt{tryFactorization} function.  
 
     % NPB:     29047 loc
     % Parboil:  7358 loc
     % Rodinia: 58510 loc
-    We compiled all the individual benchmark programs in the three benchmark
-    suites, which consist of 94915 lines of code in total.
-    For each benchmark suite, we added up all factorizations that were
-    reported.
-    We also measured LLVM's total compilation time.  
+    The individual benchmark programs in the three benchmark
+    suites consist of 94915 lines of code in total.
+    For each benchmark suite, the total number of reported factorisations as
+    well as LLVM's total compilation time were measured.
 
     We then disabled the standard LLVM optimization and instead used the CAnDL
     generated detection functionality.
@@ -1005,6 +1006,7 @@ End
     well as the CAnDL generated path.
 
 \subsubsection{Results}
+
 \begin{figure}[ht]
 \centering
 \begin{tabular}{|l||l|l|}
