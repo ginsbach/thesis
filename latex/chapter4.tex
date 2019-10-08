@@ -945,12 +945,14 @@ Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show t
         a*b+a*c\rightarrow a*(b+c)
         \label{fig:factorization1}
     \end{align}
-
     This analysis problem can be formulated in CAnDL as shown in
     \autoref{fig:facopport}.
-    The CAnDL program even captures a much larger class of opportunities for
-    factorization than \texttt{instcombine}, which requires to first apply
-    associative and commutative laws to reorder the values.
+    Crucually, in lines 5,7,9,11, the specification makes use of
+    \texttt{SumChain} and \texttt{MulChain}, which allows the CAnDL program
+    to capture a large, generalised class of opportunities for factorization.
+    The \texttt{instcombine} pass only has limited support for this, and
+    requires to first apply associative and commutative laws to reorder the
+    values.
     This is for example needed in the case of \autoref{fig:factorization2} and
     only partially supported by LLVM with the additional \texttt{reassociate}
     pass.
@@ -985,7 +987,7 @@ End
     factorisation optimisation in LLVM's \texttt{instcombine} on three benchmark
     suites: the sequential C versions of NPB, the C versions of Parboil and the
     OpenMP C/C++ versions of Rodinia.
-    The existing LLVM \texttt{instcombine} pass was extended such that it
+    The existing LLVM \texttt{instcombine} pass was extended so that it
     automatically reports every time that it successfully applies the
     \texttt{tryFactorization} function.  
 
@@ -997,11 +999,10 @@ End
     For each benchmark suite, the total number of reported factorisations as
     well as LLVM's total compilation time were measured.
 
-    We then disabled the standard LLVM optimization and instead used the CAnDL
-    generated detection functionality.
-    We compiled the same application programs reporting the number of
-    factorizations found and again measured the total compilation time this time
-    using CAnDL.
+    Then the standard LLVM optimisation was disabled and instead the CAnDL
+    generated detection functionality was used.
+    The same application programs were compiled, reporting the number of
+    factorisations found, and again measuring the total compilation time.
     Note that this compilation time includes all the other passes within LLVM as
     well as the CAnDL generated path.
 
@@ -1029,8 +1030,8 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\ \hline
     The results are shown in \autoref{fig:factorization_results}.
     In general, the performance impact of peephole optimizations is small
     and in two of the benchmark sets we find only very small numbers.
-    LLVM was unable to perform any factorization in the entire Parboil suite.
-    However,  the Rodinia suite contains more opportunities, mostly in the
+    LLVM was unable to perform any factorisation in the entire Parboil suite.
+    However, the Rodinia suite contains more opportunities, mostly in the
     Particlefilter and Mummergpu programs.
 
     In all three benchmarks suites, our scheme finds the same factorization
@@ -1038,10 +1039,28 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\ \hline
     With only 12 lines of CAnDL code, we were able to capture more factorization
     opportunities than LLVM did using two hundred lines of code.
 
-    Using CAnDL  on large complex benchmark suites only increased total
+    Using CAnDL on large complex benchmark suites only increased total
     compilation time by 5\%, demonstrating its use as a prototyping tool.
 
 \subsection{Graphics Shader Optimizations}
+
+\begin{figure}[t]
+\begin{lstlisting}[language=CAnDL]
+Constraint FloatingPointAssociativeReorder
+( include VectorMulChain and
+([$\tt \land$]) collect j N
+([$\tt \land$]) ( {hoisted[k]} = {factors[i]} forsome i=0..N
+  ([$\tt \land$]) include ScalarHoist({hoisted[j]}->{out},
+                       {scalar[j]}->{in})@{hoist[j]})
+([$\tt \land$]) collect j N
+  ( {nonhoisted[j]}  = {factors[i]} forsome i=0..N
+  ([$\tt \land$]) {nonhoisted[j]} != {hoisted[i]} forall  i=0..N))
+End
+\end{lstlisting}
+\vspace{-0.3cm}
+\caption{CAnDL code for vectorized multiplication chains}
+\label{fig:Lewis}
+\end{figure}
 
     Graphics computations often involve arithmetic on vectors of single
     precision floating point values that represent either vertex positions in
@@ -1081,24 +1100,6 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\ \hline
     In a last step, all other factors are collected into the array
     \texttt{nonhoisted}.
 
-\begin{figure}[ht]
-\begin{lstlisting}[language=CAnDL]
-Constraint FloatingPointAssociativeReorder
-( include VectorMulChain and
-([$\tt \land$]) collect j N
-([$\tt \land$]) ( {hoisted[k]} = {factors[i]} forsome i=0..N
-  ([$\tt \land$]) include ScalarHoist({hoisted[j]}->{out},
-                       {scalar[j]}->{in})@{hoist[j]})
-([$\tt \land$]) collect j N
-  ( {nonhoisted[j]}  = {factors[i]} forsome i=0..N
-  ([$\tt \land$]) {nonhoisted[j]} != {hoisted[i]} forall  i=0..N))
-End
-\end{lstlisting}
-\vspace{-0.3cm}
-\caption{CAnDL code for vectorized multiplication chains}
-\label{fig:Lewis}
-\end{figure}
-
     The corresponding transformation pass simply generates all the appropriate
     scalar and vector multiplications and replaces the old result with this
     newly generated one.
@@ -1137,6 +1138,7 @@ Detected in GFX 4.0 & - & 19 \\ \hline
 \label{fig:qualcommspeedup}
 \end{figure}
 
+\pagebreak
 \subsection{Polyhedral SCoPs}
 
     The polyhedral model allows compilers to utilize powerful mathematical
