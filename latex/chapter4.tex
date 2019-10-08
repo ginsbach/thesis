@@ -77,7 +77,7 @@
 
     This chapter presents the Compiler Analysis Description Language (CAnDL), a
     domain specific language for compiler analysis.
-    It is a constraint programming language that operates on the static single
+    It is a constraint programming language, operating on the static single
     assignment intermediate representation of the LLVM compiler infrastructure
     (LLVM IR).
     Instead of writing compiler analysis code inside the main codebase of the
@@ -156,16 +156,15 @@ End
     \citet{Menendez:2017:ADP:3062341.3062372}.
     This is impractical and an impediment to compiler development.
 
-    Instead, CAnDL allows a declarative description of the analysis problem,
-    which is easier to follow, has no interaction with other optimisations and
-    is much less verbose.
-    This is shown in \autoref{fig:candlspec}.
+    Instead, CAnDL allows a declarative description of the analysis problem.
+    It is easier to follow, has no interaction with other optimisations and
+    is concise, as visible in \autoref{fig:candlspec}.
     The first line of the program assigns a name to the specification, which is
-    then defined by the interaction of seven atomic constraint statements that
-    have to hold simultaneously on the values of \texttt{sqrt\_call},
-    \texttt{sqrt\_fn}, \texttt{square} and \texttt{a}.
-    The lines 2-8 each stipulate one of these constraints and they are joined
-    together with the logical conjunction operator ``$\land$''.
+    then defined by the interaction of seven so-called {\em atomic constraint}s.
+    These individual statements have to hold simultaneously on the values of
+    \texttt{sqrt\_call}, \texttt{sqrt\_fn}, \texttt{square} and \texttt{a}.
+    The lines 2--8 each stipulate one of these constraints, and they are joined
+    together with logical conjunctions ``$\land$''.
 
     The CAnDL compiler translates this declarative program into a C++ analysis
     function that is used in an LLVM optimisation pass.
@@ -249,10 +248,10 @@ End
     underlying theory from \autoref{chapter:theory}.
 
     The expressed structures can scale from simple instruction patterns that are
-    suited for peephole optimizations, over basic control flow structures such
+    suited for peephole optimizations, over control flow structures such
     as loops, to complex algorithmic concepts such as stencil codes with
     arbitrary kernel functions or code regions suitable for polyhedral code
-    analysis.
+    transformations.
 
     Like traditional constraint programs, CAnDL programs have two
     fundamental features: \textbf{variables} and \textbf{constraints}.
@@ -717,7 +716,7 @@ End
 
     The modularity of CAnDL allows the creation of a library of building blocks
     that are shared by multiple CAnDL programs.
-    This section will give an overview of how these can be defined with CAnDL.
+    This section will give an overview of how these can be defined.
 
     Important building blocks include control flow structures such as single
     entry single exit regions and loops.
@@ -757,6 +756,13 @@ End
     The index computation can then be described using the data flow and
     instruction opcode restrictions.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.65\textwidth]{figures/compilerFlow2.pdf}
+\caption{CAnDL in the LLVM/clang build system}
+\label{fig:build2}
+\end{figure}
+
 \section{Implementation}
 
     CAnDL interacts with the LLVM framework, as shown in \autoref{fig:build2}.
@@ -764,21 +770,14 @@ End
     source code to implement the specified LLVM analysis functionality.
     This code depends on a generic backtracking solver, which is incorporated
     into the main LLVM code base. 
-    We will see in the evaluation section this this solver adds little
-    compile-time overhead in practice.
+    The evaluation at the end of the chapter will show that this solver adds
+    little compile-time overhead in practice.
     The generated code is compiled and linked together with the existing LLVM
     libraries to make LLVM optimization passes available in the clang compiler.
 
     The generated analysis passes use the solver to search for the specified
     computational structures and output the found instances into report files,
     as well as making them available to ensuing transformation passes.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.6\textwidth]{figures/compilerFlow2.pdf}
-\caption{CAnDL in the LLVM/clang build system}
-\label{fig:build2}
-\end{figure}
 
 \subsection{The CAnDL Compiler}
 
@@ -817,7 +816,33 @@ End
 
 \subsubsection{C++ Code Generation}
 
-    We demonstrate the code generation process in \autoref{fig:codegen} with an
+\begin{figure}[t]
+\centering
+\begin{lstlisting}[language=CAnDL]
+Constraint SimpleAddition
+( opcode{addition} = add
+([$\tt \land$]) {addition}.args[0] = {left}
+([$\tt \land$]) {addition}.args[1] = {right})
+End
+\end{lstlisting}
+\begin{lstlisting}[language=C++]
+auto constr0 = AddInstruction(context);
+auto constr1 = make_shared<FirstArgument>(context);
+auto constr2 = make_shared<SecondArgument>(context);
+auto constr3 = And(constr0, select<1>(constr1),
+                            select<1>(constr2));
+
+vector<pair<string,BacktrackingPart>> result(3);
+result.emplace_back("addition", constr3);
+result.emplace_back("left", select<0>(constr1));
+result.emplace_back("right", select<0>(constr2));
+\end{lstlisting}
+\vspace{-0.3cm}
+\caption{C++ source code generation}
+\label{fig:codegen}
+\end{figure}
+
+    The code generation process is demonstrated in \autoref{fig:codegen} with an
     example.
     Each of the atomic constraints results in a line of C++ code that constructs
     an object of a corresponding class:
@@ -835,38 +860,13 @@ End
     The \texttt{select} function is used here to specify which variable of a
     constraint is being operated on.
     In this case, \texttt{addition} is the second variable in lines 3-4 of the
-    CAnDL program, so we use \texttt{select<1>}.
+    CAnDL program, so \texttt{select<1>} is used.
 
     Finally, the generated objects are inserted into a vector together with the
     corresponding variable names.
     This vector is then passed to the solver.
 
-\begin{figure}[ht]
-\centering
-\begin{lstlisting}[language=CAnDL]
-Constraint SimpleAddition
-( opcode{addition} = add
-([$\tt \land$]) {addition}.args[0] = {left}
-([$\tt \land$]) {addition}.args[1] = {right})
-End
-\end{lstlisting}
-\begin{lstlisting}[language=C++]
-auto constr0 = AddInstruction(context);
-auto constr1 = make_shared<FirstArgument>(context);
-auto constr2 = make_shared<SecondArgument>(context);
-auto constr3 = And(constr0, select<1>(constr1),
-                            select<1>(constr2));
-
-vector<pair<string,SolverAtomContainer>> result(3);
-result.emplace_back("addition", constr3);
-result.emplace_back("left", select<0>(constr1));
-result.emplace_back("right", select<0>(constr2));
-\end{lstlisting}
-\vspace{-0.3cm}
-\caption{C++ source code generation}
-\label{fig:codegen}
-\end{figure}
-
+\newpage
 \subsection{The Solver}
 
     The solver takes  LLVM IR code and a graph representation of the constraint
@@ -874,12 +874,12 @@ result.emplace_back("right", select<0>(constr2));
     We saw in \autoref{fig:codegen} that this representation comes in the form
     of a vector of labeled instances of a class called
     \texttt{SolverAtomContainer}.
-    This class wraps around the class \texttt{SolverAtom} that is defined in
+    This class wraps around the class \texttt{BacktrackingPart} that is defined in
     \autoref{lst:solveratom}.
 
 \begin{figure}[ht]
 \begin{lstlisting}
-class SolverAtom {
+class BacktrackingPart {
 public:
   virtual SkipResult skip_invalid(unsigned& c)const;
 
@@ -889,7 +889,7 @@ public:
 };
 \end{lstlisting}
 \vspace{-0.3cm}
-\caption{The SolverAtom interface.}
+\caption{The BacktrackingPart interface.}
 \label{lst:solveratom}
 \end{figure}
 
@@ -900,12 +900,12 @@ public:
     integers simply represent indices into that enumeration.
     When \texttt{skip\_invalid} returns \texttt{FAIL}, the solver backtracks.
     The other member functions \texttt{begin}, \texttt{fixate} and
-    \texttt{resume} allow implementations of the \texttt{SolverAtom} interface
+    \texttt{resume} allow implementations of \texttt{BacktrackingPart}
     to do bookkeeping.
 
     Pseudocode for the backtracking constraint solver is shown in
     \autoref{fig:solver}.
-    The array of \texttt{SolverAtom}s is named \texttt{atom}, \texttt{solution}
+    The array of \texttt{BacktrackingPart}s is named \texttt{atom}, \texttt{solution}
     is an array of integers that is incrementally filled with a solution to the
     constraint problem.
     In line 3, we can see that the \texttt{skip\_invalid} method is used to find
@@ -954,16 +954,17 @@ while i >= 0:
     \texttt{collect} constructs.
 
     The complexity of the solving process lies almost entirely in the
-    implementation of the \texttt{SolverAtom} interface for the different atomic
+    implementation of the \texttt{BacktrackingPart} interface for the different atomic
     constraints and their interactions.
-    For simple constraints like the \textbf{is an add instruction} statement,
-    this is straightforward and \texttt{skip\_invalid} only has to test whether
+    For constraints like the \textbf{is an add instruction} statement,
+    this is straightforward.
+    The member function \texttt{skip\_invalid} only has to test whether
     the value at \mbox{index n} in the function is an add instruction or not.
     This can be implemented as shown in \autoref{lst:solveratomadd}.
 
 \begin{figure}[ht]
 \begin{lstlisting}
-class AddInstruction : public SolverAtom {
+class AddInstruction : public BacktrackingPart {
 public:
   AddInstruction(Context&) { ... }
 
@@ -992,7 +993,7 @@ private:
 };
 \end{lstlisting}
 \vspace{-0.3cm}
-\caption{SolverAtom for additions}
+\caption{BacktrackingPart for additions}
 \label{lst:solveratomadd}
 \end{figure}
 
