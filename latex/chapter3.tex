@@ -243,8 +243,8 @@
     provides composable constructs from functional programming to implement
     data-parallel algorithms and operations.
     It is particularly suitable for dense linear algebra applications
-    \citep{Steuwer:2016:MMB:2968455.2968521}, but extensions to sparsity exist
-    \citep{b5f556d505d746109608f8db3cbce4ac}.
+    \citep{Steuwer:2016:MMB:2968455.2968521}, but extensions to sparsity exist.
+%    \citep{b5f556d505d746109608f8db3cbce4ac}
     The MILK programming model \citep{Kiriansky:2016:OIM:2967938.2967948}
     extends C++ with pragmas to annotate indirect memory accesses.
     This allows low level optimizations that are applicable to sparse linear
@@ -419,103 +419,102 @@
     applications.
 
 \section{CGO related}
-%% EArly scalar detection sc
-Discovering and exploiting scalar reductions in programs has been
-studied for many years based on dependence analysis and idiom detection
- \cite{pottenger1995idiom,suganuma1996detection,fisher1994parallelizing}.
-Early work focused on well structured Fortran and
-paid little attention to compiler-based detection, a notable exception being. 
-\cite{suganuma1996detection}. 
-In \cite{rauchwerger1999lrpd}, the authors went beyond previous static
- approaches and developed  a dynamic test to speculatively exploit
- reduction parallelism.
-%%Early ploy detection
-Alongside this data dependence based approach, there has also been a
- large body of work exploring mapping of reductions in a
- polyhedral setting \cite{redon1994scheduling, jouvelot1989unified}
 
-%% Expoitation of genearlise reductiosns 
- The treatment of
-more general reduction operations has received  less attention
-Work has focused on exploitation rather than discovery
-\cite{gutierrez2003optimization,gutierrez2008analytical, Gutierrez:2000}, examining trade-offs in implementation \cite{yu2006adaptive}
- or exploitation of novel hardware \cite{ravi2010compiler,Huo2011HiPC}
-In \cite{das2010experiences}, they use dynamic profile analysis to
-guide manual analysis and show there is potential for finding
-generalized reductions. In \cite{kim2012dynamic} they explore the use
-of dynamic analysis further, but state that detecting reductions on arrays is
-challenging.
+    Discovering and exploiting scalar reductions in programs has been studied
+    for many years based on dependence analysis and idiom detection
+    \cite{pottenger1995idiom,suganuma1996detection,fisher1994parallelizing}.
+    Early work focused on well structured Fortran and paid little attention to
+    compiler-based detection, a notable exception being. 
+    \cite{suganuma1996detection}. 
+    In \cite{rauchwerger1999lrpd}, the authors went beyond previous static
+    approaches and developed a dynamic test to speculatively exploit reduction
+    parallelism.
+    Alongside this data dependence based approach, there has also been a
+    large body of work exploring mapping of reductions in a polyhedral setting
+    \cite{redon1994scheduling, jouvelot1989unified}.
 
-%% LLVM out there \cite{lattner2004llvm}
-%% What NAS:\cite{seo2011performance}
+    The treatment of more general reduction operations has received less
+    attention.
+    Work has focused on the exploitation of reductions rather than discovery
+    \cite{gutierrez2003optimization,gutierrez2008analytical, Gutierrez:2000},
+    examining trade-offs in implementation \cite{yu2006adaptive} or exploitation
+    of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
+    In \cite{das2010experiences}, they use dynamic profile analysis to guide
+    manual analysis and show there is potential for finding generalized
+    reductions.
+    In \cite{kim2012dynamic} they explore the use of dynamic analysis further,
+    but state that detecting reductions on arrays is challenging.
 
-%% Vaguely related C;
+    More recently, extensions to the polyhedral framework have been proposed,
+    allowing it to capture reduction computations
+    \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
+    Such efforts are described in \cite{Doerfert2015Polly}.
+    The authors discuss and implement a reduction-enabled scheduling approach as
+    part of Polly and use the Polybench benchmark suite to evaluate it,
+    achieving speedups of up to 2.21x.
+    However as shown in our evaluation section, such schemes are fragile in the
+    presence of non static control flow.
 
-%% New polyhedral approaches
+    The difficulty in automatically detecting reductions has led to language or
+    annotation based approaches where it is the user's responsibility to mark
+    reductions in the program \cite{deitz2002high}.
+    An annotation approach is described in \cite{Reddy2016Reduction}, based on
+    the Platform-Neutral Compute Intermediate Language
+    (\cite{baghdadi2015PENCIL}).
+    This used the code generator in
+    (\cite{Verdoolaege:2013:PPC:2400682.2400713}) to generate CUDA and OpenCL
+    code for multiple compute platforms.
 
-More recently, extensions
-to the polyhedral framework have been proposed, allowing  it to capture
-reduction computations \cite{chi1997optimizing, gupta2006simplifying,
-stock2014framework} Such efforts are described
-in \cite{Doerfert2015Polly}.  The authors discuss and implement a
-reduction-enabled scheduling approach as part of Polly and use the
-Polybench benchmark suite to evaluate it, achieving speedups of up to
-2.21x. However as shown in our evaluation section, such schemes are
-fragile in the presence of non static control flow.
+    There has also been recent work extending on \cite{rauchwerger1999lrpd}
+    with more aggressive speculation and dynamic analysis
+    \cite{aguilar2015unified} to exploit reduction parallelism.
+    The authors of \cite{Han2010Speculative} present an approach for the
+    parallelization of a wide class of scalar reductions.
+    They start from the observation that many reductions in real benchmark
+    programs are not detected by current static analysis approaches.
+    They propose a hardware assisted speculative parallelization approach for
+    likely runtime reductions, which they call `partial reduction variables'.
+    Candidates for speculative parallelization are determined by searching for
+    update-chains in the data flow graph.
+    The approach is evaluated on some of the SPEC2000 benchmarks using a
+    simulator.
+    They achieve up to $46\%$ speedup by including speculative reductions.
+    This approach
+    based on update chains in the dependence graph requires hardware
+    speculation support to check dependences but is unable to detect
+    histogram reductions.
 
-%% Language Poly and non-polly
- The difficulty in automatically detecting
-reductions has led to language or annotation based approaches where it
-is the user's responsibility to mark reductions in the
-program \cite{deitz2002high}.
-%% Another approach to incorporate the reduction idiom into the Polyhedral Framework using annotations is described in
-An annotation approach is described in 
-\cite{Reddy2016Reduction}, based on the Platform-Neutral Compute Intermediate Language (\cite{baghdadi2015PENCIL}).
-This used the code generator
-in (\cite{Verdoolaege:2013:PPC:2400682.2400713}) to generate CUDA and OpenCL code for multiple compute platforms.
+    Privateer introduced in \cite{Johnson:2012:SSP:2254064.2254107}, is a
+    complex system featuring compiler support and a runtime to enable
+    speculative parallelization.
+    The core approach is the privatization of memory for each thread and an
+    exception mechanism with recovery routines for accesses that violate
+    parallelism.
+    The authors explicitly allow for reduction parallelism involving only a
+    single scalar associative and commutative operator.
+    The implementation approach is to first profile the program for hot loops
+    and then to classify all variables accessed in those loops into different
+    groups.
+    A transformation pass then identifies corresponding \texttt{malloc} and
+    \texttt{free} calls and replaces them by thread local allocations.
+    In a similar way all\texttt{load} and \texttt{store} instructions are
+    replaced by local accesses.
+    At runtime, the system uses manual page table switching and memory
+    protection to minimize runtime overhead.
+    The evaluation is done on a limited set of five benchmark programs, yielding
+    a geometric mean speedup of 11.4x on a 24 core machine.
+    The runtime overhead on these five programs varies between $<1\%$ and
+    $>50\%$.
+    Despite this complexity they only exploit simple scalar reductions.
 
-%% New dynamic approaches
-There has also been recent work following on
-from \cite{rauchwerger1999lrpd} in using more aggressive
-speculation and dynamic analysis \cite{aguilar2015unified} to exploit reduction parallelism.
-The authors of \cite{Han2010Speculative} present an approach for the parallelization of a wide class of scalar reductions.
-They start from the observation that many reductions in real benchmark programs are not detected by current static analysis approaches.
-They propose a hardware assisted speculative parallelization approach for likely runtime reductions, denominated `partial reduction variables'.
-Candidates for speculative parallelization are determined by searching for update-chains in the data flow graph.
-The approach is evaluated on some of the SPEC2000 benchmarks using a simulator.
-They achieve up to $46\%$ speedup by including speculative reductions.
-This approach
-based on update chains in the dependence graph requires hardware
-speculation support to check dependences but is unable to detect
-histogram reductions.
-
-Privateer introduced in \cite{Johnson:2012:SSP:2254064.2254107}, is a complex
-system featuring compiler support and a runtime to enable speculative
-parallelization.  The core approach is the privatization of memory
-for each thread and an exception mechanism with recovery routines for
-accesses that violate parallelism.  The authors explicitly allow for
-reduction parallelism that involves only a single scalar associative
-and commutative operator.  The implementation approach is to first
-profile the program for hot loops and then to classify all variables
-accessed in those loops into different groups.  A transformation pass
-then identifies corresponding \texttt{malloc} and \texttt{free} calls
-and replaces them by thread local allocations.  In a similar way
-all\texttt{load} and \texttt{store} instructions are replaced by local
-accesses.  At runtime, the system uses manual page table switching and
-memory protection to minimize runtime overhead.  The evaluation is
-done on a limited set of five benchmark programs, yielding a geometric
-mean speedup of 11.4x on a 24 core machine.  The runtime overhead on
-these five programs varies between $<1\%$ and $>50\%$.  Despite this
-complexity they only exploit simple scalar reductions.
-
-In \cite{Andion2015Compilation}, it describes a compiler based
-parallelization approach for heterogeneous computing that is based on
-an idiomatic intermediate representation called KIR.  This
-intermediate representation is based on the concept
-of \mbox{diKiernels}, which constitute algorithmic building blocks and
-are used to automatically generate OpenMP and OpenHMPP code.  The
-authors propose a system that detects diKernels in conventional
-compiler IR and concatenates them to form contiguous sections of KIR.
-Individual examples of diKernels are scalar reductions and irregular
-assignments. It is not clear how such an approach would work on general
-'C' programs.
+    \citet{Andion2015Compilation} describes compiler based
+    parallelisation for heterogeneous computing that is based on
+    an idiomatic intermediate representation called KIR.
+    This intermediate representation is based on the concept of
+    \mbox{diKiernels}, which constitute algorithmic building blocks and are used
+    to automatically generate OpenMP and OpenHMPP code.
+    The authors propose a system that detects diKernels in conventional compiler
+    IR and concatenates them to form contiguous sections of KIR.
+    Examples of diKernels are scalar reductions and irregular
+    assignments.
+    It is not clear how such an approach would work on general 'C' programs.
