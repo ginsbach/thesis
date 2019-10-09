@@ -1,5 +1,6 @@
 \documentclass[phd,icsa,twoside,logo,11pt]{infthesis}
 
+\usepackage{appendix}
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{amsthm}
@@ -158,7 +159,7 @@ morecomment  = [s]{"}{"}
     and domain specific languages, expensive application rewrites become
     neccessary.
 
-    The contribution of this thesis is a constraint programming methodology to
+    This thesis introduces a constraint programming methodology that is used to
     define and then automatically detect algorithmic structure in compiler
     intermediate representation.
     This allows compilers to tackle the challenge of automatic heterogeneous
@@ -289,11 +290,13 @@ morecomment  = [s]{"}{"}
     \label{chapter:conclusion}
     \input{latex/chapter8}
 
-\appendix
-    \label{appendix:polyhedral}
-    \input{latex/appendix1}
-
 \bibliographystyle{plainnat}
 \bibliography{references}
+
+\begin{appendices}
+\chapter{Polyhedral Code Sections in CAnDL}
+    \label{appendix:polyhedral}
+    \input{latex/appendix1}
+\end{appendices}
 
 \end{document}
