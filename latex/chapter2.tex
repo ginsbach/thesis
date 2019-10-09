@@ -84,10 +84,6 @@
     Static Single Assignment was first proposed by
     \citet{Rosen:1988:GVN:73560.73562}, and there are now many different
     intermediate representations that implement the concept.
-%    Static Single Assignment is not a strictly defined or mathematically
-%    codified standard, but instead refers to a group of representations that
-%    share important characteristics,
-%    the eponymous SSA property being only one among them.
     Instruction set, type system and syntax
     (if a textual representation is even specified) of these different
     representations vary
@@ -103,53 +99,60 @@
 
     SSA form was developed as an improvement over previously used compiler
     intermediate representations.
-    The eponymous static single assignment property applies to more general
-    {\em linear intermediate representations} as an additional, as described in
-    \citet{Torczon:2007:EC:1526330}.
+    Specifically, the eponymous static single assignment property applies to
+    more general {\em linear intermediate representations} as an additional
+    restriction, as described in \citet{Torczon:2007:EC:1526330}.
     The following section gives an overview of the shared properties of SSA form
     representations that are relevant for this work.
 
-
 \subsection{Static Single Assignment Form}
 
-\begin{figure}[t]
+    SSA representations are linear intermediate representations, meaning that
+    they are based on a single linear sequence of instructions per function.
+    These instructions operate on an unlimited amount of registers, using a well
+    defined -- but implementation specific -- instruction set.
+    Branch instructions are used to redirect the execution conditionally or
+    unconditionally.
+    Consecutive instructions with no such branching between them are grouped
+    into basic blocks.
+    Within these, instructions are executed in order of appearance.
+    The basic blocks may have labels or be identified simply by enumerating
+    them.
+    Instruction arguments can be registers, constants, globals or function
+    parameters.
+    Branch instructions furthermore use basic block arguments as branch targets.
+    Instructions can write their result into a single output register.
+
+    The SSA property stipulates that within a function, no register can be
+    written at more than a single static location.
+    This means that registers can be identified directly with the instructions
+    that write to them.
+    The registers can therefore be considered implicit, with only the data flow
+    between instructions required to recover them.
+    In the presence of dynamic control flow, \mbox{$\Phi$-instructions} are
+    required to uphold the SSA property.
+    These \mbox{$\Phi$-instructions} are placed at the beginning of a basic
+    block, and select one of several values dynamically, depending on the origin
+    incoming branch instruction, i.e.\ depending on the previously visited
+    basic block.
+
+    \autoref{fig:ssaoverview} shows how SSA programs can be represented as a
+    hierarchy of lists.
+    Programs are lists of functions, which are lists of basic blocks, which are
+    lists of instructions, which take lists of arguments.
+    The ability to enumerate all these entities in linear sequences enables the
+    identification of integers with SSA values in the later sections of this
+    chapter.
+
+\begin{figure}[h]
 \centering
-\includegraphics{figures/ssaoverview}
+\includegraphics[width=\textwidth]{figures/ssaoverview}
 \caption{Structural overview of SSA: Programs are represented as hierarchies of
     lists. The SSA property makes registers implicit, values can be statically
     matched to defining instructions.}
 \label{fig:ssaoverview}
 \end{figure}
 
-    SSA representations are linear intermediate representations, meaning that
-    they are based on a single sequence of instructions per function.
-    These instructions operate on an abstract machine, which provides an
-    unlimited number of identical registers and a well defined instruction set.
-    The control flow is expressed as branch instructions, which redirects the
-    execution conditionally or unconditionally.
-    Consecutive instructions without branches are grouped as basic blocks.
-    Within these basic blocks, instruction are executed in order of appearance.
-    These basic blocks may have labels or be identified simply by enumerating
-    them.
-    Instruction arguments can be registers, constants or globals.
-    Branch instructions furthermore use basic block arguments as branch targets.
-    Instructions can write their result into a single output register.
-
-    The static single assignment property stipulates that within a function,
-    no register can be written at more than a single static location.
-    This makes the data dependencies between the instructions explicit, as it
-    implies that registers can be identified directly with the instructions that
-    write to them.
-    The registers themselves can therefore be considered implicit, with only the
-    data flow between instructions required to recover them.
-
-    In the presence of dynamic control flow behaviour in the program, most
-    simply in the case of a conditional branch, it is evidently not possible to
-    match values to producing instructions statically.
-    This is resolved with {\em phi} instructions.
-    These instructions select a value from several arguments depending on the
-    previously executed basic block, i.e.\ depending on the branch from where
-    the execution reached the basic block containing the phi node.
 
 \subsection{Example of Static Single Assignment Form}
 
@@ -231,7 +234,7 @@
 \end{figure}
 
 \newpage
-\section{Deriving a Model}
+\section{Deriving an SSA Model}
 
     In order to develop constraint programming on real world SSA programs with
     mathematical rigour, a sound model is needed first.
@@ -278,8 +281,8 @@
 
 \subsection{Data Flow and Control Flow}
 
-    The data flow between interaction as well as the control flow is captured in
-    graph structures.
+    The data flow between instructions as well as the control flow is captured
+    in graph structures.
     The static single assignment property makes registers implicit, therefore
     the direct interaction between instructions becomes the natural model for
     data flow.
