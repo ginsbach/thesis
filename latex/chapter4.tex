@@ -1008,7 +1008,7 @@ End
 
 \subsubsection{Results}
 
-\begin{figure}[ht]
+\begin{figure}[b]
 \centering
 \begin{tabular}{|l||l|l|}
 \hline
@@ -1125,16 +1125,7 @@ End
 \label{fig:qualcommspeedup}
 \end{figure}
 
-    The optimization was relevant to 8 of the fragment shaders in GFXBench 4.0.
-    The number of lines of code needed and the resulting performance impact are
-    shown in \autoref{fig:candlshader} and \autoref{fig:qualcommspeedup}.
-    A total of 19 opportunities for the optimization to be applied were
-    detected.
-    Although the performance impact was moderate with $1-4\%$ speedup on eight
-    of the fragment shaders, it shows how new analysis can be rapidly prototyped
-    and evaluated with only a few lines of code.
-
-\begin{figure}[h]
+\begin{figure}[b]
 \centering
 \begin{tabular}{|l||l|l|}
 \hline
@@ -1149,6 +1140,15 @@ Detected in GFX 4.0 & - & 19 \\ \hline
 \label{fig:candlshader}
 \end{figure}
 
+    The optimization was relevant to 8 of the fragment shaders in GFXBench 4.0.
+    The number of lines of code needed and the resulting performance impact are
+    shown in \autoref{fig:candlshader} and \autoref{fig:qualcommspeedup}.
+    A total of 19 opportunities for the optimization to be applied were
+    detected.
+    Although the performance impact was moderate with $1-4\%$ speedup on eight
+    of the fragment shaders, it shows how new analysis can be rapidly prototyped
+    and evaluated with only a few lines of code.
+
 \subsection{Polyhedral SCoPs}
 
     The polyhedral model allows compilers to utilize powerful mathematical
@@ -1162,33 +1162,36 @@ Detected in GFX 4.0 & - & 19 \\ \hline
 
     Implementations of the polyhedral model may differ in their precise
     definition of SCoPs.
-    We implemented SCoP detection functionality in CAnDL and compared against
+    In this work, the definition of Semantic SCoPs in \citet{Lengauer2012Polly}
+    was used for reference.
+    SCoP detection functionality was implemented in CAnDL and compared against
     the Polly implementation in LLVM.
-    We rely on the definition of Semantic SCoPs in \citet{Lengauer2012Polly}.
+    The complete CAnDL code for this section is in \autoref{appendix:CAnDL}.
     The constraints for SCoPs can be broken into several components:
 
-    \paragraph{Structured Control Flow}
+    \paragraph*{Structured Control Flow}
     SCoPs require well structured control flow.
     Technically speaking, this means that every conditional jump within the
     corresponding piece of IR is accounted for by for loops and conditionals.
-    We enforce this with the \texttt{collect} statement as demonstrated in
+    This is enforced with the \texttt{collect} statement that was introduced in
     \autoref{fig:collectexample}.
-    We use it in CAnDL programs \texttt{ForLoop} and
+    It is used in CAnDL programs \texttt{ForLoop} and
     \texttt{Conditional} that describe the control flow of for loops and
     conditionals and extract the involved conditional jump instructions.
-    We then use another \texttt{collect} to verify that these are indeed all
+    Another \texttt{collect} is then used to verify that these are indeed all
     conditional jumps within the potential SCoP.
 
-    Once we have established the control flow, we can use the iterators that are
-    involved in the loops to define affine integer computations in the loop.
+    Once the control flow has been established, the iterators that are
+    involved in the loops are used to define affine integer computations in the
+    loop.
     This is done in a brute force fashion with a recursive constraint program.
     Using this analysis we then check that the iteration domain of all the for
     loops is well behaved, i.e.\ the boundaries are affine in the loop
     iterators.
 
-    \paragraph{Affine Memory Access}
-    We want to make sure that all memory access in the SCoP is affine.
-    For this to be true we have to verify that for each load and store
+    \paragraph*{Affine Memory Access}
+    All memory access in the SCoP has to be affine.
+    For this to be true, it needs to be verified that for each load and store
     instruction, the base pointer is loop invariant and the index is calculated
     affinely.
     The loop invariant base pointer is easily guaranteed using the
@@ -1197,30 +1200,33 @@ Detected in GFX 4.0 & - & 19 \\ \hline
     Checking the index calculations is more involved and is again based on the
     \texttt{collect} method that was demonstrated in
     \autoref{fig:collectexample}.
-    We use the \texttt{collect} construct to find all of the affine memory
+    The \texttt{collect} construct is used to to find all of the affine memory
     accesses in all the loop nests.
     We then use collect all \texttt{load} and \texttt{store} instructions and
     verify that both collections are identical.
 
-    \paragraph{}
-    We evaluated our detection of SCoPs on the PolyBench suite.
-    For both our method as well as for Polly, we counted how many of the
-    computational kernels contained in the benchmark suite are captured by the
-    analysis.
+\subsubsection{Setup}
+
+    The detection of SCoPs was evaluated on the PolyBench suite.
+    For both the CAnDL based approach as well as for Polly, it was counted
+    counted how many of the computational kernels contained in the benchmark
+    suite are captured by the analysis.
 
 \subsubsection{Results}
 
-    As is visible in \autoref{fig:candlvspolly}, we capture all the SCoPs that Polly
-    was able to detect.
+    As is visible in \autoref{fig:candlvspolly}, the CAnDL program captured all
+    the SCoPs that Polly was able to detect.
     There is some postprocessing of the generated constraint solutions required
     to achieve this.
-    Firstly, our results are not in the jscop format that Polly uses but contain
-    the raw constraint solution as shown on the right side of \autoref{fig:gui}.
-    Also, our CAnDL implementation does not merge consecutive outer level loops
+    Firstly, the CAnDL results are not in the jscop format that Polly uses but
+    contain the raw constraint solution as shown on the right side of
+    \autoref{fig:gui}.
+    Also, the CAnDL implementation does not merge consecutive outer level loops
     into SCoPs of maximum size.
-    To compare, we extracted the detected loops from our report
-    files, manually grouped them into maximum size SCoPs and verified that they
-    fully cover the SCoPs detected by Polly.
+    To compare, the detected loops from the CAnDL solver were extracted and then
+    grouped them into maximum size SCoPs.
+    It was then manually verified that they fully cover the SCoPs detected by
+    Polly.
 
     To measure lines of code, we compared our version with the amount of code in
     Polly's \texttt{ScopDetection.cpp} pass.
@@ -1244,7 +1250,7 @@ Detected in GFX 4.0 & - & 19 \\ \hline
 
 \section{Conclusion}
 
-    Optimizing compilers require sophisticated program analysis in order to
+    Optimising compilers require sophisticated program analysis in order to
     generate performant code.
     The current way of implementing this functionality manually in programming
     languages such as C++ is not satisfactory.
@@ -1260,13 +1266,5 @@ Detected in GFX 4.0 & - & 19 \\ \hline
     backtracking solver to analyze LLVM IR code, the use of CAnDL results in
     only moderate compile time increases.
     Many compiler analysis tasks are suitable for CAnDL, from
-    peephole optimizations to sophisticated program analysis with the polyhedral
+    peephole optimisations to sophisticated program analysis with the polyhedral
     model.
-
-    Future work will investigate how formal verification methods can be
-    applied to CAnDL in order to guarantee the correctness of compiler
-    optimizations.
-    Also, there is some overlap between what can be formulated in CAnDL and what
-    is provided by LLVM in the form of the ScalarEvolution pass.
-    We are interested as to whether we could use this existing functionality to
-    speed up solving times.
