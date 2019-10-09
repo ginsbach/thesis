@@ -1,40 +1,45 @@
 
     The research contributions of this thesis are based on a novel constraint
     programming approach on compiler intermediate representation.
-    This chapter introduces the theoretical underpinnings of this approach,
-    based on a mathematical model of static single assignment form (SSA).
-    With the help of this model, concepts that are typically discussed on a
-    programming language level are transferred onto the structurally simple,
-    yet semtantically expressive class of SSA compiler intermediate
-    representations.
+    This chapter introduces the underlying methodology of this approach.
+    Single static assignment (SSA) form is formalised into suitable model as the
+    basis for constraint programming.
+    With this model, constraint problems that impose restrictions on fragments
+    of SSA code are derived.
+    Detecting adhering code sections in SSA programs is then equivalent to
+    solving the constraint problem.
+    Finally, the structure of constraint problems is analysed and efficient
+    solving techniques are derived.
+    \vfill
 
-    Constraint formulas on SSA respresentations initially appear to mimic
-    pattern matching approaches on abstract syntax tree (AST) level.
-    However, they quickly prove themselves to be vastly more expressive.
-    Some consideration is necessary to handle search space explosion, but
-    the reward are much more powerful recognition capabilities and the
-    expression of higher level algorithmic structures, which are impossible to
-    define syntactically on programming language level.
-    Later chapters will explore the power of this approach in detail, by
-    building a complete constraint programming language on top of the theory in
-    this chapter, and by then using it to solve real compiler analysis problems.
+%    Constraint formulas on SSA respresentations initially appear to mimic
+%    pattern matching approaches on abstract syntax tree (AST) level.
+%    However, they quickly prove themselves to be vastly more expressive.
+%    Some consideration is necessary to handle search space explosion, but
+%    the reward are much more powerful recognition capabilities and the
+%    expression of higher level algorithmic structures, which are impossible to
+%    define syntactically on programming language level.
+%    Later chapters will explore the power of this approach in detail, by
+%    building a complete constraint programming language on top of the theory in
+%    this chapter, and by then using it to solve real compiler analysis problems.
 
-    After defining a mathematical foundation of SSA form and introducing
-    formalisms for the expression of basic contraint problems on top of it,
-    several standard definitions from compiler theory are reformulated in the
-    framework.
-    This includes common graph properties, including the concept of domination,
-    as well as control flow structures such as single entry single exit blocks.
-    All of this lays the foundations for the succeeding chapter.
+%    After defining a mathematical foundation of SSA form and introducing
+%    formalisms for the expression of basic contraint problems on top of it,
+%    several standard definitions from compiler theory are reformulated in the
+%    framework.
+%    This includes common graph properties, including the concept of domination,
+%    as well as control flow structures such as single entry single exit blocks.
+%    All of this lays the foundations for the succeeding chapter.
 
-    Finally, for the practical application of constraint programming to compiler
-    intermediate representation, efficient solver techniques are needed.
-    The last section in this chapter discusses strategies for limiting
-    compile time explosion and explores analogies of the described model to
-    standard Satisfiability Modulo Theory (SMT) problems.
-    This gives further insights into performance improvements and puts the
-    work into a broader theoretical context.
+%    Finally, for the practical application of constraint programming to compiler
+%    intermediate representation, efficient solver techniques are needed.
+%    The last section in this chapter discusses strategies for limiting
+%    compile time explosion and explores analogies of the described model to
+%    standard Satisfiability Modulo Theory (SMT) problems.
+%    This gives further insights into performance improvements and puts the
+%    work into a broader theoretical context.
 
+\pagebreak
 \section{Introduction}
 
     Modern compilers for procedural languages such as
@@ -42,62 +47,68 @@
     representations for the program during compilation.
     They can be grouped into categories and reflect the requirements of
     the compilation stages they are used in.
-    \linebreak
+
+    \vfill
     {\bf Front end representations} are close to the source program and
-    naturally reflect the internals of the compiler front end, especially the
-    parser.
-    Typically, they are built on an abstract syntax tree representation with
+    naturally the internals of the compiler front end, especially the parser.
+    Typically, they are built around an abstract syntax tree with
     additional annotations, such as type information.
-    In addition to encoding program logic, these representations are rich in
-    information about syntactic and  stylistic choices of the programmer.
-    They scale in complexity with the source language and further obscure the
-    program semantics by not resolving complex language features, such as
-    operator overloading.
-    \linebreak
+    These representations are rich in information about syntactic and stylistic
+    choices of the programmer and they scale in complexity with the source
+    language.
+    Some complex language features, such as overloaded operators, are not
+    resolved in this class of representations.
+    This means that the semantics of program parts in these representations
+    depend highly on context.
+
+    \vfill
     {\bf Back end representations} are based on a model of the target hardware.
-    These representations typically approach an assembly style format,
-    exposing specific instruction set architectures of the hardware.
-    Back end representations are concerned with problems that are removed from
-    the algorithmic core of the user program, such as register allocation and
-    instruction scheduling.
-    \\
-    {\bf Static Single Assignment} (SSA) form has emerged as a suitable
-    representation in the middle end, which is traditionally responsible for
-    applying complex optimising transformations.
-    SSA abstracts away the complexities of both the source language and the
-    target architecture, instead focusing on a relatively simple semantic
-    description of the user program that enables reliable analysis and platform
+    They typically approach an assembly style format and expose the instruction
+    set architecture of the hardware, making them platform specific.
+    Back end representations also encode decisions about problems that are
+    removed from the algorithmic core of the user program, such as instruction
+    selection and register allocation.
+
+    \vfill
+    {\bf Mid end representations} are designed to be suitable for the analysis
+    and transformation of code in order to appy optimisations.
+    {\bf Static Single Assignment} (SSA) form has emerged as a common choice for
+    the mid end in leading compilers.
+    SSA abstracts away the complexities of the source language and the
+    target architecture, focusing on a relatively simple description of the
+    semantics of the user program that enables reliable analysis and platform
     independent reasoning.
-    It is these properties that also make it the natural representation for
-    expressing algorithmic structures.
+    This is why it was chosen as the basis for this work.
 
-    Static Single Assignment is not a strictly defined or mathematically
-    codified standard, but instead refers to a group of representations that
-    share important characteristics,
-    the eponymous SSA property being only one among them.
-    Instruction sets, syntax and type systems of the different
-    SSA intermediate representations vary considerably, depending on the
-    requirements of the source languages (static or dynamic)
-    and the operating constraints (just-in-time or ahead-of-time).
-    Some prominent examples of compilers that utilize SSA for their
-    optimisation passes include {\bf clang} (LLVM IR), {\bf gcc} (GIMPLE),
-    {\bf v8 Crankshaft} (Hydrogen) and {\bf SpiderMonkey} (IonMonkey/MIR).
-    Despite many differences, they share the same fundamental paradigms
-    and many of the differences can be abstracted away as implementation
-    specific details.
+    \vfill
+    Static Single Assignment was first proposed by
+    \citet{Rosen:1988:GVN:73560.73562}, and there are now many different
+    intermediate representations that implement the concept.
+%    Static Single Assignment is not a strictly defined or mathematically
+%    codified standard, but instead refers to a group of representations that
+%    share important characteristics,
+%    the eponymous SSA property being only one among them.
+    Instruction set, type system and syntax
+    (if a textual representation is even specified) of these different
+    representations vary
+    considerably, depending on the requirements of the source languages
+    (static or dynamic) and the operating constraints
+    (just-in-time or ahead-of-time).
+    Some prominent examples of compilers that use SSA include
+    {\bf clang} (LLVM IR), {\bf gcc} (GIMPLE), {\bf v8 Crankshaft} (Hydrogen)
+    and {\bf SpiderMonkey} (IonMonkey/MIR).
+    Despite many differences, they share fundamental paradigms and many of the
+    differences can be abstracted away as implementation specific details for
+    this work.
 
-    Fundamentally, a program in single static assignment form is made up of
-    functions, which are represented as sequences of instructions, grouped into
-    basic blocks and operating on virtual registers.
-    The control flow is handled via jump instructions at end of basic blocks.
-    The virtual registers, within a function, can be assigned only at a single
-    static location each, which has very useful implications as we will later
-    see.
-    As opposed to syntax-heavy representations, SSA form is a searialized
-    program representation, where expressions have been turned into lists of
-    instructions and control flow structures into lists of basic blocks.
-    The following sections explore how this serial nature makes constraint
-    programming concepts naturally applicable.
+    SSA form was developed as an improvement over previously used compiler
+    intermediate representations.
+    The eponymous static single assignment property applies to more general
+    {\em linear intermediate representations} as an additional, as described in
+    \citet{Torczon:2007:EC:1526330}.
+    The following section gives an overview of the shared properties of SSA form
+    representations that are relevant for this work.
+
 
 \subsection{Static Single Assignment Form}
 
@@ -110,23 +121,19 @@
 \label{fig:ssaoverview}
 \end{figure}
 
-    SSA representations of programs are highly serialised, as shown in
-    \autoref{fig:ssaoverview}:
-    Programs are lists of functions, functions are lists of basic blocks,
-    basic blocks are lists of instructions and instructions are most
-    fundamentally lists of arguments.
-
-    The individual instructions operate on an abstract machine, which provides
-    an unlimited number of identical registers and a well defined instruction
-    set.
-    The control flow is expressed as branch instructions, which direct the
-    execution conditionally or unconditionally to other basic blocks.
-    Basic blocks may have labels or be identified simply by enumerating them.
-    Instruction arguments can be registers, constants or globals and branch
-    instructions additionally take basic block labels.
+    SSA representations are linear intermediate representations, meaning that
+    they are based on a single sequence of instructions per function.
+    These instructions operate on an abstract machine, which provides an
+    unlimited number of identical registers and a well defined instruction set.
+    The control flow is expressed as branch instructions, which redirects the
+    execution conditionally or unconditionally.
+    Consecutive instructions without branches are grouped as basic blocks.
+    Within these basic blocks, instruction are executed in order of appearance.
+    These basic blocks may have labels or be identified simply by enumerating
+    them.
+    Instruction arguments can be registers, constants or globals.
+    Branch instructions furthermore use basic block arguments as branch targets.
     Instructions can write their result into a single output register.
-    Branch instructions always terminate a basic block, control flow divergence
-    within basic blocks is not possible.
 
     The static single assignment property stipulates that within a function,
     no register can be written at more than a single static location.
@@ -224,7 +231,7 @@
 \end{figure}
 
 \newpage
-\section{Deriving a Mathematical Model for SSA}
+\section{Deriving a Model}
 
     In order to develop constraint programming on real world SSA programs with
     mathematical rigour, a sound model is needed first.
