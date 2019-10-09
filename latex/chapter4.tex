@@ -1065,13 +1065,22 @@ End
     Graphics computations often involve arithmetic on vectors of single
     precision floating point values that represent either vertex positions in
     space or color values.
-    Common graphics shader compilers utilize the LLVM framework using the
-    LunarGLASS project.
+    Common graphics shader compilers utilize the LLVM framework internally.
+    The LunarGLASS project was used in this work as an open source
+    implementation of LLVM for graphics shaders.
 
-    For real shader code, LLVM misses an opportunity for the associative
-    reordering of floating point computations.
-    Although such reordering is problematic in general, it is applicable in the
-    domain of graphics processing.
+    There are opportunities for associative reordering that LLVM misses.
+    In general purpose code, such reordering can be problematic due to floating
+    point computation artifacts.
+    However, this is not a problem in the domain of graphics processing.
+    Under specific circumstances, associative reordering within computations
+    that mixes vector and scalar arithmetic can result in real performance
+    improvements.
+
+%    For real shader code, LLVM misses an opportunity for the associative
+%    reordering of floating point computations.
+%    Although such reordering is problematic in general, it is applicable in the
+%    domain of graphics processing.
 
     There are often products of multiple floating point vectors, where several
     of the factors are actually scalars that were hoisted to vectors.
@@ -1083,11 +1092,12 @@ End
         ={}&\text{vec3}(c*e)*\vec a*_v\vec b*_v\vec d
     \end{align*}
 
-    We implemented the required analysis functionality for this optimization
+    The required analysis functionality for this optimization was implemented
     with CAnDL, as shown in \autoref{fig:Lewis}.
-    The \mbox{included} \texttt{VectorMulChain} program discovers chains of
+    The \mbox{included} \texttt{VectorMulChain} subprogram discovers chains of
     floating point vector multiplications in the IR code and uses the variables
-    \texttt{factors} and \texttt{partials} such that
+    \texttt{factors} and \texttt{partials} such that the following equations
+    hold
     \begin{align*}
         \text{\tt partials}[0] &= \text{\tt factors}[0]\\
         \text{\tt partials}[i+1] &= \text{\tt partials}[i]\times\text{\tt factors}[i+1].
@@ -1107,6 +1117,14 @@ End
     Adreno 530 GPU.
 
 \subsubsection{Results}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/qualcomm_plot.pdf}
+\caption{Speedup on Qualcomm Adreno 530}
+\label{fig:qualcommspeedup}
+\end{figure}
+
     The optimization was relevant to 8 of the fragment shaders in GFXBench 4.0.
     The number of lines of code needed and the resulting performance impact are
     shown in \autoref{fig:candlshader} and \autoref{fig:qualcommspeedup}.
@@ -1116,7 +1134,7 @@ End
     of the fragment shaders, it shows how new analysis can be rapidly prototyped
     and evaluated with only a few lines of code.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 \centering
 \begin{tabular}{|l||l|l|}
 \hline
@@ -1131,14 +1149,6 @@ Detected in GFX 4.0 & - & 19 \\ \hline
 \label{fig:candlshader}
 \end{figure}
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=\linewidth]{figures/qualcomm_plot.pdf}
-\caption{Speedup on Qualcomm Adreno 530}
-\label{fig:qualcommspeedup}
-\end{figure}
-
-\pagebreak
 \subsection{Polyhedral SCoPs}
 
     The polyhedral model allows compilers to utilize powerful mathematical
