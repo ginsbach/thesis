@@ -153,8 +153,7 @@
 \label{fig:ssaoverview}
 \end{figure}
 
-
-\subsection{Example of Static Single Assignment Form}
+\subsection{Emergence of Static Single Assignment Form}
 
     \autoref{ssaexample} shows many of the key features of static single
     assignment form and how they naturally emerge from simplification steps of
@@ -178,48 +177,48 @@
     This results in a sequentialisation of the expressions into their
     most basic operations, shown at the top right {\bf b)}, introducing
     explicit variables that store the previously implicit temporary values.
-    This greatly simplifies and normalises the program, with many of the
-    remaining simple expressions directly mapping to individual processor
-    instructions.
+    This simplifies and normalises the program, with many of the remaining
+    simple expressions directly mapping to individual processor instructions.
 
     In a second step, the structured control flow of the program is replaced
-    with goto statements that coordinate the control between basic blocks.
+    with goto statements that coordinate the control flow between basic blocks.
     This is shown at the bottom right {\bf c)}.
     While this does not ease the intuitive understanding of the program, it
-    unifies the many control flow structures provided in the source language
-    into a single mechanism.
+    unifies several distinct control flow structures provided in the source
+    language into a single mechanism.
     This makes automatic analysis of the program a less complex task.
     Importantly, no relevant information is lost by discarding the control flow
     structures.
     They can be reconstructed algorithmically.
 
-    Lastly, the static single assignment property is introduced.
-    Any variable that is assigned in more than one static place in the program
+    Finally, the static single assignment property is introduced at the bottom
+    left {\bf d)}.
+    Each variable that is assigned in more than one static place in the program
     is instead duplicated into multiple variables.
     Where necessary, these now distinct variables are bound together with
-    $\Phi$ nodes.
-    This cannot be directly expressed in the C syntax {\bf d)} at the bottom
-    left.
+    $\Phi$-instructions.
+    This cannot be directly expressed in the C syntax.
     Instead, the behaviour is documented by comments in lines 8-13.
-    The impact of the static single assignment property change seems minor
-    at first, but it has convenient implications.
-    As all local variables are written exactly once, the distinction between
-    their declarations and definitions becomes obsolete.
-    This furthermore implies that it is always known statically, which
-    expression yielded the value of each variable.
-    Variable names become identifiers of the expressions themselves.
-    This makes many optimising transformation strainghtforward to implement.
-    As a trivial example, it immediately guarantees that the variable $i$ in the
-    example always has the value zero.
 
-    With an understanding of how SSA form emerges during compilation, it is now
-    the aim to use the serialised nature of it to contruct a convenient
-    mathematical model.
-    The crucial observation is that most items in SSA form functions can be
-    easily enumerated and identified by their index.
-    This includes the function parameters, expressions and variables.
-    This means that properties of SSA form functions can be described using
-    integers, making for a convenient and easy mathematical language.
+    The impact of the static single assignment property seems minor
+    at first, but convenient implications can be identified already within the
+    C language.
+    As all local variables are written in exactly one static location, each
+    variable can be declared and defined in the same place.
+    This means that it is always known statically which expression yielded the
+    value of each variable.
+    This immediately guarantees that the variable \texttt{i} in the example
+    always has the value \texttt{0}, and the variable \texttt{x} always has the
+    value \texttt{1.0}.
+
+    This section developed an understanding of how SSA form originated
+    historically, and how it emerges during the compilation process.
+    The following section uses the observations from
+    \autoref{fig:ssaoverview} -- that most things in SSA can be enumerated and
+    represented as elements in lists -- to derive a model of the static
+    structure of SSA programs.
+    This model then serves as the foundation for later sections, which define
+    compiler analysis problems via constraint formulas on this model.
 
 \begin{figure}[p]
     \input{latex/figure_ssaemergence}
@@ -233,7 +232,6 @@
     \label{ssaexample}
 \end{figure}
 
-\newpage
 \section{Deriving an SSA Model}
 
     In order to develop constraint programming on real world SSA programs with
