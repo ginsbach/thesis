@@ -791,12 +791,11 @@ define double @dot(double* %0, double* %1, i64 %2) {
         Given a constraint problem $(V,C)$, an order $V=\{v_1,\dots,v_n\}$ with
         the corresponding projections $p_k\colon\mathbb N^V\rightarrow\mathbb N^k$,
         $x\mapsto(x_{v_1},\dots x_{v_k})$ can be choosen.
-
         Then a collection $(P_k)_{k=1\dots n}$ of functions
         $P_k:\mathcal M\times \mathbb N^{k-1}\times\rightarrow\mathcal P(\mathbb N)$,
         where $\mathcal P(\mathbb N)$ is the set of all subsets of $\mathbb N$,
-        is a {\em backtracking solution} of $(V,C)$ if and only if the
-        following is satisfied for all $x\in\mathbb N^V$:
+        is a {\em backtracking solution} of $(V,C)$ if and only if for all
+        $x\in\mathbb N^V$ the following is satisfied
         \begin{align}
             C(M,x)=1\iff\left[x_{v_k}\in P_k(M,p_{k-1}(x))=1\text{ for all }1\leq k\leq n\right].
         \end{align}
@@ -855,11 +854,14 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \subsection{Structure of Basic SSA Constraint Problems}
 
-    The most basic construction rules for SSA constraint problems are the
-    element-of constraint problem introduced in \autoref{def:elementofconstr}
+    Basic construction rules for SSA constraint problems are the
+    element-of constraint problem in \autoref{def:elementofconstr}
     and the conjunction and disjunction constraint problems in
-    \autoref{def:conjconstr}, which were already used in the example from
-    \autoref{fig:constraintsolution}.
+    \autoref{def:conjconstr}.
+    \autoref{def:constrext} enables conjunctions or disjunctions of constraint
+    problems that are not defined the same set of variables.
+    The example in \autoref{fig:constraintsolution} can be constructed with only
+    these rules.
 
 \begin{figure}[p]
     \begin{definition}{Element-of Constraint Problem}{elementofconstr}
@@ -910,15 +912,32 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \input{latex/figure_theorems2}
 \end{figure}
 
-    In order to form conjunctions or disjunctions of constraint problems that
-    are not defined the same set of variables, \autoref{def:constrext} is used.
-    This effectively defines the constraint over a larger set of variables by
-    ignoring all additional values.
+    \autoref{theo:theo1} introduces backtracking solutions for element-of
+    constraint problems.
+    They are constructed such that
+    $P_k[E_S](M,x)=\{y_{v_k}\mid y\in S(M), y_{v_1}=x_1,\dots,y_{v_{k-1}}=x_{k-1}\}$.
+    This is the optimal backtracking solution in the sense that the backtracking
+    algorithm will only ever backtrack immediately after yielding a result.
+    In the theorem, the backtracking solution is not defined directly, but
+    instead a helper construct $R_k$ is introduced.
+    This helper construct is used in \autoref{subsec:impl} for an efficient
+    implementation.
 
-    For SSA constraint problems that are constructed according to these rules,
-    backtracking solutions can be directly constructed as shown in
-    \autoref{theo:theo1}, \autoref{theo:theo2}, \autoref{theo:theo3} and
-    \autoref{theo:theo4}.
+    \autoref{theo:theo2} introduces backtracking solutions for conjunction
+    constraint problems.
+    These are defined in the obvious way, by taking the intersection of
+    the underlying backtracking solitions at each $k$.
+    This is not possible for disjunction constraint problems, which are dicussed
+    in \autoref{theo:theo3}.
+    The additional structure $R_k$ is used to keep track whether the current
+    partial solution satisfies $C$ or $C'$ so far.
+    The partial solution at $k$ is then the union only of those underlying
+    partial solutions at $k$ where the corresponding element in $R_k$
+    signals validity.
+
+    Finally, \autoref{theo:theo3} shows that backtracking solutions for
+    extensions of constraint problems can be constructed by simply ignoring the
+    additional variables.
 
 \subsection{Backtracking Example}
 
@@ -977,6 +996,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     solution at the bottom of the figure.
 
 \subsection{Implementation, Data Structures and Complexity}
+\label{subsec:impl}
 
     With the concrete backtracking solutions that were derived in
     \autoref{theo:theo1}, \autoref{theo:theo2}, \autoref{theo:theo3} and

@@ -25,7 +25,7 @@
             \begin{array}{l}
                 R_{k,1}(M,x)\mathrel\land x_k\in P_k(M,x)\\
                 R_{k,2}(M,x)\mathrel\land x_k\in P'_k(M,x)
-            \end{array}\right)
+            \end{array}\right).
     \end{align*}
     \tcblower
     \paragraph*{Proof:} The equivalence from \autoref{def:backtracking}
@@ -34,20 +34,20 @@
                         With $C\mathrel\lor C'(M,x)=1\iff C(M,x)=1\mathrel\lor C'(M,x)=1$,
                         this gives
     \begin{align*}
-        C\mathrel\lor C'(M,x)=1\iff{}& P_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }1\leq k\leq n\\
-                              \mathrel\lor{}& P'_k(M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})=1\text{ for all }1\leq k\leq n.
+        C\mathrel\lor C'(M,x)=1\iff{}&x_{v_k}\in P_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n\\
+                              \mathrel\lor{}&x_{v_k}\in P'_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n.
     \end{align*}
     After expanding $R_k$, this directly corresponds to the definition of
     $P_n[C\mathrel\lor C']$.
     Therefore
     \begin{align*}
-        C\mathrel\lor C'(M,x)=1\iff{}P_n[C\mathrel\lor C'](M,(x_{v_1},\dots,x_{v_{n-1}}),x_{v_n})=1.
+        C\mathrel\lor C'(M,x)=1\iff{}x_{v_n}\in P_n[C\mathrel\lor C'](M,p_{n-1}(x)).
     \end{align*}
     This is sufficient for the equivalence in \autoref{def:backtracking} to hold
     in both directions, as for all $1\leq k\leq n$, the definition of
     $P_k[C\mathrel\lor C']$ with expanded $R_k$ directly gives
     \begin{align*}
-        P_n[C\mathrel\lor C'](M,x,y)\implies P_k[C\mathrel\lor C'](M,(x_1,\dots,x_{k-1}),x_k)\text{ for all }k.
+        x_{v_n}\in P_n[C\mathrel\lor C'](M,p_{n-1}(x))\implies x_{v_k}\in P_k[C\mathrel\lor C'](M,p_{k-1}(x)).
     \end{align*}
 \end{theorem}
 \begin{theorem}{Backtracking Solution for Extensions of Constraint Problems}{theo3}
@@ -67,5 +67,5 @@
     \end{align*}
     give a backtracking solution of $(V,C^W)$.
     \tcblower
-    \paragraph*{Proof:} obvious
+    \paragraph*{Proof:} Follows immediately from \autoref{def:backtracking} and \autoref{def:constrext}.
 \end{theorem}
