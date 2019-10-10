@@ -15,10 +15,10 @@
     \item $DFG_\mathcal{F}\subset\mathbb N^3$ and
           $CFG_\mathcal{F}\subset\mathbb N^3$ are the data flow and control
           flow graph.
-    \item $T_\mathcal F\subset\mathbb N\times Types$ is the type model, defined
+    \item $T_\mathcal F\subset Types\times\mathbb N$ is the type model, defined
           by the property
           \begin{align*}
-              (k,ty)\in T_\mathcal F\iff 1\leq k\leq |val|
+              (ty,k)\in T_\mathcal F\iff 1\leq k\leq |val|
                   \mathrel{\land}(val_k\text{ has type }ty).
           \end{align*}
     \item $P_\mathcal F\subset\mathbb N$ and $G_\mathcal F\subset\mathbb N$
@@ -27,16 +27,16 @@
               k\in P_\mathcal F\iff& 1\leq k\leq |par|\text{ and}\\
               k\in G_\mathcal F\iff& |par|+|ins|<k\leq |par|+|ins|+|glb|.
           \end{align*}
-    \item $I_\mathcal F\subset\mathbb N\times Opcodes$ is the instruction model,
+    \item $I_\mathcal F\subset Opcodes\times \mathbb N$ is the instruction model,
           defined by the property
           \begin{align*}
-              (k,op)\in I_\mathcal F\iff |par|<k\leq |par|+|ins|
+              (op,k)\in I_\mathcal F\iff |par|<k\leq |par|+|ins|
                   \mathrel{\land}(ins_{k-|par|}\text{ has opcode }op).
           \end{align*}
-    \item $C_\mathcal F\subset\mathbb N\times\mathbb R$ is the constant model,
+    \item $C_\mathcal F\subset\mathbb R\times\mathbb N$ is the constant model,
           defined by the property
           \begin{align*}
-              (k,x)\in C_\mathcal F\iff{}&|par|+|ins|+|glb|<k\leq |par|+|ins|+|glb|+|cst|\\
+              (x,k)\in C_\mathcal F\iff{}&|par|+|ins|+|glb|<k\leq |par|+|ins|+|glb|+|cst|\\
                         \mathrel{\land}{}&(cst_{k-|par|-|ins|-|glb|}
                         \text{ has numeric value equal to }x).
           \end{align*}
@@ -44,16 +44,26 @@
 \end{definition}
 
 \begin{notation}{Graph Projections}{convenience}
-    For $G\subset\mathbb N^3, k\in\mathbb N$, the following notation applies:
+    For any set $S=A\times\mathbb N^k$ and any $a\in A$, the following sets are
+    defined
     \begin{align*}
-        G^k:=&\{(a,b)\in\mathbb N^2\mid (a,b,k)\in G\}\\
-        G^*:=&\{(a,b)\in\mathbb N^2\mid \exists c\in\mathbb N:(a,b,c)\in G\}.
+        heads(S)={}&\{a\in A\mid (a,b_1,\dots,b_k)\in S\text{ for some }b_1,\dots,b_k\in\mathbb N\}\\
+        tails(S)={}&\{(b_1,\dots,b_k)\in\mathbb N^k\mid (a,b_1,\dots,b_k)\in S\text{ for some }a\in A\}\\
+        select(a,S)={}&\{(b_1,\dots,b_k)\in\mathbb N^k\mid (a,b_1,\dots,b_k)\in S\}.
     \end{align*}
 
-    For $G\subset\mathbb N\times\mathbb R, c\in\mathbb R$, the following
-    notation applies:
+    Note that the case $A=\mathbb N$ is also valid.
+    Furthermore, for $S'\subset\mathbb N^k$, the set $rev(S')$ is defined as
+    $rev(S')=\{(a,b)\mid(b,a)\in S'\}$.
+    Finally, the following shorthand is used
     \begin{align*}
-        G^c:=&\{a\in\mathbb N\mid (a,c)\in G\}\\
-        G^*:=&\{a\in\mathbb N\mid \exists c\in\mathbb R:(a,c)\in G\}.
+        \begin{aligned}
+        DFG_\mathcal F^*={}&tails(DFG_\mathcal F)\\
+        CFG_\mathcal F^*={}&tails(CFG_\mathcal F)
+        \end{aligned}&&
+        \begin{aligned}
+        I_\mathcal F^*={}&tails(I_\mathcal F)\\
+        C_\mathcal F^*={}&tails(C_\mathcal F)
+        \end{aligned}
     \end{align*}
 \end{notation}

@@ -3,13 +3,13 @@
     $P_k[E_S]\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
     defined by
     \begin{align*}
-        P_k[E_S](M,x)=\{s_1\mid(s_1,\dots,s_{n-k+1})\in R_k(M,x)\}
+        P_k[E_S](M,x)=head(R_k(M,x))
     \end{align*}
     give a backtracking solution of $(V,E_S)$, where
     $R_k(M,x)\subset\mathbb N^{n-k+1}$ is given by
     \begin{align*}
-        R_k(M)={}&\{p_n(s)\mid s\in S(M)\}\\[-0.15em]
-        R_{k+1}(M,x))={}&\{(s_1,\dots,s_{n-k})\mid (x_k,s_1,\dots,s_{n-k})\in R_k(M,(x_1,\dots,x_{k-1}))\}.
+        R_k(M)={}&\{p_n(s)\mid s\in S(M)\}\\
+        R_{k+1}(M,x)={}&select(x_k,R_k(M,(x_1,\dots,x_{k-1}))).
     \end{align*}
     \tcblower
     \paragraph*{Proof:} By definition,

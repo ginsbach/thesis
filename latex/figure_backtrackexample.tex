@@ -5,131 +5,172 @@
     \vspace{-0.5em}
     \begin{align*}
         V={}&\{\text{phi}, \text{update}, \text{step}\}\\
-        C(M,x)={}&    ((x_\text{step},1)
+        C(M,x)={}&    ((1,x_\text{step})
                         \in C_\mathcal{F}\mathrel\land
                        (x_\text{phi},x_\text{update})
                         \in DFG_\mathcal{F}^*\mathrel\land\\
            &\phantom{(}(x_\text{step},x_\text{update})
                         \in DFG_\mathcal{F}^* \mathrel\land
-                       (x_\text{phi}, phi)
+                       (phi,x_\text{phi})
                         \in I_\mathcal{F}\mathrel\land\\
-           &\phantom{(}(x_\text{update}, add)
+           &\phantom{(}(add,x_\text{update})
                         \in I_\mathcal{F}\mathrel\land
                        (x_\text{update},x_\text{phi})
                         \in DFG_\mathcal{F}^*)
     \end{align*}
 \end{blackwhitebox}
 
-\vspace{0.25cm}
-{\Large\bf Backtracking Solution:}
-\vspace{0.2cm}
-
-\begin{minipage}{6cm}
-    \centering{\large $x=()$}
-    \begin{graybox}
-        \footnotesize
-        \setlength{\abovedisplayskip}{0pt}
-        \setlength{\belowdisplayskip}{0pt}
-        \vspace{-0.5em}
-        \begin{align*}
-            v_1={}&\text{phi}\\
-            P_1[C]&(M,y)=\\
-              (&y\in\{s_1\mid s\in DFG_\mathcal{F}^*\}\\
-                \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F}, s_2=phi\}\\
-                \mathrel\land{}&y\in\{s_2\mid s\in DFG_\mathcal{F}^*\})\\
-               ={}&y\in\{6,9,10\}
-        \end{align*}
-    \end{graybox}
-    \vspace{-0.75em}
-    {\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
-    \hspace{1.8cm}
-    {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
-    \hspace{1.8cm}
-    {\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
-\end{minipage}
-
-\begin{minipage}{4.75cm}
-    \centering{\large\hspace{3cm} $x=(6)$}
-    \begin{graybox}
-        \footnotesize
-        \setlength{\abovedisplayskip}{0pt}
-        \setlength{\belowdisplayskip}{0pt}
-        \vspace{-0.5em}
-        \begin{align*}
-            v_2&{}=\text{update}\\
-            P_2&{}[C](M,x,y)=\\
-              (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
-                \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}\\
-                \mathrel\land{}&y\in\{s_1\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\
-               ={}&y\in\{\}
-        \end{align*}
-    \end{graybox}
-    {\large $\implies$ backtrack}
-\end{minipage}
-\begin{minipage}{4.75cm}
+\vspace{1cm}
+\begin{minipage}[t]{6cm}
     \centering
-    {\large\phantom{$(9)$}$x=(9)$\phantom{$x$}}
+    {\Large\bf Backtracking Solution:}
+
+    $k=1$\quad$v_1=phi$
     \begin{graybox}
-        \footnotesize
         \setlength{\abovedisplayskip}{0pt}
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
         \begin{align*}
-            v_2&{}=\text{update}\\
-            P_2&{}[C](M,x,y)=\\
-              (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
-                \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}\\
-                \mathrel\land{}&y\in\{s_1\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\
-               ={}&y\in\{17\}
+            P_1[C](M)={}&heads(DFG_\mathcal{F}^*)\\
+                \mathrel\cap{}&select(phi,I_\mathcal{F})\\
+                \mathrel\cap{}&heads(rev(DFG_\mathcal{F}^*))
         \end{align*}
     \end{graybox}
     \vspace{-0.75em}
     \phantom{\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
-    \hspace{1cm}
-    {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
-    \hspace{1cm}
+    \hspace{0.3cm}
+    \phantom{\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
+    \hspace{0.3cm}
     \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
-\end{minipage}
-\begin{minipage}{4.75cm}
-    \centering{\large $x=(10)$ \hspace{2.75cm}}
-    \begin{graybox}
-        \footnotesize
-        \setlength{\abovedisplayskip}{0pt}
-        \setlength{\belowdisplayskip}{0pt}
-        \vspace{-0.5em}
-        \begin{align*}
-            v_2&{}=\text{update}\\
-            P_2&{}[C](M,x,y)=\\
-              (&y\in\{s_2\mid s\in DFG_\mathcal{F}^*,s_1=x_1\}\\
-                \mathrel\land{}&y\in\{s_1\mid s\in I_\mathcal{F},s_2=add\}\\
-                \mathrel\land{}&y\in\{s_1\mid s\in DFG_\mathcal{F}^*,s_2=x_1\})\\
-               ={}&y\in\{\}
-        \end{align*}
-    \end{graybox}
-    {\large $\implies$ backtrack}
-\end{minipage}
 
-\begin{minipage}{5cm}
-    \centering{\large \phantom{$(9,17)$}$x=(9,17)$\phantom{$x$}}
+    $k=2$\quad$v_2=update$
     \begin{graybox}
-        \footnotesize
         \setlength{\abovedisplayskip}{0pt}
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
         \begin{align*}
-            v_3={}&\text{step}\\
-            P_3[C]&(M,x,y)=\\
-              (&y\in\{s_1\mid s\in C_\mathcal{F}, s_2=1\}\\
-                \mathrel\land{}&y\in\{s_1\mid s\in DFG_\mathcal{F}^*, s_2=x_2\})\\
-               ={}&y\in\{22\}
+            P_2[C]&(M,x)=\\
+                            {}&heads(select(x_1,DFG_\mathcal{F}^*))\\
+                \mathrel\cap{}&heads(rev(DFG_\mathcal{F}^*))\\
+                \mathrel\cap{}&select(add,I_\mathcal{F})\\
+                \mathrel\cap{}&heads(select(x_1,rev(DFG_\mathcal{F}^*)))
         \end{align*}
     \end{graybox}
     \vspace{-0.75em}
     \phantom{\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
-    \hspace{1cm}
-    {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
-    \hspace{1cm}
+    \hspace{0.3cm}
+    \phantom{\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
+    \hspace{0.3cm}
     \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
-\end{minipage}
 
-{\large \phantom{$(9,17,22)$}$x=(9,17,22)$\phantom{$x$}}
+    $k=3$\quad$v_3=step$
+    \begin{graybox}
+        \setlength{\abovedisplayskip}{0pt}
+        \setlength{\belowdisplayskip}{0pt}
+        \vspace{-0.5em}
+        \begin{align*}
+            P_3[C]&(M,x)=select(1,C_\mathcal{F})\\
+                \mathrel\cap{}&heads(select(x_2,rev(DFG_\mathcal{F}^*)))
+        \end{align*}
+    \end{graybox}
+    \vspace{-0.75em}
+    \phantom{\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
+    \phantom{\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
+    \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
+
+    \phantom{\large $x=(9,17,22)$}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{8cm}
+    \centering
+    {\Large\bf Backtracking Algorithm:}
+
+    \begin{minipage}{4cm}
+        \centering
+        \vspace{1.9mm}
+        $x=()$
+        \begin{graybox}
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
+            \begin{gather*}
+                \\P_1[C](M)=\{6,9,10\}\\
+            \end{gather*}
+        \end{graybox}
+        \vspace{-0.75em}
+        {\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
+        \hspace{0.8cm}
+        {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
+        \hspace{0.8cm}
+        {\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
+    \end{minipage}
+
+    \begin{minipage}{2.5cm}
+        \centering
+        \vspace{0.7mm}
+        $x=(6)$
+        \begin{graybox}
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
+            \begin{gather*}
+                \\P_2[C](M,6)\\=\\\{\}\\
+            \end{gather*}
+        \end{graybox}
+        {\large\bf backtrack!}
+    \end{minipage}
+    \begin{minipage}{2.5cm}
+        \centering
+        \vspace{0.7mm}
+        $x=(9)$
+        \begin{graybox}
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
+            \begin{gather*}
+                \\P_2[C](M,9)\\=\\\{17\}\\
+            \end{gather*}
+        \end{graybox}
+        \vspace{-0.75em}
+        \phantom{\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
+        {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
+        \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
+    \end{minipage}
+    \begin{minipage}{2.5cm}
+        \centering
+        \vspace{0.7mm}
+        $x=(10)$
+        \begin{graybox}
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
+            \begin{gather*}
+                \\P_2[C](M,10)\\=\\\{\}\\
+            \end{gather*}
+        \end{graybox}
+        {\large\bf backtrack!}
+    \end{minipage}
+
+    \begin{minipage}{4cm}
+        \centering
+        \vspace{0.7mm}
+        $x=(9,17)$
+        \begin{graybox}
+            \setlength{\abovedisplayskip}{0pt}
+            \setlength{\belowdisplayskip}{0pt}
+            \vspace{-0.5em}
+            \begin{gather*}
+                \\[-3.75mm]
+                P_3[C](M,9,17)=\{22\}
+                \\[-3.75mm]
+            \end{gather*}
+        \end{graybox}
+        \vspace{-0.75em}
+        \phantom{\Huge \rotatebox[origin=c]{330}{$\downarrow$}{}}
+        {\Huge\rotatebox[origin=c]{0}{$\downarrow$}}
+        \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
+    \end{minipage}
+
+    \vspace{0.5mm}
+    {\large $x=(9,17,22)$}
+\end{minipage}

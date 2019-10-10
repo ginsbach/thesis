@@ -25,15 +25,15 @@
         \vspace{-0.5em}
         \begin{align*}
             V={}&\{\text{phi}, \text{update}, \text{step}\}\\
-            C(M,x)={}&    ((x_\text{step},1)
+            C(M,x)={}&    ((1,x_\text{step})
                             \in C_\mathcal{F}\mathrel\land
                            (x_\text{phi},x_\text{update})
                             \in DFG_\mathcal{F}^*\mathrel\land\\
                &\phantom{(}(x_\text{step},x_\text{update})
                             \in DFG_\mathcal{F}^* \mathrel\land
-                           (x_\text{phi}, phi)
+                           (phi,x_\text{phi})
                             \in I_\mathcal{F}\mathrel\land\\
-               &\phantom{(}(x_\text{update}, add)
+               &\phantom{(}(add,x_\text{update})
                             \in I_\mathcal{F}\mathrel\land
                            (x_\text{update},x_\text{phi})
                             \in DFG_\mathcal{F}^*)
@@ -44,21 +44,21 @@
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
         \begin{align*}
-            DF&G_\mathcal F=\{(1,11,1),(2,13,1),(3,4,1),(3,18,2),(4,5,1),(6,7,1),\\[-0.5em]
-              &(9,11,2),(9,13,2),\underline{(9,17,1)},(10,16,1),(11,12,1),(12,15,1),\\[-0.5em]
-              &(13,14,1),(14,15,2),(15,16,2),(16,6,1),(16,10,1),\underline{(17,9,2)},\\[-0.5em]
-              &(17,18,1),(18,19,1),(20,4,2),(20,9,1),(21,6,1),(21,10,2),\\[-0.5em]
-              &\underline{(22,17,2)}\}\\[-0.25em]
-            CF&G_\mathcal F=\{(4,5,1),(5,6,1),(5,8,2),(6,7,1),(8,9,1),(9,10,1),\\[-0.5em]
-              &(10,11,1),(11,12,1),(12,13,1),(13,14,1),(14,15,1),\\[-0.5em]
-              &(15,16,1),(16,17,1),(17,18,1),(18,19,1),(19,6,1),(19,9,2)\}\\[-0.25em]
-            T_\mathcal F&{}=\{(1,\textit{double*}),(2,\textit{double*}),\dots\}\\[-0.25em]
+            DF&G_\mathcal F=\{(1,1,11),(1,2,13),(1,3,4),(2,3,18),(1,4,5),(1,6,7),\\[-0.5em]
+              &(2,9,11),(2,9,13),\underline{(1,9,17)},(1,10,16),(1,11,12),(1,12,15),\\[-0.5em]
+              &(1,13,14),(2,14,15),(2,15,16),(1,16,6),(1,16,10),\underline{(2,17,9)},\\[-0.5em]
+              &(1,17,18),(1,18,19),(2,20,4),(1,20,9),(1,21,6),(2,21,10),\\[-0.5em]
+              &\underline{(2,22,17)}\}\\[-0.25em]
+            CF&G_\mathcal F=\{(1,4,5),(1,5,6),(2,5,8),(1,6,7),(1,8,9),(1,9,10),\\[-0.5em]
+              &(1,10,11),(1,11,12),(1,12,13),(1,13,14),(1,14,15),\\[-0.5em]
+              &(1,15,16),(1,16,17),(1,17,18),(1,18,19),(1,19,6),(2,19,9)\}\\[-0.25em]
+            T_\mathcal F&{}=\{(\textit{double*},1),(\textit{double*},2),\dots\}\\[-0.25em]
             P_\mathcal F&{}=\{1,2,3\}\subset\mathbb N\\[-0.25em]
-            I_\mathcal F&{}=\{(4,\textit{icmp eq}),(5,\textit{cond br}),(6,\textit{phi}),(7,\textit{ret}),(8,\textit{br}),\underline{(9,\textit{phi})},\\[-0.5em]
-                        &(10,\textit{phi}),(11,\textit{gep}),(12,\textit{load}),(13,\textit{gep}),(14,\textit{load}),(15,\textit{fmul}),\\[-0.5em]
-                        &(16,\textit{fadd}),\underline{(17\textit{add})},(18,\textit{icmp eq}),(19,\textit{cond br})\}\\[-0.25em]
+            I_\mathcal F&{}=\{(\textit{icmp eq},4),(\textit{cond br},5),(\textit{phi},6),(\textit{ret},7),(\textit{br},8),\underline{(\textit{phi},9)},\\[-0.5em]
+                        &(\textit{phi},10),(\textit{gep},11),(\textit{load},12),(\textit{gep},13),(\textit{load},14),(\textit{fmul},15),\\[-0.5em]
+                        &(\textit{fadd},16),\underline{(\textit{add},17)},(\textit{icmp eq},18),(\textit{cond br},19)\}\\[-0.25em]
             G_\mathcal F&{}=\{\}\\[-0.25em]
-            C_\mathcal F&{}=\{(20,0),(21,0),\underline{(22,1)}\}
+            C_\mathcal F&{}=\{(0,20),(0,21),\underline{(1,22)}\}
         \end{align*}
     \end{blackwhitebox}
 \end{minipage}

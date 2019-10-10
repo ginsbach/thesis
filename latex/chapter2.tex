@@ -319,7 +319,7 @@
     The {\em data flow graph} of the SSA function $\mathcal F$ is the set
     $DGF_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (a,b,n)\in DFG_{\mathcal F}\iff 1\leq a\leq |val|
+        (n,a,b)\in DFG_{\mathcal F}\iff 1\leq a\leq |val|
             \mathrel{\land}(val_a\text{ is the $n$th argument of }ins_b).
     \end{align*}
 \end{definition}
@@ -327,9 +327,9 @@
 
     Complementing the data flow graph is the control flow graph of the function,
     as introduced in \autoref{def:cfg}.
-    The control flow graph is usually defined on a basic block granularity, but
-    here it will be defined directly on instructions, in order to better
-    complement the data flow graph.
+    The control flow graph is often defined on a basic block granularity, but
+    here it oprerates directly on instructions, in order to better complement
+    the data flow graph.
     The basic block structure is easily recoverable from this representations.
 
 \begin{figure}[h]
@@ -337,7 +337,7 @@
     The {\em control flow graph} of the SSA function $\mathcal F$ is the set
     $CGF_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (a,b,n)&{}\in CFG_{\mathcal F}\iff |par|<a,b\leq |par|+|ins|\mathrel{\land}\\
+        (n,a,b)&{}\in CFG_{\mathcal F}\iff |par|<a,b\leq |par|+|ins|\mathrel{\land}\\
                &\left(\begin{aligned}[c]
                                     (\neg (ins_{a-|par|}\text{ terminates basic block})\mathrel{\land}{}&b=a+1\mathrel{\land}n=1)\\
                       \mathrel{\lor}(\phantom{\neg}(ins_{a-|par|}\text{ terminates basic block})\mathrel{\land}{}&ins_{b-|par|}\text{ first instruction in}\text{ $n$th}\\[-0.5em]
@@ -353,7 +353,7 @@
     They are either an edge within a basic block, or they are an edge between
     the last instruction of one basic block and the initial instruction of an
     another.
-    This has implications for modeling $\Phi$ nodes, which are naturally
+    This has implications for modeling $\Phi$-instructions, which are naturally
     attached to basic blocks.
     They are instead modeled as instructions, with their value depending on the
     last executed jump instruction.
@@ -394,10 +394,10 @@
     \item The arguments of all operations can be immediately filled in with the 
           DFG. Similarly, the CFG directly provides the target instructions
           for goto statements.
-    \item Incoming edges of $\Phi$ nodes are matched with incoming values using
-          the convention that the incoming values are ordered (with respect to
-          their labels in the data flow graph) according to the position of the
-          incoming basic blocks in the list of instructions.
+    \item Incoming edges of $\Phi$-instructions are matched with incoming values
+          using the convention that the incoming values are ordered
+          (with respect to their labels in the data flow graph) according to the
+          position of the incoming basic blocks in the list of instructions.
 \end{enumerate}
 
 \begin{figure}[b]
@@ -748,9 +748,9 @@ define double @dot(double* %0, double* %1, i64 %2) {
     The underlined strucures in the lower part of
     \autoref{fig:constraintsolution} {\bf b)} demonstrate the validity of the
     solution:
-    $(22,1)\in C_\mathcal F$ and $(9,17,1)\in DFG_\mathcal F$ and
-    $(22,17,2)\in DFG_\mathcal F$ and $(9,\textit{phi})\in I_\mathcal F$ and
-    $(17,\textit{add})\in I_\mathcal F$ and $(17,9,2)\in DFG_\mathcal F$,
+    $(1,22)\in C_\mathcal F$ and $(1,9,17)\in DFG_\mathcal F$ and
+    $(2,22,17)\in DFG_\mathcal F$ and $(\textit{phi},9)\in I_\mathcal F$ and
+    $(\textit{add},17)\in I_\mathcal F$ and $(2,17,9)\in DFG_\mathcal F$,
     corresponding to the six simple constraints that make up the predicate.
 
     Each solution therefore assigns an integer to each variable.
