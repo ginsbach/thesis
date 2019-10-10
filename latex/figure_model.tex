@@ -44,12 +44,12 @@
 \end{definition}
 
 \begin{notation}{Graph Projections}{convenience}
-    For any set $S=A\times\mathbb N^k$ and any $a\in A$, the following sets are
-    defined
+    For a set $A$, any $a\in A$ and $S=A\times\mathbb N^k$ for some $k>0$, the
+    following sets are defined
     \begin{align*}
-        heads(S)={}&\{a\in A\mid (a,b_1,\dots,b_k)\in S\text{ for some }b_1,\dots,b_k\in\mathbb N\}\\
-        tails(S)={}&\{(b_1,\dots,b_k)\in\mathbb N^k\mid (a,b_1,\dots,b_k)\in S\text{ for some }a\in A\}\\
-        select(a,S)={}&\{(b_1,\dots,b_k)\in\mathbb N^k\mid (a,b_1,\dots,b_k)\in S\}.
+        heads(S)={}&\{a\in A\hspace{1.8mm}\mid(a,b_1,\dots,b_k)\in S\text{ for some }b_1,\dots,b_k\in\mathbb N\}\\
+        tails(S)={}&\{b\in\mathbb N^k\mid(a,b_1,\dots,b_k)\in S\text{ for some }a\in A\}\\
+        select(a,S)={}&\{b\in\mathbb N^k\mid(a,b_1,\dots,b_k)\in S\}.
     \end{align*}
 
     Note that the case $A=\mathbb N$ is also valid.

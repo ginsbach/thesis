@@ -1,15 +1,33 @@
 
+    \vfill
     The research contributions of this thesis are based on a novel constraint
     programming approach on compiler intermediate representation.
-    This chapter introduces the underlying methodology of this approach.
-    Single static assignment (SSA) form is formalised into suitable model as the
-    basis for constraint programming.
-    With this model, constraint problems that impose restrictions on fragments
-    of SSA code are derived.
+    This chapter derives and motivates the underlying methodology of this
+    approach in several steps.
+
+    First, a quick overview of compiler intermediate representations is given
+    and the properties of static single assignment (SSA) in particular are
+    introduced.
+    SSA is then formalised into a mathematical model that captures the static
+    structure of SSA programs.
+    This model is derived in general, but then demonstrated and motivated in
+    more detail on the example SSA language LLVM IR.
+
+    On this model, the concept of constraint problems is defined.
+    These constraint problems are formulas that impose restrictions on fragments
+    of SSA code.
+    Constraint formulas can be used to define code structures such as loops in
+    the context of the SSA model.
     Detecting adhering code sections in SSA programs is then equivalent to
     solving the constraint problem.
-    Finally, the structure of constraint problems is analysed and efficient
-    solving techniques are derived.
+    The structure of several classes of constraint formulas is discussed and
+    some examples derived.
+
+    Finally, algorithms for solving constraint problems are derived and the
+    implementation of these algorithms is drafted.
+    Strategies for efficiently trimming the search space are discussed and
+    analogies to standard Satisfiability Modulo Theory (SMT) problems are
+    explored.
     \vfill
 
 %    Constraint formulas on SSA respresentations initially appear to mimic
@@ -48,8 +66,8 @@
     They can be grouped into categories and reflect the requirements of
     the compilation stages they are used in.
 
-    \vfill
-    {\bf Front end representations} are close to the source program and
+    \begin{description}[style=unboxed,leftmargin=0cm,labelindent=\parindent]
+    \item[Front end representations] are close to the source program and
     naturally the internals of the compiler front end, especially the parser.
     Typically, they are built around an abstract syntax tree with
     additional annotations, such as type information.
@@ -61,16 +79,14 @@
     This means that the semantics of program parts in these representations
     depend highly on context.
 
-    \vfill
-    {\bf Back end representations} are based on a model of the target hardware.
+    \item[\bf Back end representations] are based on a model of the target hardware.
     They typically approach an assembly style format and expose the instruction
     set architecture of the hardware, making them platform specific.
     Back end representations also encode decisions about problems that are
     removed from the algorithmic core of the user program, such as instruction
     selection and register allocation.
 
-    \vfill
-    {\bf Mid end representations} are designed to be suitable for the analysis
+    \item[\bf Mid end representations] are designed to be suitable for the analysis
     and transformation of code in order to appy optimisations.
     {\bf Static Single Assignment} (SSA) form has emerged as a common choice for
     the mid end in leading compilers.
@@ -79,8 +95,8 @@
     semantics of the user program that enables reliable analysis and platform
     independent reasoning.
     This is why it was chosen as the basis for this work.
+    \end{description}
 
-    \vfill
     Static Single Assignment was first proposed by
     \citet{Rosen:1988:GVN:73560.73562}, and there are now many different
     intermediate representations that implement the concept.
@@ -93,9 +109,8 @@
     Some prominent examples of compilers that use SSA include
     {\bf clang} (LLVM IR), {\bf gcc} (GIMPLE), {\bf v8 Crankshaft} (Hydrogen)
     and {\bf SpiderMonkey} (IonMonkey/MIR).
-    Despite many differences, they share fundamental paradigms and many of the
-    differences can be abstracted away as implementation specific details for
-    this work.
+    Despite many differences, they share the same basic structure that is
+    discussed in this chapter.
 
     SSA form was developed as an improvement over previously used compiler
     intermediate representations.
@@ -394,7 +409,7 @@
     \item The arguments of all operations can be immediately filled in with the 
           DFG. Similarly, the CFG directly provides the target instructions
           for goto statements.
-    \item Incoming edges of $\Phi$-instructions are matched with incoming values
+    \item Incoming edges of $\Phi$-instructions are matched to incoming values
           using the convention that the incoming values are ordered
           (with respect to their labels in the data flow graph) according to the
           position of the incoming basic blocks in the list of instructions.
@@ -935,9 +950,9 @@ define double @dot(double* %0, double* %1, i64 %2) {
     partial solutions at $k$ where the corresponding element in $R_k$
     signals validity.
 
-    Finally, \autoref{theo:theo3} shows that backtracking solutions for
-    extensions of constraint problems can be constructed by simply ignoring the
-    additional variables.
+    \autoref{theo:theo3} shows that backtracking solutions for extensions of
+    constraint problems can be constructed by simply ignoring the additional
+    variables.
 
 \subsection{Backtracking Example}
 
