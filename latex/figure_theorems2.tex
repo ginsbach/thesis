@@ -1,19 +1,30 @@
 \begin{theorem}{Backtracking Solution for Disjunction Constraint problems}{theo4}
     For SSA constraint problems $(V,C)$ and $(V,C')$ with backtracking
-    solutions $(P_k)_{k=1\dots n}$ and $(P'_k)_{k=1\dots n}$, the
-    predicates $(P_k[C\mathrel\lor C'])_{k=1\dots n}$ defined by
+    solutions $(P_k)_{k=1\dots n}$, $(P'_k)_{k=1\dots n}$, the
+    functions $(P_k[C\mathrel\lor C'])_{k=1\dots n}$,
+    $P_k[C\mathrel\land C']\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
+    defined by
     \begin{align*}
-        P_k[C\mathrel\lor C'](M,x,y):={}&\left(R_{k,1}(M,x,y)\mathrel\land P_k(M,x,y)\right)\\
-                          \mathrel\lor{}&\left(R_{k,2}(M,x,y)\mathrel\land P'_k(M,x,y)\right)
+        P_k[C\mathrel\lor C'](M,x)=\left(\left\{
+            \begin{array}{ll}
+                P_k(M,x)&\text{if }R_{k,1}(M,x)\\
+                \emptyset&\text{otherwise}
+            \end{array}
+            \right)\cup\left(\left\{
+            \begin{array}{ll}
+                P'_k(M,x)&\text{if }R_{k,2}(M,x)\\
+                \emptyset&\text{otherwise}
+            \end{array} 
+            \right)
     \end{align*}
     give a backtracking solution of $(V,C\mathrel\lor C')$, were $R_k(M,x)\in\{0,1\}^2$
     is given by 
     \begin{align*}
         R_0(M)=(1,1)&&
-        R_{k+1}(M,x)=\left(
+        R_{k+1}(M,x,x_k)=\left(
             \begin{array}{l}
-                R_{k,1}(M,x)\mathrel\land P_k(M,(x_1,\dots,x_{k-1}),x_k)\\
-                R_{k,2}(M,x)\mathrel\land P'_k(M,(x_1,\dots,x_{k-1}),x_k)
+                R_{k,1}(M,x)\mathrel\land x_k\in P_k(M,x)\\
+                R_{k,2}(M,x)\mathrel\land x_k\in P'_k(M,x)
             \end{array}\right)
     \end{align*}
     \tcblower
@@ -44,13 +55,14 @@
     solution $(P_k)_{k=1\dots n}$ and a set $W$ with an injection
     $i:V\hookrightarrow W$ and an order $W=\{w_1,\dots,w_n\}$ that is
     compatible with the order on $V$ in the sense that $v_k=w_{t(k)}$ with
-    some $t:\mathbb N\rightarrow\mathbb N$ strictly increasing, the
-    predicates $(P_k[C^W])_{k=1\dots |W|}$ defined by
+    some $t:\mathbb N\rightarrow\mathbb N$ strictly increasing, the functions
+    $(P_k[C^W])_{k=1\dots |W|}$,$P_k[C^W]\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
+    defined by
     \begin{align*}
-        P_k[C^W](M,x,y):=\left\{
+        P_k[C^W](M,x)=\left\{
             \begin{array}{ll}
-                P_k\left(M,\left(x_{t(1)},\dots,x_{t(n)}\right),y\right)&\text{if }w_k\in V\\
-                \equiv 1&\text{otherwise}\\
+                P_k\left(M,\left(x_{t(1)},\dots,x_{t(k'-1)}\right)\right)&\text{if }w_k\in V\text{ and therefore }k=t(k')\\
+                \mathbb N&\text{otherwise}\\
             \end{array}\right.
     \end{align*}
     give a backtracking solution of $(V,C^W)$.
