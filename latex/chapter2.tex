@@ -1,34 +1,35 @@
 
-    \vfill
     The research contributions of this thesis are based on a novel constraint
     programming approach on compiler intermediate representation.
-    This chapter derives and motivates the underlying methodology of this
+    This chapter derives and motivates this underlying methodology of this
     approach in several steps.
 
-    First, a quick overview of compiler intermediate representations is given
-    and the properties of static single assignment (SSA) in particular are
-    introduced.
+    First, a quick overview of compiler representations during different
+    compilation stages is given and the particular features of static single
+    assignment (SSA) form are highlighted.
     SSA is then formalised into a mathematical model that captures the static
     structure of SSA programs.
-    This model is derived in general, but then demonstrated and motivated in
-    more detail on the example SSA language LLVM IR.
+    This model is initially derived for SSA is general, and then demonstrated in
+    more detail on \mbox{LLVM IR}, a specific SSA language.
 
-    On this model, the concept of constraint problems is defined.
+    On the SSA model, the concept of SSA constraint problems is defined.
     These constraint problems are formulas that impose restrictions on fragments
     of SSA code.
-    Constraint formulas can be used to define code structures such as loops in
-    the context of the SSA model.
+    The formulas can define code structures such as loops in the context of the
+    SSA model.
     Detecting adhering code sections in SSA programs is then equivalent to
-    solving the constraint problem.
-    The structure of several classes of constraint formulas is discussed and
-    some examples derived.
+    finding solutions to the SSA constraint problem.
+    The structure of several classes of constraint formulas is discussed.
 
-    Finally, algorithms for solving constraint problems are derived and the
-    implementation of these algorithms is drafted.
-    Strategies for efficiently trimming the search space are discussed and
-    analogies to standard Satisfiability Modulo Theory (SMT) problems are
-    explored.
-    \vfill
+    Finally, algorithms for solving constraint problems are derived.
+    Backtracking is used to quickly find solutions by incrementally extending
+    partial solutions.
+    It is discussed in detail how to use the internal structure of specific
+    classes of SSA constraint problems for efficient backtracking solutions.
+    After the algorithmic discussion, an implementation of these algorithms with
+    suitable data structures is drafted and the runtime complexity is discussed.
+    In the last section, similarities and differences to standard Satisfiability
+    Modulo Theory (SMT) problems are explored.
 
 %    Constraint formulas on SSA respresentations initially appear to mimic
 %    pattern matching approaches on abstract syntax tree (AST) level.
