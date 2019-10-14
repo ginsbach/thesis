@@ -27,7 +27,7 @@
     This continual progress started breaking down around 2006, with the apparent
     end of Dennard Scaling.
     While the shrinking of transistors continued, this did not coincide with
-    increased clock cycles with stable power consumption any longer.
+    increased clock cycles and stable power consumption any longer.
     Therefore, scaling single core processors became unviable.
     The resulting shift toward multi-processing has left a deep mark on
     software development.
@@ -43,18 +43,19 @@
     In response to the prevailing breakdown of both Dennard Scaling and Moore's
     Law, the hardware industry turns toward architectural innovation, trending
     away from general purpose processors and toward the use of specialised
-    hardware and dark silicon.
+    hardware combined with dynamic masking out of the utilised transistors
+    at runtime (dark silicon).
     Accelerator processors have become widespread, first in the form of general
     purpose graphics processing units and now increasingly as deep learning
-    accelerators, coinciding with the meteoric rise in popularity of
-    convolutional neural networks and the success of deep learning.
+    accelerators.%, coinciding with the rise in popularity of convolutional neural
+  %  networks and the success of deep learning.
 
 \section{The Diminished Role of Traditional Compilers}
 
     This arrival of widespread heterogeneous computing is a natural and
     necessary reaction to the scaling limitations of homogeneous, general
     purpose processors.
-    However, it also poses an enormous challenge to the surrounding software
+    However, it also poses an enormous challenge to the associated software
     ecosystem, and it puts into question many of the achievements in portability
     and longevity of programs that are taken for granted in modern computing.
     Existing software does not automatically benefit from entirely new
@@ -67,10 +68,10 @@
     In particular, the novel hardware landscape greatly diminishes the scope of
     responsibilities and impact that traditional compilers for languages such as
     C, C++ and Fortran can have.
-    Were previously, such compilers were responsible for orchestrating
-    program execution on the entirety of available computing resources, they are
-    now generally limited to only targeting the small homogeneous fraction of
-    processor cores directly.
+    Such compilers used to be responsible for orchestrating
+    program execution on the entirety of available computing resources.
+    They are now generally limited to only targeting the small
+    homogeneous fraction of processor cores directly.
 
 \subsection{Libraries and Domain Specific Languages Fill the Gap}
 
@@ -268,10 +269,10 @@
     Program code typically passes through a whole range of representations
     during compilation with a modern, general purpose compiler.
     Starting from the textual source code, an abstract syntax tree is built,
-    from which a serialized intermdiate representation is constructed,
+    from which a serialised intermdiate representation is constructed,
     which is then passed on to the compiler back end for code generation.
     The intermediate representation -- typically in static single assignment
-    form -- that is used for the majority of optimising code transformations.
+    form -- is used for the majority of optimising code transformations.
     This best represents the semantic model, and therefore the set of
     assumptions and capabilities, that the compiler uses to represent the
     program.
