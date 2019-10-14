@@ -1,7 +1,7 @@
 
     The research contributions of this thesis are based on a novel constraint
     programming approach on compiler intermediate representation.
-    This chapter derives and motivates this underlying methodology of this
+    This chapter derives and motivates the underlying methodology of this
     approach in several steps.
 
     First, a quick overview of compiler representations during different
@@ -87,8 +87,8 @@
     removed from the algorithmic core of the user program, such as instruction
     selection and register allocation.
 
-    \item[\bf Mid end representations] are designed to be suitable for the analysis
-    and transformation of code in order to appy optimisations.
+    \item[\bf Mid end representations] are designed to be suitable for the
+    analysis and transformation of code in order to apply optimisations.
     {\bf Static Single Assignment} (SSA) form has emerged as a common choice for
     the mid end in leading compilers.
     SSA abstracts away the complexities of the source language and the
@@ -188,13 +188,14 @@
 \end{equation}
 
     Starting from the source code {\bf a)} at the top left of the figure, the
-    function is first simplified by breaking down complex expressions as far as
-    possible.
+    function is first modified by breaking down complex expressions.
     This results in a sequentialisation of the expressions into their
-    most basic operations, shown at the top right {\bf b)}, introducing
-    explicit variables that store the previously implicit temporary values.
-    This simplifies and normalises the program, with many of the remaining
-    simple expressions directly mapping to individual processor instructions.
+    basic operations, shown at the top right {\bf b)}, introducing explicit
+    variables for the previously implicit temporary values.
+    This simplifies the program, with many of the operations directly mapping to
+    individual processor instructions.
+    Furthermore, many different input programs get mapped to a single,
+    predictable ouput by this transformation, making it a normalisation.
 
     In a second step, the structured control flow of the program is replaced
     with goto statements that coordinate the control flow between basic blocks.
@@ -230,8 +231,8 @@
     This section developed an understanding of how SSA form originated
     historically, and how it emerges during the compilation process.
     The following section uses the observations from
-    \autoref{fig:ssaoverview} -- that most things in SSA can be enumerated and
-    represented as elements in lists -- to derive a model of the static
+    \autoref{fig:ssaoverview} -- that most parts of SSA code can be enumerated
+    and represented as elements in lists -- to derive a model of the static
     structure of SSA programs.
     This model then serves as the foundation for later sections, which define
     compiler analysis problems via constraint formulas on this model.
@@ -333,7 +334,7 @@
 
 \begin{definition}{Data Flow Graph}{dfg}
     The {\em data flow graph} of the SSA function $\mathcal F$ is the set
-    $DGF_{\mathcal F}\subset \mathbb N^3$ such that
+    $DFG_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
         (n,a,b)\in DFG_{\mathcal F}\iff 1\leq a\leq |val|
             \mathrel{\land}(val_a\text{ is the $n$th argument of }ins_b).
@@ -351,7 +352,7 @@
 \begin{figure}[h]
 \begin{definition}{Control Flow Graph}{cfg}
     The {\em control flow graph} of the SSA function $\mathcal F$ is the set
-    $CGF_{\mathcal F}\subset \mathbb N^3$ such that
+    $CFG_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
         (n,a,b)&{}\in CFG_{\mathcal F}\iff |par|<a,b\leq |par|+|ins|\mathrel{\land}\\
                &\left(\begin{aligned}[c]
@@ -509,7 +510,7 @@
     Similar notation is used to simplify the instruction, type and constant
     models.
     For example, $C_\mathcal F^*$ discards the value information and gives a
-    simple poolean predicate, akin to the global and parameter model.
+    simple boolean predicate, akin to the global and parameter model.
     On the other hand $C_\mathcal F^0$ contains all the zero-valued constants.
 
     These different simplifications will enable the easier formulation of
@@ -732,7 +733,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \label{fig:constraintsolution}
 \end{figure}
 
-    Consider the task of detecting in a program all simple loop iterator in a
+    Consider the task of detecting in a program all simple loop iterators in a
     function, shown in \autoref{fig:constraintsolution}.
     The top {\bf a)} demonstrates how this can be translated into a constraint
     problem, solved in the context of an SSA model.
@@ -747,8 +748,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
     $V=\{\text{phi}, \text{update}, \text{step}\}$ and a predicate to
     describe the required conditions on the variables.
     The predicate is decomposed with logical conjunctions (``$\land$'') into
-    several {\em elemt-of} relationships that have to hold simultaneously on the
-    structures of the model.
+    several {\em element-of} relationships that have to hold simultaneously on
+    the structures of the model.
     Explicit control flow constraints for establishing the loop strucure are not
     required, as the data flow with the $\Phi$ node already implies the presence
     of a loop structure.
@@ -821,7 +822,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     Note that \autoref{def:backtracking} defines the concept of a backtracking
     solution, but it does not show how such a backtracking solution could
     actually be constructed.
-    That is be a topic of later sections.
+    That is a topic of later sections.
     In this context, the concept is introduced in order to allow the definition
     of the backtracking search \autoref{backtrackalg}, which operates as
     follows.
@@ -1115,8 +1116,8 @@ struct Tree { vector<pair<int,Tree>> s; };
 
     There are a number of additional construction rules for SSA constraint
     problems that are used in this thesis.
-    Some of them less intuitive than the previously introduced definition, but
-    allow for powerful compiler analysis.
+    Some of them are less intuitive than the previously introduced definitions,
+    but allow for powerful compiler analysis.
 
     Firstly, there are a number of very simple SSA constraint problems that
     operate directly on the integer values, without interpreting them as indizes
@@ -1147,7 +1148,7 @@ struct Tree { vector<pair<int,Tree>> s; };
 
     Finally, collect-all constraint problem are introduced in
     \autoref{def:collectconstr}.
-    Given a constraint problem $(V,C)$, the variables $V$ is divided into
+    Given a constraint problem $(V,C)$, the variables $V$ are divided into
     two subsets.
     The collect-all constraint problem identifies all possible solutions over
     one of the variable subsets, given that the other variable subset is fixed.
@@ -1227,8 +1228,8 @@ struct Tree { vector<pair<int,Tree>> s; };
 
 \subsection{Satifiability Modulo Theory}
 
-    SSA constraint problems can to an extent be interpreted as an unconventional
-    instance of Satisfiability Modulo Theory (SMT) problems.
+    SSA constraint problems can to a certain extent be interpreted as an
+    unconventional instance of Satisfiability Modulo Theory (SMT) problems.
     Howeverm, where typical SMT problems might operate on the
     {\em theory of linear arithmetic} or the {\em theory of bit-vectors},
     SSA constraint problems operate on the {\em theory of SSA values in the
