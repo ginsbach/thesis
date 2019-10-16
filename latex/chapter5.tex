@@ -364,78 +364,152 @@ for (i = 0; i < NK; i++) {
 
     There are three fundamental issues to address in exploiting reductions:
     detection, replacement and profitability.
-    This chapter focuses on the reliable detection of reductions based on a
-    constraint specification.
+    This chapter focuses on the reliable detection of reductions.
     For evaluation purposes, a preliminary code generation phase that generates
     parallel pthread code was also implemented.
     Profitability heuristics are important in practice to determine whether or
     not to apply parallelising code transformations.
-    We use a simple profile-based
-    approach to determine whether or not to apply our optimization.
+    A simple profile-based approach was used for this work to determine whether
+    or not to apply our optimisation.
 
-    Our method for the detection of reduction operations is based on a novel
-    constraint based description language for computational idioms and a generic
-    solver algorithm that searches in single static assignment compiler IR code
-    for subsets that satisfy them.
-    This decoupling of specification and detection enables us to build an
-    extensible system that can process complex reductions beyond the
-    capabilities of established approaches.
+%    Our method for the detection of reduction operations is based on a novel
+%    constraint based description language for computational idioms and a generic
+%    solver algorithm that searches in single static assignment compiler IR code
+%    for subsets that satisfy them.
+%    This decoupling of specification and detection enables us to build an
+%    extensible system that can process complex reductions beyond the
+%    capabilities of established approaches.
 
-    In the next sub-sections we first motivate and describe our constraint based
-    specification approach.
-    We describe how the reduction idiom can be specified in this system.
-    We then derive a generic algorithm that can be used to generate detection
-    functionality directly from the constraint description.
-    This is followed by a brief outline of how this can be integrated in the
+    In the next sub-sections, the constraint based specification approach with
+    CAnDL is first motivated and described.
+    The reduction idiom is then specified in this system and the CAnDL context
+    is given.
+    This is followed by a brief outline of how this is integrated in the
     LLVM compiler infrastructure.
-    Finally, in the following section, we give an overview of our code
-    generation approach.
+    Finally, in the following section, an overview of the parallel code
+    generation approach is given.
 
 \subsection{Constraint based formulation}
-In this section we describe how scalar and generalized reductions can be formulated as constraints.
-%% In the motivation section we described how reductions can be
-%% parallelized and suggested that the same basic technique can be
-%% applied to a wide range of generalised reductions.  To enable
-%% compilers to exploit this, we need a precise definition of the kinds
-%% of computations that fit this approach.  We will start with an
-%% intuitive description and then deconstruct it into a specification
-%% that is made up of constraints that can be automatically verified.
+
+    The motivation section described how reductions can be parallelised and
+    suggested that the same basic technique can be applied to a wide range of
+    generalised reductions.
+    To enable compilers to exploit this, a precise definition of the kinds
+    of computations that fit this approach is needed.
+    This section formulates scalar and generalized reductions with constraints.
+
 \subsubsection{Scalar Reductions}
-Informally  we require the following conditions to hold in piece of source code for it to contain a scalar reduction:
-\begin{enumerate}
-\item The code is contained in a for loop and the iteration space is known in advance (not necessarily at compile time).
-\item There is a scalar value $x$ that is updated in every iteration.
-\item One or multiple values $a_1,\dots,a_n$ are read from arrays and the indices are affine in the loop iterator.
-\item The updated value $x'$ is computed as a term only of $x$, the array values $a_1,\dots,a_n$ and values that are constant within the loop.
-\end{enumerate}
 
-The definition is broader than usual.  In particular we allow the
-reduction to encompass multiple arrays.  Furthermore we allow complex
-computations inside the reduction, not just a scalar binary operator.
+    Informally, the following conditions are required to hold in a piece of
+    source code for it to contain a computation that can be parallelised like a
+    scalar reduction:
+    \begin{enumerate}
+        \item The code is contained in a for loop and the iteration space of the
+              loop is known in advance (not necessarily at compile time).
+        \item There is a scalar value $x$ that is updated in every iteration.
+        \item One or multiple values $a_1,\dots,a_n$ are read from arrays and
+              the indices are affine in the loop iterator.
+        \item The updated value $x'$ is computed as a term only of $x$, the
+              array values $a_1,\dots,a_n$ and values that are constant within
+              the loop.
+    \end{enumerate}
 
-\paragraph{Example}
-Figure \ref{complex-reduction-figure} in section 2 already  demonstrated the 
-need for this broader definition.
-It contains two scalar reductions, one to \texttt{sx} and one to \texttt{sy}.
-The main loop contains control flow in the form of a conditional statement.
-The branch condition is however only dependent on values that are read affinely from the array \texttt{x} and the constants \texttt{1.0} and \texttt{2.0}.
-In the same way the new values of \texttt{sx} and \texttt{sy} are only dependent of the respective old values, values that are read affinely from the array \texttt{x} and the constants \texttt{1.0} and \texttt{2.0}.
-This is due to the fact that all functions used in the computation are pure functions.
-The values of \texttt{sx} and \texttt{sy} are not unconditionally updated in the C code, but the second condition is still true due to the introduction of PHI nodes in the SSA intermediate representation.
+    The definition is broader than usual.
+    In particular, it allows the reduction to encompass multiple input arrays.
+    Furthermore, complex computations inside the reduction are possible, not
+    just a scalar binary operator.
+    Note that condition 2 is enforced only at SSA level.
+    Finally, this definition does not yet contain a commutativity condition that
+    would be neccesarry to allow the parallelisation to work.
+    Instead, it also captures intrinsically sequential scalar reductions.
+
+    \paragraph*{Example}
+    Both variables \texttt{sx} and \texttt{sy} in
+    \autoref{complex-reduction-figure} satisfy the conditions:
+    Firstly, the iteration space of the loop is bounded by \texttt{NK}, which is
+    constant.
+    Secondly, within the SSA representation, both \texttt{sx} and \texttt{sy}
+    are unconditionally updated via $\Phi$-instructions, shown previously in
+    \autoref{nice-picture2}.
+    This is despite the conditional statement in the original C representation
+    of the program.
+    Thirdly, exactly two values are read from the single input array \texttt{x}
+    in every iteration, and the indices \texttt{2*i} and \texttt{2*i+1} are
+    affine in \texttt{i}.
+    Finally, the updated values depend only on the respective old values,
+    the two values read from \texttt{x} and the constants \texttt{1.0} and
+    \texttt{2.0}.
+    This is due to the fact that all functions used in the computation are pure
+    functions.
+
+\begin{figure}[t]
+\begin{lstlisting}[language=C++]
+sum = 0;
+for(i = 0; i < n && sum < 10; i++)
+    sum += a[i];
+\end{lstlisting}
+\begin{lstlisting}[language=C++]
+sum = 0;
+for(i = 0; i < n; i++)
+    b[i] += a[i];
+\end{lstlisting}
+\begin{lstlisting}[language=C++]
+chase = 0;
+for(i = 0; i < n; i++)
+    chase = a[chase];
+\end{lstlisting}
+\begin{lstlisting}[language=C++]
+sum = 0;
+active = false;
+for(i = 0; i < n; i++) {
+    sum += active?a[i]:0;
+    active = active && (sum < 10);
+}
+\end{lstlisting}
+\caption{Counterexamples to the four conditions: None of these computations can
+         be parallelised as scalar reductions.
+         The first and last example implement the same program.\parfillskip=0pt}
+\label{counterexamples}
+\end{figure}
+
+    \paragraph*{Counterexamles}
+    \autoref{counterexamples} shows counterexamples to the four conditions,
+    demonstrating why they are all needed in order to parallelise a given
+    computation as a scalar reduction.
+
+    In the first example, the iteration space is not known in advance, as the
+    computation can be terminated depending on the input data.
+    This makes it impossible to compute partial sums in parallel.
+    The second example is straightforward, as there is no reduction variable
+    that could be privatised.
+    The loop could still be computed in parallel -- but not as a scalar
+    reduction.
+    The third example uses index calculations that are not affine in \texttt{i}.
+    This prevents a straightforward distribution of the input array across
+    threads.
+    In this particular case, the index calculation also involves values other
+    than \texttt{i}, preventing the computation of partial results entirely.
+    The final example is equivalent to the first first, but breaks the fourth
+    condition instead of the first.
 
 \subsubsection{Generalized reductions or histograms}
-Histogram reductions can be defined with only slight changes to the above definition.
-\begin{enumerate}
-\item The code is contained in a for loop and the iteration space is known in advance (not necessarily at compile time).
-\item One or multiple values $a_1,\dots,a_n$ are read from arrays and the indices are affine in the loop iterator.
-\item A value {\tt idx} is computed as a term only of the array values $a_1,\dots,a_n$ and values that are constant within the loop.
-\item A value $x$ is read from an array at index {\tt idx} and a modified value $x'$ is written at the same index
-\item The updated value $x'$ is computed as a term only of $x$, the array values $a_1,\dots,a_n$ and values that are constant within the loop.
-\end{enumerate}
 
-%% are precise enough for human readers but we need a
-%% more formal definition of these properties to implement functionality
-%% that can automatically verify them. 
+    Histogram reductions can be defined with only slight changes to the previous
+    definition:
+    \begin{enumerate}
+        \item The code is contained in a for loop and the iteration space of the
+              loop is known in advance (not necessarily at compile time).
+        \item One or multiple values $a_1,\dots,a_n$ are read from arrays and
+              the indices are affine in the loop iterator.
+        \item A value {\tt idx} is computed as a term only of the array values
+              $a_1,\dots,a_n$ and values that are constant within the loop.
+        \item A value $x$ is read from an array at index {\tt idx} and a
+              modified value $x'$ is written at the same index
+        \item The updated value $x'$ is computed as a term only of $x$, the
+              array values $a_1,\dots,a_n$ and values that are constant within
+              the loop.
+    \end{enumerate}
+
 
 \begin{figure}[th]
 {\small
