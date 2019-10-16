@@ -143,34 +143,39 @@
 
 \section{Motivation}
 
-    Figure \ref{sum-figure} shows a standard scalar reductions.
-    Rather than sequentially scanning {\tt a} and accumulating it into
-    {\tt sum}, it is possible to calculate private partial sums in parallel
-    before they are added together to form the final value.
-    Such simple reductions frequently occur and can be readily detected.
-    However, such reductions rarely dominate execution in a program.
+    Figure \ref{sum-figure} shows a standard scalar reduction.
+    The elements of the array \texttt{a} are successively accumulated in the
+    variable \texttt{sum}.
+    The accumulation creates dependencies between successive loop iterations,
+    but they can easily be broken:
+    Rather than sequentially accumulating {\tt a} into {\tt sum}, it is possible
+    to calculate several partial sums in parallel into private copies of
+    \texttt{sum}, which are then added together to form the final value.
+    Such simple reductions frequently occur and can be readily detected by
+    existing compilers, but they rarely dominate execution in a program.
 
-\begin{figure}[ht]
-\begin{lstlisting}
+\begin{figure}[h]
+\begin{lstlisting}[language=C++]
 sum = 0;
 for(i = 0; i < n; i++)
   sum += a[i];
 \end{lstlisting}
-\caption{Sum Reduction}
+\caption{The most conventional example of a reduction is adding up all values in
+         an array.}
 \label{sum-figure}
 \end{figure}
 
-
     Figure \ref{complex-reduction-figure} in contrast shows a more complex
     section of code that constitutes a performance bottleneck of a standard
-    benchmark program (Embarrassingly Parallel of the NAS Parallel Benchmarks).
-    At first glance it is not obvious that this computation can be treated as a
+    benchmark program
+    (``Embarrassingly Parallel'' of the NAS Parallel Benchmarks).
+    It is not obvious at first glance that this computation can be treated as a
     reduction.
-    It can however, can be parallelized in a similar way as the simple sum using
-    privatization.
+    However, it can be parallelised in a similar way as the simple sum using
+    privatisation.
 
-\begin{figure}[ht]
-\begin{lstlisting}
+\begin{figure}[h]
+\begin{lstlisting}[language=C++]
 for (i = 0; i < NK; i++) {
   x1 = 2.0 * x[2*i] - 1.0;
   x2 = 2.0 * x[2*i+1] - 1.0;
@@ -186,22 +191,26 @@ for (i = 0; i < NK; i++) {
   }
 }
 \end{lstlisting}
-\caption{Complex Reduction}
+\caption{Example of ``complex reductions and histograms'' computation:
+         This bottleneck from NAS Parallel Benchmarks can be parallelised
+         as reductions by privatising variables \texttt{sx}, \texttt{sy},
+         \texttt{q[]}.}
 \label{complex-reduction-figure}
 \end{figure}
 
-As in the case of the simple sum, the parallelization of this code
-requires the computation of partial results in a separate memory
-location before merging together the partial results. 
- The whole process is illustrated
-in Figure \ref{nice-picture}.
-Here  we privatize the scalar variables \texttt{sx}, \texttt{sy}
-and the array \texttt{q}.  We can then accumulate partial results in
-these local copies by partitioning the iteration space 0{\dots}N across 
-the individual threads.  Finally we synchronize and  merge together partial
-results.  This is done by adding together the local copies
-of \texttt{sx}, \texttt{sy} and by performing an element wise addition
-of the local copies of \texttt{q}. 
+    \pagebreak
+    As in the case of the simple sum, the parallelisation of this code
+    requires the computation of partial results in a separate memory
+    location before merging together the partial results.
+    The whole process is illustrated in Figure \ref{nice-picture}.
+    The scalar variables \texttt{sx}, \texttt{sy} and the array \texttt{q} are
+    privatised.
+    Partial results are then accumulated in the local copies by partitioning the
+    iteration space 0{\dots}N across the individual threads. 
+    Finally we synchronize and  merge together partial
+    results.  This is done by adding together the local copies
+    of \texttt{sx}, \texttt{sy} and by performing an element wise addition
+    of the local copies of \texttt{q}. 
 
 \begin{figure}[h]
 \centering
