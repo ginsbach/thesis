@@ -35,16 +35,16 @@
 
 \section{Introduction}
 
-    Reductions occur widely in numerical applications and there are established
+    Reductions occur widely in numerical applications, and there are established
     techniques for parallelising them \citep{Jradi2017fast}.
-    The typical reduction operation successively applies an arithmetic
-    operator to an array of numeric values, in order to compute, for
-    example, the sum of a set of floating point numbers.
+    Typical reduction operations successively apply an arithmetic operator to an
+    array of numeric values, in order to compute, for example, the sum of a set
+    of floating point numbers.
     Perhaps most prominently, a reduction features in the innermost loop of the
     matrix multiplication kernel in the form of a dot product.
-    In this form, reductions are critical to many standard high performance
-    computing (HPC) workloads based on linear algebra, as well as embedded
-    benchmarks and emerging machine learning and computer vision applications
+    In this form, reductions are critical to many high performance computing
+    (HPC) workloads based on linear algebra, as well as embedded benchmarks and
+    emerging machine learning and computer vision applications
     \citep{Reddy2016Reduction}.
 
     However, there is a much larger class of computations that can be
@@ -86,41 +86,39 @@
 %    annotation based approaches where it is the user's responsibility to mark
 %    reductions in the program \cite{Reddy2016Reduction,ciesko2015scaling}.
 %
-    This chapter develops a new compiler based approach that
-    automatically detects a wide class of generalized reductions. Such
-    reductions can span large sections of code, contain general
+    This chapter develops a new compiler based approach that automatically
+    detects a wide class of generalised reductions.
+    Such reductions can span large sections of code, contain general
     control-flow, have non-linear access to arrays and include histograms.
-
     Rather than developing a bespoke detection pass, the methodology is based on
-    the previously introduced CAnDL constraint programming language, which
-    allows easy extensions to cover other idioms and has been implemented as an
-    LLVM \cite{lattner2004llvm} pass after lowering to SSA-form.  
-    This formulation allows us to specify the reduction idiom in a semi-formal
-    way using data flow and control flow constraints.
-    We then develop a customized constraint solver to identify
-    satisfying subsets that constitute a reduction operation.  We use a a careful
-    enumeration strategy to reduce the theoretic combinatorial complexity
-    of detection to  linear time.
+    the previously introduced CAnDL constraint programming language.
+    This formulation allows us to specify the reduction idiom using data flow
+    and control flow constraints.
+    During compilation, the CAnDL solver automatically identifies satisfying
+    subsets within LLVM IR that constitute a reduction operation.
 
-    We applied our approach to C/C++ versions of 3 well known benchmark
-    suites: NAS \cite{seo2011performance},
-    Parboil\cite{stratton2012parboil} and
-    Rodinia \cite{Che2009Rodinia}. These are non-trivial code bases and
-    vary considerably in terms of code structure and complexity. We
-    compared our approach to state of the art polyhedral and data
-    dependence approaches and find 84 scalar reductions and 6
-    histograms. Only our approach finds general histogram reductions.
+    The chapter focuses on the detection of reductions and then assumes later
+    compiler stages are responsible for mapping to existing tuned libraries.
+    However, to illustrate the potential performance of the scheme, a code
+    generation pass was implemented that generates templated parallel pthread
+    reduction code.
+    This transformation pass achieved significant speedups on those benchmarks
+    where reductions are performance bottlenecks.
+
+    The approach was applied to C/C++ versions of 3 well known benchmark
+    suites:
+    NAS \cite{seo2011performance},
+    Parboil \cite{stratton2012parboil} and
+    Rodinia \cite{Che2009Rodinia}.
+    These are non-trivial code bases and vary considerably in terms of code
+    structure and complexity.
+    State of the art polyhedral and data dependence approaches are compared
+    against.
+    None of them find general histogram reductions, whereas the CAnDL approach
+    detects 84 scalar reductions and 6 histograms.
     %% In order to further evaluate our approach, we manually profiled and
     %% examined the code and found that our approach is able to determine xyz\% of 
     %% all possible reductions.
-
-    This paper focuses on the detection of reductions and then assumes later
-    compiler stages are responsible for mapping to existing tuned libraries.
-    However, to illustrate the potential performance of our scheme we developed
-    and implemented a code generation pass that generates templated parallel
-    pthread reduction code.
-    Using this scheme, on those benchmarks where reductions are performance
-    bottleneck we achieve significant speedups.
 
 %    Our constraint based approach can be used for a wide range of optimizations 
 %    beyond reduction detection.
@@ -145,12 +143,12 @@
 
 \section{Motivation}
 
-Figure \ref{sum-figure} shows a standard scalar reductions.  Rather
-than sequentially scanning {\tt a} and accumulating it into {\tt sum},
-it is possible to calculate private partial sums in parallel before
-they are added together to form the final value.  Such simple
-reductions frequently occur and can be readily detected.  However,
-such reductions rarely dominate execution in a program.
+    Figure \ref{sum-figure} shows a standard scalar reductions.
+    Rather than sequentially scanning {\tt a} and accumulating it into
+    {\tt sum}, it is possible to calculate private partial sums in parallel
+    before they are added together to form the final value.
+    Such simple reductions frequently occur and can be readily detected.
+    However, such reductions rarely dominate execution in a program.
 
 \begin{figure}[ht]
 \begin{lstlisting}
@@ -163,11 +161,13 @@ for(i = 0; i < n; i++)
 \end{figure}
 
 
-Figure \ref{complex-reduction-figure} in contrast shows a more complex section
-of code that constitutes a performance bottleneck of a standard benchmark
-program (Embarrassingly Parallel of the NAS Parallel Benchmarks).
-At first glance it is not obvious that this computation can be treated as a reduction.
-It can however, can be parallelized in a similar way as the simple sum using privatization.
+    Figure \ref{complex-reduction-figure} in contrast shows a more complex
+    section of code that constitutes a performance bottleneck of a standard
+    benchmark program (Embarrassingly Parallel of the NAS Parallel Benchmarks).
+    At first glance it is not obvious that this computation can be treated as a
+    reduction.
+    It can however, can be parallelized in a similar way as the simple sum using
+    privatization.
 
 \begin{figure}[ht]
 \begin{lstlisting}
