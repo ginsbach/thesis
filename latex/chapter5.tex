@@ -144,15 +144,13 @@
 \section{Motivation}
 
     Figure \ref{sum-figure} shows a standard scalar reduction.
-    The elements of the array \texttt{a} are successively accumulated in the
-    variable \texttt{sum}.
-    The accumulation creates dependencies between successive loop iterations,
+    In a single loop, the elements of the array \texttt{a} are successively
+    accumulated in the variable \texttt{sum} with the ``\texttt{+=}'' operator.
+    This accumulation creates dependencies between successive loop iterations,
     but they can easily be broken:
     Rather than sequentially accumulating {\tt a} into {\tt sum}, it is possible
-    to calculate several partial sums in parallel into private copies of
+    to calculate in parallel several partial sums into private copies of
     \texttt{sum}, which are then added together to form the final value.
-    Such simple reductions frequently occur and can be readily detected by
-    existing compilers, but they rarely dominate execution in a program.
 
 \begin{figure}[h]
 \begin{lstlisting}[language=C++]
@@ -164,6 +162,15 @@ for(i = 0; i < n; i++)
          an array.}
 \label{sum-figure}
 \end{figure}
+
+    Simple reductions frequently occur and can be readily detected by existing
+    compilers.
+    However, they rarely dominate execution in a program, and when they do, they
+    are often part of bigger algorithmic structures such as matrix
+    multiplications.
+    In that case, outer scope parallelism is often more profitable to exploit.
+    The parallelisation of simple reductions alone therefore often has limited
+    impact on program performance.
 
     Figure \ref{complex-reduction-figure} in contrast shows a more complex
     section of code that constitutes a performance bottleneck of a standard
@@ -198,7 +205,6 @@ for (i = 0; i < NK; i++) {
 \label{complex-reduction-figure}
 \end{figure}
 
-    \pagebreak
     As in the case of the simple sum, the parallelisation of this code
     requires the computation of partial results in a separate memory
     location before merging together the partial results.
