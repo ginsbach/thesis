@@ -159,7 +159,7 @@ for(i = 0; i < n; i++)
   sum += a[i];
 \end{lstlisting}
 \caption{The most conventional example of a reduction is adding up all values in
-         an array.}
+         an array. \parfillskip=0pt}
 \label{sum-figure}
 \end{figure}
 
@@ -201,54 +201,77 @@ for (i = 0; i < NK; i++) {
 \caption{Example of ``complex reductions and histograms'' computation:
          This bottleneck from NAS Parallel Benchmarks can be parallelised
          as reductions by privatising variables \texttt{sx}, \texttt{sy},
-         \texttt{q[]}.}
+         \texttt{q[]}.\parfillskip=0pt}
 \label{complex-reduction-figure}
 \end{figure}
+
+    The loop in \ref{complex-reduction-figure} is considered as a
+    ``complex reductions and histograms'' calculation due to the following
+    features:
+    First, There is an input array \texttt{x}, from which values are read
+    pairwise.
+    Secondly, the values \texttt{sx} and \texttt{sy} are scalar reduction
+    variables, as visible in lines 11-12.
+    They are only incremented conditionally, and the added value is the result
+    of a complex calculation.
+    However, both the calculation and the branching condition only depend on the
+    input values \texttt{x[2*i]} and \texttt{x[2*i+1]}.
+    Thirdly, the array \texttt{q[]} is updated as a histogram calculation in
+    line 10.
+    The index \texttt{l} is not directly read from an input array as in a
+    conventional histogram, but again the calculation only depends on the input
+    values.
 
     As in the case of the simple sum, the parallelisation of this code
     requires the computation of partial results in a separate memory
     location before merging together the partial results.
-    The whole process is illustrated in Figure \ref{nice-picture}.
+    The whole process is illustrated in Figure \ref{nice-picture}, with the
+    different colours on the right showing the distribution of the program
+    over two threads.
     The scalar variables \texttt{sx}, \texttt{sy} and the array \texttt{q} are
     privatised.
     Partial results are then accumulated in the local copies by partitioning the
-    iteration space 0{\dots}N across the individual threads. 
-    Finally we synchronize and  merge together partial
-    results.  This is done by adding together the local copies
-    of \texttt{sx}, \texttt{sy} and by performing an element wise addition
-    of the local copies of \texttt{q}. 
+    input array across the two threads. 
+    Finally, the threads are synchronised and partial results merged together.
+    This is done by adding together the local copies of \texttt{sx}, \texttt{sy}
+    and by performing an element wise addition of the local copies of
+    \texttt{q}. 
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/nicepicture.png}
-\caption{Illustration of Parallel Complex Reduction. Private copies of the reduction variables which accumulate partial results. These are merged after synchronization}
+\includegraphics[width=0.6\textwidth]{figures/nicepicture.png}
+\caption{Parallelisation of \autoref{complex-reduction-figure}:
+         The input array \texttt{x} is distributed over two threads that operate
+         on private copies of \texttt{sx}, \texttt{sy}, \texttt{q[]}.
+         These copies are then merged after synchronisation.\parfillskip=0pt}
 \label{nice-picture}
 \end{figure}
 
 
 \begin{figure}[p]
 \centering
- \includegraphics[width=0.9\textwidth]{figures/nicepicture2.png}
- \caption{A subset of the Data Flow, Control Flow and Control Dependences of Figure 2}
- \label{nice-picture2}
- \end{figure}
+\includegraphics[width=\textwidth]{figures/nicepicture2.png}
+\caption{A subset of the Data Flow, Control Flow and Control Dependences of Figure 2}
+\label{nice-picture2}
+\end{figure}
 
-The reason existing schemes do not detect such reductions can be better understood by considering 
-Figure \ref{nice-picture2} which denotes the compiler representation of this 
-program.  The histogram update occurs in the 3rd basic block. with the load, assign and store operations but it is by no means obvious that it is a safe reduction
-
-In fact, accurately detecting reductions is non-trivial.  If in the
- original program, shown in Figure \ref{complex-reduction-figure}, the
- condition on line 5 was changed to {\tt t1<=sx}, there would be no
- longer a legal reduction as there is now a control dependence on an
- intermediate result. This is turn would manifest as an additional
- data dependence edge from block 3 to block 2 in
- Figure \ref{nice-picture2}.
-Furthermore the code segment can only be classified as a reduction because all the function calls that are present are pure.
- Such details have to be checked to ensure
- correctness. What is needed is a way to specify these conditions
- exactly and to then automatically identify code regions that meet the
- constraints.
+    \autoref{nice-picture2} gives an insight into why existing schemes do not
+    detect such reductions by showing the compiler representation of this 
+    program.
+    The histogram update occurs in the 3rd basic block with the load, assign and
+    store operations but it is by no means obvious that it is a safe reduction.
+    In fact, accurately detecting reductions is non-trivial.
+    If in the original program, shown in \autoref{complex-reduction-figure}, the
+    condition on line 5 was changed to {\tt t1<=sx}, there would be no longer a
+    legal reduction as there is now a control dependence on an intermediate
+    result.
+    This is turn would manifest as an additional data dependence edge from
+    block 3 to block 2 in Figure \ref{nice-picture2}.
+    Furthermore the code segment can only be classified as a reduction because
+    all the function calls that are present are pure.
+    Such details have to be checked to ensure correctness.
+    What is needed is a way to specify these conditions exactly and to then
+    automatically identify code regions that meet the constraints.
 
  
 
@@ -337,87 +360,36 @@ Furthermore the code segment can only be classified as a reduction because all t
 %% The $*=$ operator can not be this easily deduced but is not dependent on he whole
 %% operation performed in the $+=$ operator.
 
-
-\newpage
-
-    To enable the capture of higher order functions such as stencils or
-    reduction operations, we need to handle arbitrary kernel functions.
-    Kernel functions are sections of code that are side-effect free and
-    can be separated out. Identifying side-effect free code is useful in
-    many types of compiler optimization.  It can be expressed in CAnDL, as
-    shown in \autoref{fig:kernel}.
-
-\begin{figure}[ht]
-\begin{lstlisting}[language=CAnDL]
-Constraint KernelFunction
-( collect i N
-([$\tt \land$]) ( include LocalConst({outer}->{begin}*@*{closure[i]}
-  ([$\tt \land$]) ir_type{closure[i].value} != literal
-  ([$\tt \land$]) {closure[i].use} ([$\tt \in$]) {closure[i].value}.args
-  ([$\tt \land$]) domination({inner}, {closure[i].use}))
-([$\tt \land$]) collect i N data_origin{tainted1[i]}
-([$\tt \land$]) collect i N
-([$\tt \land$]) ( domination({outer}, {tainted2[i]})
-  ([$\tt \land$]) strict_domination({tainted2[i]}, {inner}))
-([$\tt \land$]) calculated_from(
-   {tainted1[0..N],tainted2[0..N]},
-   {origin[0..N],closure[0..N].value,input[0..N]},
-   {output}))
-End
-\end{lstlisting}
-\vspace{-0.3cm}
-\caption{CAnDL Formulation of Kernel Functions}
-\label{fig:kernel}
-\end{figure}
-
-    Essentially, this set of contraints captures the computation of a
-    single \texttt{output} value from a set of specified \texttt{input}
-    values as well as a set of automatically captured \texttt{closure}
-    variables.  The computation for \texttt{output} should be such that it
-    can be replaced with a function call that is free of side effects and
-    takes only the \texttt{input} and \texttt{closure} variables as
-    arguments.
-
-    In addition to these variables, there are two non-obvious additional
-    variables involved: \texttt{outer} and \texttt{inner}.
-    These set boundaries in the control flow as follows: Closure values have to
-    be computed before \texttt{outer} and the computation that results in outer
-    is performed after \texttt{inner}.
-    Usually these will be derived from loops nests, where \texttt{outer} is the
-    entry to the outermost loop and \texttt{inner} is the entry to the innermost
-    loop.
-    The actual core constraint is then a generalized dominance relationship in
-    the program dependence graph.
-
-    The use of the sets \texttt{tainted1} and \texttt{tainted2} makes sure that
-    no impure functions are used in computing \texttt{output} and the entire
-    computation is performed after \texttt{inner} (ruling out e.g.\ loop carried
-    variabls from outer loops).
-
-
-\newpage
-
 \section{Approach}
 
-There are three fundamental issues to address in exploiting
-reductions: detection, replacement and profitability.  This article
-focuses on the reliable detection of reductions based on a constraint
-specification.  For evaluation purposes we have also implemented a
-preliminary code generation phase that generates parallel pthread
-code.  In future work we intend to rely on specific DSLs or libraries
-as more efficient code generation backends.  Profitability heuristics
-are important in practice to determine whether or not to apply
-parallelizing code transformations.  We use a simple profile-based
-approach to determine whether or not to apply our optimization.
+    There are three fundamental issues to address in exploiting reductions:
+    detection, replacement and profitability.
+    This chapter focuses on the reliable detection of reductions based on a
+    constraint specification.
+    For evaluation purposes, a preliminary code generation phase that generates
+    parallel pthread code was also implemented.
+    Profitability heuristics are important in practice to determine whether or
+    not to apply parallelising code transformations.
+    We use a simple profile-based
+    approach to determine whether or not to apply our optimization.
 
-Our method for the detection of reduction operations is based on a novel constraint based description language for computational idioms and a generic solver algorithm that searches in single static assignment compiler IR code for subsets that satisfy them.
-This decoupling of specification and detection enables us to build an extensible system that can process complex reductions beyond the capabilities of established approaches.
+    Our method for the detection of reduction operations is based on a novel
+    constraint based description language for computational idioms and a generic
+    solver algorithm that searches in single static assignment compiler IR code
+    for subsets that satisfy them.
+    This decoupling of specification and detection enables us to build an
+    extensible system that can process complex reductions beyond the
+    capabilities of established approaches.
 
-In the next sub-sections we first motivate and describe our constraint based specification approach.
-We describe how the reduction idiom can be specified in this system.
-We then derive a generic algorithm that can be used to generate detection functionality directly from the constraint description.
-This is followed by a brief outline of how this can be integrated in the LLVM compiler infrastructure.
-Finally, in the following section,  we give an overview of our code generation   approach.
+    In the next sub-sections we first motivate and describe our constraint based
+    specification approach.
+    We describe how the reduction idiom can be specified in this system.
+    We then derive a generic algorithm that can be used to generate detection
+    functionality directly from the constraint description.
+    This is followed by a brief outline of how this can be integrated in the
+    LLVM compiler infrastructure.
+    Finally, in the following section, we give an overview of our code
+    generation approach.
 
 \subsection{Constraint based formulation}
 In this section we describe how scalar and generalized reductions can be formulated as constraints.
@@ -544,6 +516,66 @@ Due to space we omit further details.
 
 %% We now have a well defined specification of reductions.
 %% In the next section we will derive an algorithm that automatically finds parts of LLVM IR code in a given function that correspond to these specifications.
+
+
+\newpage
+
+    To enable the capture of higher order functions such as stencils or
+    reduction operations, we need to handle arbitrary kernel functions.
+    Kernel functions are sections of code that are side-effect free and
+    can be separated out. Identifying side-effect free code is useful in
+    many types of compiler optimization.  It can be expressed in CAnDL, as
+    shown in \autoref{fig:kernel}.
+
+\begin{figure}[ht]
+\begin{lstlisting}[language=CAnDL]
+Constraint KernelFunction
+( collect i N
+([$\tt \land$]) ( include LocalConst({outer}->{begin}*@*{closure[i]}
+  ([$\tt \land$]) ir_type{closure[i].value} != literal
+  ([$\tt \land$]) {closure[i].use} ([$\tt \in$]) {closure[i].value}.args
+  ([$\tt \land$]) domination({inner}, {closure[i].use}))
+([$\tt \land$]) collect i N data_origin{tainted1[i]}
+([$\tt \land$]) collect i N
+([$\tt \land$]) ( domination({outer}, {tainted2[i]})
+  ([$\tt \land$]) strict_domination({tainted2[i]}, {inner}))
+([$\tt \land$]) calculated_from(
+   {tainted1[0..N],tainted2[0..N]},
+   {origin[0..N],closure[0..N].value,input[0..N]},
+   {output}))
+End
+\end{lstlisting}
+\vspace{-0.3cm}
+\caption{CAnDL Formulation of Kernel Functions}
+\label{fig:kernel}
+\end{figure}
+
+    Essentially, this set of contraints captures the computation of a
+    single \texttt{output} value from a set of specified \texttt{input}
+    values as well as a set of automatically captured \texttt{closure}
+    variables.  The computation for \texttt{output} should be such that it
+    can be replaced with a function call that is free of side effects and
+    takes only the \texttt{input} and \texttt{closure} variables as
+    arguments.
+
+    In addition to these variables, there are two non-obvious additional
+    variables involved: \texttt{outer} and \texttt{inner}.
+    These set boundaries in the control flow as follows: Closure values have to
+    be computed before \texttt{outer} and the computation that results in outer
+    is performed after \texttt{inner}.
+    Usually these will be derived from loops nests, where \texttt{outer} is the
+    entry to the outermost loop and \texttt{inner} is the entry to the innermost
+    loop.
+    The actual core constraint is then a generalized dominance relationship in
+    the program dependence graph.
+
+    The use of the sets \texttt{tainted1} and \texttt{tainted2} makes sure that
+    no impure functions are used in computing \texttt{output} and the entire
+    computation is performed after \texttt{inner} (ruling out e.g.\ loop carried
+    variabls from outer loops).
+
+
+\newpage
 
 \subsection{Solving Constraints}
 Instead of hand crafting detection routines to identify reductions 
