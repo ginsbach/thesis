@@ -494,8 +494,9 @@ for(i = 0; i < n; i++) {
 
 \subsubsection{Generalized reductions or histograms}
 
-    Histogram reductions can be defined with only slight changes to the previous
-    definition:
+    Histogram reductions are defined in the context of this work very similiarly
+    to the previous definition of scalar reductions, with only some additional
+    conditions:
     \begin{enumerate}
         \item The code is contained in a for loop and the iteration space of the
               loop is known in advance (not necessarily at compile time).
@@ -504,14 +505,77 @@ for(i = 0; i < n; i++) {
         \item A value {\tt idx} is computed as a term only of the array values
               $a_1,\dots,a_n$ and values that are constant within the loop.
         \item A value $x$ is read from an array at index {\tt idx} and a
-              modified value $x'$ is written at the same index
+              modified value $x'$ is written at the same index.
+              The writing might be control dependent only on $a_1,\dots,a_n$ and
+              it may not be in a nested loop.
         \item The updated value $x'$ is computed as a term only of $x$, the
               array values $a_1,\dots,a_n$ and values that are constant within
               the loop.
     \end{enumerate}
 
+    Again, additional commutativity conditions are required in order to restrict
+    this to only parallelisable histograms.
+    Note that the statement on control dependency and nested loops has to be
+    made only for the write location, as writing to memory is the only side
+    effect of the loop.
 
-\begin{figure}[th]
+    \paragraph*{Example}
+    The first two conditions are the same as those in the previous discussion of
+    scalar reductions and were shown to hold for the loop in
+    \autoref{complex-reduction-figure}.
+    The array \texttt{q[]} also satisfies the remaining conditions:
+    Firstly, the variable \texttt{l} corresponds to the value \texttt{idx}.
+    Secondly, the element \texttt{q[l]} is read, modified and written.
+    Lastly, the updated value is computed in a legal way, as it is obtained by
+    merely adding a constant \texttt{1.0} to the previous value.
+
+    \paragraph*{Counterexamples}
+    Again, counterexamples are given in \autoref{counterexamples2} to give an
+    intuition about the significance of conditions 3-5.
+
+    In the first example, the index of the histogram is not computed from an
+    input aray, but instead read from an input stream.
+    This makes parallelisation as a histogram impossible, as the stream is only
+    avaliable sequentially.
+    In the second and third example, the computation is effectively stopped as
+    soon as an index beyond a certain size occurs.
+    Again, this can only be detected by sequentially going through the array,
+    and therefore a parallel computation of partial results is not efficiently
+    possible.
+    This behaviour is demonstrated in two ways, by breaking conditions 4 and 5
+    respectively.
+    This shows the need to restrict both data flow and control flow of the
+    histogram kernel.
+
+\begin{figure}[t]
+\begin{lstlisting}[language=C++]
+for(i = 0; i < n; i++)
+    hist[getchar()] += 1;
+\end{lstlisting}
+\begin{lstlisting}[language=C++]
+active = true;
+for(i = 0; i < n; i++) {
+    if(a[i] > 9)
+        active = false;
+    if(active)
+        hist[a[i]] += 1;
+}
+\end{lstlisting}
+\begin{lstlisting}[language=C++]
+active = 0;
+for(i = 0; i < n; i++) {
+    if(a[i] > 9)
+        active = false;
+    hist[a[i]] += active?1:0;
+}
+\end{lstlisting}
+\caption{Counterexamples to the last three conditions: None of these
+         computations can be parallelised as histograms.
+         The final two example loops implement the same functionality.\parfillskip=0pt}
+\label{counterexamples2}
+\end{figure}
+
+\begin{figure}[p]
 {\small
 A for loop is a tuple
 \begin{align*}
@@ -560,8 +624,9 @@ such that the following holds:
 \label{dom-expr-constraints}
 \end{figure}
 
-These definitions 
-need be formulated precisely in a constraint language in a form that can 
+\section{Formulation in CAnDL}
+
+These definitions need be formulated precisely in a constraint language in a form that can 
 automatically verified by a constraint solver.
 So we  developed a
 formal language  to achieve this.
