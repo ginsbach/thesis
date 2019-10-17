@@ -1,21 +1,22 @@
 \section{The Emergence of Heterogeneous Computing}
 
     For several decades, from the 1970s until the early 2000s, advances in
-    processor development followed Moore's Law and Dennard Scaling.
-    The circuit density approximately doubled every two years, yet the power
-    consumption and the accompanying thermal limitations remained relatively
-    stable.
-    This resulted in steady hardware improvements, primarily by the means of
+    processor development followed Moore's Law \citep{4785860} and
+    Dennard Scaling \citep{1050511}.
+    This meant that the density of integrated circuits approximately doubled
+    every two years, and this enabled processor clock frequencies to rise
+    proportionally, while maintaining similar power consumption.
+    This enabled continual hardware improvements that were driven primarily by
     rising clock frequencies, enabling ever faster computations.
 
-    The physics-driven nature of these advances in hardware design has had major
-    implications for software development.
+    The physics-driven nature \citep{Hutcheson2018Moore} of these advances in
+    hardware has had major implications for software development.
     Not only did the performance of computers improve exponentially, but these
     performance gains were in the form of direct speedups, available to all the
     already existing programs.
-    The fundamental contract between software and hardware - the
-    instruction set architectures of mainstream processors - evolved without
-    paradigmatic changes.
+    The fundamental contract between software and hardware - the instruction set
+    architectures of mainstream processors - evolved gradually and with few
+    paradigmatic changes \citep{8310168}.
     This is best exemplified by the pervasive x86 instruction set architecture,
     which still retains backward compatibility with its original inception in
     1978 and dominates desktop processors to this day.
@@ -24,18 +25,19 @@
 
 \subsection{Via Multi-Processing to Heterogeneous Compute}
 
-    This continual progress started breaking down around 2006, with the apparent
-    end of Dennard Scaling.
+    This continual progress started breaking down around 2005 with the apparent
+    end of Dennard Scaling \citep{6307773}.
     While the shrinking of transistors continued, this did not coincide with
     increased clock cycles and stable power consumption any longer.
-    Therefore, scaling single core processors became unviable.
-    The resulting shift toward multi-processing has left a deep mark on
-    software development.
+    Scaling single core processors became unviable, and processor designer
+    instead shifted to increasing core counts.
+    This shift toward multi-processing has left a deep mark on software
+    development.
     New programming paradigms and languages, annotation systems, programming
     interfaces, libraries and compiler techniques were developed and continue to
     evolve around the challenges of parallel computing.
-    Despite immense progress in the field over many years, it remains an area
-    of active research and automatic approaches often fall short.
+%    Despite immense progress in the field over many years, it remains an area
+%    of active research and automatic approaches often fall short.
 
     In recent years, it has become clear that multi-processing alone has
     also reached its limits, and another change in direction is following
