@@ -369,15 +369,14 @@
 \newpage
 \section{Structure of the Thesis}
 
-    This PhD thesis is divided into six chapters.
-    Following the introduction in {\bf\cref{chapter:introduction}},
-    the foundations of the methodology are developed in
-    {\bf\Cref{chapter:theory}}.
-    This forms the core of the later
-    \cref{chapter:candl,chapter:idioms,chapter:reductions,chapter:lilac}.
+    This thesis is divided into six chapters.
+    Following this introduction, the core methodology is developed in
+    {\bf\autoref{chapter:theory}}.
+    This forms the basis of the later
+    {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions}}.
     Based on a novel mathematical model of established static single assignment
-    form compiler representaions, the core of the constraint programming
-    approach is derived and some particular challenges are discussed in detail.
+    form compiler representaions, a constraint programming approach is derived
+    and some particular challenges are discussed in detail.
 
     {\bf\Cref{chapter:literature}} gives a broad overview of the related work.
     This literature survey covers the four main research areas that this work
@@ -391,7 +390,7 @@
     Lastly {\em computational idioms}, a term for several overlapping concepts
     of algorithmic patterns.
 
-    {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions,chapter:lilac}}
+    {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions}}
     are each based on a published research article and elaborate on different
     applications of constraint programming in compilers.
 
@@ -422,15 +421,3 @@
     speedups on established benchmark suites.
     The work of this chapter has been published as
     {\bf\citet{Ginsbach:2018:AML:3173162.3173182}}.
-
-    {\bf\Cref{chapter:lilac}} builds on top of the idiom descriptions for linear
-    algebra that were introduced in the previous chapter and demonstrates how
-    compiler analysis based on constraint programming can be made accessible to
-    non-experts.
-    With the novel LiLAC language, constraint programs in IDL are automatically
-    generated from a high-level specification for many different sparse linear
-    algebra representations.
-    This powers a fully integrated compiler approach, handling everything from
-    algorithmic detection, library call insertion and run time data transfer
-    optimisations.
-    The work of this chapter has been published as \citet{lilacpaper}.
