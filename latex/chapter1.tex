@@ -59,7 +59,7 @@
     ecosystem, and it puts into question many of the achievements in portability
     and longevity of programs that are taken for granted in modern computing.
     Existing software does not automatically benefit from entirely new
-    acccelerator designs in the way that it profited from continuous
+    accelerator designs in the way that it profited from continuous
     improvements of established architectures.
     Where previously, programs performed better on each succeeding hardware
     generation, with at most a recompilation required, new accelerators arrive
@@ -82,10 +82,10 @@
     traditional compilers fail.
 
     Two examples stand characteristically for the breadth of these approaches.
-    Firstly, Basic Linear Algera Subprograms (BLAS), a standard for library
+    Firstly, Basic Linear Algebra Subprograms (BLAS), a standard for library
     function interfaces dating back to the 1970s, has been implemented for
     almost all accelerators.
-    These implementations are widely used and offer unrivaled performance, with
+    These implementations are widely used and offer unrivalled performance, with
     some of them provided by hardware vendors and some from the scientific
     community.
     Competing implementations use a plethora of approaches to achieve as close
@@ -158,7 +158,7 @@
     This is made possible by a combination of factors that apply uniquely to
     kernel compilers.
     Smaller programs allow for more expensive compilation techniques;
-    more restrictive languages and intermediate representaions allow for
+    more restrictive languages and intermediate representations allow for
     stronger reasoning;
     abstractions in kernel compilers can be customised for the exact hardware
     architecture of accelerators;
@@ -166,7 +166,7 @@
     embedded in custom compiler technology, without requiring their validity
     on generic programs.
     Furthermore, kernel compilers often run in more controlled environments,
-    with less need for predictability, reproducability and stability.
+    with less need for predictability, reproducibility and stability.
     The range of input programs might even be small enough to leave compilation
     to experts and vendors, which may share the results in the form of already
     compiled library functions.
@@ -174,10 +174,10 @@
     As host compilers operate under less forgiving conditions, it is
     unsurprising that they have lagged behind these developments.
     Because they cannot rely on such a restricted environment, host compilers
-    are unable to match the optimisation capabilites of kernel compilers.
+    are unable to match the optimisation capabilities of kernel compilers.
     Domain specific compilers and languages, as well as libraries, have
-    therefore not been championned only because their restricted program
-    spaces match the capabilites of particular heterogeneous accelerators.
+    therefore not been championed only because their restricted program
+    spaces match the capabilities of particular heterogeneous accelerators.
     The restricted environment also makes them intrinsically more powerful and
     able to generate better code.
 
@@ -204,7 +204,7 @@
     optimisation capabilities.
 
     It is important to clarify here what is meant by optimisation potential in
-    this context and how it differes from raw performance.
+    this context and how it differs from raw performance.
     C++ is of course very suitable for manual optimisation.
     However, it is difficult for compilers to automatically perform deep
     structural changes to the program.
@@ -269,7 +269,7 @@
     Program code typically passes through a whole range of representations
     during compilation with a modern, general purpose compiler.
     Starting from the textual source code, an abstract syntax tree is built,
-    from which a serialised intermdiate representation is constructed,
+    from which a serialised intermediate representation is constructed,
     which is then passed on to the compiler back end for code generation.
     The intermediate representation -- typically in static single assignment
     form -- is used for the majority of optimising code transformations.
@@ -278,7 +278,7 @@
     program.
 
     Static single assignment form representations are accessible to mathematical
-    resoning, with most of their interesting properties based on graph and list
+    reasoning, with most of their interesting properties based on graph and list
     structures.
     With this in mind, structural restrictions on intermediate representation
     code -- corresponding to restricted, domain specific models -- can be
@@ -290,9 +290,9 @@
     \autoref{specialgradient}.
     On one extreme, sections of code should be recognised as implementing
     specific algorithms, like matrix multiplications, that are merely
-    parameterised with numbers.
-    Next are algorithms that allow parameterization with an operator.
-    Stencil kernels or reductions fall into this catefory.
+    parametrised with numbers.
+    Next are algorithms that allow parametrisation with an operator.
+    Stencil kernels or reductions fall into this category.
     More generic again are programs that merely follow specific structural
     restrictions.
     Polyhedral code sections fall under this domain.
@@ -375,13 +375,13 @@
     This forms the basis of the later
     {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions}}.
     Based on a novel mathematical model of established static single assignment
-    form compiler representaions, a constraint programming approach is derived
+    form compiler representations, a constraint programming approach is derived
     and some particular challenges are discussed in detail.
 
     {\bf\Cref{chapter:literature}} gives a broad overview of the related work.
     This literature survey covers the four main research areas that this work
     is placed in.
-    Firstly {\em constraint programming}, which is the basis of the methodoloy
+    Firstly {\em constraint programming}, which is the basis of the methodology
     for most of this research.
     Secondly {\em compiler analysis and auto-parallelisation}, against which the
     results in this thesis are evaluated.
@@ -398,7 +398,7 @@
     language called CAnDL, with an implementation in the LLVM compiler
     infrastructure that automatically generates compiler analysis passes from
     declarative descriptions.
-    Using CAnDL, the chapter explores severeal complex compiler analysis
+    Using CAnDL, the chapter explores several complex compiler analysis
     challenges, concluding with a full polyhedral code analysis.
     The work of this chapter has been published as
     {\bf\citet{Ginsbach:2018:CDS:3178372.3179515}}.
@@ -406,9 +406,9 @@
     {\bf\Cref{chapter:reductions}} develops an auto-parallelising compiler for
     complex reduction and histogram computations using CAnDL-powered analysis
     functionality.
-    This covers many computations that are inaccesible to established approaches
-    based on data flow or polyhedral analysis and is to demonstrate the greater
-    flexibility of constraint programming.
+    This covers many computations that are inaccessible to established
+    approaches based on data flow or polyhedral analysis and is to demonstrate
+    the greater flexibility of constraint programming.
     The work of this chapter has been published as
     {\bf\citet{ginsbach2017discovery}}.
 
