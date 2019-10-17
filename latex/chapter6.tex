@@ -178,7 +178,7 @@
 \subsection{Compiler Flow}
 
     The structure of the approach is described in more detail in
-    \autoref{fig:methodology}.
+    \Cref{fig:methodology}.
     The compiler takes two programs as inputs: the first is the user's program
     source code, the second describes the idioms that are to be detected in the
     idiom description language (section 3).
@@ -221,10 +221,9 @@
     applicable libraries and DSLs and pick the best executing
     code. Determining the best option is future work.
 
-
 \subsection{IDL Example}
 
-    At the core of our approach is IDL, which is described in \autoref{sec:idl}.
+    At the core of our approach is IDL, which is described in \Cref{sec:idl}.
     A fundamental part of its design is the
     ability to detect  complex idioms.  Here we first focus on a simple example
     to show how IDL works.  Consider the standard factorizing
@@ -256,20 +255,20 @@ End
 \end{figure}
 
     With IDL, we can formulate this in only a few lines of an easily
-    understandable program (\autoref{fig:IDLfactorization}).
+    understandable program (\Cref{fig:IDLfactorization}).
     For this example, the underlying constraint problem is immediately visible:
     There are four variables \texttt{sum}, \texttt{left\_addend},
     \texttt{right\_addend}, \texttt{factor} and nine individual constraints
     that are combined with boolean operators.
 
-    From the formulation in \autoref{fig:IDLfactorization}, the IDL compiler
-    builds an internal representation of the underlying constraint problem that
-    is passed to a constraint solver.
+    From the formulation in \Cref{fig:IDLfactorization}, the IDL compiler builds
+    an internal representation of the underlying constraint problem that is
+    passed to a constraint solver.
     For a given section of user code, this solver returns the set of
     factorization opportunities, each containing four entries
     \texttt{sum}, \texttt{left\_addend}, \texttt{right\_addend}, \texttt{factor}
     that refer to values inside the user code.
-    \autoref{fig:firstexample} shows a simple example.
+    \Cref{fig:firstexample} shows a simple example.
     The incoming C code is translated to optimized LLVM IR.
     The solver then finds a single solution to the constraint problem.
 
@@ -310,12 +309,12 @@ Detected factorization opportunities:
     {\tt \%2} of this instruction. 
 
     Lines \ref{line:factorFirstLeft} and \ref{line:factorSecondLeft} of
-    \autoref{fig:IDLfactorization} say that {\tt factor} can either be the first
+    \Cref{fig:IDLfactorization} say that {\tt factor} can either be the first
     argument OR the second argument of {\tt left\_addend}.
     As the {\tt left\_addend} is {\tt \%1}, then {\tt factor} can be either
     {\tt \%a} or {\tt \%b}.
     Similarly lines \ref{line:factorFirstRight} and
-    \ref{line:factorSecondRight} of \autoref{fig:IDLfactorization} say that
+    \ref{line:factorSecondRight} of \Cref{fig:IDLfactorization} say that
     {\tt factor} can be be the first argument OR the second argument of the
     {\tt right\_addend}.
     As the {\tt right\_addend} is {\tt \%1}, then {\tt factor} can be either
@@ -331,7 +330,7 @@ Detected factorization opportunities:
 \nonumber
 \end{equation}
 The only value of {\tt factor} that satisfies this condition is {\tt factor = \%a}.
-Therefore, the solution at the bottom of \autoref{fig:firstexample} is the only factorization opportunity in the code.
+Therefore, the solution at the bottom of \Cref{fig:firstexample} is the only factorization opportunity in the code.
 
 \begin{figure}[p]
     \input{latex/figure_spmvexample3}

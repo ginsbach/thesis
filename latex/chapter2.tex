@@ -152,7 +152,7 @@
     incoming branch instruction, i.e.\ depending on the previously visited
     basic block.
 
-    \autoref{fig:ssaoverview} shows how SSA programs can be represented as a
+    \Cref{fig:ssaoverview} shows how SSA programs can be represented as a
     hierarchy of lists.
     Programs are lists of functions, which are lists of basic blocks, which are
     lists of instructions, which take lists of arguments.
@@ -171,13 +171,13 @@
 
 \subsection{Emergence of Static Single Assignment Form}
 
-    \autoref{ssaexample} shows many of the key features of static single
-    assignment form and how they naturally emerge from simplification steps of
+    \Cref{ssaexample} shows many of the key features of static single assignment
+    form and how they naturally emerge from simplification steps of
     the source code of procedural languages.
     This is demonstrated on an example C function ``{\tt sqrt}'',
     which  appriximates the square root of a double precision floating point
     value using the Babylonian method, as described in
-    \autoref{babylonian_equation}.
+    \Cref{babylonian_equation}.
 
 \begin{equation}
     x_0\approx\sqrt{S},\text{\hspace{1cm}}
@@ -231,7 +231,7 @@
     This section developed an understanding of how SSA form originated
     historically, and how it emerges during the compilation process.
     The following section uses the observations from
-    \autoref{fig:ssaoverview} -- that most parts of SSA code can be enumerated
+    \Cref{fig:ssaoverview} -- that most parts of SSA code can be enumerated
     and represented as elements in lists -- to derive a model of the static
     structure of SSA programs.
     This model then serves as the foundation for later sections, which define
@@ -317,7 +317,7 @@
     conveniently turned into a labelled multigraph, with edge labels accounting
     for the positional order of the arguments.
     These observations lead to the definition of the set of used values in
-    \autoref{def:usedvalues} and the data flow graph in \autoref{def:dfg}.
+    \Cref{def:usedvalues} and the data flow graph in \Cref{def:dfg}.
 
 \begin{figure}[h]
 \begin{definition}{Set of Used Values}{usedvalues}
@@ -343,7 +343,7 @@
 \end{figure}
 
     Complementing the data flow graph is the control flow graph of the function,
-    as introduced in \autoref{def:cfg}.
+    as introduced in \Cref{def:cfg}.
     The control flow graph is often defined on a basic block granularity, but
     here it oprerates directly on instructions, in order to better complement
     the data flow graph.
@@ -364,7 +364,7 @@
 \end{definition}
 \end{figure}
 
-    The control flow graph in \autoref{def:cfg} is defined using individual
+    The control flow graph in \Cref{def:cfg} is defined using individual
     instructions, not basic blocks.
     Edges are therefore of two distinct types:
     They are either an edge within a basic block, or they are an edge between
@@ -379,11 +379,11 @@
 
     With the control flow and data flow separated into distinct mathematical
     structures, individual instructions are encoded by their opcodes alone.
-    This is demonstrated in \autoref{fig:separation}.
+    This is demonstrated in \Cref{fig:separation}.
     At the top of the figure is a simple function in an abstract SSA
     representation.
     It calculates an approximation of the square root of a number using the
-    Babylonian method, as previously introduced in \autoref{ssaexample}.
+    Babylonian method, as previously introduced in \Cref{ssaexample}.
     The function has 11 instructions separated into 4 basic blocks, with the
     majority of the instructions in a loop structure that iteratively improves
     the result.
@@ -391,13 +391,13 @@
     The entire semantic information that is encoded in this SSA representation
     can be recovered from the structures at the bottom of the figure:
     per-instruction opcode information, lists of the parameters, constants and
-    globals used, the data flow graph as in \autoref{def:dfg} and the control
-    flow graph as in \autoref{def:cfg}.
+    globals used, the data flow graph as in \Cref{def:dfg} and the control
+    flow graph as in \Cref{def:cfg}.
     The information at the bottom left will be further discussed later.
     It may involve a type system and also the instruction set remains to be
     specified.
 
-    In order to demonstrate the equivalence in \autoref{fig:separation},
+    In order to demonstrate the equivalence in \Cref{fig:separation},
     consider these reconstruction steps:
 \begin{enumerate}
     \item The basic block boundaries are reconstructed by identifying all
@@ -425,7 +425,7 @@
 \end{figure}
 
     The only part of the SSA representation that still needs to be modeled is
-    the per-value information at the bottom left of \autoref{fig:separation},
+    the per-value information at the bottom left of \Cref{fig:separation},
     which in this case is nothing more than a list of opcodes, and the list of
     constants, paramters and globals.
     The opcodes are specific to different SSA representations, although a wide
@@ -433,7 +433,7 @@
     This chapter aims to capture commonalities of SSA representations, the study
     of instruction sets and type systems is orthogonal to this.
     Therefore, these structures remain opaque at this point and are modeled as
-    arbitrary sets as in \autoref{def:isatypes}.
+    arbitrary sets as in \Cref{def:isatypes}.
 
 \begin{figure}[p]
 \input{latex/figure_ssadecomposition}
@@ -442,7 +442,7 @@
          This is an equivalent representation of the function, no semantic
          information is lost.
          The example is a rendering of the Babylonian method in
-         \autoref{ssaexample}, abstracting away the C syntax.}
+         \Cref{ssaexample}, abstracting away the C syntax.}
 \label{fig:separation}
 \end{figure}
 
@@ -455,7 +455,7 @@
     With separate mathematical models in place for all the individual structures
     that interact in SSA representations, it is now possible to compile a
     complete model.
-    \autoref{def:ssamodel} shows this completed model.
+    \Cref{def:ssamodel} shows this completed model.
     The data flow graph and control flow graph were discussed in detail
     previously, but some clarifications are required for the remaining
     structures.
@@ -467,7 +467,7 @@
     instead, with $I_\mathcal F\colon\mathbb N\rightarrow Opcode$,
     $T_\mathcal F\colon\mathbb N\rightarrow Types$,
     $C_\mathcal F\colon\mathbb N\rightarrow \mathbb R$.
-    The model in \autoref{def:ssamodel} has several advantages over such an
+    The model in \Cref{def:ssamodel} has several advantages over such an
     approach.
     Firstly, it makes it easy to account for what would be partial function
     definitions, e.g.\ only instructions have opcodes.
@@ -553,7 +553,7 @@
     Instead, some crucial features for the context of this thesis are
     demonstrated on an example.
 
-    Consider \autoref{llvmirexample}.
+    Consider \Cref{llvmirexample}.
     At the top {\bf a)} of the figure, a dot product is implemented as a
     function in C.
     The function receives as arguments two pointers {\tt a,b} to arrays of
@@ -634,8 +634,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \newpage
 
-    \autoref{fig:derivemaths} shows in detail how the SSA model is derived from
-    the LLVM IR representation of the program in \autoref{llvmirexample}.
+    \Cref{fig:derivemaths} shows in detail how the SSA model is derived from the
+    LLVM IR representation of the program in \Cref{llvmirexample}.
     In the top left, implementations of the dot product function are shown
     in three programming languages that LLVM supports: Fortran, C and C++.
     On the top right is the corresponding LLVM IR code.
@@ -650,7 +650,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     This constains all semantically relevant information of the program, as was
     demonstrated previously.
     In the bottom row, the mathematical representation of the function is shown,
-    adhering to \autoref{def:ssamodel}.
+    adhering to \Cref{def:ssamodel}.
     The labeled multigraphs for the control flow and data flow graphs are
     represented as sets of $3$-tuples of integers.
 
@@ -669,7 +669,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     programs can now be formulated as constraint problems.
     For this purpose, \autoref{not:modelrepresentations} is introduced first,
     followed by the actual definition of {\em SSA constraint problem}s in
-    \autoref{def:cprob}.
+    \Cref{def:cprob}.
 
 \begin{figure}[H]
 \begin{notation}{Set of SSA Models}{modelrepresentations}
@@ -728,17 +728,17 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \begin{figure}[p]
     \input{latex/figure_solutionexample}
 \caption{Detection of simple loop iterators is formulated as a constraint
-         problem and applied to the SSA model from \autoref{fig:derivemaths}.
+         problem and applied to the SSA model from \Cref{fig:derivemaths}.
          One solution corresponding to the source variable {\tt i} is found.}
 \label{fig:constraintsolution}
 \end{figure}
 
     Consider the task of detecting in a program all simple loop iterators in a
-    function, shown in \autoref{fig:constraintsolution}.
+    function, shown in \Cref{fig:constraintsolution}.
     The top {\bf a)} demonstrates how this can be translated into a constraint
     problem, solved in the context of an SSA model.
     For demonstration purposes, the SSA model that was derived in
-    \autoref{fig:derivemaths} is used.
+    \Cref{fig:derivemaths} is used.
 
     Simple loop iterators show up in LLVM IR as data flow cycles with a phi node
     and an add instruction.
@@ -754,7 +754,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     required, as the data flow with the $\Phi$ node already implies the presence
     of a loop structure.
     Below the predicate formulation is the SSA model from
-    \autoref{fig:derivemaths}.
+    \Cref{fig:derivemaths}.
 
     At the bottom {\bf c)} of the figure, the set of constraint solutions is
     shown.
@@ -763,7 +763,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     Note that elements of $\mathbb N^V$ can be identified as mappings
     $V\rightarrow\mathbb N$.
     The underlined strucures in the lower part of
-    \autoref{fig:constraintsolution} {\bf b)} demonstrate the validity of the
+    \Cref{fig:constraintsolution} {\bf b)} demonstrate the validity of the
     solution:
     $(1,22)\in C_\mathcal F$ and $(1,9,17)\in DFG_\mathcal F$ and
     $(2,22,17)\in DFG_\mathcal F$ and $(\textit{phi},9)\in I_\mathcal F$ and
@@ -771,15 +771,15 @@ define double @dot(double* %0, double* %1, i64 %2) {
     corresponding to the six simple constraints that make up the predicate.
 
     Each solution therefore assigns an integer to each variable.
-    With the help of \autoref{fig:derivemaths}, the specific values $9,17,22$
+    With the help of \Cref{fig:derivemaths}, the specific values $9,17,22$
     can be identified with lines 14 and 17, as well as the constant 1 in the
-    LLVM IR code from \autoref{llvmirexample} {\bf b)}.
+    LLVM IR code from \Cref{llvmirexample} {\bf b)}.
     This corresponds to the loop iterator \texttt{i} in the C source code of the
     \texttt{dot} function, correctly identifying the only simple loop iterator.
 
     With a detailed derivation of the SSA model completed and some intuition
     about the nature of constraint problems, only the solver $S$ in
-    \autoref{fig:constraintsolution} remains a black box.
+    \Cref{fig:constraintsolution} remains a black box.
     The next sections derive how a backtracking solver can
     be used to efficiently compute the set of solutions.
 
@@ -819,12 +819,12 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \end{definition}
 \end{figure}
 
-    Note that \autoref{def:backtracking} defines the concept of a backtracking
+    Note that \Cref{def:backtracking} defines the concept of a backtracking
     solution, but it does not show how such a backtracking solution could
     actually be constructed.
     That is a topic of later sections.
     In this context, the concept is introduced in order to allow the definition
-    of the backtracking search \autoref{backtrackalg}, which operates as
+    of the backtracking search \Cref{backtrackalg}, which operates as
     follows.
     The variable $x$ iterates over $\mathbb N^n$
     (which is identified with $\mathbb N^V$ in line 7), while the variable $k$
@@ -872,12 +872,12 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \subsection{Structure of Basic SSA Constraint Problems}
 
     Basic construction rules for SSA constraint problems are the
-    element-of constraint problem in \autoref{def:elementofconstr}
+    element-of constraint problem in \Cref{def:elementofconstr}
     and the conjunction and disjunction constraint problems in
-    \autoref{def:conjconstr}.
-    \autoref{def:constrext} enables conjunctions or disjunctions of constraint
+    \Cref{def:conjconstr}.
+    \Cref{def:constrext} enables conjunctions or disjunctions of constraint
     problems that are not defined the same set of variables.
-    The example in \autoref{fig:constraintsolution} can be constructed with only
+    The example in \Cref{fig:constraintsolution} can be constructed with only
     these rules.
 
 \begin{figure}[p]
@@ -929,7 +929,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \input{latex/figure_theorems2}
 \end{figure}
 
-    \autoref{theo:theo1} introduces backtracking solutions for element-of
+    \Cref{theo:theo1} introduces backtracking solutions for element-of
     constraint problems.
     They are constructed such that
     $P_k[E_S](M,x)=\{y_{v_k}\mid y\in S(M), y_{v_1}=x_1,\dots,y_{v_{k-1}}=x_{k-1}\}$.
@@ -937,22 +937,22 @@ define double @dot(double* %0, double* %1, i64 %2) {
     algorithm will only ever backtrack immediately after yielding a result.
     In the theorem, the backtracking solution is not defined directly, but
     instead a helper construct $R_k$ is introduced.
-    This helper construct is used in \autoref{subsec:impl} for an efficient
+    This helper construct is used in \Cref{subsec:impl} for an efficient
     implementation.
 
-    \autoref{theo:theo2} introduces backtracking solutions for conjunction
+    \Cref{theo:theo2} introduces backtracking solutions for conjunction
     constraint problems.
     These are defined in the obvious way, by taking the intersection of
     the underlying backtracking solitions at each $k$.
     This is not possible for disjunction constraint problems, which are dicussed
-    in \autoref{theo:theo3}.
+    in \Cref{theo:theo3}.
     The additional structure $R_k$ is used to keep track whether the current
     partial solution satisfies $C$ or $C'$ so far.
     The partial solution at $k$ is then the union only of those underlying
     partial solutions at $k$ where the corresponding element in $R_k$
     signals validity.
 
-    \autoref{theo:theo3} shows that backtracking solutions for extensions of
+    \Cref{theo:theo3} shows that backtracking solutions for extensions of
     constraint problems can be constructed by simply ignoring the additional
     variables.
 
@@ -961,27 +961,25 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \begin{figure}[p]
     \input{latex/figure_backtrackexample}
     \caption{Backtracking is used to find the single solution of the SSA
-             constraint problem from \autoref{fig:constraintsolution}.
+             constraint problem from \Cref{fig:constraintsolution}.
              The partial solution is extended in three steps from top to bottom.
              The backtracking solution $(P_k[C])_{k=1\dots3}$ is contructed
-             according to \autoref{theo:theo1}, \autoref{theo:theo2} and
-             \autoref{theo:theo4}.}
+             according to \Cref{theo:theo1,theo:theo2,theo:theo4}.}
     \label{fig:backtracsol}
 \end{figure}
 
-    \autoref{fig:backtracsol} shows how backtracking is used to algorithmically
+    \Cref{fig:backtracsol} shows how backtracking is used to algorithmically
     determine the solution of the SSA constraint problem that was introduced in
-    \autoref{fig:constraintsolution}.
+    \Cref{fig:constraintsolution}.
     The original SSA constraint problem is shown again at the top of the figure.
     It is entirely constructed via conjunctions of element-of constraint
     problems.
     The constraint problem can therefore be expressed entirely according to
-    \autoref{def:elementofconstr}, \autoref{def:conjconstr} and
-    \autoref{def:constrext}.
+    \Cref{def:elementofconstr,def:conjconstr,def:constrext}.
 
-    This means that \autoref{theo:theo1}, \autoref{theo:theo2} and
-    \autoref{theo:theo4} can be used to construct a backtracking solution
-    $(P_k[C])_{k=1\dots3}$ of the constraint problem.
+    This means that \Cref{theo:theo1,theo:theo2,theo:theo4} can be used to
+    construct a backtracking solution $(P_k[C])_{k=1\dots3}$ of the constraint
+    problem.
     The lower part of the figure demonstrates how this backtracking solution is
     used to determine the solution.
 
@@ -1016,36 +1014,35 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \label{subsec:impl}
 
     With the concrete backtracking solutions that were derived in
-    \autoref{theo:theo1}, \autoref{theo:theo2}, \autoref{theo:theo3} and
-    \autoref{theo:theo4}, it is possible to identify suitable data structures
-    and algorithmic decisions for efficiently implementing the corresponding
-    functionality in real code.
+    \Cref{theo:theo1,theo:theo2,theo:theo3,theo:theo4}, it is possible to
+    identify suitable data structures and algorithmic decisions for efficiently
+    implementing the corresponding functionality in real code.
     This first requires a revisiting of the backtracking algorithm first
-    introduced in \autoref{backtrackalg}.
-    \autoref{cppsolver} shows how this backtracking solver can be implemented as
+    introduced in \Cref{backtrackalg}.
+    \Cref{cppsolver} shows how this backtracking solver can be implemented as
     a C++ function.
     Most of the \texttt{solver} function in lines 12--43 maps directly onto
-    \autoref{backtrackalg}, and needs no further explanation.
+    \Cref{backtrackalg}, and needs no further explanation.
     However, there are some crucial details that are made explicit here, which
     need elaboration.
     They mostly relate to the calculation of
     $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
-    in line 4 of \autoref{backtrackalg}, which was previously left as a black
+    in line 4 of \Cref{backtrackalg}, which was previously left as a black
     box.
 
     \texttt{BacktrackingPart} corresponds to the backtracking solution in
-    \autoref{def:backtracking}.
+    \Cref{def:backtracking}.
     The class provides four member functions.
     Most importantly, \texttt{skip\_invalid} is used for implementing the
     evaluation of
     $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
-    in line 4 of \autoref{backtrackalg}.
+    in line 4 of \Cref{backtrackalg}.
     More precisely, it increases the argument to the smallest value that is
     part of a partial solution.
 
 \begin{figure}[p]
     \input{latex/figure_backtrackingcpp}
-    \caption{Complete C++ implementation of \autoref{backtrackalg}.
+    \caption{Complete C++ implementation of \Cref{backtrackalg}.
              The if-else statements in lines 20--41 precisely correspond
              to those in lines 5--17 of that algorithm.
              The \texttt{BacktrackingPart} class provides
@@ -1061,7 +1058,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     This allows computations that would otherwise be performed repeatedly by
     the \texttt{skip\_invalid} function to instead of performed ahead of time.
     More specifically, this corresponds directly to $R_k(M,x)$ in both
-    \autoref{theo:theo1} and \autoref{theo:theo4}.
+    \Cref{theo:theo1} and \Cref{theo:theo4}.
     Crucially, this distribution of the computation allows all previously
     discussed types of SSA constraint problems to be implemented efficiently as
     follows.
@@ -1122,7 +1119,7 @@ struct Tree { vector<pair<int,Tree>> s; };
     Firstly, there are a number of very simple SSA constraint problems that
     operate directly on the integer values, without interpreting them as indizes
     into the value list of the SSA model.
-    These are listed in \autoref{def:auxconstr}.
+    These are listed in \Cref{def:auxconstr}.
     $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$ are defined in the
     obvious way, forcing equality/inequality.
     Finally, there is $(\{a\}, C^{unused})$.
@@ -1131,8 +1128,8 @@ struct Tree { vector<pair<int,Tree>> s; };
     Therefore, it is used by convention to signal that no value from the SSA
     model was assigned.
 
-    Generalised graph domination constraint problems as in
-    \autoref{def:domconstr} are versatile tools for analysing SSA models.
+    Generalised graph domination constraint problems as in \Cref{def:domconstr}
+    are versatile tools for analysing SSA models.
     The special case of $|V_1|=|V_2|=|V_2|=1$ and $V_1=\{v_1\}$,
     with $v_1$ the control origin of the function, turns this definition into
     the usual control flow dominance concept that is established in compiler
@@ -1140,21 +1137,21 @@ struct Tree { vector<pair<int,Tree>> s; };
     However, the generalisation that is used here encompasses a much larger
     set of interesting properties.
     Importantly, this can be applied also to data flow, which will be useful in
-    \autoref{chapter:reductions}.
+    \Cref{chapter:reductions}.
     The backtracking solution of generalised graph domination constraint
     problems is brute force, with $P_k[D_G]\equiv 1$ for all $1\leq k<n$.
     The checking of the condition in $P_n[D_G]$ is typically preformed in
     $O(|val|)$ time, therefore this is a computationally expensive constraint.
 
     Finally, collect-all constraint problem are introduced in
-    \autoref{def:collectconstr}.
+    \Cref{def:collectconstr}.
     Given a constraint problem $(V,C)$, the variables $V$ are divided into
     two subsets.
     The collect-all constraint problem identifies all possible solutions over
     one of the variable subsets, given that the other variable subset is fixed.
     The parameter $N$ gives an upper limit to the number of these solutions.
     Collect-all constraint problems are used to approximate logical quantifiers.
-    This is discussed in more detail in \autoref{chapter:candl}.
+    This is discussed in more detail in \Cref{chapter:candl}.
 
     In order to calculate a backtracking solution of collect-all constraint
     problems, the order on $W$ needs to satisfy the property
@@ -1324,10 +1321,10 @@ struct Tree { vector<pair<int,Tree>> s; };
 %\subsection{Control Dependence Example}
 %
 %    The control dependence graph is a function of the control flow graph, as is
-%    directly apparent from \autoref{def:cdg}.
+%    directly apparent from \Cref{def:cdg}.
 %    We can see how an example control dependence graph is computed in
-%    \autoref{fig:pdg}, from the control flow graph of the \texttt{dot} function
-%    in \autoref{fig:derivemaths}.
+%    \Cref{fig:pdg}, from the control flow graph of the \texttt{dot} function
+%    in \Cref{fig:derivemaths}.
 %    From the definition it is immediately obvious that we need to only consider
 %    conditional branches as origins of control dependence.
 %

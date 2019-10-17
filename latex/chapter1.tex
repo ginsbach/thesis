@@ -196,7 +196,7 @@
 
     General purpose programming languages, domain specific languages and
     accelerator libraries exist on a spectrum of specialisation.
-    \autoref{specialgradient} gives some intuition about this spectrum.
+    \Cref{specialgradient} gives some intuition about this spectrum.
     On the left are the most versatile general purpose languages.
     Moving to the right, flexibility is lost, with BLAS libraries at the end
     providing only fixed-function computations.
@@ -247,7 +247,7 @@
 \section{Moving Between Abstraction Levels}
 
     To combine the positive features on both ends of the spectrum in
-    \autoref{specialgradient}, host compilers need the ability to recognise
+    \Cref{specialgradient}, host compilers need the ability to recognise
     restricted programming models within general purpose code and to transform
     adhering code sections into domain specific representations.
     After these transformations, host compilers would be able to tap into the
@@ -287,7 +287,7 @@
     detection of adhering code regions feasible.
 
     This constraint programming methodology needs to capture the spectrum from
-    \autoref{specialgradient}.
+    \Cref{specialgradient}.
     On one extreme, sections of code should be recognised as implementing
     specific algorithms, like matrix multiplications, that are merely
     parametrised with numbers.
@@ -371,7 +371,7 @@
 
     This thesis is divided into six chapters.
     Following this introduction, the core methodology is developed in
-    {\bf\autoref{chapter:theory}}.
+    {\bf\Cref{chapter:theory}}.
     This forms the basis of the later
     {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions}}.
     Based on a novel mathematical model of established static single assignment

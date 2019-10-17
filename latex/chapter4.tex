@@ -1,6 +1,6 @@
 
-    In \autoref{chapter:theory}, the underlying theory for constraint
-    programming on SSA compiler intermediate representation was derived.
+    In \Cref{chapter:theory}, the underlying theory for constraint programming
+    on SSA compiler intermediate representation was derived.
     Building on that framework, this chapter develops a domain specific
     constraint programming language and presents an implementation of this
     language as an extension to the production quality LLVM compiler
@@ -91,7 +91,7 @@
     formulation of highly readable code.
 
     CAnDL is based on the constraint programming methodology introduced in
-    \autoref{chapter:theory}.
+    \Cref{chapter:theory}.
     It uses a solver that is integrated into the LLVM code base.
     CAnDL is developed as a complete programming language, with a full parser
     and code generator.
@@ -121,7 +121,7 @@ End
 \label{fig:candlspec}
 \end{figure}
 
-    As an example of the CAnDL workflow, consider \autoref{fig:root}.
+    As an example of the CAnDL workflow, consider \Cref{fig:root}.
     This basic algebraic equation can be interpreted as a recipe for a compiler
     optimisation:
     Assuming an environment without the particularities of floating point
@@ -158,7 +158,7 @@ End
 
     Instead, CAnDL allows a declarative description of the analysis problem.
     It is easier to follow, has no interaction with other optimisations and
-    is concise, as visible in \autoref{fig:candlspec}.
+    is concise, as visible in \Cref{fig:candlspec}.
     The first line of the program assigns a name to the specification, which is
     then defined by the interaction of seven so-called {\em atomic constraint}s.
     These individual statements have to hold simultaneously on the values of
@@ -168,8 +168,8 @@ End
 
     The CAnDL compiler translates this declarative program into a C++ analysis
     function that is used in an LLVM optimisation pass.
-    This is demonstrated in \autoref{fig:candlexample}, which shows the analysis
-    function generated from the CAnDL specification in \autoref{fig:candlspec}
+    This is demonstrated in \Cref{fig:candlexample}, which shows the analysis
+    function generated from the CAnDL specification in \Cref{fig:candlspec}
     applied to a user program as follows:
     The input program ({\bf a}) is a simple C function that calls the
     \texttt{sqrt} function twice with squares of floating point values.
@@ -187,7 +187,7 @@ End
     transformation, shown as first solution ({\bf d}) and second solution
     ({\bf e}).
     Each of the two solutions assigns values from within the LLVM IR code to
-    each of the variables in the CAnDL program in \autoref{fig:candlspec}, such
+    each of the variables in the CAnDL program in \Cref{fig:candlspec}, such
     that all the specified constraints are fulfilled.
     The validity of these solutions is demonstrated in the middle row of the
     figure ({\bf e}-{\bf f}).
@@ -228,7 +228,7 @@ End
     demonstrated towards the end of the chapter.
     The next sections give a specification of the CAnDL language and outline how
     it is implemented on top of the constraint programming methodology devised
-    in \autoref{chapter:theory}.
+    in \Cref{chapter:theory}.
 
 \begin{figure*}[p]
     \input{latex/figure_candlexample}
@@ -245,7 +245,7 @@ End
     These structures are specified as constraint programs on static single
     assignment (SSA) form representation of user code in LLVM IR.
     CAnDL could also easily be ported to different SSA representations using the
-    underlying theory from \autoref{chapter:theory}.
+    underlying theory from \Cref{chapter:theory}.
 
     The expressed structures can scale from simple instruction patterns that are
     suited for peephole optimizations, over control flow structures such
@@ -275,7 +275,7 @@ End
     is typically encoded as UTF-8.
     An individual CAnDL program contains constraint formulas that are
     bound to identifiers.
-    As previously shown in \autoref{fig:candlspec}, the syntax for this is as
+    As previously shown in \Cref{fig:candlspec}, the syntax for this is as
     follows:
 \begin{figure}[H]
 \centering
@@ -287,7 +287,7 @@ End
 \end{figure}
 
     \noindent
-    Furthermore, \autoref{fig:candlspec} already demonstrated that logical
+    Furthermore, \Cref{fig:candlspec} already demonstrated that logical
     conjunctions are be used to combine simpler {\it formula}s.
     More generally, a {\it formula} can be any of the following:
 \begin{figure}[H]
@@ -360,24 +360,24 @@ End
   \label{twovaratomics}
 \end{figure}
 
-    Based on the model from \autoref{chapter:theory}, CAnDL provides a wide
+    Based on the model from \Cref{chapter:theory}, CAnDL provides a wide
     range of atomic constraints.
     The most simple group are those that operate on only a single variable,
-    listed in \autoref{onevaratomics}.
+    listed in \Cref{onevaratomics}.
     They operate immediately on the underlying mathematical structures, testing
     element-of properties of the sets in order to constrain data types,
     instrution opcodes etc.
     At the bottom of the list is the {\bf function\_name} constraint,
     which is particular.
     Function names are not a fundamental component of the SSA model from
-    \autoref{chapter:theory}.
+    \Cref{chapter:theory}.
     However, they are easily accommodated within the type information
     $T_\mathcal F$.
     The same data structure can also be used to capture all kinds of LLVM
     specific metadata.
 
     There are additional atomic constraint that operate on pairs of variables.
-    These are listed in \autoref{twovaratomics}.
+    These are listed in \Cref{twovaratomics}.
     These most importantly check for edges in the control flow and data flow
     graphs.
     Furthermore, two constraints are available for shallow comparisons of
@@ -522,7 +522,6 @@ End
 \label{fig:forall}
 \end{figure}
 
-
     Building on top of atomics and the fundamental conjunction and disjunction
     constructs, there are range based versions that operate on arrays of
     variables:
@@ -539,7 +538,7 @@ End
     \noindent
     These constructs allow the replication of a constraint formula over a range
     of indices.
-    This is demonstrated in \autoref{fig:forall}, which shows two equivalent
+    This is demonstrated in \Cref{fig:forall}, which shows two equivalent
     CAnDL programs, the first one formulated with \texttt{foreach} and the
     second one without.
     In both cases, the program specifies an array of five variables with data
@@ -600,7 +599,7 @@ End
     The other optional syntax is used to rename individual {\it variable}s in
     the included {\it formula}.
 
-    \autoref{fig:inheritsandrenameandrebase} illustrates this with two
+    \Cref{fig:inheritsandrenameandrebase} illustrates this with two
     equivalent programs.
     Both programs specify an addition of four values, first adding pairwise and
     then adding the intermediate results.
@@ -636,7 +635,7 @@ End
 \end{figure}
 
     \noindent
-    In \autoref{fig:simplecollect}, the variables \texttt{arg[0],\dots,arg[N-1]}
+    In \Cref{fig:simplecollect}, the variables \texttt{arg[0],\dots,arg[N-1]}
     are constraint to contain all of the data dependences of \texttt{ins}.
     The first argument of \text{\it collect} specifies the name of an index
     variable that is used to detect which variables belong to the collected set.
@@ -678,10 +677,10 @@ End
     \end{align*}
     This means that if a set $S$ is constrained to be equal to both $S_1$ and
     $S_1\cap S_2$ at the same time, the constraints are satisfiable if and only
-    if the implication in \autoref{fig:implication} holds.
+    if the implication in \Cref{fig:implication} holds.
 
     This condition can be expressed in CAnDL, as is shown in
-    \autoref{fig:collectexample}.
+    \Cref{fig:collectexample}.
     With the first {\it collect} statement in line 3, the set \texttt{arg} is
     constrainted to be equal to $S_1$ and with the second one in lines 4-5, it
     is constrained to be $S_1\cap S_2$ as well.
@@ -727,7 +726,7 @@ End
     entered, it isn't allowed to change from loop iteration to iteration.
     This leaves it to be either a function argument, an actual constant or an
     instruction that strictly dominates the loop entry.
-    This is expressed in \autoref{fig:localconstant}.
+    This is expressed in \Cref{fig:localconstant}.
     Note that this formula is to be included into larger CAnDL programs, as the
     \texttt{begin} variable is under specified otherwise.
 
@@ -764,7 +763,7 @@ End
 
 \section{Implementation}
 
-    CAnDL interacts with the LLVM framework, as shown in \autoref{fig:build2}.
+    CAnDL interacts with the LLVM framework, as shown in \Cref{fig:build2}.
     CAnDL programs are read by the CAnDL compiler, which then generates C++
     source code to implement the specified LLVM analysis functionality.
     This code depends on a generic backtracking solver, which is incorporated
@@ -789,7 +788,7 @@ End
 
     The CAnDL compiler is responsible for generating C++ code from CAnDL
     programs.
-    An overview of its  flow is shown in \autoref{fig:compilerflow}.
+    An overview of its  flow is shown in \Cref{fig:compilerflow}.
     The frontend reads in  CAnDL source code and builds an abstract syntax tree.
     This syntax tree is simplified in two steps to eliminate some of the higher
     order constructs of CAnDL.
@@ -843,7 +842,7 @@ result[2] = make_pair("right",    select<1>(constr2));
 \label{fig:codegen}
 \end{figure}
 
-    The code generation process is demonstrated in \autoref{fig:codegen} with an
+    The code generation process is demonstrated in \Cref{fig:codegen} with an
     example.
     Each of the atomic constraints results in a line of C++ code that constructs
     an object of a corresponding class:
@@ -862,7 +861,7 @@ result[2] = make_pair("right",    select<1>(constr2));
 
     Those constraint classes that implement constraints on a single variable
     directly implement the \texttt{BacktrackingPart} interface introduced in
-    \autoref{cppsolver}.
+    \Cref{cppsolver}.
     In this example, this is true for \texttt{AddInstruction} and
     \texttt{Conjunction}.
     For more complex constraints, the \texttt{select<n>} template is used to
@@ -875,7 +874,7 @@ result[2] = make_pair("right",    select<1>(constr2));
     corresponding variable names.
     This vector corresponds to the backtracking solution of the entire
     constraint problem and is then passed to the solver, which is implemented
-    as in \autoref{cppsolver}.
+    as in \Cref{cppsolver}.
 
 \begin{figure*}[ht]
 \centering
@@ -900,8 +899,8 @@ Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show t
     Most importantly, this includes an interactive gui, where developers can
     test out corner cases of CAnDL programs to find false positives and false
     negatives.
-    This gui is shown in \autoref{fig:gui}, the example is from one of the use
-    cases presented in \autoref{sec:casestudies}.
+    This gui is shown in \Cref{fig:gui}, the example is from one of the use
+    cases presented in \Cref{sec:casestudies}.
 
     In the left column,  part of a C program from the PolyBench benchmark suite
     is visible, which implements a two-dimensional Jacobi stencil.
@@ -937,7 +936,7 @@ Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show t
     \texttt{instcombine} pass.
     One example of this is the standard factorization optimization that uses the
     law of distributivity to simplify integer calculations as shown in
-    \autoref{fig:factorization1}.
+    \Cref{fig:factorization1}.
     It is implemented in 203 lines of code and furthermore uses supporting
     functionality provided by \texttt{instcombine}.
     \begin{align}
@@ -945,14 +944,14 @@ Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show t
         \label{fig:factorization1}
     \end{align}
     This analysis problem can be formulated in CAnDL as shown in
-    \autoref{fig:facopport}.
+    \Cref{fig:facopport}.
     Crucually, in lines 5,7,9,11, the specification makes use of
     \texttt{SumChain} and \texttt{MulChain}, which allows the CAnDL program
     to capture a large, generalised class of opportunities for factorization.
     The \texttt{instcombine} pass only has limited support for this, and
     requires to first apply associative and commutative laws to reorder the
     values.
-    This is for example needed in the case of \autoref{fig:factorization2} and
+    This is for example needed in the case of \Cref{fig:factorization2} and
     only partially supported by LLVM with the additional \texttt{reassociate}
     pass.
     \begin{align}
@@ -982,7 +981,7 @@ End
 
 \subsubsection{Setup}
 
-    The program in \autoref{fig:facopport} was evaluated against the default
+    The program in \Cref{fig:facopport} was evaluated against the default
     factorisation optimisation in LLVM's \texttt{instcombine} on three benchmark
     suites: the sequential C versions of NPB, the C versions of Parboil and the
     OpenMP C/C++ versions of Rodinia.
@@ -1026,7 +1025,7 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\ \hline
 \label{fig:factorization_results}
 \end{figure}
 
-    The results are shown in \autoref{fig:factorization_results}.
+    The results are shown in \Cref{fig:factorization_results}.
     In general, the performance impact of peephole optimizations is small
     and in two of the benchmark sets we find only very small numbers.
     LLVM was unable to perform any factorisation in the entire Parboil suite.
@@ -1092,7 +1091,7 @@ End
     \end{align*}
 
     The required analysis functionality for this optimization was implemented
-    with CAnDL, as shown in \autoref{fig:Lewis}.
+    with CAnDL, as shown in \Cref{fig:Lewis}.
     The \mbox{included} \texttt{VectorMulChain} subprogram discovers chains of
     floating point vector multiplications in the IR code and uses the variables
     \texttt{factors} and \texttt{partials} such that the following equations
@@ -1141,7 +1140,7 @@ Detected in GFX 4.0 & - & 19 \\ \hline
 
     The optimization was relevant to 8 of the fragment shaders in GFXBench 4.0.
     The number of lines of code needed and the resulting performance impact are
-    shown in \autoref{fig:candlshader} and \autoref{fig:qualcommspeedup}.
+    shown in \Cref{fig:candlshader} and \Cref{fig:qualcommspeedup}.
     A total of 19 opportunities for the optimization to be applied were
     detected.
     Although the performance impact was moderate with $1-4\%$ speedup on eight
@@ -1173,7 +1172,7 @@ Detected in GFX 4.0 & - & 19 \\ \hline
     Technically speaking, this means that every conditional jump within the
     corresponding piece of IR is accounted for by for loops and conditionals.
     This is enforced with the \texttt{collect} statement that was introduced in
-    \autoref{fig:collectexample}.
+    \Cref{fig:collectexample}.
     It is used in CAnDL programs \texttt{ForLoop} and
     \texttt{Conditional} that describe the control flow of for loops and
     conditionals and extract the involved conditional jump instructions.
@@ -1194,11 +1193,10 @@ Detected in GFX 4.0 & - & 19 \\ \hline
     instruction, the base pointer is loop invariant and the index is calculated
     affinely.
     The loop invariant base pointer is easily guaranteed using the
-    \texttt{LocalConst} program from \autoref{fig:localconstant}.
+    \texttt{LocalConst} program from \Cref{fig:localconstant}.
 
     Checking the index calculations is more involved and is again based on the
-    \texttt{collect} method that was demonstrated in
-    \autoref{fig:collectexample}.
+    \texttt{collect} method that was demonstrated in \Cref{fig:collectexample}.
     The \texttt{collect} construct is used to to find all of the affine memory
     accesses in all the loop nests.
     We then use collect all \texttt{load} and \texttt{store} instructions and
@@ -1213,13 +1211,13 @@ Detected in GFX 4.0 & - & 19 \\ \hline
 
 \subsubsection{Results}
 
-    As is visible in \autoref{fig:candlvspolly}, the CAnDL program captured all
+    As is visible in \Cref{fig:candlvspolly}, the CAnDL program captured all
     the SCoPs that Polly was able to detect.
     There is some postprocessing of the generated constraint solutions required
     to achieve this.
     Firstly, the CAnDL results are not in the jscop format that Polly uses but
     contain the raw constraint solution as shown on the right side of
-    \autoref{fig:gui}.
+    \Cref{fig:gui}.
     Also, the CAnDL implementation does not merge consecutive outer level loops
     into SCoPs of maximum size.
     To compare, the detected loops from the CAnDL solver were extracted and then

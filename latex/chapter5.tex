@@ -1,7 +1,7 @@
 
     The Compiler Analysis Description Language (CAnDL) in the previous chapter
     makes the constraint programming methodology introduced in
-    \autoref{chapter:theory}
+    \Cref{chapter:theory}
     directly available within the LLVM infrastructure.
     The previous chapter already showed how this enables complex compiler
     analysis generation, by reimplementing peephole optimisations and even a
@@ -240,7 +240,7 @@ for (i = 0; i < NK; i++) {
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.6\textwidth]{figures/nicepicture.png}
-\caption{Parallelisation of \autoref{complex-reduction-figure}:
+\caption{Parallelisation of \Cref{complex-reduction-figure}:
          The input array \texttt{x} is distributed over two threads that operate
          on private copies of \texttt{sx}, \texttt{sy}, \texttt{q[]}.
          These copies are then merged after synchronisation.\parfillskip=0pt}
@@ -251,29 +251,28 @@ for (i = 0; i < NK; i++) {
 \begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{figures/nicepicture2.png}
-\caption{A subset of the Data Flow, Control Flow and Control Dependences of Figure 2}
+\caption{A subset of the Data Flow, Control Flow and Control Dependences of
+         \Cref{complex-reduction-figure}}
 \label{nice-picture2}
 \end{figure}
 
-    \autoref{nice-picture2} gives an insight into why existing schemes do not
+    \Cref{nice-picture2} gives an insight into why existing schemes do not
     detect such reductions by showing the compiler representation of this 
     program.
     The histogram update occurs in the 3rd basic block with the load, assign and
     store operations but it is by no means obvious that it is a safe reduction.
     In fact, accurately detecting reductions is non-trivial.
-    If in the original program, shown in \autoref{complex-reduction-figure}, the
+    If in the original program, shown in \Cref{complex-reduction-figure}, the
     condition on line 5 was changed to {\tt t1<=sx}, there would be no longer a
     legal reduction as there is now a control dependence on an intermediate
     result.
     This is turn would manifest as an additional data dependence edge from
-    block 3 to block 2 in Figure \ref{nice-picture2}.
+    block 3 to block 2 in \Cref{nice-picture2}.
     Furthermore the code segment can only be classified as a reduction because
     all the function calls that are present are pure.
     Such details have to be checked to ensure correctness.
     What is needed is a way to specify these conditions exactly and to then
     automatically identify code regions that meet the constraints.
-
- 
 
 %% This becomes clearer when we write the operation with appropriately defined
 %% types and using a custom overloaded operator as in Figure
@@ -425,12 +424,12 @@ for (i = 0; i < NK; i++) {
 
     \paragraph*{Example}
     Both variables \texttt{sx} and \texttt{sy} in
-    \autoref{complex-reduction-figure} satisfy the conditions:
+    \Cref{complex-reduction-figure} satisfy the conditions:
     Firstly, the iteration space of the loop is bounded by \texttt{NK}, which is
     constant.
     Secondly, within the SSA representation, both \texttt{sx} and \texttt{sy}
     are unconditionally updated via $\Phi$-instructions, shown previously in
-    \autoref{nice-picture2}.
+    \Cref{nice-picture2}.
     This is despite the conditional statement in the original C representation
     of the program.
     Thirdly, exactly two values are read from the single input array \texttt{x}
@@ -473,7 +472,7 @@ for(i = 0; i < n; i++) {
 \end{figure}
 
     \paragraph*{Counterexamles}
-    \autoref{counterexamples} shows counterexamples to the four conditions,
+    \Cref{counterexamples} shows counterexamples to the four conditions,
     demonstrating why they are all needed in order to parallelise a given
     computation as a scalar reduction.
 
@@ -522,7 +521,7 @@ for(i = 0; i < n; i++) {
     \paragraph*{Example}
     The first two conditions are the same as those in the previous discussion of
     scalar reductions and were shown to hold for the loop in
-    \autoref{complex-reduction-figure}.
+    \Cref{complex-reduction-figure}.
     The array \texttt{q[]} also satisfies the remaining conditions:
     Firstly, the variable \texttt{l} corresponds to the value \texttt{idx}.
     Secondly, the element \texttt{q[l]} is read, modified and written.
@@ -530,7 +529,7 @@ for(i = 0; i < n; i++) {
     merely adding a constant \texttt{1.0} to the previous value.
 
     \paragraph*{Counterexamples}
-    Again, counterexamples are given in \autoref{counterexamples2} to give an
+    Again, counterexamples are given in \Cref{counterexamples2} to give an
     intuition about the significance of conditions 3-5.
 
     In the first example, the index of the histogram is not computed from an
@@ -664,7 +663,7 @@ Due to space we omit further details.
     Kernel functions are sections of code that are side-effect free and
     can be separated out. Identifying side-effect free code is useful in
     many types of compiler optimization.  It can be expressed in CAnDL, as
-    shown in \autoref{fig:kernel}.
+    shown in \Cref{fig:kernel}.
 
 \begin{figure}[ht]
 \begin{lstlisting}[language=CAnDL]
