@@ -29,29 +29,9 @@
 \usetikzlibrary{patterns}
 \pgfplotsset{compat=1.13}
 
-\renewcommand{\subsectionautorefname}{Subsection}
-\renewcommand{\chapterautorefname}{Chapter}
-\newcommand*{\Appendixautorefname}{Appendix}
-
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 
 \hyphenpenalty=100000
-
-\makeatletter
-\newcommand{\tcb@cnt@theoremautorefname}{Theorem}
-\makeatother
-
-\makeatletter
-\newcommand{\tcb@cnt@definitionautorefname}{Definition}
-\makeatother
-
-\makeatletter
-\newcommand{\tcb@cnt@notationautorefname}{Notation}
-\makeatother
-
-\makeatletter
-\newcommand{\algorithmautorefname}{Algorithm}
-\makeatother
 
 \newtcbtheorem[auto counter,number within=chapter]{theorem}{Theorem}{
 label type=theorem,
@@ -66,13 +46,6 @@ colback=white,
 colframe=black,
 fonttitle=\bfseries,
 title={Definition \thetcbcounter}}{def}
-
-\newtcbtheorem[auto counter,number within=chapter]{notation}{Notation}{
-label type=notation,
-colback=white,
-colframe=black,
-fonttitle=\bfseries,
-title={Definition \thetcbcounter}}{not}
 
 \newtcolorbox{blackbox}[1]{
 top=0mm,

@@ -23,12 +23,12 @@
         E_S(M,x)=1\implies x_{v_k}\in\{s_{v_k}\mid s\in S(M),p_{k-1}(s)=p_{k-1}(x)\}=P_k[E_S](M,p_{k-1}(x)).
     \end{align*}
 
-    This gives ``$\implies$'' for the equation in \autoref{def:backtracking}.
+    This gives ``$\implies$'' for the equation in \Cref{def:backtracking}.
     The reverse is true for $k=n$, as
     \begin{align*}
         x_{v_n}\in{}&\{s_{v_n}\mid s\in S(M),p_{k-1}(s)=p_{k-1}(x)\}\implies x\in S(M).
     \end{align*}
-    Therefore, the equivalence from \autoref{def:backtracking} holds in both directions.
+    Therefore, the equivalence from \Cref{def:backtracking} holds in both directions.
 \end{theorem}
 \begin{theorem}{Backtracking Solution for Conjunction Constraint problems}{theo2}
     For SSA constraint problems $(V,C)$ and $(V,C')$ with backtracking
@@ -43,7 +43,7 @@
     \tcblower
     \paragraph*{Proof:}
     The definition of $(V,C\mathrel\land C')$ together with the
-    assumption that \autoref{def:backtracking} holds for the two given
+    assumption that \Cref{def:backtracking} holds for the two given
     backtracking solutions gives
     \begin{align*}
         C\mathrel\land C'(M,x)=1\iff{}&\left[x_{v_k}\in P_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n\right]\\

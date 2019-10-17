@@ -342,7 +342,7 @@ Therefore, the solution at the bottom of \Cref{fig:firstexample} is the only fac
     program analysis, we want to detect much more complex idioms and 
     map them to existing APIs.
 
-    The C code in \autoref{fig:spmvexample1} shows the performance bottleneck of
+    The C code in \Cref{fig:spmvexample1} shows the performance bottleneck of
     the NAS \emph{Conjugate Gradient (GC)} benchmark, as well as the
     corresponding LLVM IR code.
     It implements a standard operation from sparse linear algebra, namely a
@@ -358,20 +358,20 @@ Therefore, the solution at the bottom of \Cref{fig:firstexample} is the only fac
     Under these conditions, simple data dependence models, but also
     sophisticated analysis based on the polyhedral model, would fail.
 
-    We can express this idiom in IDL (\autoref{sec:idioms}, \autoref{fig:spmv}).
+    We can express this idiom in IDL (\Cref{sec:idioms}, \Cref{fig:spmv}).
     The IR code, together with the IDL program, is fed into a constraint solver,
-    which outputs a constraint solution as shown in \autoref{fig:spmvexample2}.
+    which outputs a constraint solution as shown in \Cref{fig:spmvexample2}.
     We can see that different parts of the IR have been assigned to IDL
     variables.
 
-    \autoref{fig:spmvexample3} shows how this solution is used to generate a
+    \Cref{fig:spmvexample3} shows how this solution is used to generate a
     call to a cuSPARSE procedure.
     The solution variables are inserted into the {\tt cusparseDcsrmv} code
     template as function arguments. 
     The original code is then cut out and replaced with this function call.
     The cuSPARSE library is then linked with the object code produced by the
     LLVM compiler, resulting in a speedup of $17\times$ on a GPU as described in
-    \autoref{sec:results}.
+    \Cref{sec:results}.
 
     Central to our approach is the ability to detect idioms.
     In the next section we introduce a powerful description language that is
@@ -404,7 +404,7 @@ Therefore, the solution at the bottom of \Cref{fig:firstexample} is the only fac
     Writing and debugging IDL code is challenging, but the modularity mechanisms
     make it very suitable for unit testing.
     The full syntax specification of IDL in BNF notation is shown in
-    \autoref{fig:idlbnf}.
+    \Cref{fig:idlbnf}.
 
     \paragraph{Terminals}
     The symbols $\left<\text{\bf s}\right>$ and $\left<\text{\bf n}\right>$ in
@@ -476,7 +476,7 @@ Therefore, the solution at the bottom of \Cref{fig:firstexample} is the only fac
 
     The most basic control flow structure that is needed for expressing
     computational idioms is the single entry single exit (SESE) region.
-    \autoref{candl_sese} shows the specification, which contains some
+    \Cref{candl_sese} shows the specification, which contains some
     non-obvious considerations.
 
 \begin{figure}[h]
@@ -520,7 +520,7 @@ End
     aligned to basic block boundaries.
 
 \section{Loop Structures}
-    Building on top of the SESE region, \autoref{candl_loop} presents the CAnDL
+    Building on top of the SESE region, \Cref{candl_loop} presents the CAnDL
     specification of a basic loop structure.
     Using the CAnDL description of a SESE region, this is a very simple
     definition: A Loop is simply a SESE region with a backedge.
@@ -540,7 +540,7 @@ End
     They are distinguished by a specific kind of breaking condition that is
     based on an induction variable reaching a limit value, which can be
     expressed in CAnDL using a set of further constraints shown in
-    \autoref{candl_forloop}.
+    \Cref{candl_forloop}.
 
 \begin{figure}[h]
 \begin{lstlisting}[language=CAnDL]
@@ -592,7 +592,7 @@ End
     A SESE region is a part of code spanned by two instructions $A$ and $B$ such
     that $A$ dominates $B$, $B$ postdominates $A$ and every cycle containing
     either $A$ or $B$ also contains the other.
-    It is defined in \autoref{fig:sese}.
+    It is defined in \Cref{fig:sese}.
 
     Using simple building blocks such as SESE, we can define more complex
     control structures such as loops and important memory access patterns such
@@ -602,8 +602,7 @@ End
 
 \subsection{Full Idiom Definition}
 
-    The generalized matrix multiplication idiom is described in
-    \autoref{fig:gemm}.
+    The generalized matrix multiplication idiom is described in \Cref{fig:gemm}.
     The control flow is captured by three nested for loops.
     Inside these loops, the memory access is characterized by three matrix
     accesses, each with a different subset of the loop iterators.
@@ -613,7 +612,7 @@ End
     This also contains the linear combination with factors \texttt{alpha} and
     \texttt{beta} that is part of the generalized matrix multiplication.
 
-    \autoref{fig:histogram} shows the generalized histogram idiom.
+    \Cref{fig:histogram} shows the generalized histogram idiom.
     It is contained in a for loop and the basic memory access pattern is a
     read-modify-write to a bin array.
     This memory access can be conditional as long as the condition is well
@@ -624,13 +623,13 @@ End
     Finally there are two well behaved kernel functions in a histogram, one to compute the access index and one to compute
     the updated value.
 
-The sparse matrix vector multiplication defined in \autoref{fig:spmv} is different to the other idioms in that
+The sparse matrix vector multiplication defined in \Cref{fig:spmv} is different to the other idioms in that
 the control flow of the skeleton of the idiom does not consist of perfectly nested for loops.
 Instead, the iteration space of the inner loop is read from an array using the \texttt{ReadRange} idiom.
 The actual computation that SPMV performs is a dot product and thus it uses the same \texttt{DotProductLoop} idiom as
 \texttt{GEMM} but the memory access pattern is different, with indirect memory access in \texttt{indir\_read}.
 
-    \autoref{fig:stencilcompute} shows the basic stencil idiom.
+    \Cref{fig:stencilcompute} shows the basic stencil idiom.
     Stencils consist of a loop nest with a multi-dimensional memory access to
     store the updated cell value.
     This updated value is computed with a kernel function using a number of
@@ -638,15 +637,15 @@ The actual computation that SPMV performs is a dot product and thus it uses the 
     \texttt{StencilRead} idiom, which specifies multidimensional array access
     with only constant offsets in all dimensions.
 
-The scalar reduction idiom is specified in \autoref{fig:scalarreduction}.
+The scalar reduction idiom is specified in \Cref{fig:scalarreduction}.
 Its structure is similar to the histogram idiom, but instead of a read-modify-write memory access
 it operates on an induction variable that is implemented with the \texttt{InductionVar} idiom.
 
 \subsection{Not Syntactic Pattern Matching}
 The idiom descriptions may at first appear to be shallow syntactic pattern matching.
 In fact, because it operates on the IR level, it can detect idioms that are written in superficially distinct style but are semantically equivalent.
-For example, there are two syntactically distinct programs in \autoref{fig:gemmexamples}, which in fact are both implementations of general matrix multiplication.
-The IDL in \autoref{fig:gemm} discovers they are both instances of GEMM and they can both be replaced with an API call to GEMM.
+For example, there are two syntactically distinct programs in \Cref{fig:gemmexamples}, which in fact are both implementations of general matrix multiplication.
+The IDL in \Cref{fig:gemm} discovers they are both instances of GEMM and they can both be replaced with an API call to GEMM.
 
 \begin{figure}[ht]
 \begin{lstlisting}[numbers=none,basicstyle=\linespread{1.133}\footnotesize\ttfamily]
@@ -764,7 +763,7 @@ for(int i = 0; i < 1000; i++)
     used for the function call.
 
     For example, in the case of the {\tt GEMM} program that was shown in
-    \autoref{fig:gemm}, the original code is removed by deleting the IR
+    \Cref{fig:gemm}, the original code is removed by deleting the IR
     instruction at {\tt output.store\_instr} explicitly, which captures the
     store instruction of the {\tt MatrixStore} subprogram.
     The remaining cleanup is left to the standard dead code elimination pass.
@@ -825,7 +824,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
 
 \paragraph{}
 After code for the DSLs is generated, it is passed to the DSL code generator.
-\autoref{fig:liftmxm} shows an example of the Lift code generated for GEMM (\texttt{gemm\_in\_lift}).
+\Cref{fig:liftmxm} shows an example of the Lift code generated for GEMM (\texttt{gemm\_in\_lift}).
 It performs a dot product (expressed in line~\ref{line:dot} using the Lift skeletons \texttt{zip}, \texttt{map}, and \texttt{reduce}) for each row of matrix A (\texttt{a\_row}) and column of matrix B (\texttt{b\_col}).
 This code is compiled by Lift into optimized OpenCL code.
 
@@ -914,15 +913,15 @@ Finally, we again replace the idiom code in the user's code with a call to the c
 
 \subsection{Idiom Detection}
 
-    \autoref{tab:detection} shows the number of idioms found by our approach, Polly, and ICC.
+    \Cref{tab:detection} shows the number of idioms found by our approach, Polly, and ICC.
     Polly finds 3 scalar reductions and 6 stencils while ICC which just considers  scalar reduction finds 28.
     Polly is unable to perform idiom specific optimizations on GEMM.
     Other approaches do not detect any histograms or sparse matrix operations, because such code involves indirect and thus non-affine memory accesses.
     This fundamentally contradicts assumptions that these tools rely on and is not merely an implementation artifact.
-    Our IDL approach detects 60 idioms overall with the compile time cost shown in figure \autoref{tab:compiletimecost}.
+    Our IDL approach detects 60 idioms overall with the compile time cost shown in figure \Cref{tab:compiletimecost}.
     On average, the compilation time is increased by 82\%, which can be reduced further by optimizing the solver.
 
-    \autoref{detection-figure} shows the different idioms detected across
+    \Cref{detection-figure} shows the different idioms detected across
     the  benchmarks. We detect both scalar
     and histogram reductions as well as stencils, dense matrix operations
     and sparse matrix-vector multiplication.
@@ -959,7 +958,7 @@ Finally, we again replace the idiom code in the user's code with a call to the c
 \subsection{Runtime Coverage}
 
     To determine if the detected idioms are actually important,
-    \autoref{coverage-figure} shows the percentage of time spent in the detected
+    \Cref{coverage-figure} shows the percentage of time spent in the detected
     computational idiom.
     This data shows that either the detected idioms have a low runtime
     contribution or they dominate almost the entire execution.
@@ -1023,10 +1022,10 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 \addtolength{\tabcolsep}{+.3em}
 
 \paragraph*{Speedup vs. Sequential}
-\autoref{fig:speedup-figure} shows the end-to-end speedup obtained by accelerating idioms with heterogeneous APIs on a CPU, an integrated GPU, and an external GPU.
+\Cref{fig:speedup-figure} shows the end-to-end speedup obtained by accelerating idioms with heterogeneous APIs on a CPU, an integrated GPU, and an external GPU.
 All results include data transfer overhead to and from the GPUs.
 Here the best performing API is shown;
-\autoref{tab:detailed-results} provides detailed results  for all APIs. 
+\Cref{tab:detailed-results} provides detailed results for all APIs. 
 
 \begin{figure*}[t]
   \centering
@@ -1109,7 +1108,7 @@ We manually applied a straightforward lazy copying technique by flagging memory 
 As can be seen this runtime optimization is crucial for achieving high performance for these benchmarks.
 
 \paragraph*{API performance comparison}
-\autoref{tab:detailed-results} shows a breakdown of the performance of each API on each program and platform.
+\Cref{tab:detailed-results} shows a breakdown of the performance of each API on each program and platform.
 Not all APIs
 target all platforms, {\emph{e.g.} cuSPARSE only targets NVIDIA GPUs and in the
 case of Halide, the current version that we have access to failed to generate
@@ -1125,7 +1124,7 @@ On the iGPU, clBLAS provides a better matrix-multiplication implementation than 
 On the external GPUs, the libraries provide better linear algebra implementations, while Lift performs well on stencils and reductions.
 
 \paragraph*{Speedup vs. Handwritten Parallel Implementations}
-\autoref{fig:speedup-figure-2} shows the performance of our approach compared to hand-written reference OpenMP and OpenCL implementations.
+\Cref{fig:speedup-figure-2} shows the performance of our approach compared to hand-written reference OpenMP and OpenCL implementations.
 For some of the benchmarks, the parallel versions are significantly modified using different algorithms beyond the domain of automation.
 We can see that for benchmarks where the handwritten implementation does not make algorithmic changes (\emph{CG}, \emph{histo}, \emph{lbm}, \emph{sgemm}, \emph{spmv}, \emph{stencil}), we achieve comparable -- or better -- performance.
 For four benchmarks (\emph{EP}, \emph{IS}, \emph{MG}, and \emph{tpacf}) it is beneficial to parallelize the entire application -- which is beyond the scope of this paper. Future work will examine outer loop parallelism as an idiom to exploit.

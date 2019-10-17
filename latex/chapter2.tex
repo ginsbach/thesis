@@ -260,13 +260,13 @@
     representations.
     This requires naming conventions for some of the basic features of
     SSA programs.
-    The remainder of this section adheres to \autoref{not:ssa} when referring to
+    The remainder of this section adheres to \Cref{def:ssa} when referring to
     these features.
     No specific representative of the class of SSA representations is chosen
     here.
 
 \begin{figure}[h]
-\begin{notation}{Static Single Assignment Function}{ssa}
+\begin{definition}{Features of Static Single Assignment Functions}{ssa}
     For the remainder of this section, some function $\mathcal F$ in SSA form is
     assumed fixed. 
     The following identifiers are then used to describe the features of this
@@ -282,7 +282,7 @@
     \item $|cst|$ is the number of unique constants $cst_1,\dots cst_{|cst|}$
           that are referenced as an operand of any of the instructions.
     \end{itemize}
-\end{notation}
+\end{definition}
 \end{figure}
 
     This notation fixes several decisions about the utilised model.
@@ -307,7 +307,7 @@
     but they can be treated separately in the control flow graph that is
     introduced later.
     All instruction arguments are therefore taken from the named sets introduced
-    in \autoref{not:ssa}.
+    in \Cref{def:ssa}.
 
     For each function, these sets can be statically determined and are finite.
     Therefore, a single integer is enough to encode each instruction argument as
@@ -492,7 +492,7 @@
 
 \subsection{Graph Projections}
 
-    Additional notation is introduced in \autoref{not:convenience} for
+    Additional notation is introduced in \Cref{def:convenience} for
     convenience.
     The representation of data flow and control flow as labeled multigraphs
     often contains more information than required.
@@ -667,12 +667,12 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     With a mathematical model of SSA programs in place, properties of such
     programs can now be formulated as constraint problems.
-    For this purpose, \autoref{not:modelrepresentations} is introduced first,
+    For this purpose, \Cref{def:modelrepresentations} is introduced first,
     followed by the actual definition of {\em SSA constraint problem}s in
     \Cref{def:cprob}.
 
 \begin{figure}[H]
-\begin{notation}{Set of SSA Models}{modelrepresentations}
+\begin{definition}{Set of SSA Models}{modelrepresentations}
     Given a specific SSA representation (LLVM, Hydrogen, MIR, $\dots$), then
     denote $F$ the set of all valid functions that can be expressed in it.
 
@@ -680,7 +680,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \begin{align*}
         \mathcal M := \{M\mid M \text{ is the SSA Model of some }\mathcal F\in F\}
     \end{align*}
-\end{notation}
+\end{definition}
 
 \begin{definition}{SSA constraint problem}{cprob}
     An SSA constraint problem $(V,C)$ is made up of a finite set of variables
