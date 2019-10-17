@@ -71,7 +71,7 @@
     the compiler are particularly pernicious.
     They tamper with the user programs, but can remain unnoticed and often only
     trigger in corner cases.
-    Ideally, we would like a simpler way of implementing such analysis that
+    Ideally, there would be a simpler way of implementing such analysis that
     reduces boiler-plate code and opens the way for new compiler optimisation
     innovation.
 
@@ -192,8 +192,8 @@ End
     The validity of these solutions is demonstrated in the middle row of the
     figure ({\bf e}-{\bf f}).
     Subsituting the variables in the CAnDL program with the concrete
-    instances from the solutions, we can verify the individual atomic
-    constraints one by one:
+    instances from the solutions, the individual atomic constraints can be
+    verified one by one:
     \begin{itemize}
     \item \texttt{\%4} and \texttt{\%6} are function calls and their first
           argument (the function to be called) is \texttt{@sqrt}.
@@ -312,7 +312,6 @@ End
     followed by the higher level constructs.
 
 \subsection{Atomic Constraints}
-
 
 \begin{figure}[t]
   \centering
@@ -605,8 +604,8 @@ End
     equivalent programs.
     Both programs specify an addition of four values, first adding pairwise and
     then adding the intermediate results.
-    We can see in the first listing that a {\it formula} for the addition of two
-    values is bound to the name {\tt Sum}.
+    In the first listing, a {\it formula} for the addition of two values is
+    bound to the name {\tt Sum}.
     This is then included three times in another {\it formula} names
     {\tt SumOfSums}.
     Using the optional grammatical constructs, the formula operates on a
@@ -641,11 +640,11 @@ End
     are constraint to contain all of the data dependences of \texttt{ins}.
     The first argument of \text{\it collect} specifies the name of an index
     variable that is used to detect which variables belong to the collected set.
-    In this example we want all solutions of \texttt{arg[i]} for a given value
-    of \texttt{ins}.
+    In this example, solutions of \texttt{arg[i]} for a given value
+    of \texttt{ins} are identified.
     The second argument gives an upper bound to the amount of collected
-    variables, in this case we leave it unspecified by using the symbol
-    \texttt{N}.
+    variables.
+    It is left unspecified in this case by using the symbol \texttt{N}.
 
 \begin{figure}[ht]
 \begin{lstlisting}[language=CAnDL]
@@ -659,37 +658,37 @@ End
 \label{fig:simplecollect}
 \end{figure}
 
-    We can now extend this example to show how {\it collect} can be used to
+    This example can now to extended to show how {\it collect} can be used to
     implement quantifiers.
-    Consider that we want to detect instructions with only floating point data
-    dependences.
+    Consider that the aim is to detect instructions with only floating point
+    data dependences.
     This involves the $\forall$ quantifier, as it is equivalent to
     the following equation.
     \begin{align}
         \forall v\colon\ v\in I.\text{args}\implies\text{data\_type}(v)=\text{float}
     \label{fig:implication}
     \end{align}
-    We can rewrite this to an equivalent formulation on sets:
+    This can be rewritten to an equivalent formulation on sets:
     \begin{align*}
         S_1:= \{v\mid v\in I.\text{args}\}\subset S_2:={}\{v\mid\text{data\_type}(v)=\text{float}\}.
     \end{align*}
-    Now we can apply the following equivalences:
+    The following equivalences can now be applied:
     \begin{align*}
         S_1\subset S_2\iff S_1 = S_1\cap S_2\iff S=S_1\land S=S_1\cap S_2\text{ for some set }S.
     \end{align*}
-    This means that if we constrain a set $S$ to be equal to both $S_1$ and
+    This means that if a set $S$ is constrained to be equal to both $S_1$ and
     $S_1\cap S_2$ at the same time, the constraints are satisfiable if and only
     if the implication in \autoref{fig:implication} holds.
 
     This condition can be expressed in CAnDL, as is shown in
     \autoref{fig:collectexample}.
-    With the first {\it collect} statement in line 3, we constrain the set
-    \texttt{arg} to be equal to $S_1$ and with the second one in lines 4-5 we
-    constrain it to be $S_1\cap S_2$ as well.
-    Note that we were from the onset only interested in the values that qualify
-    for \texttt{ins}.
+    With the first {\it collect} statement in line 3, the set \texttt{arg} is
+    constrainted to be equal to $S_1$ and with the second one in lines 4-5, it
+    is constrained to be $S_1\cap S_2$ as well.
+    Note that only the values that qualify for \texttt{ins} were of interested
+    initially.
     The set \texttt{arg} was only introduced to further constraint \texttt{ins},
-    not because we actually wanted to know the values that it contains.
+    not because its contents are necessarily of interest themselves.
 
 \begin{figure}[ht]
 \begin{lstlisting}[language=CAnDL]
@@ -904,8 +903,8 @@ Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show t
     This gui is shown in \autoref{fig:gui}, the example is from one of the use
     cases presented in \autoref{sec:casestudies}.
 
-    In the left column, we can see part of a C program from the PolyBench
-    benchmark suite, which implements a two-dimensional Jacobi stencil.
+    In the left column,  part of a C program from the PolyBench benchmark suite
+    is visible, which implements a two-dimensional Jacobi stencil.
     The gui is configured to look for static control flow regions (SCoPs), as
     described later in one of the use cases.
     The user has clicked the ``analyze'' button, which triggered the analysis to
