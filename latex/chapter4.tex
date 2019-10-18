@@ -936,24 +936,28 @@ Constraint LoopWithOnlyArrayAccesses
 Constraint SimpleAddition
 ( opcode{addition} = add
 ([$\tt \land$]) {addition}.args[0] = {left}
-([$\tt \land$]) {addition}.args[1] = {right})
-End
+([$\tt \land$]) {addition}.args[1] = {right}) End
 \end{lstlisting}
 \begin{lstlisting}[language=C++]
+// Step 1: Instantiate Atomic Constraints
 auto constr0 = make_shared<AddInstruction>(model);
 auto constr1 = make_shared<FirstArgument> (model);
 auto constr2 = make_shared<SecondArgument>(model);
+// Step 2: Compose Higher-Level Constraints
 auto constr3 = make_shared<Conjunction>(
                    constr0,
                    select<0>(constr1),
                    select<0>(constr2));
-
+// Step 3: Assemble Backtracking Solution
 vector<pair<string,shared_ptr<BacktrackingPart>>> result(3);
 result[0] = make_pair("addition", constr3);
 result[1] = make_pair("left",     select<1>(constr1));
 result[2] = make_pair("right",    select<1>(constr2));
 \end{lstlisting}
-\caption{C++ source code generation}
+\caption{C++ code generation: The code is generated to first instantiate
+         atomic constraints, then compose higher-level constructs and
+         finally assemble a backtracking solution for the solver.
+         \parfillskip=0pt}
 \label{fig:codegen}
 \end{figure}
 
@@ -963,7 +967,6 @@ result[2] = make_pair("right",    select<1>(constr2));
     an object of a corresponding class:
     In this case, the three involved atomic constraints are implemented by
     \texttt{AddInstruction}, \texttt{FirstArgument} and \texttt{SecondArgument}.
-    For constraints that 
     These objects are instantiated as shared pointers.
 
     The compiler then generates similar objects for the
@@ -977,7 +980,7 @@ result[2] = make_pair("right",    select<1>(constr2));
     Those constraint classes that implement constraints on a single variable
     directly implement the \texttt{BacktrackingPart} interface introduced in
     \Cref{cppsolver}.
-    In this example, this is true for \texttt{AddInstruction} and
+    In the example, this applies to \texttt{AddInstruction} and
     \texttt{Conjunction}.
     For more complex constraints, the \texttt{select<n>} template is used to
     specify which variable of a constraint is being considered.
@@ -985,44 +988,50 @@ result[2] = make_pair("right",    select<1>(constr2));
     referring to the \texttt{addition} variable, and to then pass them as
     arguments to the conjunction.
 
-    Finally, the generated objects are inserted into a vector together with the
+    Finally, the generated objects are inserted into a vector, together with the
     corresponding variable names.
-    This vector corresponds to the backtracking solution of the entire
-    constraint problem and is then passed to the solver, which is implemented
-    as in \Cref{cppsolver}.
+    The variables are in the order of appearance in the CAnDL code.
+    This vector corresponds to the backtracking solution of the constraint
+    problem and is passed to the solver.
 
 \begin{figure*}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/visual_gui2.png}
-\caption{Interactive CAnDL test tool}
-\medskip
-\small
-Left hand panel shows a SCoP in Polybench jacobi-2d, the right hand panel show the corresponding constraint solution
+\includegraphics[width=0.98\textwidth]{figures/visual_gui2.png}
+\caption{Interactive CAnDL test tool: The left hand panel shows a Static Control
+        Part (SCoP) in Polybench jacobi-2d, the right hand panel shows the
+        constraint solutions found by the solver.
+        \parfillskip=0pt}
 \label{fig:gui}
 \end{figure*}
 
 \subsection{Developer Tools}
 
-    CAnDL makes writing compiler analysis passes easier, but reasoning about the
-    semantics of compiler IR still remains difficult and the correctness of
-    CAnDL programs can only be guaranteed with thorough testing.
-    It is important to keep in mind that CAnDL is targeted at expert compiler
-    developers.
+    CAnDL simplifies the construction of compiler analysis functionaliy
+    drastically, but reasoning about the semantics of compiler intermediate
+    representation still remains difficult.
+    The solver detects whatever the programmer specifies, without any additional
+    effort, but it is difficult to ascertain that the CAnDL code actually
+    specifies the structures that the programmer intended.
+    Generally, the correctness of CAnDL programs can only be guaranteed with
+    thorough testing, and it is important to keep in mind that CAnDL is targeted
+    at expert compiler developers.
 
-    In order to make debugging of CAnDL programs more feasible, several
-    supporting tools can be used.
+    In order to make the debugging of CAnDL programs more feasible, 
+    supporting tools are provided.
     Most importantly, this includes an interactive gui, where developers can
-    test out corner cases of CAnDL programs to find false positives and false
-    negatives.
-    This gui is shown in \Cref{fig:gui}, the example is from one of the use
+    test out corner cases of their CAnDL programs to find false positives and
+    false negatives.
+    This gui is shown in \Cref{fig:gui}, with an example from one of the use
     cases presented in \Cref{sec:casestudies}.
 
-    In the left column,  part of a C program from the PolyBench benchmark suite
+    In the left half, part of a C program from the PolyBench benchmark suite
     is visible, which implements a two-dimensional Jacobi stencil.
-    The gui is configured to look for static control flow regions (SCoPs), as
-    described later in one of the use cases.
+    The gui was configured to look for static control regions (SCoPs), as
+    described later.
     The user has clicked the ``analyze'' button, which triggered the analysis to
-    run and prints the results in the right column.
+    run by invoking the modified clang compiler.
+    The gui then read the report file, and printed the results in the right
+    hand part of the figure.
 
     The solver found a SCoP in the IR code (corresponding to lines 459-468 of
     the C program).
