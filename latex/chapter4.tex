@@ -320,20 +320,20 @@ End
     syntax & SSA model formulation \\
     \hline
     \hline
-    $\text{\bf data\_type}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ &  $(x,s)\in T_\mathcal F$\\
+    $\text{\bf data\_type}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ &  $(s,x)\in T_\mathcal F$\\
     \hline
     $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf literal}$ &  $x\in C_\mathcal F^*$\\
     $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf argument}$ & $x\in P_\mathcal F^*$\\
     $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf instruction}$ & $x\in I_\mathcal F^*$\\
     \hline
-    $\text{\bf opcode}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(x,s)\in I_\mathcal F$\\
+    $\text{\bf opcode}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(s,x)\in I_\mathcal F$\\
     \hline
-    $\text{\bf function\_name}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(x,\text{!name=}s)\in T_\mathcal F$\\
+    $\text{\bf function\_name}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(\text{!name=}s,x)\in T_\mathcal F$\\
     \hline
   \end{tabular}
   \caption{The simplest atomic constraints operate on a single variable and
            check element-of properties for the different sets in the SSA model.
-           Function names are accommodated in $T_\mathcal F$.}
+           Function names are accommodated in $T_\mathcal F$.\parfillskip=0pt}
   \label{onevaratomics}
 \end{figure}
 
@@ -344,10 +344,10 @@ End
     syntax & SSA model formulation \\
     \hline
     \hline
-    $\text{\it variable}\text{\bf.args[}\left<\text{\bf n}\right>\text{\bf]}\ \text{\bf =}\ \text{\it variable}$ & $(y,x,n)\in DFG_\mathcal F$\\
+    $\text{\it variable}\text{\bf.args[}\left<\text{\bf n}\right>\text{\bf]}\ \text{\bf =}\ \text{\it variable}$ & $(n,y,x)\in DFG_\mathcal F$\\
     $\text{\it variable}\ \text{\bf $\in$}\ \text{\it variable}\text{\bf .args}$ & $(x,y)\in DFG_\mathcal F^*$\\
     \hline
-    $\text{\it variable}\text{\bf.successors[}\left<\text{\bf n}\right>\text{\bf]}\ \text{\bf =}\ \text{\it variable}$ & $(x,y,n)\in CFG_\mathcal F$\\
+    $\text{\it variable}\text{\bf.successors[}\left<\text{\bf n}\right>\text{\bf]}\ \text{\bf =}\ \text{\it variable}$ & $(n,x,y)\in CFG_\mathcal F$\\
     $\text{\it variable}\ \text{\bf $\in$}\ \text{\it variable}\text{\bf .successors}$ & $(y,x)\in CFG_\mathcal F^*$\\
     \hline
     $\text{\it variable}\ \text{\bf =}\ \text{\it variable}$ & $x=y$\\
@@ -356,17 +356,18 @@ End
   \end{tabular}
   \caption{The second class of atomic constraints operate on pairs of variables.
            The constraints check for graph edges in the
-           data flow and control low graphs, or simply for shallow equivalence.}
+           data flow and control low graphs, or simply for shallow equivalence.
+           \parfillskip=0pt}
   \label{twovaratomics}
 \end{figure}
 
-    Based on the model from \Cref{chapter:theory}, CAnDL provides a wide
+    Based on the SSA model from \Cref{chapter:theory}, CAnDL provides a wide
     range of atomic constraints.
-    The most simple group are those that operate on only a single variable,
+    The simplest group are those that operate on only a single variable,
     listed in \Cref{onevaratomics}.
     They operate immediately on the underlying mathematical structures, testing
     element-of properties of the sets in order to constrain data types,
-    instrution opcodes etc.
+    instruction opcodes etc.
     At the bottom of the list is the {\bf function\_name} constraint,
     which is particular.
     Function names are not a fundamental component of the SSA model from
@@ -404,9 +405,9 @@ End
 
     On top of the atomic constraints that operate immediately on the sets of
     the mathematical model, there are a list of constraints that are based on
-    based on graph properties.
+    graph properties.
     These include dominance relationships and the interaction of data flow and
-    control flow in $\Phi$ nodes.
+    control flow for $\Phi$-instructions.
 
 %    \begin{align*}
 %        \text{\bf control\_origin}&\ \text{\it variable}\\
@@ -414,10 +415,10 @@ End
 %    \end{align*}
 %    The value is an origin of control (function entry) or data (function argument, {\tt load} instruction, inpure function call).
 
-\subsubsection*{Phi Nodes}
+\subsubsection{Phi Nodes}
 
-    The following syntax is used to express the condition that a value reaches a
-    $\Phi$ node via a specific jump instruction:
+    The following syntax is used to express the condition that a value has to
+    reach a $\Phi$-instruction via a specific jump instruction:
 \begin{figure}[h]
     \centering
     \begin{tabular}{|c|}
@@ -433,18 +434,19 @@ End
     reached.
     Using the SSA model, this is equivalent to the following:
     \begin{align*}
-        (C,phi)\in I_\mathcal F\mathrel\land{}&(B,h(C))\in CFG_\mathcal F\mathrel\land(A,C,n)\in DFG_\mathcal F,\\
-            \text{where }h(C):={}&min\{c\mid (x,phi)\in I_\mathcal F\text{ for all }c\leq x\leq C\}\\
-            \text{and }n:={}&\{b\leq B\mid (b,h(C))\in CFG_\mathcal F\}.
+        (C,phi)\in I_\mathcal F\mathrel\land{}&(B,h(C))\in CFG_\mathcal F^*\mathrel\land(A,C,n)\in DFG_\mathcal F,\\
+            \text{where }h(C):={}&min\{c\mid (phi,x)\in I_\mathcal F\text{ for all }c\leq x\leq C\}\\
+            \text{and }n:={}&\{b\leq B\mid (b,h(C))\in CFG_\mathcal F^*\}.
     \end{align*}
-    Firstly, $C$ is a $\Phi$ node.
-    Secondly, $B$ has a control flow edge to the basic block that $C$ is in.
+    Firstly, $C$ is a $\Phi$-instruction.
+    Secondly, $B$ has a control flow edge to the basic block containing $C$.
     The first instruction of this basic block is identified as $h(C)$, to
-    account for the possibility of more than one $\Phi$ node in the block.
-    Thirdly, $A$ is the $n$-th argument of $C$, where $n$ is the index of $B$ in
-    the list of jump instructions targeting $h(C)$.
+    account for the possibility of more than one $\Phi$-instruction in the
+    basic block.
+    Thirdly, $A$ is the $n$th argument of $C$, where $n$ is the index of $B$ in
+    the list of jump instructions that target $h(C)$.
 
-\subsubsection*{Graph Domination}
+\subsubsection{Graph Domination}
 
     In order to express domination in the control flow graph, the following
     syntax is used:
@@ -466,7 +468,9 @@ End
     entry node to $B$ must go through $A$.
     Strict domination additionally requires that $A$ and $B$ are distinct.
 
-    Another generalised graph domination is given by the following:
+    Completing the domination constraints, there are corresponding
+    post-dominator versions {\bf post\_domination} and
+    {\bf strict\_post\_domination}, as well as the following generalisation:
 \begin{figure}[h]
     \centering
     \begin{tabular}{|c|}
@@ -479,7 +483,7 @@ End
     \noindent
     This constraint is similar to a standard control flow domination, but
     instead of taking paths from the control flow origin, a third variable is
-    used for parameterisation. 
+    used for parametrisation. 
 %    \begin{align*}
 %        \text{\bf calculated\_from(}\text{\it varlist}\text{\bf,}\text{\it varlist}\text{\bf,}\text{\it variable}\text{\bf)}
 %    \end{align*}
@@ -492,12 +496,13 @@ End
 %    We will see later how this is useful to specify kernel functions for
 %    e.g.\ stencil calculations.
 
-\subsubsection*{Additional Atomic Constraints}
+\subsubsection{Additional Atomic Constraints}
 
-    The set of {\it atomic}s that CAnDL supports is easily extensible.
-    This will be further explored in later chapters.
-    Possible additions include constraints on function attributes, value
-    constraints on literals etc.
+    The set of atomic constraints that CAnDL supports is easily extensible.
+    Some possible additions include constraints on function attributes and value
+    constraints on literals.
+    This will be further explored in the later
+    \Cref{chapter:reductions,chapter:idioms}.
 
 \subsection{Range Constraints}
 
@@ -517,14 +522,15 @@ End
 \end{lstlisting}
 \vspace{-0.3cm}
 \caption{Example for the expansion of range constraints in CAnDL:
-         Range based expresions can be ``unrolled'' manually, the two
-         specifications are identical.}
+         The specification at the top can be ``unrolled'' manually,
+         resulting in the equivalent, but more verbose, specification below.
+         \parfillskip=0pt}
 \label{fig:forall}
 \end{figure}
 
-    Building on top of atomics and the fundamental conjunction and disjunction
-    constructs, there are range based versions that operate on arrays of
-    variables:
+    Building on top of the atomic constraints and the fundamental conjunction
+    and disjunction constructs, there are range based versions that operate on
+    arrays of variables:
 \begin{figure}[h]
   \centering
   \begin{tabular}{|c|}
@@ -539,19 +545,19 @@ End
     These constructs allow the replication of a constraint formula over a range
     of indices.
     This is demonstrated in \Cref{fig:forall}, which shows two equivalent
-    CAnDL programs, the first one formulated with \texttt{foreach} and the
+    CAnDL programs, the first one formulated with {\it foreach} and the
     second one without.
     In both cases, the program specifies an array of five variables with data
     flow from each element to the next.
-    This shows how \texttt{foreach} can be expanded by duplicating the contained
+    This shows how {\it foreach} can be expanded by duplicating the contained
     formula, with logical conjunctions ($\land$) binding the replicas of the
     formula together.
-    Otherwise identical, the \texttt{forany} construct invokes logical
+    Otherwise identical, the {\it forany} construct invokes logical
     disjunctions ($\lor$) instead.
 
     Although variable identifiers are black boxes to atomic constraints, their
-    syntactic structure is relevant to range constructs, when indices are
-    evaluated at CAnDL compile time.
+    syntactic structure is clearly relevant to range expressions.
+    Variable identifiers are constructed as follows:
 
 \begin{figure}[h]
   \centering
@@ -569,7 +575,7 @@ End
     They can contain simple index calculations to support the range constructs,
     as well as a hierarchical structure.
     This hierarchical structure corresponds to the modularity capabilities of
-    CAnDL that ar eintroduced in the next section.
+    CAnDL that are introduced in the next section.
 
 \subsection{Modularity}
 
@@ -580,50 +586,53 @@ End
         \begin{tabular}{|c|}
             \hline
             $\text{\bf include}\ \left<\text{\bf s}\right>
-                                [\text{\bf (}\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \{\text{\bf ,}\ \text{\it variable}\ \text{\bf ->}\ \text{\it variable}\}\text{\bf )}]
-                                [\text{\bf @}\ \text{\it variable}]$\\
+                                [\ \text{\bf (}\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \{\ \text{\bf ,}\ \text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \}\ \text{\bf )}\ ]\ 
+                                [\ \text{\bf @}\ \text{\it variable}\ ]$\\
             \hline
         \end{tabular}
     \end{figure}
 
     \noindent
-    Note that the syntax in square brackets is optional and the syntax in curly
-    brackets can be repeated.
-    The basic version of \texttt{\it include}, without the optional structures,
-    is simple.
-    It copies the {\it formula} that corresponds to the identifier verbatim into
-    another {\it formula}.
-    If $[\text{\bf @}\ \text{\it variable}]$ is specified, then all the variable
-    names of the inserted constraint formula are prefixed with the given
-    variable name, separated with a dot.
-    The other optional syntax is used to rename individual {\it variable}s in
-    the included {\it formula}.
+    Note that the syntax in square brackets ``[]'' is optional and the syntax in
+    curly brackets ``\{\}'' may be repeated.
+    The basic version of \texttt{\it include}, using none of the optional
+    structures, is simple.
+    It copies the formula that corresponds to the identifier verbatim into
+    the current specification.
+    If ``$[\text{\bf @}\ \text{\it variable}]$'' is specified, then all the
+    variable names of the inserted constraint formula are prefixed with the
+    given variable name, separated with a dot.
+    The other optional syntax is used to rename individual variables in
+    the included formula.
+    If both optional constructs are used together, then the prefix is only
+    applied to variables that are not renamed.
 
     \Cref{fig:inheritsandrenameandrebase} illustrates this with two
-    equivalent programs.
+    equivalent constraint programs.
     Both programs specify an addition of four values, first adding pairwise and
     then adding the intermediate results.
-    In the first listing, a {\it formula} for the addition of two values is
+    In the first listing, a formula for the addition of two values is
     bound to the name {\tt Sum}.
-    This is then included three times in another {\it formula} names
-    {\tt SumOfSums}.
+    This is then included three times in another formula named {\tt SumOfSums}.
     Using the optional grammatical constructs, the formula operates on a
-    different set of {\it variable}s each time such that the third addition
+    different set of variables each time, such that the third addition
     takes the results of the previous two as input.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 \input{latex/figure_candlinheritance}
+\caption{Example for the expansion of {\it include} constraints:
+         Both specifications are equivalent.\parfillskip=0pt}
 \label{fig:inheritsandrenameandrebase}
 \end{figure}
 
 \subsubsection{Collect}
 
     The \text{\it collect} construct is used to capture all possible solutions
-    of a given formula.
-    It is used to implement constraints that require the logical $\forall$
-    quantifier.
-    For example, it can be used to guarantee that all memory accesses in a loop
-    use affine index computations.
+    of a given formula in variables.
+    It is used to implement constraints that require the logical
+    $\forall$ (``for all'') quantifier.
+    For example, it can guarantee that all memory accesses in a loop use affine
+    index computations.
     The grammar is simple but the semantics require some elaboration.
 \begin{figure}[H]
     \centering
@@ -636,7 +645,8 @@ End
 
     \noindent
     In \Cref{fig:simplecollect}, the variables \texttt{arg[0],\dots,arg[N-1]}
-    are constraint to contain all of the data dependences of \texttt{ins}.
+    are constrained to contain all of the direct data dependences of
+    \texttt{ins}.
     The first argument of \text{\it collect} specifies the name of an index
     variable that is used to detect which variables belong to the collected set.
     In this example, solutions of \texttt{arg[i]} for a given value
@@ -645,35 +655,35 @@ End
     variables.
     It is left unspecified in this case by using the symbol \texttt{N}.
 
-\begin{figure}[ht]
+\begin{figure}[t]
 \begin{lstlisting}[language=CAnDL]
 Constraint CollectArguments
 ( ir_type{ins} = instruction
 ([$\tt \land$]) collect i N ({arg[i]} ([$\tt \in$]) {ins}.args))
 End
 \end{lstlisting}
-\vspace{-0.3cm}
-\caption{Simple collect example in CAnDL}
+\caption{Simple {\it collect} example in CAnDL: All direct data dependences of
+         {\tt ins} are collected.}
 \label{fig:simplecollect}
 \end{figure}
 
-    This example can now to extended to show how {\it collect} can be used to
+    This example is now extended to show how {\it collect} can be used to
     implement quantifiers.
     Consider that the aim is to detect instructions with only floating point
-    data dependences.
+    direct data dependences.
     This involves the $\forall$ quantifier, as it is equivalent to
-    the following equation.
+    the following equation:
     \begin{align}
-        \forall v\colon\ v\in I.\text{args}\implies\text{data\_type}(v)=\text{float}
-    \label{fig:implication}
+        \forall x\colon\ (x,ins)\in DFG_\mathcal F^*\implies(float,x)\in I_\mathcal F
+        \label{fig:implication}
     \end{align}
     This can be rewritten to an equivalent formulation on sets:
     \begin{align*}
-        S_1:= \{v\mid v\in I.\text{args}\}\subset S_2:={}\{v\mid\text{data\_type}(v)=\text{float}\}.
+        S_1:= select(ins,rev(DFG_\mathcal F^*))\subset S_2:=select(float,I_\mathcal F).
     \end{align*}
     The following equivalences can now be applied:
     \begin{align*}
-        S_1\subset S_2\iff S_1 = S_1\cap S_2\iff S=S_1\land S=S_1\cap S_2\text{ for some set }S.
+        S_1\subset S_2\iff S_1 = S_1\cap S_2\iff S=S_1\land S=S_1\text{ and }S_2\text{ for some set }S.
     \end{align*}
     This means that if a set $S$ is constrained to be equal to both $S_1$ and
     $S_1\cap S_2$ at the same time, the constraints are satisfiable if and only
@@ -682,12 +692,13 @@ End
     This condition can be expressed in CAnDL, as is shown in
     \Cref{fig:collectexample}.
     With the first {\it collect} statement in line 3, the set \texttt{arg} is
-    constrainted to be equal to $S_1$ and with the second one in lines 4-5, it
+    constrained to be equal to $S_1$ and with the second one in lines 4-5, it
     is constrained to be $S_1\cap S_2$ as well.
     Note that only the values that qualify for \texttt{ins} were of interested
     initially.
-    The set \texttt{arg} was only introduced to further constraint \texttt{ins},
-    not because its contents are necessarily of interest themselves.
+    The range of variables \texttt{arg} was only introduced to further restrict
+    \texttt{ins}, not because its contents are necessarily of interest
+    themselves.
 
 \begin{figure}[ht]
 \begin{lstlisting}[language=CAnDL]
@@ -699,14 +710,15 @@ Constraint FloatingPointInstruction
 End
 \end{lstlisting}
 \vspace{-0.3cm}
-\caption{Collect Example in CAnDL}
+\caption{{\it Collect} is used to constrain {\tt ins} to be calculated from only
+         floating point values.}
 \label{fig:collectexample}
 \end{figure}
 
     The exact same approach can be used to e.g. restrict all array accesses in a
     loop to be affine in the loop iterators:
     First {\it collect} all memory accesses
-    (i.e.\ all \texttt{load} and \texttt{store} instrutions) and then use
+    (i.e.\ all \texttt{load} and \texttt{store} instructions) and then use
     another {\it collect} statement to stipulate affine calculations for the
     indices.
 

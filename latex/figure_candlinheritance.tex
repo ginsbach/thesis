@@ -1,4 +1,4 @@
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.984}\ttfamily]
 Constraint Sum
 ( opcode{out} = add
 ([$\tt \land$]) {out}.args[0] = {in1}
@@ -10,7 +10,7 @@ Constraint SumOfSums
 ([$\tt \land$]) include Sum({sum1.out}->{in1},{sum2.out}->{in2}))
 End
 \end{lstlisting}
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.984}\ttfamily]
 Constraint SumOfSums
 ( opcode{sum1.out} = add
 ([$\tt \land$]) {sum1.out}.args[0] = {sum1.in1}
@@ -23,5 +23,3 @@ Constraint SumOfSums
 ([$\tt \land$]) {out}.args[1] = {sum2.out})
 End
 \end{lstlisting}
-\vspace{-0.3cm}
-\caption{Expansion of Inheritance in CAnDL}
