@@ -1046,8 +1046,8 @@ result[2] = make_pair("right",    select<1>(constr2));
 \section{Case Studies}
 \label{sec:casestudies}
 
-    The usefulness of CAnDL was evaluated on three real life use cases.
-    First, it was used for detecting opportunities to apply a simple peephole
+    The usefulness of CAnDL was evaluated with three different use cases.
+    Firstly, it was used for detecting opportunities to apply a simple peephole
     optimisation.
     Secondly, CAnDL was applied to graphics shader code optimisation.
     Finally, the detection of static control flow parts (SCoPs) that are
@@ -1055,7 +1055,7 @@ result[2] = make_pair("right",    select<1>(constr2));
     Where possible, the evaluation compares the number of lines of CAnDL code,
     the achieved program coverage and performance against prior approaches.
 
-\subsection{Simple Optimizations}
+\subsection{Case Study 1: Simple Optimisations}
 
 \begin{figure}[t]
 \begin{lstlisting}[language=CAnDL]
@@ -1177,7 +1177,7 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\ \hline
     evaluation of the performance or code size impact vs {\tt instcombine} is
     unlikely to yield significant results.
 
-\subsection{Graphics Shader Optimizations}
+\subsection{Case Study 2: Graphics Shader Optimisations}
 
 \begin{figure}[t]
 \begin{lstlisting}[language=CAnDL]
@@ -1192,70 +1192,94 @@ Constraint FloatingPointAssociativeReorder
   ([$\tt \land$]) {nonhoisted[j]} != {hoisted[i]} forall  i=0..N))
 End
 \end{lstlisting}
-\vspace{-0.3cm}
-\caption{CAnDL code for vectorized multiplication chains}
+\caption{CAnDL code for multiplication chains involving genuine vectors and
+         hoisted scalars:
+         After separating the two cases, some of the multiplications can be
+         performed on scalars instead.\parfillskip=0pt}
 \label{fig:Lewis}
 \end{figure}
 
     Graphics computations often involve arithmetic on vectors of single
-    precision floating point values that represent either vertex positions in
-    space or color values.
-    Common graphics shader compilers utilize the LLVM framework internally.
-    The LunarGLASS project was used in this work as an open source
-    implementation of LLVM for graphics shaders.
-
-    There are opportunities for associative reordering that LLVM misses.
-    In general purpose code, such reordering can be problematic due to floating
-    point computation artifacts.
-    However, this is not a problem in the domain of graphics processing.
-    Under specific circumstances, associative reordering within computations
-    that mixes vector and scalar arithmetic can result in real performance
-    improvements.
+    precision floating point values, which can represent either vertex positions
+    in space or colour values.
+    Common graphics shader compilers utilise the LLVM framework internally.
+    The LunarGLASS project \citep{lunarglass} was used in this work as an open
+    source implementation of LLVM for graphics shaders.
 
 %    For real shader code, LLVM misses an opportunity for the associative
 %    reordering of floating point computations.
 %    Although such reordering is problematic in general, it is applicable in the
 %    domain of graphics processing.
 
-    There are often products of multiple floating point vectors, where several
-    of the factors are actually scalars that were hoisted to vectors.
+    In real shader code, there are often element wise products of multiple
+    floating point vectors, where several of the factors are actually scalars
+    that were hoisted to vectors.
     By reordering the factors and delaying the hoisting to vectors, some of the
-    vector products can be simplified to scalar products, as shown in the
-    following equation.
+    element wise vector products can be simplified to products on scalars, as
+    shown by example in the following equation.
     \begin{align*}
         \vec x={}&\vec a*_v\vec b*_v\text{vec3}(c)*_v\vec d*_v\text{vec3}(e)\\
         ={}&\text{vec3}(c*e)*\vec a*_v\vec b*_v\vec d
     \end{align*}
 
-    The required analysis functionality for this optimization was implemented
-    with CAnDL, as shown in \Cref{fig:Lewis}.
-    The \mbox{included} \texttt{VectorMulChain} subprogram discovers chains of
-    floating point vector multiplications in the IR code and uses the variables
-    \texttt{factors} and \texttt{partials} such that the following equations
-    hold
-    \begin{align*}
-        \text{\tt partials}[0] &= \text{\tt factors}[0]\\
-        \text{\tt partials}[i+1] &= \text{\tt partials}[i]\times\text{\tt factors}[i+1].
-    \end{align*}
-    The \texttt{VectorMulChain} program furthermore guarantees that this is a
-    chain of maximal length by checking that neither of the first two factors
-    are multiplications and the last factor is not used in any multiplication.
-    \texttt{ScalarHoist} detects the hoisting of scalars to vectors and this is
-    used to collect all hoisted factors into the array \texttt{hoisted}.
-    In a last step, all other factors are collected into the array
-    \texttt{nonhoisted}.
+    For general purpose code, such reordering can be problematic.
+    This is due to computation artefacts in floating point arithmetic.
+    However, this is not a problem in the domain of graphics processing.
+    Instead, associative reordering can result in real performance improvements
+    when combined with lowering to scalar multiplications as discussed above.
 
-    The corresponding transformation pass simply generates all the appropriate
-    scalar and vector multiplications and replaces the old result with this
-    newly generated one.
-    We evaluated the performance impact on the CFXBench 4.0 on the  Qualcomm
-    Adreno 530 GPU.
+    The required analysis functionality for this optimisation was implemented
+    with CAnDL, as shown in \Cref{fig:Lewis}.
+    Firstly, the specification includes \texttt{VectorMulChain} to detect 
+    chains of floating point vector multiplications.
+    In lines 4--6, all the factors that are hoisted from some scalar are
+    collected into the array {\tt hoisted}.
+    Correspondingly, all the other factors are collected into the array
+    {\tt nonhoisted} in lines 7--9.
+
+    {\tt VectorMulChain} and {\tt ScalarHoist} are themselves implemented as
+    CAnDL specifications.
+    {\tt VectorMulChain} discovers chains of floating point vector
+    multiplications in the IR code.
+    It is defined very similarly to {\tt SumChain} and {\tt MulChain}, which
+    were used in the previous case study.
+    It guarantees chains of maximal length by checking that neither of the first
+    two factors is a multiplication itself, and that the last factor is not used
+    in any multiplication.
+    \texttt{ScalarHoist} operates on the variables {\tt in} and {\tt out}, as
+    well as some internals.
+    It specifies that {\tt out} is a vector generated from {\tt in} by setting
+    all vector dimensions to the value of {\tt in}.
+    The implementation of this is very specific to LLVM and involves
+    combinations of the LLVM IR instruction {\tt insertelement} and
+    {\tt shufflevector}
+
+\subsubsection{Setup}
+
+    The CAnDL specification was applied to all fragment shaders in the
+    GFXBench 4.0 suite from \citet{gfxbench}.
+    A corresponding transformation pass was added to LLVM, which uses the
+    detected solutions to implement the described optimisation.
+    This is done by constructing the appropriate scalar and vector
+    multiplications from the arrays {\tt hoisted} and {\tt nonhoisted}, and then
+    replacing the result of the original vector multiplication chain with the
+    final multiplication in these newly generated instructions.
+    Standard dead code elimination automatically removes the remnants of the
+    original calculation.
+
+    The performance impact was evaluated on the Qualcomm Adreno 530 GPU.
+    To measure the baseline of benchmark performance, all shaders were
+    compiled with the default Qualcomm graphics stack.
+    They were then compiled with LunarGLASS, and the resulting LLVM IR was
+    optimised using CAnDL.
+    To evaluate the impact of this, the result was again passed through the
+    default graphics stack and the performance of the benchmarks measured.
 
 \subsubsection{Results}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{figures/qualcomm_plot.pdf}
+\includegraphics[width=0.66\linewidth]{figures/qualcomm_plot.pdf}
 \caption{Speedup on Qualcomm Adreno 530}
 \label{fig:qualcommspeedup}
 \end{figure}
@@ -1275,16 +1299,16 @@ Detected in GFX 4.0 & - & 19 \\ \hline
 \label{fig:candlshader}
 \end{figure}
 
-    The optimization was relevant to 8 of the fragment shaders in GFXBench 4.0.
-    The number of lines of code needed and the resulting performance impact are
-    shown in \Cref{fig:candlshader} and \Cref{fig:qualcommspeedup}.
-    A total of 19 opportunities for the optimization to be applied were
-    detected.
-    Although the performance impact was moderate with $1-4\%$ speedup on eight
+    There were 19 solutions to the specification across the benchmarks, and
+    the transformation had an impact on the performance of 8 fragment shaders.
+    The resulting performance impact is shown in \Cref{fig:qualcommspeedup}.
+    Evidently, there are opportunities for such associative reordering that
+    the default graphics stack misses.
+    Although the performance impact was moderate with 1--4\% speedup on eight
     of the fragment shaders, it shows how new analysis can be rapidly prototyped
     and evaluated with only a few lines of code.
 
-\subsection{Polyhedral SCoPs}
+\subsection{Case Study 3: Detection of Polyhedral SCoPs}
 
     The polyhedral model allows compilers to utilize powerful mathematical
     reasoning to detect parallelism opportunities in sequential code and to
