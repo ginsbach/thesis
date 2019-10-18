@@ -67,12 +67,12 @@ sqrt_fn = @sqrt
 {\bf(e)} Verification of first solution:
 \begin{lstlisting}[language=CAnDL,numbers=none,framexleftmargin=0pt,xleftmargin=0pt]
 ( opcode{%4} = call
-([$\tt \land$]) {%4}.args[0] = {@sqrt}
+([$\tt \land$]) {@sqrt} = {%4}.args[0]
 ([$\tt \land$]) function_name{@sqrt} = sqrt
-([$\tt \land$]) {%4}.args[1]  = {%3}
+([$\tt \land$]) {%3} = {%4}.args[1]
 ([$\tt \land$]) opcode{%3} = fmul
-([$\tt \land$]) {%3}.args[0] = {%0}
-([$\tt \land$]) {%3}.args[1] = {%0})
+([$\tt \land$]) {%0} = {%3}.args[0]
+([$\tt \land$]) {%0} = {%3}.args[1])
 \end{lstlisting}
 \end{minipage}
 \hfill
@@ -81,12 +81,12 @@ sqrt_fn = @sqrt
 {\bf(f)} Verification of second solution:
 \begin{lstlisting}[language=CAnDL,numbers=none,framexleftmargin=0pt,xleftmargin=0pt]
 ( opcode{%6} = call
-([$\tt \land$]) {%6}.args[0] = {@sqrt}
+([$\tt \land$]) {@sqrt} = {%6}.args[0]
 ([$\tt \land$]) function_name{@sqrt} = sqrt
-([$\tt \land$]) {%4}.args[1]  = {%5}
+([$\tt \land$]) {%5} = {%4}.args[1]
 ([$\tt \land$]) opcode{%5} = fmul
-([$\tt \land$]) {%5}.args[0] = {%1}
-([$\tt \land$]) {%5}.args[1] = {%1})
+([$\tt \land$]) {%1} = {%5}.args[0]
+([$\tt \land$]) {%1} = {%5}.args[1])
 \end{lstlisting}
 \end{minipage}
 \end{minipage}

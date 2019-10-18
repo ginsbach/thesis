@@ -108,12 +108,12 @@ approaches.
 \begin{lstlisting}[language=CAnDL]
 Constraint SqrtOfSquare
 ( opcode{sqrt_call} = call
-([$\tt \land$]) {sqrt_call}.args[0] = {sqrt_fn}
+([$\tt \land$]) {sqrt_fn} = {sqrt_call}.args[0]
 ([$\tt \land$]) function_name{sqrt_fn} = sqrt
-([$\tt \land$]) {sqrt_call}.args[1]  = {square}
+([$\tt \land$]) {square} = {sqrt_call}.args[1]
 ([$\tt \land$]) opcode{square} = fmul
-([$\tt \land$]) {square}.args[0] = {a}
-([$\tt \land$]) {square}.args[1] = {a})
+([$\tt \land$]) {a} = {square}.args[0]
+([$\tt \land$]) {a} = {square}.args[1])
 End
 \end{lstlisting}
 \caption{The left side of \Cref{fig:root} as specified in CAnDL\parfillskip=0pt}
@@ -344,10 +344,10 @@ End
     syntax & SSA model formulation \\
     \hline
     \hline
-    $\text{\it variable}\text{\bf.args[}\left<\text{\bf n}\right>\text{\bf]}\ \text{\bf =}\ \text{\it variable}$ & $(n,y,x)\in DFG_\mathcal F$\\
+    $\text{\it variable}\ \text{\bf =}\ \text{\it variable}\text{\bf.args[}\left<\text{\bf n}\right>\text{\bf]}$ & $(n,x,y)\in DFG_\mathcal F$\\
     $\text{\it variable}\ \text{\bf $\in$}\ \text{\it variable}\text{\bf .args}$ & $(x,y)\in DFG_\mathcal F^*$\\
     \hline
-    $\text{\it variable}\text{\bf.successors[}\left<\text{\bf n}\right>\text{\bf]}\ \text{\bf =}\ \text{\it variable}$ & $(n,x,y)\in CFG_\mathcal F$\\
+    $\text{\it variable}\ \text{\bf =}\ \text{\it variable}\text{\bf.successors[}\left<\text{\bf n}\right>\text{\bf]}$ & $(n,y,x)\in CFG_\mathcal F$\\
     $\text{\it variable}\ \text{\bf $\in$}\ \text{\it variable}\text{\bf .successors}$ & $(y,x)\in CFG_\mathcal F^*$\\
     \hline
     $\text{\it variable}\ \text{\bf =}\ \text{\it variable}$ & $x=y$\\
@@ -627,13 +627,13 @@ End
 
 \subsubsection{Collect}
 
-    The \text{\it collect} construct is used to capture all possible solutions
-    of a given formula in variables.
-    It is used to implement constraints that require the logical
-    $\forall$ (``for all'') quantifier.
-    For example, it can guarantee that all memory accesses in a loop use affine
-    index computations.
-    The grammar is simple but the semantics require some elaboration.
+    The \text{\it collect} construct captures all possible solutions of a given
+    formula.
+    It is used to implement constraints that require logical quantifiers
+    $\forall$ (``for all'') and $\exists$ (``there exists some'').
+%    For example, it can guarantee that all memory accesses in a loop use affine
+%    index computations.
+%    The grammar is simple but the semantics require some elaboration.
 \begin{figure}[H]
     \centering
     \begin{tabular}{|c|}
@@ -681,26 +681,19 @@ End
     \begin{align*}
         S_1:= select(ins,rev(DFG_\mathcal F^*))\subset S_2:=select(float,I_\mathcal F).
     \end{align*}
-    The following equivalences can now be applied:
-    \begin{align*}
-        S_1\subset S_2\iff S_1 = S_1\cap S_2\iff S=S_1\land S=S_1\text{ and }S_2\text{ for some set }S.
-    \end{align*}
-    This means that if a set $S$ is constrained to be equal to both $S_1$ and
-    $S_1\cap S_2$ at the same time, the constraints are satisfiable if and only
-    if the implication in \Cref{fig:implication} holds.
 
+    Using the equivalence
+    $S_1\subset S_2\iff S_1 = S_1\cap S_2$, this means that
+    if a set $S$ is constrained to be equal to both $S_1$ and $S_1\cap S_2$,
+    these constraints are satisfiable if and only if the implication in
+    \Cref{fig:implication} holds.
     This condition can be expressed in CAnDL, as is shown in
     \Cref{fig:collectexample}.
     With the first {\it collect} statement in line 3, the set \texttt{arg} is
     constrained to be equal to $S_1$ and with the second one in lines 4-5, it
     is constrained to be $S_1\cap S_2$ as well.
-    Note that only the values that qualify for \texttt{ins} were of interested
-    initially.
-    The range of variables \texttt{arg} was only introduced to further restrict
-    \texttt{ins}, not because its contents are necessarily of interest
-    themselves.
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \begin{lstlisting}[language=CAnDL]
 Constraint FloatingPointInstruction
 ( ir_type{ins} = instruction
@@ -715,56 +708,148 @@ End
 \label{fig:collectexample}
 \end{figure}
 
-    The exact same approach can be used to e.g. restrict all array accesses in a
+    The exact same approach can be used for much more complex analysis tasks.
+    For example, the final case study at the end of this chapter uses
+    {\it collect} statements to restrict all array accesses within a
     loop to be affine in the loop iterators:
-    First {\it collect} all memory accesses
-    (i.e.\ all \texttt{load} and \texttt{store} instructions) and then use
-    another {\it collect} statement to stipulate affine calculations for the
-    indices.
+    First {\it collect} all memory accesses in the loop
+    (i.e.\ all \texttt{load} and \texttt{store} instructions), and then use a
+    second {\it collect} statement to enforce affine calculations of the access
+    indices that are used by the address calculations for these instructions.
 
 \subsection{Expressing Larger Structures}
 
-    The modularity of CAnDL allows the creation of a library of building blocks
-    that are shared by multiple CAnDL programs.
-    This section will give an overview of how these can be defined.
+    The modularity of CAnDL allows for the creation of building blocks that are
+    used by multiple CAnDL specifications.
+    These form a standard library that enables higher-level programming
+    within CAnDL.
+    This section gives an overview of how some of these standard building
+    blocks are defined.
 
-    Important building blocks include control flow structures such as single
-    entry single exit regions and loops.
-    These are standard in compiler analysis and the implementation in CAnDL is
-    straightforward.
-    A for loop involves a comparison of the loop iterator with the end of the
-    iteration space.
-    In order to be valid, this value has to be determined before the loop is
-    entered, it isn't allowed to change from loop iteration to iteration.
-    This leaves it to be either a function argument, an actual constant or an
-    instruction that strictly dominates the loop entry.
-    This is expressed in \Cref{fig:localconstant}.
-    Note that this formula is to be included into larger CAnDL programs, as the
-    \texttt{begin} variable is under specified otherwise.
+    \Cref{fig:CAnDLSESE} gives the specification of single entry single exit
+    (SESE) regions.
+    Such regions are spanned by variables {\tt begin} and {\tt end}, with an
+    incoming control flow edge from {\tt precursor} to {\tt begin} (line 3) and
+    an outgoing control flow edge from {\tt end} to {\tt successor} (line 5).
+    Graph domination constraints in lines 8 and 7 guarantee that these are the
+    only entry and exit of the region.
+    Additional domination constraints in lines 6--7 and lines 10--13 make sure
+    that there are no jumps from outside the region into an instruction of the
+    region that is not {\tt begin}, and similarly that there are no early exits
+    of the region.
+    Finally, regions are restricted to align with basic block boundaries in
+    lines 2 and 4.
 
-\begin{figure}[ht]
-\begin{lstlisting}[language=CAnDL]
+    Natural loops are easily defined in CAnDL, as is visible in
+    \Cref{fig:CAnDLLoop}.
+    The specification includes {\tt SESE}, and adds only a single additional
+    constraint for the back edge of the loop in line~3.
+    Additional extensions to this specification are added to define more
+    restricted loop structures, such for loops.
+    This involves the identification of the loop iterator, the breaking
+    condition, and the corresponding iteration space boundaries.
+    In order to be a valid for loop, the end of the iteration space has to be
+    determined before the loop is entered.
+    This is expressed in \Cref{fig:localconstant}, restricting {\tt value}
+    to be either a function argument, a constant or an instruction that strictly
+    dominates the loop entry.
+    Note that this formula is underspecified on its own.
+    It is to be included into larger CAnDL programs that also include
+    {\tt Loop}.
+
+\begin{figure}[p]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.78}\ttfamily]
+Constraint SESE
+( opcode{precursor} = branch
+([$\tt\land$]) {begin} ([$\tt\in$]) {precursor}.successors
+([$\tt\land$]) opcode{end} = branch
+([$\tt\land$]) {successor} ([$\tt\in$]) {end}.successors
+([$\tt\land$]) domination({begin}, {end})
+([$\tt\land$]) post_domination({end}, {begin})
+([$\tt\land$]) strict_domination({precursor}, {begin})
+([$\tt\land$]) strict_post_domination({successor}, {end})
+([$\tt\land$]) all control flow from {begin} to {precursor}
+         passes through {end}
+([$\tt\land$]) all control flow from {successor} to {end}
+         passes through {begin}) End
+\end{lstlisting}
+\caption{Single entry single exit region in CAnDL:
+         The region spans from {\tt begin} to {\tt end}, with the entry as
+         control flow {\tt precursor} to {\tt begin}, and the exit as control
+         flow {\tt end} to {\tt successor}.
+         \parfillskip=0pt}
+\label{fig:CAnDLSESE}
+\end{figure}
+
+\begin{figure}[p]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.78}\ttfamily]
+Constraint Loop
+( include SESE
+([$\tt\land$])  {begin} ([$\tt\in$]) {end}.successors) End
+\end{lstlisting}
+\caption{Loops are defined in CAnDL as single entry single exit regions with a
+         back edge.
+         The back edge does not break the ``single exit'' condition, because it
+         does not exit the region.
+         \parfillskip=0pt}
+\label{fig:CAnDLLoop}
+\end{figure}
+
+\begin{figure}[p]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.78}\ttfamily]
 Constraint LocalConst
 ( ir_type{value} = literal
-([$\tt \lor$]) ir_type{value} = argument
-([$\tt \lor$]) strict_domination({value}, {begin}))
-End
+([$\tt\lor$]) ir_type{value} = argument
+([$\tt\lor$]) strict_domination({value}, {loop.begin})) End
 \end{lstlisting}
-\vspace{-0.3cm}
-\caption{LocalConst in CAnDL}
+\caption{This specification restricts {\tt value} to remain constant during
+         the execution of a loop.
+         It is underspecified on its own, and should be included in
+         larger CAnDL programs that also include {\tt Loop},
+         renaming {\tt value} to the specific variable that needs to be constrained in this way.
+         \parfillskip=0pt}
 \label{fig:localconstant}
+\end{figure}
+
+\begin{figure}[p]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.78}\ttfamily]
+Constraint PointerAccess
+( ( (opcode{access} = store ([$\tt \land$]) {pointer} = {access}.args[1])
+  ([$\tt \lor$]) (opcode{access} = load  ([$\tt \land$]) {pointer} = {access}.args[0]))
+([$\tt \land$]) domination({loop.begin}, {access})
+([$\tt \land$]) post_domination({loop.end}, {access})) End
+
+Constraint ArrayAccess
+( include PointerAccess
+([$\tt \land$]) opcode{pointer} = getelementptr
+([$\tt \land$]) {base_pointer} = {pointer}.args[0]
+([$\tt \land$]) include LocalConst({base_pointer}->{value})) End
+
+Constraint LoopWithOnlyArrayAccesses
+( include Loop
+([$\tt \land$]) collect i N (include PointerAccess({}->{loop})@acc[i])
+([$\tt \land$]) collect i N (include ArrayAccess({}->{loop})@acc[i])) End
+\end{lstlisting}
+\caption{Building blocks are combined to restrict the allowed memory accesses
+         of a loop.
+         \leftskip=0pt\rightskip=0pt}
+\label{fig:arrayloop}
 \end{figure}
 
     Another class of important building blocks are different categories of
     memory access.
     These form a hierarchy of restrictiveness and include multidimensional array
     access and array access that is affine in some loop iterators.
-    LLVM strictly separates memory access from pointer computations, which means
-    that CAnDL only has to concern itself with plain pointer computations here.
-    In general it is required that the base pointer is \texttt{LocalConst} in
-    order to avoid pointer chases.
-    The index computation can then be described using the data flow and
-    instruction opcode restrictions.
+    \Cref{fig:arrayloop} combines several of the introduced building blocks to
+    specify a loop in which all memory access locations are calculated as
+    offsets from base pointers that are constant within the loop.
+    This for example excludes loops with pointer chasing.
+    The {\tt ArrayAccess} specification can be extended with more restrictive
+    memory access patterns as previously mentioned.
+    This is crucial to define advanced compiler analysis passes, such as the
+    detection of regions suitable for polyhedral code analysis.
+
+\pagebreak
 
 \begin{figure}[t]
 \centering
