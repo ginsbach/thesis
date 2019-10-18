@@ -3,15 +3,18 @@
 \centering
 \begin{minipage}[t]{\textwidth}
 \centering
-{\bf(a)} C program code:
-\begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=C,basicstyle=\small\ttfamily]
+\vspace{-1em}
+\begin{lstlisting}[language=C,basicstyle=\small\ttfamily,
+                   numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
+                   captionpos=t,title={{\bf(a)} C program code:}]
  double example(double a, double b) {return sqrt(a*a) + sqrt(b*b); }
 \end{lstlisting}
 \end{minipage}
 \begin{minipage}[t]{7.1cm}
 \centering
-{\bf(b)} Resulting LLVM IR:
-\begin{lstlisting}[language={LLVM}]
+\vspace{-0.19cm}
+\begin{lstlisting}[language={LLVM},
+                   captionpos=t,title={{\bf(b)} Resulting LLVM IR:}]
 define double @example(    
  double %0,                
  double %1) {              
@@ -27,8 +30,10 @@ declare double @sqrt(double)
 \hfill
 \begin{minipage}[t]{3.5cm}
 \centering
-{\bf(c)} First solution:
-\begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=LLVM]
+\vspace{-0.19cm}
+\begin{lstlisting}[language=LLVM,
+                   numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
+                   captionpos=t,title={{\bf(c)} First solution:}]
 
 a = %0
 
@@ -44,8 +49,10 @@ sqrt_fn = @sqrt
 \hfill
 \begin{minipage}[t]{3.5cm}
 \centering
-{\bf(d)} Second solution:
-\begin{lstlisting}[numbers=none,framexleftmargin=0pt,xleftmargin=0pt,language=LLVM]
+\vspace{-0.19cm}
+\begin{lstlisting}[language=LLVM,
+                   numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
+                   captionpos=t,title={{\bf(d)} Second solution:}]
 
 
 a = %1
@@ -60,12 +67,13 @@ sqrt_fn = @sqrt
 \end{minipage}
 \end{minipage}
 
-\vspace{1em}
 \begin{minipage}[t]{\textwidth}
 \begin{minipage}[t]{0.493\textwidth}
 \centering
-{\bf(e)} Verification of first solution:
-\begin{lstlisting}[language=CAnDL,numbers=none,framexleftmargin=0pt,xleftmargin=0pt]
+\vspace{-0.19cm}
+\begin{lstlisting}[language=CAnDL,
+                   numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
+                   captionpos=t,title={{\bf(e)} Verification of first solution:}]
 ( opcode{%4} = call
 ([$\tt \land$]) {@sqrt} = {%4}.args[0]
 ([$\tt \land$]) function_name{@sqrt} = sqrt
@@ -78,8 +86,11 @@ sqrt_fn = @sqrt
 \hfill
 \begin{minipage}[t]{0.493\textwidth}
 \centering
-{\bf(f)} Verification of second solution:
-\begin{lstlisting}[language=CAnDL,numbers=none,framexleftmargin=0pt,xleftmargin=0pt]
+\vspace{-0.19cm}
+\begin{lstlisting}[language=CAnDL,
+                   numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
+                   captionpos=t,title=
+   {{\bf(f)} Verification of second solution:}]
 ( opcode{%6} = call
 ([$\tt \land$]) {@sqrt} = {%6}.args[0]
 ([$\tt \land$]) function_name{@sqrt} = sqrt
@@ -91,11 +102,10 @@ sqrt_fn = @sqrt
 \end{minipage}
 \end{minipage}
 
-\vspace{1em}
 \begin{minipage}[t]{\textwidth}
 \centering
-{\bf(g)} C++ transformation code:
-\begin{lstlisting}
+\vspace{-0.19cm}
+\begin{lstlisting}[captionpos=t,title={{\bf(g)} C++ transformation code:}]
 using namespace std;
 using namespace llvm;
 void transform(map<string,Value*> solution, Function* abs) {
@@ -106,11 +116,11 @@ void transform(map<string,Value*> solution, Function* abs) {
 \end{lstlisting}
 \end{minipage}
 
-\vspace{1em}
 \begin{minipage}[t]{\textwidth}
 \centering
-{\bf(h)} Transformed LLVM IR after dead code elimination:
-\begin{lstlisting}[escapeinside={(*}{*)},language={LLVM}]
+\vspace{-0.19cm}
+\begin{lstlisting}[captionpos=t,title=
+   {{\bf(h)} Transformed LLVM IR after dead code elimination:}]
 define double @example(double %0, double %1) {              
  %3 = call double @abs(double %0) 
  %4 = call double @abs(double %1)
