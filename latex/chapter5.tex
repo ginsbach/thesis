@@ -1524,7 +1524,7 @@ The parallel version provided by the implementers also achieves no speedup again
 %{\em MOB NO. Put in the reduction performance or remove}
 %{\em On the sgemm benchmark we achieve $104x$ speedup.
 %As the sgemm bottleneck is not a histogram computation, it is treated differently by our code transformation pass.
-%We use a extra code transformation pass that uses a formulation of matrix multiplication in our constraint language and replaces occurences with calls to OpenBLAS.}
+%We use a extra code transformation pass that uses a formulation of matrix multiplication in our constraint language and replaces occurrences with calls to OpenBLAS.}
 
 On tpacf we achieve an almost linear speedup of $35.7074x$.
 %{\em MOB probably drop this text This result was achieved in a semi-manual fashion due to current limitations of our gode generator.
@@ -1648,7 +1648,7 @@ The original version of this program is implemented poorly using a critical sect
 Our constraint based formualtion allows other idioms to be detected. To 
 illustrate this, we implemented a matrix-multiplication pattern as a 
 system of constraints and a code generator that
-replaces occurences with calls to OpenBLAS. 
+replaces occurrences with calls to OpenBLAS. 
 It detected the only occurrence in sgemm and was able to achieve a 104x speedup.
 
 \section{Summary}
