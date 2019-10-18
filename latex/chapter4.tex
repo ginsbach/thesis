@@ -403,10 +403,10 @@ End
 %  \label{phiatomic}
 %\end{figure}
 
-    On top of the atomic constraints that operate immediately on the sets of
-    the mathematical model, there are a list of constraints that are based on
-    graph properties.
-    These include dominance relationships and the interaction of data flow and
+    Besides those constraints that operate immediately on the sets of the
+    SSA model, there are several atomic constraints that enforce graph
+    properties.
+    This includes dominance relationships and the interaction of data flow and
     control flow for $\Phi$-instructions.
 
 %    \begin{align*}
@@ -498,8 +498,9 @@ End
 
 \subsubsection{Additional Atomic Constraints}
 
-    The set of atomic constraints that CAnDL supports is easily extensible.
-    Some possible additions include constraints on function attributes and value
+    The set of atomic constraints that are supported by CAnDL can easily be
+    extended.
+    Possible additions include constraints on function attributes and value
     constraints on literals.
     This will be further explored in the later
     \Cref{chapter:reductions,chapter:idioms}.
@@ -702,7 +703,6 @@ Constraint FloatingPointInstruction
               ([$\tt \land$]) data_type{arg[i]} = float))
 End
 \end{lstlisting}
-\vspace{-0.3cm}
 \caption{{\it Collect} is used to constrain {\tt ins} to be calculated from only
          floating point values.}
 \label{fig:collectexample}
@@ -718,44 +718,6 @@ End
     indices that are used by the address calculations for these instructions.
 
 \subsection{Expressing Larger Structures}
-
-    The modularity of CAnDL allows for the creation of building blocks that are
-    used by multiple CAnDL specifications.
-    These form a standard library that enables higher-level programming
-    within CAnDL.
-    This section gives an overview of how some of these standard building
-    blocks are defined.
-
-    \Cref{fig:CAnDLSESE} gives the specification of single entry single exit
-    (SESE) regions.
-    Such regions are spanned by variables {\tt begin} and {\tt end}, with an
-    incoming control flow edge from {\tt precursor} to {\tt begin} (line 3) and
-    an outgoing control flow edge from {\tt end} to {\tt successor} (line 5).
-    Graph domination constraints in lines 8 and 7 guarantee that these are the
-    only entry and exit of the region.
-    Additional domination constraints in lines 6--7 and lines 10--13 make sure
-    that there are no jumps from outside the region into an instruction of the
-    region that is not {\tt begin}, and similarly that there are no early exits
-    of the region.
-    Finally, regions are restricted to align with basic block boundaries in
-    lines 2 and 4.
-
-    Natural loops are easily defined in CAnDL, as is visible in
-    \Cref{fig:CAnDLLoop}.
-    The specification includes {\tt SESE}, and adds only a single additional
-    constraint for the back edge of the loop in line~3.
-    Additional extensions to this specification are added to define more
-    restricted loop structures, such for loops.
-    This involves the identification of the loop iterator, the breaking
-    condition, and the corresponding iteration space boundaries.
-    In order to be a valid for loop, the end of the iteration space has to be
-    determined before the loop is entered.
-    This is expressed in \Cref{fig:localconstant}, restricting {\tt value}
-    to be either a function argument, a constant or an instruction that strictly
-    dominates the loop entry.
-    Note that this formula is underspecified on its own.
-    It is to be included into larger CAnDL programs that also include
-    {\tt Loop}.
 
 \begin{figure}[p]
 \begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.78}\ttfamily]
@@ -836,6 +798,46 @@ Constraint LoopWithOnlyArrayAccesses
 \label{fig:arrayloop}
 \end{figure}
 
+    The modularity of CAnDL allows for the creation of building blocks that are
+    used by multiple CAnDL specifications.
+    This includes classic control flow structures, such as single entry single
+    exit (SESE) regions and different classes of loops, as well as memory access
+    patterns.
+    They form a standard library that enables higher-level programming
+    within CAnDL.
+    This section gives an overview of how some of these standard building
+    blocks are defined.
+
+    \Cref{fig:CAnDLSESE} gives the specification of SESE regions in CAnDL.
+    Such regions are spanned by the variables {\tt begin} and {\tt end}, with an
+    incoming control flow edge from {\tt precursor} to {\tt begin} (line 3) and
+    an outgoing control flow edge from {\tt end} to {\tt successor} (line 5).
+    Graph domination constraints in lines 8 and 7 guarantee that these are the
+    only entry and exit of the region.
+    Additional domination constraints in lines 6--7 and lines 10--13 make sure
+    that there are no jumps from outside the region into an instruction of the
+    region that is not {\tt begin}, and similarly that there are no early exits
+    of the region.
+    Finally, regions are restricted to align with basic block boundaries in
+    lines 2 and 4.
+
+    Natural loops are easily defined in CAnDL, as is visible in
+    \Cref{fig:CAnDLLoop}.
+    The specification includes {\tt SESE}, and adds only a single additional
+    constraint for the back edge of the loop in line~3.
+    Additional extensions to this specification are added to define more
+    restricted loop structures, such for loops.
+    This involves the identification of the loop iterator, the breaking
+    condition, and the corresponding iteration space boundaries.
+    In order to be a valid for loop, the end of the iteration space has to be
+    determined before the loop is entered.
+    This is expressed in \Cref{fig:localconstant}, restricting {\tt value}
+    to be either a function argument, a constant or an instruction that strictly
+    dominates the loop entry.
+    Note that this formula is underspecified on its own.
+    It is to be included into larger CAnDL programs that also include
+    {\tt Loop}.
+
     Another class of important building blocks are different categories of
     memory access.
     These form a hierarchy of restrictiveness and include multidimensional array
@@ -849,65 +851,80 @@ Constraint LoopWithOnlyArrayAccesses
     This is crucial to define advanced compiler analysis passes, such as the
     detection of regions suitable for polyhedral code analysis.
 
-\pagebreak
-
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.65\textwidth]{figures/compilerFlow2.pdf}
-\caption{CAnDL in the LLVM/clang build system}
+\includegraphics[width=0.59\textwidth]{figures/compilerFlow2.pdf}
+\caption{CAnDL in the LLVM/clang system: The CAnDL code gets parsed by the
+         CAnDL compiler and turned into C++, which is compiled directly
+         into LLVM and then used by clang.
+         \parfillskip=0pt}
 \label{fig:build2}
 \end{figure}
 
 \section{Implementation}
 
-    CAnDL interacts with the LLVM framework, as shown in \Cref{fig:build2}.
-    CAnDL programs are read by the CAnDL compiler, which then generates C++
-    source code to implement the specified LLVM analysis functionality.
-    This code depends on a generic backtracking solver, which is incorporated
-    into the main LLVM code base. 
+    CAnDL is embedded in the LLVM framework, as shown in \Cref{fig:build2}.
+    CAnDL programs are read by the CAnDL compiler during LLVM build time, which
+    then generates C++ source code to implement the specified LLVM analysis
+    functionality.
+    This code depends on the generic backtracking solver derived in
+    \Cref{chapter:theory}, which is incorporated directly into the LLVM code
+    base.
+    The generated code is compiled and linked together with the existing LLVM
+    libraries.
+    The clang compiler, which is built on LLVM, then automatically invokes this
+    solver during the compilation of user programs, after the standard
+    optimisation passes.
     The evaluation at the end of the chapter will show that this solver adds
     little compile-time overhead in practice.
-    The generated code is compiled and linked together with the existing LLVM
-    libraries to make LLVM optimization passes available in the clang compiler.
 
-    The generated analysis passes use the solver to search for the specified
-    computational structures and output the found instances into report files,
-    as well as making them available to ensuing transformation passes.
+    The resulting modified version of the clang compiler uses the solver to
+    search for the specified computational structures and outputs the found
+    instances into report files.
+    It also makes the results available to ensuing transformation passes in the
+    form of C++ structures.
 
 \subsection{The CAnDL Compiler}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.6\textwidth]{figures/candlstages.pdf}
-\caption{CAnDL compiler flow}
+\begin{minipage}{0.7\textwidth}
+\centering
+\includegraphics[width=0.85\textwidth]{figures/candlstages.pdf}
+\caption{Flow within the CAnDL compiler:
+         The CAnDL source code gets lowered in several steps to generated C++
+         source code.\parfillskip=0pt}
 \label{fig:compilerflow}
+\end{minipage}
 \end{figure}
 
-    The CAnDL compiler is responsible for generating C++ code from CAnDL
-    programs.
+    The CAnDL compiler is responsible for parsing CAnDL programs and
+    generating C++ code from them.
     An overview of its  flow is shown in \Cref{fig:compilerflow}.
     The frontend reads in  CAnDL source code and builds an abstract syntax tree.
     This syntax tree is simplified in two steps to eliminate some of the higher
     order constructs of CAnDL.
-    The \texttt{inheritance} clauses are replaced using standard function
-    inlining after the contained variables have been transformed accordingly.
-    Also, \texttt{foreach} and \texttt{forany} statements are lowered to
+    The {\it inheritance} clauses are inlined after the contained variables
+    have been transformed accordingly.
+    Also, {\it foreach} and {\it forany} statements are lowered to
     conjunction and disjunction constructs by duplicating the contained
-    constraint code and then renaming the contained variable names appropriately
+    constraint code and then renaming its variables appropriately
     for each iteration.
-    This is equivalent to complete loop unrolling.
-    From this point onwards, variable names are treated as flat strings.
     The remaining core language now consists only of atomics, conjunctions,
     disjunctions and collections.
 
-    The CAnDL compiler applies a set of basic optimizations to speed up the
+    The CAnDL compiler then applies a set of optimisations to speed up the
     solving process using the later generated C++ code.
     For example, nested conjunctions and disjunctions are flattened wherever
     possible.
+    Furthermore, if shallow equivalence of two variables is enforced in a
+    conjunction, one of the two variables is chosen as having higher priority.
+    all occurrences of the other variable are then replaced with that one.
 
-    Finally, the compiler generates the C++ source code.
-    This essentially involves constructing the constraint problem as a graph
-    structure that is accessible to the solver.
+    Finally, the compiler generates C++.
+    This essentially means generating a function which at runtime constructs
+    the constraint problem as a graph structure that is accessible to the
+    solver.
 
 \subsubsection{C++ Code Generation}
 
@@ -934,7 +951,6 @@ result[0] = make_pair("addition", constr3);
 result[1] = make_pair("left",     select<1>(constr1));
 result[2] = make_pair("right",    select<1>(constr2));
 \end{lstlisting}
-\vspace{-0.3cm}
 \caption{C++ source code generation}
 \label{fig:codegen}
 \end{figure}
