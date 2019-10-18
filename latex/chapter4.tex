@@ -105,7 +105,8 @@ approaches.
 \begin{figure}[b]
 \centering
 \begin{minipage}[t]{0.67\textwidth}
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,label={fig:candlspec},caption=
+   {The left side of \Cref{fig:root} as specified in CAnDL\parfillskip=0pt}]
 Constraint SqrtOfSquare
 ( opcode{sqrt_call} = call
 ([$\tt \land$]) {sqrt_fn} = {sqrt_call}.args[0]
@@ -116,8 +117,6 @@ Constraint SqrtOfSquare
 ([$\tt \land$]) {a} = {square}.args[1])
 End
 \end{lstlisting}
-\caption{The left side of \Cref{fig:root} as specified in CAnDL\parfillskip=0pt}
-\label{fig:candlspec}
 \end{minipage}
 \end{figure}
 
@@ -513,7 +512,10 @@ Constraint ValueChain
  {element[i] ([$\tt \in$]) {element[i+1]}.args foreach i=0..4
 End
 \end{lstlisting}
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,label={fig:forall},caption=
+   {Example for the expansion of range constraints in CAnDL:
+    The specification at the top can be ``unrolled'' manually, resulting in the
+    equivalent, but more verbose, specification below.\parfillskip=0pt}]
 Constraint ValueChain
 ( {element[0]} ([$\tt \in$]) {element[1]}.args
 ([$\tt \land$]) {element[1]} ([$\tt \in$]) {element[2]}.args
@@ -521,11 +523,6 @@ Constraint ValueChain
 ([$\tt \land$]) {element[3]} ([$\tt \in$]) {element[4]}.args)
 End
 \end{lstlisting}
-\caption{Example for the expansion of range constraints in CAnDL:
-         The specification at the top can be ``unrolled'' manually,
-         resulting in the equivalent, but more verbose, specification below.
-         \parfillskip=0pt}
-\label{fig:forall}
 \end{figure}
 
     Building on top of the atomic constraints and the fundamental conjunction
@@ -614,7 +611,7 @@ End
     equivalent constraint programs.
     Both programs specify an addition of four values, first adding pairwise and
     then adding the intermediate results.
-    In the first listing, a formula for the addition of two values is
+    In the code at the top, a formula for the addition of two values is
     bound to the name {\tt Sum}.
     This is then included three times in another formula named {\tt SumOfSums}.
     Using the optional grammatical constructs, the formula operates on a
@@ -623,9 +620,6 @@ End
 
 \begin{figure}[h]
 \input{latex/figure_candlinheritance}
-\caption{Example for the expansion of {\it include} constraints:
-         Both specifications are equivalent.\parfillskip=0pt}
-\label{fig:inheritsandrenameandrebase}
 \end{figure}
 
 \subsubsection{Collect}
@@ -659,15 +653,14 @@ End
     It is left unspecified in this case by using the symbol \texttt{N}.
 
 \begin{figure}[t]
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,label={fig:simplecollect},caption=
+   {Simple {\it collect} example in CAnDL: All direct data dependences of
+    {\tt ins} are collected.\leftskip=0pt\rightskip=0pt}]
 Constraint CollectArguments
 ( ir_type{ins} = instruction
 ([$\tt \land$]) collect i N ({arg[i]} ([$\tt \in$]) {ins}.args))
 End
 \end{lstlisting}
-\caption{Simple {\it collect} example in CAnDL: All direct data dependences of
-         {\tt ins} are collected.}
-\label{fig:simplecollect}
 \end{figure}
 
     This example is now extended to show how {\it collect} can be used to
@@ -697,7 +690,9 @@ End
     is constrained to be $S_1\cap S_2$ as well.
 
 \begin{figure}[H]
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,label={fig:collectexample},caption=
+   {{\it Collect} is used to restrict {\tt ins} to be calculated exclusively
+    from floating point values.\leftskip=0pt\rightskip=0pt}]
 Constraint FloatingPointInstruction
 ( ir_type{ins} = instruction
 ([$\tt \land$]) collect i N ( {ins} ([$\tt \in$]) {arg[i]}.args)
@@ -705,9 +700,6 @@ Constraint FloatingPointInstruction
               ([$\tt \land$]) data_type{arg[i]} = float))
 End
 \end{lstlisting}
-\caption{{\it Collect} is used to constrain {\tt ins} to be calculated from only
-         floating point values.}
-\label{fig:collectexample}
 \end{figure}
 
     The exact same approach can be used for much more complex analysis tasks.
@@ -722,7 +714,12 @@ End
 \subsection{Expressing Larger Structures}
 
 \begin{figure}[p]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.78}\ttfamily]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
+                   label={CAnDLSESE},caption=
+   {Single entry single exit region in CAnDL:
+    The region spans from {\tt begin} to {\tt end}, with the entry as control
+    flow {\tt precursor} to {\tt begin}, and the exit as control flow {\tt end}
+    to {\tt successor}.\parfillskip=0pt}]
 Constraint SESE
 ( opcode{precursor} = branch
 ([$\tt\land$]) {begin} ([$\tt\in$]) {precursor}.successors
@@ -737,46 +734,32 @@ Constraint SESE
 ([$\tt\land$]) all control flow from {successor} to {end}
          passes through {begin}) End
 \end{lstlisting}
-\caption{Single entry single exit region in CAnDL:
-         The region spans from {\tt begin} to {\tt end}, with the entry as
-         control flow {\tt precursor} to {\tt begin}, and the exit as control
-         flow {\tt end} to {\tt successor}.
-         \parfillskip=0pt}
-\label{fig:CAnDLSESE}
-\end{figure}
-
-\begin{figure}[p]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.78}\ttfamily]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
+                   label={CAnDLLoop},caption=
+   {Loops are defined in CAnDL as single entry single exit regions with a back
+    edge.
+    The back edge does not break the ``single exit'' condition, because it does
+    not exit the region.\parfillskip=0pt}]
 Constraint Loop
 ( include SESE
 ([$\tt\land$])  {begin} ([$\tt\in$]) {end}.successors) End
 \end{lstlisting}
-\caption{Loops are defined in CAnDL as single entry single exit regions with a
-         back edge.
-         The back edge does not break the ``single exit'' condition, because it
-         does not exit the region.
-         \parfillskip=0pt}
-\label{fig:CAnDLLoop}
-\end{figure}
-
-\begin{figure}[p]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.78}\ttfamily]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
+                   label={localconstant},caption=
+   {This specification restricts {\tt value} to remain constant during the
+    execution of a loop.
+    It is underspecified on its own, and should be included in larger CAnDL
+    programs that also include {\tt Loop}, renaming {\tt value} to the specific
+    variable that needs to be constrained in this way. \parfillskip=0pt}]
 Constraint LocalConst
 ( ir_type{value} = literal
 ([$\tt\lor$]) ir_type{value} = argument
 ([$\tt\lor$]) strict_domination({value}, {loop.begin})) End
 \end{lstlisting}
-\caption{This specification restricts {\tt value} to remain constant during
-         the execution of a loop.
-         It is underspecified on its own, and should be included in
-         larger CAnDL programs that also include {\tt Loop},
-         renaming {\tt value} to the specific variable that needs to be constrained in this way.
-         \parfillskip=0pt}
-\label{fig:localconstant}
-\end{figure}
-
-\begin{figure}[p]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.78}\ttfamily]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
+                   label={fig:arrayloop},caption=
+   {Building blocks are combined to restrict the permitted memory access within
+    a loop. \leftskip=0pt\rightskip=0pt}]
 Constraint PointerAccess
 ( ( (opcode{access} = store ([$\tt \land$]) {pointer} = {access}.args[1])
   ([$\tt \lor$]) (opcode{access} = load  ([$\tt \land$]) {pointer} = {access}.args[0]))
@@ -794,10 +777,6 @@ Constraint LoopWithOnlyArrayAccesses
 ([$\tt \land$]) collect i N (include PointerAccess({}->{loop})@acc[i])
 ([$\tt \land$]) collect i N (include ArrayAccess({}->{loop})@acc[i])) End
 \end{lstlisting}
-\caption{Building blocks are combined to restrict the allowed memory accesses
-         of a loop.
-         \leftskip=0pt\rightskip=0pt}
-\label{fig:arrayloop}
 \end{figure}
 
     The modularity of CAnDL allows for the creation of building blocks that are
@@ -810,7 +789,7 @@ Constraint LoopWithOnlyArrayAccesses
     This section gives an overview of how some of these standard building
     blocks are defined.
 
-    \Cref{fig:CAnDLSESE} gives the specification of SESE regions in CAnDL.
+    \Cref{CAnDLSESE} gives the specification of SESE regions in CAnDL.
     Such regions are spanned by the variables {\tt begin} and {\tt end}, with an
     incoming control flow edge from {\tt precursor} to {\tt begin} (line 3) and
     an outgoing control flow edge from {\tt end} to {\tt successor} (line 5).
@@ -824,7 +803,7 @@ Constraint LoopWithOnlyArrayAccesses
     lines 2 and 4.
 
     Natural loops are easily defined in CAnDL, as is visible in
-    \Cref{fig:CAnDLLoop}.
+    \Cref{CAnDLLoop}.
     The specification includes {\tt SESE}, and adds only a single additional
     constraint for the back edge of the loop in line~3.
     Additional extensions to this specification are added to define more
@@ -833,8 +812,8 @@ Constraint LoopWithOnlyArrayAccesses
     condition, and the corresponding iteration space boundaries.
     In order to be a valid for loop, the end of the iteration space has to be
     determined before the loop is entered.
-    This is expressed in \Cref{fig:localconstant}, restricting {\tt value}
-    to be either a function argument, a constant or an instruction that strictly
+    This is expressed in \Cref{localconstant}, restricting {\tt value} to be
+    either a function argument, a constant or an instruction that strictly
     dominates the loop entry.
     Note that this formula is underspecified on its own.
     It is to be included into larger CAnDL programs that also include
@@ -938,7 +917,10 @@ Constraint SimpleAddition
 ([$\tt \land$]) {addition}.args[0] = {left}
 ([$\tt \land$]) {addition}.args[1] = {right}) End
 \end{lstlisting}
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=C++,label={fig:codegen},caption=
+   {C++ code generation: The code is generated to first instantiate atomic
+    constraints, then compose higher-level constructs and finally assemble a
+    backtracking solution for the solver.\parfillskip=0pt}]
 // Step 1: Instantiate Atomic Constraints
 auto constr0 = make_shared<AddInstruction>(model);
 auto constr1 = make_shared<FirstArgument> (model);
@@ -954,17 +936,12 @@ result[0] = make_pair("addition", constr3);
 result[1] = make_pair("left",     select<1>(constr1));
 result[2] = make_pair("right",    select<1>(constr2));
 \end{lstlisting}
-\caption{C++ code generation: The code is generated to first instantiate
-         atomic constraints, then compose higher-level constructs and
-         finally assemble a backtracking solution for the solver.
-         \parfillskip=0pt}
-\label{fig:codegen}
 \end{figure}
 
-    The code generation process is demonstrated in \Cref{fig:codegen} with an
-    example.
-    Each of the atomic constraints results in a line of C++ code that constructs
-    an object of a corresponding class:
+    The code generation process is demonstrated with an example in
+    \Cref{fig:codegen}.
+    Every atomic constraint in CAnDL results in a line of C++ code that
+    constructs an object of a corresponding class:
     In this case, the three involved atomic constraints are implemented by
     \texttt{AddInstruction}, \texttt{FirstArgument} and \texttt{SecondArgument}.
     These objects are instantiated as shared pointers.
@@ -1058,7 +1035,10 @@ result[2] = make_pair("right",    select<1>(constr2));
 \subsection{Case Study 1: Simple Optimisations}
 
 \begin{figure}[t]
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,label={fig:facopport},caption=
+   {Factorisation opportunities in CAnDL: This captures some opportunities that
+    LLVM {\tt instcombine} misses. {\tt SumChain} and {\tt MulChain} are
+    themselves specified in CAnDL (16 LoC).}]
 Constraint ComplexFactorisation
 ( opcode{value} = add
 ([$\tt\land$]) {sum1.value} = {value}.args[0]
@@ -1071,10 +1051,6 @@ Constraint ComplexFactorisation
 ([$\tt\land$]) {product2.value} = {sum2.last_factor}
 ([$\tt\land$]) include MulChain @ {product2}) End
 \end{lstlisting}
-\caption{Factorisation opportunities in CAnDL: This captures
-         some opportunities that LLVM {\tt instcombine} misses. {\tt SumChain}
-         and {\tt MulChain} are themselves specified in CAnDL (16 LoC).}
-\label{fig:facopport}
 \end{figure}
 
     Arithmetic simplifications in LLVM are implemented in the
@@ -1181,7 +1157,11 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\
 \subsection{Case Study 2: Graphics Shader Optimisations}
 
 \begin{figure}[t]
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,label={fig:Lewis},caption=
+   {CAnDL defines multiplication chains involving genuine vectors and hoisted
+    scalars:
+    After separating the two cases, some of the multiplications can be performed
+    on scalars instead.\parfillskip=0pt}]
 Constraint FloatingPointAssociativeReorder
 ( include VectorMulChain and
 ([$\tt \land$]) collect j N
@@ -1193,11 +1173,6 @@ Constraint FloatingPointAssociativeReorder
   ([$\tt \land$]) {nonhoisted[j]} != {hoisted[i]} forall  i=0..N))
 End
 \end{lstlisting}
-\caption{CAnDL code for multiplication chains involving genuine vectors and
-         hoisted scalars:
-         After separating the two cases, some of the multiplications can be
-         performed on scalars instead.\parfillskip=0pt}
-\label{fig:Lewis}
 \end{figure}
 
     Graphics computations often involve arithmetic on vectors of single
@@ -1359,7 +1334,7 @@ End
     instruction, the base pointer is loop invariant and the index is calculated
     affinely.
     The loop invariant base pointer is easily guaranteed using the
-    \texttt{LocalConst} program from \Cref{fig:localconstant}.
+    \texttt{LocalConst} program from \Cref{localconstant}.
 
     Checking the index calculations is more involved and is again based on the
     \texttt{collect} method that was demonstrated in \Cref{fig:collectexample}.

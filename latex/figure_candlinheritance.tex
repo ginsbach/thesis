@@ -1,4 +1,4 @@
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.984}\ttfamily]
+\begin{lstlisting}[language=CAnDL]
 Constraint Sum
 ( opcode{out} = add
 ([$\tt \land$]) {in1} = {out}.args[0]
@@ -10,7 +10,10 @@ Constraint SumOfSums
 ([$\tt \land$]) include Sum({sum1.out}->{in1},{sum2.out}->{in2}))
 End
 \end{lstlisting}
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.984}\ttfamily]
+\begin{lstlisting}[language=CAnDL,
+                   label={fig:inheritsandrenameandrebase},caption=
+   {Example for the expansion of {\it include} constraints:
+    Both specifications are equivalent.\parfillskip=0pt}]
 Constraint SumOfSums
 ( opcode{sum1.out} = add
 ([$\tt \land$]) {sum1.in1} = {sum1.out}.args[0]
