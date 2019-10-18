@@ -105,7 +105,8 @@ sqrt_fn = @sqrt
 \begin{minipage}[t]{\textwidth}
 \centering
 \vspace{-0.19cm}
-\begin{lstlisting}[captionpos=t,title={{\bf(g)} C++ transformation code:}]
+\begin{lstlisting}[language=C++,captionpos=t,title=
+   {{\bf(g)} C++ transformation code:}]
 using namespace std;
 using namespace llvm;
 void transform(map<string,Value*> solution, Function* abs) {
@@ -119,7 +120,7 @@ void transform(map<string,Value*> solution, Function* abs) {
 \begin{minipage}[t]{\textwidth}
 \centering
 \vspace{-0.19cm}
-\begin{lstlisting}[captionpos=t,title=
+\begin{lstlisting}[language=LLVM,captionpos=t,title=
    {{\bf(h)} Transformed LLVM IR after dead code elimination:}]
 define double @example(double %0, double %1) {              
  %3 = call double @abs(double %0) 
