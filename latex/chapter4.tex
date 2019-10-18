@@ -1138,21 +1138,22 @@ Constraint ComplexFactorisation
 
 \subsubsection{Results}
 
-\begin{figure}[b]
+\begin{figure}[t]
 \centering
 \begin{tabular}{|l||l|l|}
 \hline
          & LLVM  &CAnDL \\
 \hline
 \hline
-Lines of Code & 203 & 12 \\ \hline
+Lines of Code & 203 & 12 \\
+\hline
 Detected in NPB & 1 & 1 + 2 \\
 Detected in Parboil & 0 & 0 + 1\\
-Detected in Rodinia & 24 & 24 + 4\\ \hline
-Total Compilation time & 152.2s & 152.2s+7.8s \\ \hline
+Detected in Rodinia & 24 & 24 + 4\\
+\hline
+Total Compilation time & 152.2s & 152.2s+7.8s \\
 \hline
 \end{tabular}
-\vspace{-0.1cm}
 \caption{Factorisations enabled by LLVM vs CAnDL}
 \label{fig:factorization_results}
 \end{figure}
@@ -1206,11 +1207,6 @@ End
     The LunarGLASS project \citep{lunarglass} was used in this work as an open
     source implementation of LLVM for graphics shaders.
 
-%    For real shader code, LLVM misses an opportunity for the associative
-%    reordering of floating point computations.
-%    Although such reordering is problematic in general, it is applicable in the
-%    domain of graphics processing.
-
     In real shader code, there are often element wise products of multiple
     floating point vectors, where several of the factors are actually scalars
     that were hoisted to vectors.
@@ -1238,7 +1234,7 @@ End
     {\tt nonhoisted} in lines 7--9.
 
     {\tt VectorMulChain} and {\tt ScalarHoist} are themselves implemented as
-    CAnDL specifications.
+    CAnDL programs.
     {\tt VectorMulChain} discovers chains of floating point vector
     multiplications in the IR code.
     It is defined very similarly to {\tt SumChain} and {\tt MulChain}, which
@@ -1284,20 +1280,20 @@ End
 \label{fig:qualcommspeedup}
 \end{figure}
 
-\begin{figure}[b]
-\centering
-\begin{tabular}{|l||l|l|}
-\hline
-         & LLVM  &CAnDL \\
-\hline
-\hline
-Lines of Code & Not implemented& 10 \\ \hline
-Detected in GFX 4.0 & - & 19 \\ \hline
-\hline
-\end{tabular}
-\caption{Shader optimization LLVM vs CAnDL}
-\label{fig:candlshader}
-\end{figure}
+%\begin{figure}[b]
+%\centering
+%\begin{tabular}{|l||l|l|}
+%\hline
+%         & LLVM  &CAnDL \\
+%\hline
+%\hline
+%Lines of Code & Not implemented& 10 \\ \hline
+%Detected in GFX 4.0 & - & 19 \\ \hline
+%\hline
+%\end{tabular}
+%\caption{Shader optimization LLVM vs CAnDL}
+%\label{fig:candlshader}
+%\end{figure}
 
     There were 19 solutions to the specification across the benchmarks, and
     the transformation had an impact on the performance of 8 fragment shaders.
@@ -1310,23 +1306,32 @@ Detected in GFX 4.0 & - & 19 \\ \hline
 
 \subsection{Case Study 3: Detection of Polyhedral SCoPs}
 
-    The polyhedral model allows compilers to utilize powerful mathematical
+    The polyhedral model allows compilers to utilise powerful mathematical
     reasoning to detect parallelism opportunities in sequential code and to
     implement code transformations for well structured nested
     loops.
-    It is currently applicable to Static Control Flow Parts (SCoPs) with affine
-    data dependencies.
-    Detecting SCoPs is fundamental and a necessary first step for any later
-    polyhedral optimization.
+    Conventional polyhedral code transformations are applicable to
+    static control parts (SCoPs).
+    These are regions of code that comprise nestings of well-behaved loops and
+    conditionals with only affine data access patterns inside.
+    Detecting SCoPs is fundamental and necessary first step for any later
+    polyhedral optimisation.
 
     Implementations of the polyhedral model may differ in their precise
     definition of SCoPs.
-    In this work, the definition of Semantic SCoPs in \citet{Lengauer2012Polly}
-    was used for reference.
+    In this work, the definition of Semantic SCoPs from
+    \citet{Lengauer2012Polly} was used for reference.
     SCoP detection functionality was implemented in CAnDL and compared against
-    the Polly implementation in LLVM.
-    The complete CAnDL code for this section is in Appendix~\ref{appendix:CAnDL}.
-    The constraints for SCoPs can be broken into several components:
+    Polly \citep{Lengauer2012Polly}, which is a polyhedral compiler that is
+    implemented as an extension to LLVM.
+    The use of the same definition for SCoPS and the implementation in the same
+    compiler infrastructure allow for a direct comparison between Polly and
+    CAnDL.
+    The specification of SCoPs is significantly more complex than the required
+    CAnDL code for the previous case studies.
+    However, it can be broken into several components
+    \footnote{The complete CAnDL code for this section can be found in
+    Appendix~\ref{appendix:CAnDL}.}.
 
     \paragraph*{Structured Control Flow}
     SCoPs require well structured control flow.
