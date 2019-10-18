@@ -1,17 +1,15 @@
-    \begin{minipage}{0.48\textwidth}
-    {\bf(a)} {} C source function
-    \begin{lstlisting}[language=C]
+\begin{minipage}{0.48\textwidth}
+\begin{lstlisting}[language=C,captionpos=t,title=
+   {{\bf(a)} {} C source function\leftskip=0pt}]
 double sqrt(double S) {
   double x = 1.0;
   for(int i = 0; i<N; i++)
     x = 0.5 * (x + S / x);
   return x;
 }
-    \end{lstlisting}
-
-    \vspace{1em}
-    {\bf(d)} {} The SSA property is introduced
-    \begin{lstlisting}[language=C]
+\end{lstlisting}
+\begin{lstlisting}[language=C,captionpos=t,title=
+   {{\bf(d)} {} The SSA property is introduced\leftskip=0pt}]
 double sqrt(double S) {
 entry:
   double x = 1.0;
@@ -39,12 +37,13 @@ loop:
 exit:
     return x2;
 }
-    \end{lstlisting}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.48\textwidth}
-    {\bf(b)} {} Complex expressions are broken down
-    \begin{lstlisting}[language=C,basicstyle=\linespread{1.06451612903}\ttfamily]
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+\begin{lstlisting}[language=C,basicstyle=\linespread{1.06451612903}\ttfamily,
+                   captionpos=t,title=
+   {{\bf(b)} {} Complex expressions are broken down\leftskip=0pt}]
 double sqrt(double S) {
   double x = 1.0;
   for(int i = 0; i<N; i++)
@@ -55,11 +54,10 @@ double sqrt(double S) {
   }
   return x;
 }
-    \end{lstlisting}
-
-    \vspace{1em}
-    {\bf(c)} {} Structured control flow is expanded
-    \begin{lstlisting}[language=C,basicstyle=\linespread{1.06451612903}\ttfamily]
+\end{lstlisting}
+\begin{lstlisting}[language=C,basicstyle=\linespread{1.06451612903}\ttfamily,
+                   captionpos=t,title=
+   {{\bf(c)} {} Structured control flow is expanded\leftskip=0pt}]
 double sqrt(double S) {
 entry:
   double x = 1.0;
@@ -81,5 +79,5 @@ loop:
 exit:
     return x;
 }
-    \end{lstlisting}
-    \end{minipage}
+\end{lstlisting}
+\end{minipage}
