@@ -26,8 +26,9 @@
     partial solutions.
     It is discussed in detail how to use the internal structure of specific
     classes of SSA constraint problems for efficient backtracking solutions.
-    After the algorithmic discussion, an implementation of these algorithms with
-    suitable data structures is drafted and the runtime complexity is discussed.
+    After discussing the algorithms abstractly, an implementation of these
+    algorithms with suitable data structures is drafted and the runtime
+    complexity is discussed.
     In the last section, similarities and differences to standard Satisfiability
     Modulo Theory (SMT) problems are explored.
 
@@ -187,19 +188,19 @@
     \label{babylonian_equation}
 \end{equation}
 
-    Starting from the source code {\bf a)} at the top left of the figure, the
+    Starting from the source code {\bf(a)} at the top left of the figure, the
     function is first modified by breaking down complex expressions.
     This results in a sequentialisation of the expressions into their
-    basic operations, shown at the top right {\bf b)}, introducing explicit
+    basic operations, shown at the top right {\bf(b)}, introducing explicit
     variables for the previously implicit temporary values.
     This simplifies the program, with many of the operations directly mapping to
     individual processor instructions.
-    Furthermore, many different input programs get mapped to a single,
+    Furthermore, different input programs get mapped to the same,
     predictable ouput by this transformation, making it a normalisation.
 
     In a second step, the structured control flow of the program is replaced
     with goto statements that coordinate the control flow between basic blocks.
-    This is shown at the bottom right {\bf c)}.
+    This is shown at the bottom right {\bf(c)}.
     While this does not ease the intuitive understanding of the program, it
     unifies several distinct control flow structures provided in the source
     language into a single mechanism.
@@ -209,7 +210,7 @@
     They can be reconstructed algorithmically.
 
     Finally, the static single assignment property is introduced at the bottom
-    left {\bf d)}.
+    left {\bf(d)}.
     Each variable that is assigned in more than one static place in the program
     is instead duplicated into multiple variables.
     Where necessary, these now distinct variables are bound together with
@@ -243,9 +244,10 @@
              and normalisation of source language features: 
              Demonstration on an example C function that approximates the
              square root of an input value with the Babylonian method.
-             The transformation results {\bf b)-d)} are redered in C.
+             The transformation results {\bf (b-d)} are rendered in C.
              Real compilers typically operate on
-             dedicated internal representations instead.}
+             dedicated internal representations instead.
+             \parfillskip=0pt}
     \label{ssaexample}
 \end{figure}
 
@@ -554,7 +556,7 @@
     demonstrated on an example.
 
     Consider \Cref{llvmirexample}.
-    At the top {\bf a)} of the figure, a dot product is implemented as a
+    At the top {\bf (a)} of the figure, a dot product is implemented as a
     function in C.
     The function receives as arguments two pointers {\tt a,b} to arrays of
     double precision floating point values, representing the input vectors, as
@@ -563,7 +565,7 @@
     the variable {\tt d}, which is eventually returned as the function result in
     the penultimate line $6$.
 
-    At the bottom {\bf b)} of the figure is the corresponding LLVM intermediate
+    At the bottom {\bf (b)} of the figure is the corresponding LLVM intermediate
     code, captured after optimisations from the mid end of the LLVM-based clang
     compiler.
     Additional comments were inserted manually.
@@ -585,8 +587,10 @@
 
 
 \begin{figure}[p]
-\paragraph*{a)} C source code of a {\tt dot} product function implementation
-\begin{lstlisting}[language=C]
+\vspace{-0.09cm}
+\begin{lstlisting}[language=C,captionpos=t,title=
+   {{\bf(a)} {} C source code of a {\tt dot} product function implementation
+    \leftskip=0pt}]
 double dot(double* a, double *b, size_t n)
 {
   double d = 0.0;
@@ -595,9 +599,10 @@ double dot(double* a, double *b, size_t n)
   return d;
 }
 \end{lstlisting}
-
-\paragraph*{b)} LLVM IR representation of the same {\tt dot} product function
-\begin{lstlisting}[language=LLVM,breaklines=true]
+\vspace{-0.09cm}
+\begin{lstlisting}[language=LLVM,breaklines=true,captionpos=t,title=
+   {{\bf(b)} {} LLVM IR representation of the same {\tt dot} product function
+    \leftskip=0pt}]
 define double @dot(double* %0, double* %1, i64 %2) {
 ; <label>:3:
   %4 = icmp eq i64 %2, 0  ; integer (i) comparison (cmp): check if register %2 is equal (eq) to constant zero

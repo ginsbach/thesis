@@ -6,7 +6,7 @@
 \vspace{-1em}
 \begin{lstlisting}[language=C,basicstyle=\small\ttfamily,
                    numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
-                   captionpos=t,title={{\bf(a)} C program code:}]
+                   captionpos=t,title={{\bf(a)} {} C program code:}]
  double example(double a, double b) {return sqrt(a*a) + sqrt(b*b); }
 \end{lstlisting}
 \end{minipage}
@@ -14,7 +14,7 @@
 \centering
 \vspace{-0.19cm}
 \begin{lstlisting}[language={LLVM},
-                   captionpos=t,title={{\bf(b)} Resulting LLVM IR:}]
+                   captionpos=t,title={{\bf(b)} {} Resulting LLVM IR:}]
 define double @example(    
  double %0,                
  double %1) {              
@@ -33,7 +33,7 @@ declare double @sqrt(double)
 \vspace{-0.19cm}
 \begin{lstlisting}[language=LLVM,
                    numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
-                   captionpos=t,title={{\bf(c)} First solution:}]
+                   captionpos=t,title={{\bf(c)} {} First solution:}]
 
 a = %0
 
@@ -52,7 +52,7 @@ sqrt_fn = @sqrt
 \vspace{-0.19cm}
 \begin{lstlisting}[language=LLVM,
                    numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
-                   captionpos=t,title={{\bf(d)} Second solution:}]
+                   captionpos=t,title={{\bf(d)} {} Second solution:}]
 
 
 a = %1
@@ -73,7 +73,8 @@ sqrt_fn = @sqrt
 \vspace{-0.19cm}
 \begin{lstlisting}[language=CAnDL,
                    numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
-                   captionpos=t,title={{\bf(e)} Verification of first solution:}]
+                   captionpos=t,title=
+   {{\bf(e)} {} Verification of first solution:}]
 ( opcode{%4} = call
 ([$\tt \land$]) {@sqrt} = {%4}.args[0]
 ([$\tt \land$]) function_name{@sqrt} = sqrt
@@ -90,7 +91,7 @@ sqrt_fn = @sqrt
 \begin{lstlisting}[language=CAnDL,
                    numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
                    captionpos=t,title=
-   {{\bf(f)} Verification of second solution:}]
+   {{\bf(f)} {} Verification of second solution:}]
 ( opcode{%6} = call
 ([$\tt \land$]) {@sqrt} = {%6}.args[0]
 ([$\tt \land$]) function_name{@sqrt} = sqrt
@@ -106,7 +107,7 @@ sqrt_fn = @sqrt
 \centering
 \vspace{-0.19cm}
 \begin{lstlisting}[language=C++,captionpos=t,title=
-   {{\bf(g)} C++ transformation code:}]
+   {{\bf(g)} {} C++ transformation code:}]
 using namespace std;
 using namespace llvm;
 void transform(map<string,Value*> solution, Function* abs) {
@@ -121,7 +122,7 @@ void transform(map<string,Value*> solution, Function* abs) {
 \centering
 \vspace{-0.19cm}
 \begin{lstlisting}[language=LLVM,captionpos=t,title=
-   {{\bf(h)} Transformed LLVM IR after dead code elimination:}]
+   {{\bf(h)} {} Transformed LLVM IR after dead code elimination:}]
 define double @example(double %0, double %1) {              
  %3 = call double @abs(double %0) 
  %4 = call double @abs(double %1)
