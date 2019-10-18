@@ -521,7 +521,6 @@ Constraint ValueChain
 ([$\tt \land$]) {element[3]} ([$\tt \in$]) {element[4]}.args)
 End
 \end{lstlisting}
-\vspace{-0.3cm}
 \caption{Example for the expansion of range constraints in CAnDL:
          The specification at the top can be ``unrolled'' manually,
          resulting in the equivalent, but more verbose, specification below.
@@ -530,8 +529,8 @@ End
 \end{figure}
 
     Building on top of the atomic constraints and the fundamental conjunction
-    and disjunction constructs, there are range based versions that operate on
-    arrays of variables:
+    and disjunction constructs, there are range based constraints that operate
+    on arrays of variables:
 \begin{figure}[h]
   \centering
   \begin{tabular}{|c|}
@@ -551,14 +550,17 @@ End
     In both cases, the program specifies an array of five variables with data
     flow from each element to the next.
     This shows how {\it foreach} can be expanded by duplicating the contained
-    formula, with logical conjunctions ($\land$) binding the replicas of the
+    formula, with logical conjunctions binding the replicas of the
     formula together.
-    Otherwise identical, the {\it forany} construct invokes logical
-    disjunctions ($\lor$) instead.
+    Otherwise identical, the {\it forany} construct is based on logical
+    disjunctions instead.
 
-    Although variable identifiers are black boxes to atomic constraints, their
-    syntactic structure is clearly relevant to range expressions.
-    Variable identifiers are constructed as follows:
+    The syntactic structure of variable identifiers carries no semantic
+    information for atomic constraints.
+    This is clearly not true for range expressions, which rely on index
+    calculations in order to evaluate the underlying variables.
+    Therefore, it is important to now introduce the precise syntax for variable
+    names, which are constructed as follows:
 
 \begin{figure}[h]
   \centering
