@@ -273,16 +273,15 @@ End
     The solver then finds a single solution to the constraint problem.
 
 \begin{figure}[ht]
-Original C code:
-\begin{lstlisting}[language={C++}]
+\begin{lstlisting}[language={C++},captionpos=t,title=
+   {{\bf(a)} {} Original C code:\leftskip=0pt}]
 int example(int a, int b, int c) {
     int d = a;
     return (a*b) + (c*d);
 }
 \end{lstlisting}
-\vspace{1em}
-Resulting LLVM IR:
-\begin{lstlisting}[escapeinside={(*}{*)},language={LLVM}]
+\begin{lstlisting}[escapeinside={(*}{*)},language={LLVM},captionpos=t,title=
+   {{\bf(b)} {} Resulting LLVM IR:\leftskip=0pt}]
 define i32 @example(i32 %a, i32 %b, i32 %c) {
   %1 = mul i32 %a, %b
   %2 = mul i32 %c, %a
@@ -290,15 +289,13 @@ define i32 @example(i32 %a, i32 %b, i32 %c) {
   ret i32 %3
 }
 \end{lstlisting}
-\vspace{1em}
-Detected factorization opportunities:
-\begin{lstlisting}[escapeinside={(*}{*)},language={}]
+\begin{lstlisting}[escapeinside={(*}{*)},language={},captionpos=t,title=
+   {{\bf(c)} {} Detected factorization opportunities:\leftskip=0pt}]
 { "sum" :          %3,
   "left_addend" :  %1,
   "right_addend" : %2,
   "factor" :       %a }
 \end{lstlisting}
-\vspace{-0.3cm}
 \caption{Demonstration of simple idiom detection}
 \label{fig:firstexample}
 \end{figure}
