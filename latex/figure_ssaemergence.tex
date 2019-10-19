@@ -3,7 +3,7 @@
    {{\bf(a)} {} C source function\leftskip=0pt}]
 double sqrt(double S) {
   double x = 1.0;
-  for(int i = 0; i<N; i++)
+  for(int i=0; i<N; i+=1)
     x = 0.5 * (x + S / x);
   return x;
 }
@@ -20,7 +20,7 @@ header:
   int i2 = /* if reached
     from line  5: i,
     from line 23: i3 */
-  int x_2 = /* if reached
+  int x2 = /* if reached
     from line  5: x,
     from line 23: x3 */
   bool test = i2 < N;
@@ -46,11 +46,11 @@ exit:
    {{\bf(b)} {} Complex expressions are broken down\leftskip=0pt}]
 double sqrt(double S) {
   double x = 1.0;
-  for(int i = 0; i<N; i++)
+  for(int i=0; i<N; i+=1)
   {
     double t1 = S / x;
     double t2 = x + t1;
-    root = 0.5 * tmp2;
+    x = 0.5 * t2;
   }
   return x;
 }
@@ -72,7 +72,7 @@ header:
 loop:
   double t1 = S / x;
   double t2 = x + t1;
-  root = 0.5 * t2;
+  x = 0.5 * t2;
   i = i+1;
   goto header;
 

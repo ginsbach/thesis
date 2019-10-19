@@ -261,19 +261,17 @@
 
 \section{Deriving an SSA Model}
 
-    In order to develop constraint programming on real world SSA programs with
-    mathematical rigour, a sound model is needed first.
+    This section develops a mathematical model for programs that are in
+    SSA form.
     The aim here is not to introduce an operational semantics, or more
-    generally to derive a model for the execution of SSA programs.
-    Instead, the section will investigate the static structure, focusing on
-    clear notation of the commonalities of existing SSA intermediate
+    generally to derive a model for the execution of such programs.
+    Instead, the section investigates the static structure, focusing on
+    precise notation for the commonalities of existing SSA intermediate
     representations.
     This requires naming conventions for some of the basic features of
     SSA programs.
     The remainder of this section adheres to \Cref{def:ssa} when referring to
     these features.
-    No specific representative of the class of SSA representations is chosen
-    here.
 
 \begin{figure}[h]
 \begin{definition}{Features of Static Single Assignment Functions}{ssa}
@@ -285,86 +283,103 @@
     \begin{itemize}
     \item $|par|$ is the number of function parameters
           $par_1,\dots par_{|par|}$.
-    \item $|ins|$ is the number of instructions $ins_1,\dots ins_{|ins|}$ in the
-          function, ordered depth first, starting from the execution entry.
+    \item $|ins|$ is the number of instructions $ins_1,\dots ins_{|ins|}$ that
+          make up the function, in depth-first order, starting from the
+          execution entry.
     \item $|glb|$ is the number of unique globals $glb_1,\dots glb_{|glb|}$ that
-          are referenced as an operand of any of the instructions.
+          are used as an operand of any of the instructions.
     \item $|cst|$ is the number of unique constants $cst_1,\dots cst_{|cst|}$
-          that are referenced as an operand of any of the instructions.
+          that are used as an operand of any of the instructions.
     \end{itemize}
 \end{definition}
 \end{figure}
 
-    This notation fixes several decisions about the utilised model.
-    Firstly, the model captures only a single function.
-    Secondly, basic block structures are not explicitly encoded.
-    Instead, all instructions of the function are listed sequentially in depth
-    first order, starting from the function entry.
-    Basic blocks can be reconstructed from the control flow, as discussed later.
-    Thirdly, the argument structure of the instructions is not represented and
-    will instead be modeled separately.
+    This notation already implies several decisions about the SSA model that is
+    derived in this section.
+    Firstly, the model captures only a single function at once.
+    Secondly, basic blocks are not explicitly encoded.
+    Instead, all instructions of the function are enumerated sequentially in
+    depth-first order, starting from the function entry.
+    Basic blocks can, however, be reconstructed from the control flow, as
+    discussed in \Cref{sec:remainingstructure}.
+    Thirdly, the argument structure of the instructions is modelled separately.
 
 \subsection{Data Flow and Control Flow}
 
-    The data flow between instructions as well as the control flow is captured
+    The data flow between instructions, as well as the control flow, is captured
     in graph structures.
-    The static single assignment property makes registers implicit, therefore
-    the direct interaction between instructions becomes the natural model for
-    data flow.
+    The Static Single Assignment property makes registers implicit, and the
+    direct interaction between instructions becomes the natural model for data
+    flow.
     Instruction arguments fall into four categories: function parameters,
-    constants, globals and other instructions.
+    other instructions, constants, and globals.
     Branching instructions also take basic block labels as branch targets,
-    but they can be treated separately in the control flow graph that is
+    but those are treated separately in the control flow graph that is
     introduced later.
     All instruction arguments are therefore taken from the named sets introduced
     in \Cref{def:ssa}.
 
-    For each function, these sets can be statically determined and are finite.
-    Therefore, a single integer is enough to encode each instruction argument as
-    an index into the union of those four sets.
-    Together with the list based representation, this allows for the
-    entire argument structure of the instructions in an SSA function to be
-    conveniently turned into a labelled multigraph, with edge labels accounting
-    for the positional order of the arguments.
-    These observations lead to the definition of the set of used values in
-    \Cref{def:usedvalues} and the data flow graph in \Cref{def:dfg}.
+    For each function, the sequences $par$, $ins$, $gbl$, $cst$ can be
+    statically determined.
+    Therefore, individual instruction arguments can be encoded by one integer
+    each, indexing into the union of those four sequences.
+%    Therefore, a single integer is enough to encode each instruction argument as
+%    an index into the union of those four sequences.
+    This allows for the entire argument structure of the instructions in an SSA
+    function to be turned into a labelled multigraph, with edge labels
+    accounting for the positional order of the arguments.
+    These observations lead to the definition of the {\it set of used values} in
+    \Cref{def:usedvalues} and the {\it data flow graph} in \Cref{def:dfg}.
 
 \begin{figure}[h]
 \begin{definition}{Set of Used Values}{usedvalues}
     The {\em set of used values} of the SSA function $\mathcal F$ is the tuple
     \begin{align*}
-       val_1,\dots,val_{|val|} := par_1,\dots par_{|par|},
-                                  ins_1,\dots ins_{|ins|},
-                                  glb_1,\dots glb_{|glb|},
-                                  cst_1,\dots cst_{|cst|}.
+       val_1,\dots,val_{|val|} = par_1,\dots,par_{|par|},
+                                 ins_1,\dots,ins_{|ins|},
+                                 glb_1,\dots,glb_{|glb|},
+                                 cst_1,\dots,cst_{|cst|}.
     \end{align*}
-    The value $|val|:=|par|+|ins|+|glb|+|cst|$ is the
-    {\em number of used values}.
 \end{definition}
 
 \begin{definition}{Data Flow Graph}{dfg}
     The {\em data flow graph} of the SSA function $\mathcal F$ is the set
     $DFG_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (n,a,b)\in DFG_{\mathcal F}\iff 1\leq a\leq |val|
-            \mathrel{\land}(val_a\text{ is the $n$th argument of }ins_b).
+        (n,a,b)\in DFG_{\mathcal F}\iff{}&1\leq a\leq |val|
+            \mathrel{\land}1\leq b-|par|\leq |ins|\\
+            \mathrel{\land}{}&(val_a\text{ is the $n$th argument of }ins_{b-|par|}).
     \end{align*}
+    For $\Phi$-instructions, the incoming basic blocks are ordered according to
+    the order on $ins$.
+    The $n$th argument is the incoming value attached to the $n$th incoming
+    basic blocks.
 \end{definition}
 \end{figure}
 
     Complementing the data flow graph is the control flow graph of the function,
     as introduced in \Cref{def:cfg}.
-    The control flow graph is often defined on a basic block granularity, but
-    here it oprerates directly on instructions, in order to better complement
-    the data flow graph.
-    The basic block structure is easily recoverable from this representations.
+    The control flow graph is often defined with edges between basic blocks.
+    However, in this definition, the edges are directly between instructions.
+    This is convenient in later
+    \Cref{sec:constraintprogramming,sec:constraintsolving}, where both graphs
+    can be treated identically.
+
+    The defining equation can be separated into several parts.
+    The first line expresses that edges in the control flow graph are always
+    between two instructions.
+    The remainder of the equation gives two options, corresponding to different
+    types of edges in the control flow graph.
+    Firstly, there are the trivial edges within a basic block.
+    Secondly, there are edges between basic blocks.
+
 
 \begin{figure}[h]
 \begin{definition}{Control Flow Graph}{cfg}
     The {\em control flow graph} of the SSA function $\mathcal F$ is the set
     $CFG_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (n,a,b)&{}\in CFG_{\mathcal F}\iff |par|<a,b\leq |par|+|ins|\mathrel{\land}\\
+        (n,a,b)&{}\in CFG_{\mathcal F}\iff 1<a-|par|\leq|ins|\mathrel{\land}1<b-|par|\leq|ins|\mathrel{\land}\\
                &\left(\begin{aligned}[c]
                                     (\neg (ins_{a-|par|}\text{ terminates basic block})\mathrel{\land}{}&b=a+1\mathrel{\land}n=1)\\
                       \mathrel{\lor}(\phantom{\neg}(ins_{a-|par|}\text{ terminates basic block})\mathrel{\land}{}&ins_{b-|par|}\text{ first instruction in}\text{ $n$th}\\[-0.5em]
@@ -374,27 +389,17 @@
 \end{definition}
 \end{figure}
 
-    The control flow graph in \Cref{def:cfg} is defined using individual
-    instructions, not basic blocks.
-    Edges are therefore of two distinct types:
-    They are either an edge within a basic block, or they are an edge between
-    the last instruction of one basic block and the initial instruction of an
-    another.
-    This has implications for modeling $\Phi$-instructions, which are naturally
-    attached to basic blocks.
-    They are instead modeled as instructions, with their value depending on the
-    last executed jump instruction.
-
 \subsection{Identifying Remaining Structure}
+\label{sec:remainingstructure}
 
     With the control flow and data flow separated into distinct mathematical
-    structures, individual instructions are encoded by their opcodes alone.
+    structures, individual instructions are encoded by their opcodes.
     This is demonstrated in \Cref{fig:separation}.
     At the top of the figure is a simple function in an abstract SSA
     representation.
     It calculates an approximation of the square root of a number using the
     Babylonian method, as previously introduced in \Cref{ssaexample}.
-    The function has 11 instructions separated into 4 basic blocks, with the
+    The function has 11 instructions separated into four basic blocks, with the
     majority of the instructions in a loop structure that iteratively improves
     the result.
 
@@ -417,10 +422,11 @@
         \item $A$ does not have exactly one outgoing edge to $B$ or
         \item $B$ does not have exactly one incoming edge from $A$.
     \end{itemize}
-    \item Basic block labels and register names can be chosen arbitrarily.
-    \item The arguments of all operations can be immediately filled in with the 
+    \item Basic block labels and register names can be chosen arbitrarily, they
+          carry no meaning.
+    \item The arguments of all operations can be immediately filled in from the 
           DFG. Similarly, the CFG directly provides the target instructions
-          for goto statements.
+          for all goto statements.
     \item Incoming edges of $\Phi$-instructions are matched to incoming values
           using the convention that the incoming values are ordered
           (with respect to their labels in the data flow graph) according to the
@@ -677,6 +683,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \end{figure}
 
 \section{Constraint Programming on SSA Programs}
+\label{sec:constraintprogramming}
 
     With a mathematical model of SSA programs in place, properties of such
     programs can now be formulated as constraint problems.
@@ -796,7 +803,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
     The next sections derive how a backtracking solver can
     be used to efficiently compute the set of solutions.
 
-\subsection{Solving of SSA Constraint Problems}
+\section{Solving of SSA Constraint Problems}
+\label{sec:constraintsolving}
 
     A solver for SSA constraint problems needs to efficiently compute $S_M(V,C)$
     for some concrete $(V,C)$ and $M$.
