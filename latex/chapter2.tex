@@ -1,36 +1,48 @@
 
     The research contributions of this thesis are based on a novel constraint
-    programming approach on compiler intermediate representation.
-    This chapter derives and motivates the underlying methodology of this
-    approach in several steps.
+    programming approach on Static Single Assignment (SSA) compiler intermediate
+    representation.
+    This chapter derives and motivates the underlying methodology, which is
+    then used as the basis for
+    \Cref{chapter:candl,chapter:reductions,chapter:idioms}.
+    The constraint programming approach is derived in three steps.
 
-    First, a quick overview of compiler representations during different
-    compilation stages is given and the particular features of static single
-    assignment (SSA) form are highlighted.
-    SSA is then formalised into a mathematical model that captures the static
+    First, an overview of program representations during different compilation
+    stages is given, and the particular features of SSA representations are
+    highlighted.
+    These features are then used to derive a model that captures the static
     structure of SSA programs.
-    This model is initially derived for SSA is general, and then demonstrated in
-    more detail on \mbox{LLVM IR}, a specific SSA language.
+    The section uses some mathematical notation in an attempt to build a
+    reliable foundation for later parts of the thesis.
+    The {\it List of Symbols and Notation} contains many of the presumed
+    notational conventions.
+    The SSA model is initially derived generically and then demonstrated in
+    more detail on \mbox{LLVM IR}, a specific SSA compiler intermediate
+    representation.
 
-    On the SSA model, the concept of SSA constraint problems is defined.
-    These constraint problems are formulas that impose restrictions on fragments
-    of SSA code.
-    The formulas can define code structures such as loops in the context of the
-    SSA model.
-    Detecting adhering code sections in SSA programs is then equivalent to
-    finding solutions to the SSA constraint problem.
-    The structure of several classes of constraint formulas is discussed.
+    After the derivation of the SSA model, the concept of SSA constraint
+    problems is defined.
+    These are formulas that impose restrictions on parts of SSA code,
+    formulated as constraints on the SSA model.
+    SSA constraint problems define code structures such as loops, and detecting
+    adhering code sections in SSA code is then equivalent to finding
+    solutions to the constraints.
+    The structure of several classes of constraint formulas is discussed,
+    reflecting conventional compiler analysis methods like data flow,
+    dominance relationships, and data type restrictions.
 
-    Finally, algorithms for solving constraint problems are derived.
-    Backtracking is used to quickly find solutions by incrementally extending
+    Finally, efficient algorithms for SSA solving constraint problems are
+    derived.
+    Backtracking is used to find solutions quickly by incrementally extending
     partial solutions.
-    It is discussed in detail how to use the internal structure of specific
-    classes of SSA constraint problems for efficient backtracking solutions.
-    After discussing the algorithms abstractly, an implementation of these
-    algorithms with suitable data structures is drafted and the runtime
-    complexity is discussed.
-    In the last section, similarities and differences to standard Satisfiability
-    Modulo Theory (SMT) problems are explored.
+    The structure of specific classes of SSA constraint problems is analysed,
+    and efficient backtracking solutions are derived individually, yielding
+    composable building blocks for the solver.
+    After deriving the algorithms, implementation considerations are
+    discussed.
+    Suitable data structures are selected, and runtime complexity is analysed.
+    To conclude the chapter, similarities and differences to standard
+    Satisfiability Modulo Theory (SMT) problems are explored.
 
 %    Constraint formulas on SSA respresentations initially appear to mimic
 %    pattern matching approaches on abstract syntax tree (AST) level.
@@ -59,98 +71,97 @@
 %    This gives further insights into performance improvements and puts the
 %    work into a broader theoretical context.
 
-\pagebreak
 \section{Introduction}
 
     Modern compilers for procedural languages such as
     C/C++, Fortran or JavaScript typically use a succession of different
     representations for the program during compilation.
-    They can be grouped into categories and reflect the requirements of
-    the compilation stages they are used in.
+    They reflect the requirements of the compilation stages in which they are
+    used.
 
     \begin{description}[style=unboxed,leftmargin=0cm,labelindent=\parindent]
     \item[Front end representations] are close to the source program and
-    naturally the internals of the compiler front end, especially the parser.
-    Typically, they are built around an abstract syntax tree with
-    additional annotations, such as type information.
+    are strongly influenced by the specific grammar of the programming language.
+    Typically, they are built around an abstract syntax tree with additional
+    annotations, such as type information.
     These representations are rich in information about syntactic and stylistic
-    choices of the programmer and they scale in complexity with the source
+    choices of the programmer, and they scale in complexity with the source
     language.
-    Some complex language features, such as overloaded operators, are not
+    Some advanced language features, such as overloaded operators, are not
     resolved in this class of representations.
-    This means that the semantics of program parts in these representations
-    depend highly on context.
+    Therefore, the semantics of program parts in these representations
+    is highly dependent on context.
 
-    \item[\bf Back end representations] are based on a model of the target hardware.
+    \item[\bf Back end representations] are based on a model of the target
+    hardware.
     They typically approach an assembly style format and expose the instruction
-    set architecture of the hardware, making them platform specific.
-    Back end representations also encode decisions about problems that are
-    removed from the algorithmic core of the user program, such as instruction
+    set architecture of the hardware, making them platform-specific.
+    Back end representations also encode decisions for problems that are removed
+    from the algorithmic content of the user program, such as instruction
     selection and register allocation.
 
-    \item[\bf Mid end representations] are designed to be suitable for the
-    analysis and transformation of code in order to apply optimisations.
-    {\bf Static Single Assignment} (SSA) form has emerged as a common choice for
-    the mid end in leading compilers.
+    \item[\bf Middle end representations] are designed to enable the analysis
+    and transformation of code in order to apply optimisations.
+    {\bf Static Single Assignment} (SSA) representations have emerged as a
+    common choice for the middle end in leading compilers.
     SSA abstracts away the complexities of the source language and the
     target architecture, focusing on a relatively simple description of the
-    semantics of the user program that enables reliable analysis and platform
-    independent reasoning.
-    This is why it was chosen as the basis for this work.
+    semantics of the user program.
+    This enables reliable analysis and platform-independent reasoning.
     \end{description}
 
     Static Single Assignment was first proposed by
     \citet{Rosen:1988:GVN:73560.73562}, and there are now many different
-    intermediate representations that implement the concept.
+    compiler intermediate representations that implement the concept.
     Instruction set, type system and syntax
-    (if a textual representation is even specified) of these different
-    representations vary
-    considerably, depending on the requirements of the source languages
+    (if a textual representation is even specified) of these representations
+    vary considerably, depending on the requirements of the source languages
     (static or dynamic) and the operating constraints
     (just-in-time or ahead-of-time).
-    Some prominent examples of compilers that use SSA include
-    {\bf clang} (LLVM IR), {\bf gcc} (GIMPLE), {\bf v8 Crankshaft} (Hydrogen)
+    Some prominent examples of compilers using SSA include
+    {\bf clang} (LLVM IR), {\bf GCC} (GIMPLE), {\bf v8 Crankshaft} (Hydrogen),
     and {\bf SpiderMonkey} (IonMonkey/MIR).
     Despite many differences, they share the same basic structure that is
     discussed in this chapter.
 
-    SSA form was developed as an improvement over previously used compiler
-    intermediate representations.
+    SSA form was developed as an improvement over previously used
+    compiler intermediate representations.
     Specifically, the eponymous static single assignment property applies to
     more general {\em linear intermediate representations} as an additional
     restriction, as described in \citet{Torczon:2007:EC:1526330}.
-    The following section gives an overview of the shared properties of SSA form
-    representations that are relevant for this work.
+    The following \Cref{sec:ssaf} gives an overview of the characteristic shared
+    features of SSA representations that are relevant for this work.
 
 \subsection{Static Single Assignment Form}
+\label{sec:ssaf}
 
     SSA representations are linear intermediate representations, meaning that
-    they are based on a single linear sequence of instructions per function.
+    they represent each function as a single linear sequence of instructions.
     These instructions operate on an unlimited amount of registers, using a well
-    defined -- but implementation specific -- instruction set.
+    defined -- but representation specific -- instruction set.
     Branch instructions are used to redirect the execution conditionally or
     unconditionally.
-    Consecutive instructions with no such branching between them are grouped
-    into basic blocks.
+    Consecutive instructions with no branching between them are grouped into
+    basic blocks.
     Within these, instructions are executed in order of appearance.
-    The basic blocks may have labels or be identified simply by enumerating
-    them.
+    Basic blocks may have labels or be identified simply by enumerating them.
     Instruction arguments can be registers, constants, globals or function
     parameters.
-    Branch instructions furthermore use basic block arguments as branch targets.
-    Instructions can write their result into a single output register.
+    Branch instructions furthermore take basic block arguments as branch
+    targets.
+    Instructions may write their result into a single output register.
 
     The SSA property stipulates that within a function, no register can be
     written at more than a single static location.
     This means that registers can be identified directly with the instructions
-    that write to them.
-    The registers can therefore be considered implicit, with only the data flow
+    that define them.
+    The registers can, therefore, be made implicit, with only the data flow
     between instructions required to recover them.
     In the presence of dynamic control flow, \mbox{$\Phi$-instructions} are
     required to uphold the SSA property.
     These \mbox{$\Phi$-instructions} are placed at the beginning of a basic
     block, and select one of several values dynamically, depending on the origin
-    incoming branch instruction, i.e.\ depending on the previously visited
+    of incoming branches, i.e.\ depending on the previously visited
     basic block.
 
     \Cref{fig:ssaoverview} shows how SSA programs can be represented as a
@@ -165,20 +176,18 @@
 \centering
 \includegraphics[width=\textwidth]{figures/ssaoverview}
 \caption{Structural overview of SSA: Programs are represented as hierarchies of
-    lists. The SSA property makes registers implicit, values can be statically
+    lists. The SSA property makes registers implicit; values can be statically
     matched to defining instructions.}
 \label{fig:ssaoverview}
 \end{figure}
 
-\subsection{Emergence of Static Single Assignment Form}
+\subsection{The Emergence of Static Single Assignment Form}
 
-    \Cref{ssaexample} shows many of the key features of static single assignment
-    form and how they naturally emerge from simplification steps of
-    the source code of procedural languages.
-    This is demonstrated on an example C function ``{\tt sqrt}'',
-    which  appriximates the square root of a double precision floating point
-    value using the Babylonian method, as described in
-    \Cref{babylonian_equation}.
+    \Cref{ssaexample} shows how critical features of SSA form emerge from
+    simplification steps of source code.
+    This is demonstrated on the ``{\tt sqrt}'' example function that
+    approximates the square root of a double-precision floating-point value
+    in C, using the Babylonian method described in \Cref{babylonian_equation}.
 
 \begin{equation}
     x_0\approx\sqrt{S},\text{\hspace{1cm}}
@@ -190,13 +199,13 @@
 
     Starting from the source code {\bf(a)} at the top left of the figure, the
     function is first modified by breaking down complex expressions.
-    This results in a sequentialisation of the expressions into their
-    basic operations, shown at the top right {\bf(b)}, introducing explicit
-    variables for the previously implicit temporary values.
+    The expressions are turned into sequences of basic operations, shown at the
+    top right {\bf(b)}.
+    Explicit variables appear for the previously implicit temporary values.
     This simplifies the program, with many of the operations directly mapping to
     individual processor instructions.
     Furthermore, different input programs get mapped to the same,
-    predictable ouput by this transformation, making it a normalisation.
+    predictable output by this transformation, making it a normalisation.
 
     In a second step, the structured control flow of the program is replaced
     with goto statements that coordinate the control flow between basic blocks.
@@ -204,38 +213,37 @@
     While this does not ease the intuitive understanding of the program, it
     unifies several distinct control flow structures provided in the source
     language into a single mechanism.
-    This makes automatic analysis of the program a less complex task.
+    This simplifies program analysis.
     Importantly, no relevant information is lost by discarding the control flow
     structures.
     They can be reconstructed algorithmically.
 
-    Finally, the static single assignment property is introduced at the bottom
+    Finally, the Static Single Assignment property is introduced at the bottom
     left {\bf(d)}.
-    Each variable that is assigned in more than one static place in the program
-    is instead duplicated into multiple variables.
+    Each variable that is assigned in more than one static locations in the
+    program is instead duplicated into multiple variables.
     Where necessary, these now distinct variables are bound together with
     $\Phi$-instructions.
-    This cannot be directly expressed in the C syntax.
-    Instead, the behaviour is documented by comments in lines 8-13.
+    This cannot be expressed in the C programming language syntax.
+    Instead, the behaviour is documented by comments in lines 8--13.
 
-    The impact of the static single assignment property seems minor
-    at first, but convenient implications can be identified already within the
-    C language.
+    The impact of the SSA property seems minor at first, but convenient
+    implications can be identified already within the C language.
     As all local variables are written in exactly one static location, each
     variable can be declared and defined in the same place.
-    This means that it is always known statically which expression yielded the
+    This means that it is always known statically, which expression yielded the
     value of each variable.
-    This immediately guarantees that the variable \texttt{i} in the example
-    always has the value \texttt{0}, and the variable \texttt{x} always has the
-    value \texttt{1.0}.
+    This immediately guarantees that the variable ``\texttt{i}'' in the example
+    always has the value \texttt{0}, and that the variable~``\texttt{x}'' always
+    has the value \texttt{1.0}.
 
     This section developed an understanding of how SSA form originated
-    historically, and how it emerges during the compilation process.
+    historically and how it emerges during the compilation process.
     The following section uses the observations from
     \Cref{fig:ssaoverview} -- that most parts of SSA code can be enumerated
     and represented as elements in lists -- to derive a model of the static
     structure of SSA programs.
-    This model then serves as the foundation for later sections, which define
+    This model then serves as the foundation of later sections, which define
     compiler analysis problems via constraint formulas on this model.
 
 \begin{figure}[p]
