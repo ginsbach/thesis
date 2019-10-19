@@ -143,7 +143,7 @@
 
 \section{Motivation}
 
-    Figure \ref{sum-figure} shows a standard scalar reduction.
+    \Cref{sum-figure} shows a standard scalar reduction.
     In a single loop, the elements of the array \texttt{a} are successively
     accumulated in the variable \texttt{sum} with the ``\texttt{+=}'' operator.
     This accumulation creates dependencies between successive loop iterations,
@@ -153,14 +153,13 @@
     \texttt{sum}, which are then added together to form the final value.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=C++,label={sum-figure},caption=
+    {The most conventional example of a reduction is adding up all values in an
+     array.\leftskip=0pt\rightskip=0pt}]
 sum = 0;
 for(i = 0; i < n; i++)
   sum += a[i];
 \end{lstlisting}
-\caption{The most conventional example of a reduction is adding up all values in
-         an array. \parfillskip=0pt}
-\label{sum-figure}
 \end{figure}
 
     Simple reductions frequently occur and can be readily detected by existing
@@ -172,7 +171,7 @@ for(i = 0; i < n; i++)
     The parallelisation of simple reductions alone therefore often has limited
     impact on program performance.
 
-    Figure \ref{complex-reduction-figure} in contrast shows a more complex
+    \Cref{complex-reduction-figure} in contrast shows a more complex
     section of code that constitutes a performance bottleneck of a standard
     benchmark program
     (``Embarrassingly Parallel'' of the NAS Parallel Benchmarks).
@@ -182,12 +181,16 @@ for(i = 0; i < n; i++)
     privatisation.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=C++]
-for (i = 0; i < NK; i++) {
+\begin{lstlisting}[language=C++,label={complex-reduction-figure},caption=
+   {Example of ``complex reductions and histograms'' computation:
+    This bottleneck from NAS Parallel Benchmarks can be parallelised as
+    reductions by privatising variables \texttt{sx}, \texttt{sy}, \texttt{q[]}.
+    \parfillskip=0pt}]
+for(i = 0; i < NK; i++) {
   x1 = 2.0 * x[2*i] - 1.0;
   x2 = 2.0 * x[2*i+1] - 1.0;
   t1 = x1 * x1 + x2 * x2;
-  if (t1 <= 1.0) {
+  if(t1 <= 1.0) {
     t2   = sqrt(-2.0 * log(t1) / t1);
     t3   = (x1 * t2);
     t4   = (x2 * t2);
@@ -198,11 +201,6 @@ for (i = 0; i < NK; i++) {
   }
 }
 \end{lstlisting}
-\caption{Example of ``complex reductions and histograms'' computation:
-         This bottleneck from NAS Parallel Benchmarks can be parallelised
-         as reductions by privatising variables \texttt{sx}, \texttt{sy},
-         \texttt{q[]}.\parfillskip=0pt}
-\label{complex-reduction-figure}
 \end{figure}
 
     The loop in \ref{complex-reduction-figure} is considered as a
@@ -457,7 +455,10 @@ chase = 0;
 for(i = 0; i < n; i++)
     chase = a[chase];
 \end{lstlisting}
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=C++,label={counterexamples},caption=
+   {Counterexamples to the four conditions: None of these computations can be
+    parallelised as scalar reductions.
+    The first and last example implement the same program.\parfillskip=0pt}]
 sum = 0;
 active = false;
 for(i = 0; i < n; i++) {
@@ -465,10 +466,6 @@ for(i = 0; i < n; i++) {
     active = active && (sum < 10);
 }
 \end{lstlisting}
-\caption{Counterexamples to the four conditions: None of these computations can
-         be parallelised as scalar reductions.
-         The first and last example implement the same program.\parfillskip=0pt}
-\label{counterexamples}
 \end{figure}
 
     \paragraph*{Counterexamles}
@@ -560,7 +557,11 @@ for(i = 0; i < n; i++) {
         hist[a[i]] += 1;
 }
 \end{lstlisting}
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=C++,label={counterexamples2},caption=
+   {Counterexamples to the last three conditions:
+    None of these computations can be parallelised as histograms.
+    The final two example loops implement the same functionality.
+    \parfillskip=0pt}]
 active = 0;
 for(i = 0; i < n; i++) {
     if(a[i] > 9)
@@ -568,10 +569,6 @@ for(i = 0; i < n; i++) {
     hist[a[i]] += active?1:0;
 }
 \end{lstlisting}
-\caption{Counterexamples to the last three conditions: None of these
-         computations can be parallelised as histograms.
-         The final two example loops implement the same functionality.\parfillskip=0pt}
-\label{counterexamples2}
 \end{figure}
 
 \begin{figure}[p]
@@ -637,10 +634,10 @@ formal language  to achieve this.
 %The separation of the detection algorithm and the specification of the idiom 
 % allows for a very modular and extensible system.
 
-Figure \ref{for-loop-constraints} shows
+\Cref{for-loop-constraints} shows
 the formulation of the first condition regarding the type of loop structure allowed in this language.  
-Figure \ref{dom-expr-constraints} specifies the fourth condition.
-The first item in Figure \ref{dom-expr-constraints}  requires some clarifications.
+\Cref{dom-expr-constraints} specifies the fourth condition.
+The first item in \Cref{dom-expr-constraints}  requires some clarifications.
 When we say that a node $a$ is {\tt 1+dominat}ed by nodes $b_1,\dots,b_n$, we do not mean that each individual node $b_k$ dominates $a$.
 Instead we mean that each path from a source (non pure function call, load instruction) to $a$ has to pass through {\em at least one} of the nodes $b_1,\dots,b_n$.
 This ensures that no other inputs influence the value of $x'$.
@@ -666,7 +663,8 @@ Due to space we omit further details.
     shown in \Cref{fig:kernel}.
 
 \begin{figure}[ht]
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,label={fig:kernel},caption=
+   {CAnDL Formulation of Kernel Functions}]
 Constraint KernelFunction
 ( collect i N
 ([$\tt \land$]) ( include LocalConst({outer}->{begin}*@*{closure[i]}
@@ -683,9 +681,6 @@ Constraint KernelFunction
    {output}))
 End
 \end{lstlisting}
-\vspace{-0.3cm}
-\caption{CAnDL Formulation of Kernel Functions}
-\label{fig:kernel}
 \end{figure}
 
     Essentially, this set of contraints captures the computation of a
@@ -838,7 +833,7 @@ various schemes. This is followed an analysis of how significant each
 reduction is. Finally we show the performance impact of our scheme.
    
 \subsection{Discovery}
-We applied our approach to the three benchmark suites  and the results are shown in Figures \ref{npb_spotted}, \ref{parboil_spotted} and \ref{rodinia_spotted}. 
+We applied our approach to the three benchmark suites  and the results are shown in \Cref{npb_spotted,parboil_spotted,rodinia_spotted}. 
 Across the suites, our detection algorithms
 was able to identify 84 scalar reductions and 6 histogram reductions.
 
@@ -1325,8 +1320,9 @@ Polly+Reduction generally struggled with the more complex code bases of the
 Rodinia and Parboil benchmarks.  This was often not due to fundamental
 limitations of the polyhedral model.  Instead it was mostly the result
 of not statically known iteration spaces and the use of flat array
-structures.  Figures  \ref{npb_scops},\ref{parboil_scops},\ref{rodinia_scops}
-shows the number of static control-flow
+structures. 
+\Cref{npb_scops,parboil_scops,rodinia_scops}
+show the number of static control-flow
 regions SCoPs that baseline Polly finds. As the reduction pass of
 Polly requires SCoPS these provide a natural upper bound on the
 number of restrictions.  On 23 of the 40 benchmarks, Polly found no
