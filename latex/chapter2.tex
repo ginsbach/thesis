@@ -798,68 +798,68 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \section{Solving of SSA Constraint Problems}
 \label{sec:constraintsolving}
 
-    A solver for SSA constraint problems needs to efficiently compute $S_M(V,C)$
+    The solver for SSA constraint problems should efficiently compute $S_M(V,C)$
     for some concrete $(V,C)$ and $M$.
     This is a search problem:
-    All values in $\mathbb N^V$ that satisfy $C$ with the context $M$ need to
-    be identified.
+    All values in $\mathbb N^V$ that satisfy $C$ in the context $M$ need to be
+    identified.
 
-    $\mathbb N^V$ is infinitely large, although the relevant search space can
-    immediately be trimmed to only tuples that have all values $\leq|vals|$.
-    The case \mbox{$|V|>50$} is common in later section, and \mbox{$|vals|>100$}
-    is likely for interesting SSA functions.
-    The remaining search space therefore still has $100^{50}=10^{100}$ elements.
-    This means that a brute force search is unfeasible, even assuming that
-    the direct evaluation of $C$ for any potential solution can be performed
-    efficiently for any candidate.
+    The search space $\mathbb N^V$ is infinitely large, but it can immediately
+    be trimmed to only tuples that have all values $\leq|vals|$.
+    The case \mbox{$|V|>50$} is common in
+    \Cref{chapter:candl,chapter:reductions,chapter:idioms}, and interesting
+    functions often have \mbox{$|vals|>100$}.
+    The remaining search space therefore has $>100^{50}=10^{100}$ elements.
+    Brute force search is unfeasible on such a large search space, even when assuming
+    that the direct evaluation of the predicate for any potential solution can
+    be performed efficiently.
     However, backtracking can be used to find partial solutions, which are
     incrementally extended.
-    This prunes the search space more effectively.
 
 \begin{figure}[h]
     \begin{definition}{Backtracking Solution of Constraint Problems}{backtracking}
-        Given a constraint problem $(V,C)$, an order $V=\{v_1,\dots,v_n\}$ with
-        the corresponding projections $p_k\colon\mathbb N^V\rightarrow\mathbb N^k$,
-        $x\mapsto(x_{v_1},\dots x_{v_k})$ can be choosen.
-        Then a collection $(P_k)_{k=1\dots n}$ of functions
-        $P_k:\mathcal M\times \mathbb N^{k-1}\times\rightarrow\mathcal P(\mathbb N)$,
+        For a constraint problem $(V,C)$, an enumeration of
+        $V=\{v_1,\dots,v_n\}$ with corresponding projections
+        $p_k\colon\mathbb N^V\rightarrow\mathbb N^k$,
+        $x\mapsto(x_{v_1},\dots x_{v_k})$ can be chosen.
+        Then a collection $(B_k)_{k=1\dots n}$ of functions
+        $B_k:\mathcal M\times \mathbb N^{k-1}\times\rightarrow\mathcal P(\mathbb N)$,
         where $\mathcal P(\mathbb N)$ is the set of all subsets of $\mathbb N$,
         is a {\em backtracking solution} of $(V,C)$ if and only if for all
         $x\in\mathbb N^V$ the following is satisfied
         \begin{align}
-            C(M,x)=1\iff\left[x_{v_k}\in P_k(M,p_{k-1}(x))=1\text{ for all }1\leq k\leq n\right].
+            C(M,x)=1\iff\left[x_{v_k}\in B_k(M,p_{k-1}(x))=1\text{ for all }1\leq k\leq n\right].
         \end{align}
     \end{definition}
 \end{figure}
 
-    Note that \Cref{def:backtracking} defines the concept of a backtracking
-    solution, but it does not show how such a backtracking solution could
-    actually be constructed.
-    That is a topic of later sections.
-    In this context, the concept is introduced in order to allow the definition
-    of the backtracking search \Cref{backtrackalg}, which operates as
-    follows.
+    \Cref{def:backtracking} defines the concept of a backtracking solution, but
+    it does not show how such a backtracking solution could be constructed.
+    That is explained in the next section.
+    The concept is introduced in order to allow the definition of the
+    backtracking search \Cref{backtrackalg}, which operates as follows:
     The variable $x$ iterates over $\mathbb N^n$
-    (which is identified with $\mathbb N^V$ in line 7), while the variable $k$
-    tracks the number of currently considered dimensions of this partial
-    solution.
-    After initialisation in line 2, a single loop spans the remainder of the
-    algorithm.
+    (identified with $\mathbb N^V$ in line 7), while the variable $k$ tracks the
+    number of currently considered dimensions of this partial solution.
+    After the initialisation assignments in line 2, a single loop spans the
+    remainder of the algorithm.
     In each iteration, the algorithm tries to assign a valid value to the latest
-    element in the partial solution in line 4.
-    By convention, the minimum of an empty set yields the symbol ``$\infty$''.
-    If this occurs, the algorithm backtracks in lines 12--17.
-    Otherwise, the solution is either complete (lines 6--8), or the algorithm
-    increases the size of the partial solution in lines 9--11 and continues the
-    search for the next element of $x$ in the following iteration.
+    considered element in the partial solution $x$ (line 4).
+    By convention, the minimum of the empty set is the
+    \mbox{symbol ``$\infty$''}.
+    If this case occurs, the algorithm backtracks in lines 12--17.
+    Otherwise, the solution is either complete (lines 6--8), or the dimension
+    $k$ of the partial solution is increased in \mbox{line 10}, and the
+    algorithm continues by searching for the next element of $x$ in the
+    following iteration.
 
 \begin{algorithm}[p]
     \caption{Basic backtracking algorithm}
     \begin{algorithmic}[1]
-        \Procedure{Detect}{$M,(P_k)_{k=1\dots n}$}\vspace{-0.45em}
+        \Procedure{Detect}{$M,(B_k)_{k=1\dots n}$}\vspace{-0.45em}
             \State $k\gets1$,\quad$x\gets(1,\dots,1)\in\mathbb N^n$\vspace{-0.45em}
             \While{$true$}\vspace{-0.45em}
-                \State $x_k\gets min\{y\in P_k(M,p_{k-1}(x))\mid y\geq x_k\}$\vspace{-0.45em}
+                \State $x_k\gets min\{y\in B_k(M,p_{k-1}(x))\mid y\geq x_k\}$\vspace{-0.45em}
                 \If{$x_k<\infty$}\vspace{-0.45em}
                     \If{$k=n$}\vspace{-0.45em}
                         \State {\bf yield} $\{v_k\mapsto x_k\}_{k=1\dots n}\in\mathbb N^V$\vspace{-0.45em}
@@ -884,12 +884,12 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \subsection{Structure of Basic SSA Constraint Problems}
 
-    Basic construction rules for SSA constraint problems are the
-    element-of constraint problem in \Cref{def:elementofconstr}
+    Basic construction rules for SSA constraint problems are the element-of
+    constraint problem in \Cref{def:elementofconstr},
     and the conjunction and disjunction constraint problems in
     \Cref{def:conjconstr}.
-    \Cref{def:constrext} enables conjunctions or disjunctions of constraint
-    problems that are not defined the same set of variables.
+    \Cref{def:constrext} enables the composition of constraint problems that are
+    not defined on the same set of variables.
     The example in \Cref{fig:constraintsolution} can be constructed with only
     these rules.
 
@@ -897,7 +897,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \begin{definition}{Element-of Constraint Problem}{elementofconstr}
         For a set of tuples $S(M)\subset\mathbb N^V$ that is potentially
         dependent on the SSA model $M\in\mathcal M$
-        (i.e.\ $S(M):=DFG_\mathcal F^*$),
+        (e.g.\ $S(M)\approx DFG_\mathcal F^*$),
         the element-of constraint problem $(V,E_S)$ is given by
         \begin{align*}
             E_S(M,x)=\left\{\begin{array}{l}
@@ -907,10 +907,10 @@ define double @dot(double* %0, double* %1, i64 %2) {
         \end{align*}
     \end{definition}
 
-    \begin{definition}{Conjunction and Disjunction Constraint}{conjconstr}
-        For two constraint problems $(V,C)$ and $(V,C')$, the
-        conjunction constraint $(V,C\mathrel\land C')$ and the
-        disjunction constraint $(V,C\mathrel\lor C')$ are given by
+    \begin{definition}{Conjunction and Disjunction Constraint Problems}{conjconstr}
+        For two SSA constraint problems $(V,C)$ and $(V,C')$, the
+        conjunction constraint problem $(V,C\mathrel\land C')$ and the
+        disjunction constraint problem $(V,C\mathrel\lor C')$ are given by
         \begin{align*}
             &C\mathrel\land C'(M,x)=\left\{
                 \begin{array}{l}
@@ -929,7 +929,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
         For an SSA constraint problem $(V,C)$ and an injection
         $i:V\hookrightarrow W$, the constraint problem $(W,C^W)$ is given by
         \begin{align*}
-            C^W(M,x)=C(M,\{x_{i(v)}\}_{v\in V}).
+            C^W(M,x)=C\left(M,\left(x_{i(v)}\right)_{v\in V}\right).
         \end{align*}
     \end{definition}
 \end{figure}
