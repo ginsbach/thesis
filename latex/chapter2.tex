@@ -718,7 +718,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     Finally, the set of constraint solutions lists all those tuples for which
     the predicate holds.
 
-\subsection{Constraint Program Example}
+\subsection{SSA Constraint Problem Example}
 
 \begin{figure}[p]
     \input{latex/figure_solutionexample}
@@ -728,37 +728,54 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \label{fig:constraintsolution}
 \end{figure}
 
-    Consider the task of detecting in a program all simple loop iterators in a
-    function, shown in \Cref{fig:constraintsolution}.
-    The top {\bf a)} demonstrates how this can be translated into a constraint
-    problem, solved in the context of an SSA model.
-    For demonstration purposes, the SSA model that was derived in
-    \Cref{fig:derivemaths} is used.
+    Consider the task of detecting in a program all simple loop iterators.
+    These are variables within a loop that are incremented by a constant value
+    of one in each iteration.
+    \Cref{fig:constraintsolution} shows how this can be formulated as an
+    SSA constraint problem and then demonstrates the application of it with the
+    SSA model that was derived in \Cref{fig:derivemaths}.
+    The top {\bf(a)} of the figure first gives an intuition about how such a
+    compiler analysis task can be translated into a constraint problem, which is
+    then solved in the context of an SSA model.
 
-    Simple loop iterators show up in LLVM IR as data flow cycles with a phi node
-    and an add instruction.
-    This is expressed as a constraint problem at the top of the second part
-    {\bf b)} of the figure.
+    Simple loop iterators show up in LLVM IR as data flow cycles with a
+    $\Phi$-instruction and an addition.
+    This is expressed as a constraint problem at the top of the middle part
+    {\bf(b)} of the figure.
     The formulation introduces the variables
-    $V=\{\text{phi}, \text{update}, \text{step}\}$ and a predicate to
-    describe the required conditions on the variables.
-    The predicate is decomposed with logical conjunctions (``$\land$'') into
+    ``phi'', ``update'', and ``step'', and a predicate $C$ to describe the
+    required conditions on the variables.
+    The predicate is composed with logical conjunctions (``$\land$'') from
     several {\em element-of} relationships that have to hold simultaneously on
-    the structures of the model.
+    the structures of the model:
+    \begin{itemize}
+        \item The step size is contant one
+              [$(1,x_\text{step})\in C_\mathcal{F}$].
+        \item The updated iterator value is computed as an addition
+              [$(add,x_\text{update})\in I_\mathcal{F}$] of the previous
+              iterator value
+              [$(x_\text{phi},x_\text{update})\in DFG_\mathcal{F}^*$] and the
+              step size
+              [$(x_\text{step},x_\text{update})\in DFG_\mathcal{F}^*$].
+        \item The updated iterator is an incoming value
+              [$(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*$] to the
+              $\Phi$-instruction [$(phi,x_\text{phi})\in I_\mathcal{F}$] that
+              holds the current iterator value.
+    \end{itemize}
     Explicit control flow constraints for establishing the loop strucure are not
-    required, as the data flow with the $\Phi$ node already implies the presence
-    of a loop structure.
+    required, as the data flow with the $\Phi$-instruction already implies the
+    presence of a loop structure.
     Below the predicate formulation is the SSA model from
     \Cref{fig:derivemaths}.
 
-    At the bottom {\bf c)} of the figure, the set of constraint solutions is
+    At the bottom {\bf(c)} of the figure, the set of constraint solutions is
     shown.
     It contains as its only element the tuple
     $\{\text{phi}\mapsto6,\text{update}\mapsto14,\text{step}\mapsto19\}$.
     Note that elements of $\mathbb N^V$ can be identified as mappings
     $V\rightarrow\mathbb N$.
     The underlined strucures in the lower part of
-    \Cref{fig:constraintsolution} {\bf b)} demonstrate the validity of the
+    \Cref{fig:constraintsolution} {\bf(b)} demonstrate the validity of the
     solution:
     $(1,22)\in C_\mathcal F$ and $(1,9,17)\in DFG_\mathcal F$ and
     $(2,22,17)\in DFG_\mathcal F$ and $(\textit{phi},9)\in I_\mathcal F$ and

@@ -6,8 +6,8 @@
 {\LARGE$\underbrace{\text{Detect\vphantom{p}}}
                   _{\text{solver }S}
       \ \underbrace{\text{simple loop iterators}}
-                  _{\text{constraint problem }(V,C_{iter})}
-                  \ \text{in}
+                  _{\text{SSA constraint problem }(V,C)}
+                  \ \text{in the}
       \ \underbrace{\text{dot product function}}
                   _{\text{SSA model }M_{dot}}
                     \text{.}$}\\[2em]
@@ -30,7 +30,7 @@
                            (x_\text{phi},x_\text{update})
                             \in DFG_\mathcal{F}^*\mathrel\land\\
                &\phantom{(}(x_\text{step},x_\text{update})
-                            \in DFG_\mathcal{F}^* \mathrel\land
+                            \in DFG_\mathcal{F}^*\mathrel\land
                            (phi,x_\text{phi})
                             \in I_\mathcal{F}\mathrel\land\\
                &\phantom{(}(add,x_\text{update})
@@ -69,6 +69,6 @@
 {\bf(c)} {} Resulting set of constraint solutions:\\[1em]
 
 \centering
-{\LARGE$S_{M_{dot}}(V,C_{iter})=\{\{\text{phi}\mapsto9,
-                                    \text{update}\mapsto17,
-                                    \text{step}\mapsto22\}\}\subset\mathbb N^V$}
+{\LARGE$S_{M_{dot}}(V,C)=\{\{\text{phi}\mapsto9,
+                             \text{update}\mapsto17,
+                             \text{step}\mapsto22\}\}\subset\mathbb N^V$}
