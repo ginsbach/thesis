@@ -15,28 +15,29 @@
     \item $DFG_\mathcal{F}\subset\mathbb N^3$ and
           $CFG_\mathcal{F}\subset\mathbb N^3$ are the data flow and control
           flow graph.
-    \item $T_\mathcal F\subset Types\times\mathbb N$ is the type model, defined
-          by the property
+    \item $T_\mathcal F\subset Types\times\mathbb N$ is the {\it type model},
+          defined by the property
           \begin{align*}
-              (ty,k)\in T_\mathcal F\iff 1\leq k\leq |val|
-                  \mathrel{\land}(val_k\text{ has type }ty).
+              (t,k)\in T_\mathcal F\iff 1\leq k\leq |val|
+                  \mathrel{\land}(val_k\text{ has type }t).
           \end{align*}
     \item $P_\mathcal F\subset\mathbb N$ and $G_\mathcal F\subset\mathbb N$
-          are the parameter model and global model, defined by the properties
+          are the {\it parameter model} and {\it global model}, defined by the
+          properties
           \begin{align*}
-              k\in P_\mathcal F\iff& 1\leq k\leq |par|\text{ and}\\
-              k\in G_\mathcal F\iff& |par|+|ins|<k\leq |par|+|ins|+|glb|.
+              k\in P_\mathcal F\iff&1\leq k\leq|par|\\
+              k\in G_\mathcal F\iff&1\leq k-(|par|+|ins|)\leq|glb|.
           \end{align*}
-    \item $I_\mathcal F\subset Opcodes\times \mathbb N$ is the instruction model,
-          defined by the property
+    \item $I_\mathcal F\subset Opcodes\times \mathbb N$ is the
+          {\it instruction model}, defined by the property
           \begin{align*}
-              (op,k)\in I_\mathcal F\iff |par|<k\leq |par|+|ins|
-                  \mathrel{\land}(ins_{k-|par|}\text{ has opcode }op).
+              (c,k)\in I_\mathcal F\iff1\leq k-|par|\leq|ins|
+                  \mathrel{\land}(ins_{k-|par|}\text{ has opcode }c).
           \end{align*}
-    \item $C_\mathcal F\subset\mathbb R\times\mathbb N$ is the constant model,
-          defined by the property
+    \item $C_\mathcal F\subset\mathbb R\times\mathbb N$ is the
+          {\it constant model}, defined by the property
           \begin{align*}
-              (x,k)\in C_\mathcal F\iff{}&|par|+|ins|+|glb|<k\leq |par|+|ins|+|glb|+|cst|\\
+              (x,k)\in C_\mathcal F\iff{}&1\leq k-(|par|+|ins|+|glb|)\leq |cst|\\
                         \mathrel{\land}{}&(cst_{k-|par|-|ins|-|glb|}
                         \text{ has numeric value equal to }x).
           \end{align*}
@@ -44,7 +45,7 @@
 \end{definition}
 
 \begin{definition}{Notations for Reducing Dimensionality}{convenience}
-    For a set $A$, any $a\in A$ and $S=A\times\mathbb N^k$ for some $k>0$, the
+    For a set $A$, any $a\in A$ and $S\subset A\times\mathbb N^k$ for some $k>0$, the
     following sets are defined
     \begin{align*}
         heads(S)={}&\{a\in A\hspace{1.8mm}\mid(a,b_1,\dots,b_k)\in S\text{ for some }b_1,\dots,b_k\in\mathbb N\}\\

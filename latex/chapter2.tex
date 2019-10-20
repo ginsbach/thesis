@@ -260,18 +260,18 @@
 \end{figure}
 
 \section{Deriving an SSA Model}
+\label{sec:derivingamodel}
 
     This section develops a mathematical model for programs that are in
     SSA form.
-    The aim here is not to introduce an operational semantics, or more
-    generally to derive a model for the execution of such programs.
-    Instead, the section investigates the static structure, focusing on
-    precise notation for the commonalities of existing SSA intermediate
-    representations.
-    This requires naming conventions for some of the basic features of
-    SSA programs.
-    The remainder of this section adheres to \Cref{def:ssa} when referring to
-    these features.
+    The aim is not to introduce an operational semantics of such programs, or
+    more generally to derive a model for their execution.
+    Instead, the section focuses on precise notation to express the static
+    structure of existing SSA intermediate representations.
+    The completed model will enable the generation of a program that is
+    semantically equivalent to the one from which the model was extracted.
+    The remainder of this section adheres to the naming conventions in
+    \Cref{def:ssa}.
 
 \begin{figure}[h]
 \begin{definition}{Features of Static Single Assignment Functions}{ssa}
@@ -392,28 +392,16 @@
 \subsection{Identifying Remaining Structure}
 \label{sec:remainingstructure}
 
-    With the control flow and data flow separated into distinct mathematical
-    structures, individual instructions are encoded by their opcodes.
-    This is demonstrated in \Cref{fig:separation}.
-    At the top of the figure is a simple function in an abstract SSA
-    representation.
-    It calculates an approximation of the square root of a number using the
-    Babylonian method, as previously introduced in \Cref{ssaexample}.
-    The function has 11 instructions separated into four basic blocks, with the
-    majority of the instructions in a loop structure that iteratively improves
-    the result.
+    \Cref{sec:derivingamodel} introduced structures to model the control flow
+    and data flow of SSA programs.
+    This section identifies the remaining information that the SSA model needs
+    in order to capture the program semantics fully.
+    This is achieved when it is possible to recreate a semantically equivalent
+    program in the source SSA compiler intermediate representation from the
+    model.
+    Most of the program structure can already be recovered from $DFG_\mathcal F$
+    and $CFG_\mathcal F$:
 
-    The entire semantic information that is encoded in this SSA representation
-    can be recovered from the structures at the bottom of the figure:
-    per-instruction opcode information, lists of the parameters, constants and
-    globals used, the data flow graph as in \Cref{def:dfg} and the control
-    flow graph as in \Cref{def:cfg}.
-    The information at the bottom left will be further discussed later.
-    It may involve a type system and also the instruction set remains to be
-    specified.
-
-    In order to demonstrate the equivalence in \Cref{fig:separation},
-    consider these reconstruction steps:
 \begin{enumerate}
     \item The basic block boundaries are reconstructed by identifying all
           consecutive instructions $A$, $B$ where at least one of the
@@ -422,43 +410,58 @@
         \item $A$ does not have exactly one outgoing edge to $B$ or
         \item $B$ does not have exactly one incoming edge from $A$.
     \end{itemize}
-    \item Basic block labels and register names can be chosen arbitrarily, they
-          carry no meaning.
-    \item The arguments of all operations can be immediately filled in from the 
-          DFG. Similarly, the CFG directly provides the target instructions
+    \item Basic block labels and register names carry no meaning and can be
+          chosen arbitrarily.
+    \item The arguments of all instructions can be immediately filled in from 
+          $DFG_\mathcal F$.
+          Similarly, $CFG_\mathcal F$ directly provides the target instructions
           for all goto statements.
-    \item Incoming edges of $\Phi$-instructions are matched to incoming values
-          using the convention that the incoming values are ordered
-          (with respect to their labels in the data flow graph) according to the
-          position of the incoming basic blocks in the list of instructions.
+    \item The positional arguments of $\Phi$-instructions in $DFG_\mathcal F$
+          are attached as incoming values to the incoming basic blocks
+          after ordering those according to the order on $ins$.
+          The original positional order of the incoming pairs is
+          not recovered, but it carries no meaning.
 \end{enumerate}
 
-\begin{figure}[b]
-\begin{definition}{Instruction Set and Type System}{isatypes}
-    For a specific member $m$ of the family of SSA representations, there is
-    a set of opcodes $Opcodes_m$ and a set of types $Types_m$.
-\end{definition}
-\end{figure}
+    The only part of the SSA representation that still needs modelling is
+    per-value information.
+    This includes the opcodes of instructions, the values of constants,
+    and type information.
+    This is demonstrated in \Cref{fig:separation}.
+    At the top of the figure is a simple function in an abstract SSA
+    representation, which calculates an approximation of the square root of a
+    number using the Babylonian method.
+    It has 11 instructions separated into four basic blocks, with the majority
+    of the instructions in a loop that iteratively improves the result.
+    The entire semantic information that is encoded in this SSA representation
+    can be recovered from the structures at the bottom of the figure:
+    per-instruction opcode information, lists of the parameters, constants and
+    globals used, the data flow graph as in \Cref{def:dfg} and the control
+    flow graph as in \Cref{def:cfg}.
 
-    The only part of the SSA representation that still needs to be modeled is
-    the per-value information at the bottom left of \Cref{fig:separation},
-    which in this case is nothing more than a list of opcodes, and the list of
-    constants, paramters and globals.
-    The opcodes are specific to different SSA representations, although a wide
-    overlap exists (basic arithmetic, phi nodes).
+    Instruction sets and type systems differ between SSA representations,
+    although they overlap significantly.
     This chapter aims to capture commonalities of SSA representations, the study
     of instruction sets and type systems is orthogonal to this.
-    Therefore, these structures remain opaque at this point and are modeled as
+    Therefore, these structures remain opaque at this point and are modelled as
     arbitrary sets as in \Cref{def:isatypes}.
+
+\begin{figure}[h]
+\begin{definition}{Instruction Set and Type System}{isatypes}
+    For an SSA compiler intermediate representation $L$, the
+    {\it set of opcodes} is $Opcodes_L$ and the {\it set of types} is $Types_L$.
+\end{definition}
+\end{figure}
 
 \begin{figure}[p]
 \input{latex/figure_ssadecomposition}
 \caption{SSA representation is decomposed into individual instructions, data
          flow and control flow.
-         This is an equivalent representation of the function, no semantic
+         This is an equivalent representation of the function; no semantic
          information is lost.
          The example is a rendering of the Babylonian method in
-         \Cref{ssaexample}, abstracting away the C syntax.}
+         \Cref{ssaexample}, abstracting away the C syntax.
+         \parfillskip=0pt}
 \label{fig:separation}
 \end{figure}
 
@@ -468,69 +471,68 @@
     \input{latex/figure_model}
 \end{figure}
 
-    With separate mathematical models in place for all the individual structures
-    that interact in SSA representations, it is now possible to compile a
-    complete model.
+    With separate mathematical structures in place to capture all the relevant
+    information contained in SSA programs, the SSA model can now be assembled.
     \Cref{def:ssamodel} shows this completed model.
-    The data flow graph and control flow graph were discussed in detail
-    previously, but some clarifications are required for the remaining
-    structures.
+    The data flow graph $DFG_\mathcal F$ and the control flow graph
+    $CFG_\mathcal F$ were discussed in detail previously, but some
+    clarifications are required for the remaining structures.
 
-    The instruction model, type model and constant model all conceptually assign
-    additional information from different domains to the used values in the
-    program.
-    It would be perhaps more intuitive at first to model them as functions
-    instead, with $I_\mathcal F\colon\mathbb N\rightarrow Opcode$,
-    $T_\mathcal F\colon\mathbb N\rightarrow Types$,
-    $C_\mathcal F\colon\mathbb N\rightarrow \mathbb R$.
-    The model in \Cref{def:ssamodel} has several advantages over such an
-    approach.
-    Firstly, it makes it easy to account for what would be partial function
-    definitions, e.g.\ only instructions have opcodes.
-    Secondly, it can express type hierarchies and instruction categories.
-    For example, a value might be a ``pointer'' and an ``integer pointer'' at
-    at the same time.
-    The same holds for opcodes, where an instruction might be an ``arithmetic''
-    operation and in particular a ``subtraction'' at the same time.
-    Thirdly, the representation as a set makes the encoding in appropriate data
-    structures more intuitive and will help in later sections.
-
-    Finally, the parameter model and global model are essentially encoding
-    boolean predicates on values.
-    The models simply mark all the used values that are parameters or globals.
-    They can therefore only be distinguished and identified by their position
-    in the list of values.
-    This is clearly sufficient for parameters, as they are distinguished by
-    their positionality.
-    However, from a program-wide perspective, global variable names arguably
-    carry significance.
-    However, the model operates per function, as previously said.
+    The {\it instruction model}, {\it type model}, and {\it constant model}
+    assign additional information from different domains to the used values in
+    the program.
+    Instead of attaching one opcode to each instruction, the
+    {\it instruction model} allows instructions to be linked with several
+    elements in the set {\it Opcodes}.
+    This is convenient to model opcode categories, where an instruction might be
+    an ``arithmetic'' operation and a ``subtraction'' in particular.
+    The same is true for the {\it type model}, which enables it to express
+    subtyping, e.g.\ an ``integer pointer'' value can also be a ``pointer''.
+    The {\it type model} can also be used to capture additional data, such as
+    compiler-specific attributes and aliasing information.
+    
+    Finally, the {\it parameter model} and {\it global model} are encoding which
+    elements in the set of used values of $\mathcal F$ are parameters and
+    globals, respectively.
+    They mark all the values that are function parameters or globals without
+    attaching any extra information.
+    This is sufficient for parameters because their names carry no significance
+    and their positionality distinguishes them.
+    However, from a program-wide perspective, global variable names are
+    significant.
+    The SSA model operates per function, but global names can in practice still
+    be convenient in some cases.
+    This is particularly true for the names of standard library functions.
+    When required, these can be encoded in the type model, as in
+    \Cref{chapter:candl}.
 
 \subsection{Graph Projections}
 
-    Additional notation is introduced in \Cref{def:convenience} for
-    convenience.
-    The representation of data flow and control flow as labeled multigraphs
-    often contains more information than required.
-    The presented graph projection allow different ways of reducing the
-    dimensionality of the model structures that will be useful in later
-    sections.
+    The individual components in the SSA model are each expressed as a set of
+    tuples.
+    In order to conveniently manipulate these structures, 
+    \Cref{def:convenience} introduces some notation.
 
-    The control flow and data flow graph can be simplified by either filtering
-    for specific edge labels or by discarding them entirely.
-    For example, the graph $DFG_\mathcal F^*$ has erased all the information
-    about instruction operand order.
-    Similarly, the graph $CFG_\mathcal F^1$ has filtered the control flow to
-    only consider the first edge at any branch.
+    For a set of tuples, the function $head$ returns the set of all the first
+    elements of the tuples.
+    For example, $head(I_\mathcal F)$ yields all the opcodes that are used in
+    the function $\mathcal F$.
+    Correspondingly, $tails$ removes the first element of all tuples within a
+    set.
+    For example, $tails(I_\mathcal F)$ identifies the indices of all
+    instructions within the set of used values of $\mathcal F$, but removes the
+    information about their opcodes.
+    Finally, the $select$ function is used to filter a set for only those tuples
+    with a specific first element, and then returns the tails of all these
+    tuples.
+    For example, $select(add,I_\mathcal F)$ gives the indices of all $add$
+    instructions within the set of used values of the function $\mathcal F$.
 
-    Similar notation is used to simplify the instruction, type and constant
-    models.
-    For example, $C_\mathcal F^*$ discards the value information and gives a
-    simple boolean predicate, akin to the global and parameter model.
-    On the other hand $C_\mathcal F^0$ contains all the zero-valued constants.
-
-    These different simplifications will enable the easier formulation of
-    constraint programs later.
+    The representation of data flow and control flow as labelled multigraphs
+    contains more information than is required for some tasks.
+    The simplified versions $DFG_\mathcal F^*$ and $CFG_\mathcal F^*$ are
+    constructed with the $tails$ function, effectively removing the labels and
+    resulting in a ordinary graph structures.
 
 \subsection{The LLVM Compiler Framework}
 
