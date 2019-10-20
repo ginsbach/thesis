@@ -947,29 +947,29 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \Cref{theo:theo1} introduces backtracking solutions for element-of
     constraint problems.
     They are constructed such that
-    $P_k[E_S](M,x)=\{y_{v_k}\mid y\in S(M), y_{v_1}=x_1,\dots,y_{v_{k-1}}=x_{k-1}\}$.
-    This is the optimal backtracking solution in the sense that the backtracking
-    algorithm will only ever backtrack immediately after yielding a result.
-    In the theorem, the backtracking solution is not defined directly, but
-    instead a helper construct $R_k$ is introduced.
-    This helper construct is used in \Cref{subsec:impl} for an efficient
+    $B_k[E_S](M,x)=\{y_{v_k}\mid y\in S(M), y_{v_1}=x_1,\dots,y_{v_{k-1}}=x_{k-1}\}$.
+    This is optimal in the sense that the backtracking algorithm will only ever
+    backtrack immediately after yielding a result.
+    In the theorem, the backtracking solution is not defined directly.
+    Instead, a helper construct $R_k$ is introduced.
+    This is used in the later \Cref{subsec:impl} to derive an efficient
     implementation.
 
     \Cref{theo:theo2} introduces backtracking solutions for conjunction
     constraint problems.
-    These are defined in the obvious way, by taking the intersection of
-    the underlying backtracking solitions at each $k$.
+    These are constructed in the obvious way, by taking the intersection set of
+    the underlying backtracking solutions at each $k$.
     This is not possible for disjunction constraint problems, which are dicussed
     in \Cref{theo:theo3}.
     The additional structure $R_k$ is used to keep track whether the current
-    partial solution satisfies $C$ or $C'$ so far.
+    partial solution satisfies $C$ or $C'$ so far
+    (this was a given for conjunctions).
     The partial solution at $k$ is then the union only of those underlying
     partial solutions at $k$ where the corresponding element in $R_k$
     signals validity.
-
-    \Cref{theo:theo3} shows that backtracking solutions for extensions of
-    constraint problems can be constructed by simply ignoring the additional
-    variables.
+    Finally, \Cref{theo:theo3} shows that backtracking solutions for extensions
+    of constraint problems can be constructed by essentially skipping the
+    additional variables.
 
 \subsection{Backtracking Example}
 
