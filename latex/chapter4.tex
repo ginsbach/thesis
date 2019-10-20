@@ -1,9 +1,9 @@
 
-    \Cref{chapter:theory} derived the underlying methodology for constraint
-    programming on static single assignment compiler intermediate representation.
-    Building on that framework, this chapter develops a domain specific
-    constraint programming language and presents an implementation of this
-    language within the production quality LLVM compiler infrastructure.
+    \Cref{chapter:theory} derived an approach for constraint programming on
+    Static Single Assignment (SSA) compiler intermediate representation.
+    This chapter develops a novel domain-specific constraint programming
+    language based on that methodology and presents an implementation within the
+    production quality LLVM compiler infrastructure.
 
     The Compiler Analysis Description Language (CAnDL) automatically generates
     compiler analysis functionality that would otherwise have to be implemented
@@ -11,31 +11,31 @@
     This fills an important niche in compiler development:
     Optimising compilers have to use elaborate program transformations to exploit
     increasingly complex hardware.
-    Implementing the required analysis functionality for such optimizations to
+    Implementing the required analysis functionality for such optimisations to
     be safely applied is a time consuming and error prone activity.
     For example, tens of thousands of lines of code are required in the LLVM
-    code base to detect the appropriate places to apply peephole optimizations,
-    and bugs in this functionality can result in corrupted user programs.
-    This is a barrier to the rapid prototyping and evaluation of new
-    optimisations.
+    codebase to detect the appropriate places for applying peephole
+    optimisations, and bugs in this functionality can result in corrupted user
+    programs.
+    This is a barrier to the rapid prototyping and evaluation of innovative new
+    compiler optimisations.
 
     CAnDL enables a workflow that is much more amenable to efficient compiler
     development.
-    The compiler implementer only has to write CAnDL programs, which are then
-    compiled by the CAnDL compiler fully automatically into C++ LLVM passes.
-    These passes automatically spot code sections that adhere the specified
-    structure, leaving only the transformation functionality to be implemented
-    by hand.
-    This provides a uniform manner in which to describe compiler analysis,
-    significantly reducing code length and complexity.
+    The compiler implementer only has to write CAnDL programs, which the CAnDL
+    compiler then fully automatically transforms into LLVM analysis passes in
+    C++.
+    These generated passes automatically detect all sections in user code that
+    adhere to the specified structure.
+    This approach provides a uniform manner in which to describe compiler
+    analysis, significantly reducing code length and complexity.
 
-    The approach scales to a wide range of compiler analysis tasks.
-    Multiple case studies are presented that range from the detection of
-    peephole optimisation opportunities, over domain specific graphics
-    optimisations, to fully capturing static control flow regions for polyhedral
-    code analysis.
-    All these tasks can be  expressed more briefly than with competing
-approaches.
+    CAnDL scales to a wide range of compiler analysis tasks.
+    Several case studies are presented that range from the detection of
+    peephole optimisation opportunities, over graphics shader optimisations,
+    to fully capturing static control flow regions for polyhedral code analysis.
+    These tasks can all be expressed more briefly in CAnDL than with competing
+    approaches.
 
 \section{Introduction}
 
