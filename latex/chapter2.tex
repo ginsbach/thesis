@@ -536,11 +536,10 @@
 
 \subsection{The LLVM Compiler Framework}
 
-    The previously introduced mathematical model is generic and does not
-    presuppose a specific language from the family of SSA representations.
-    In order to apply the methodology on real compiler problems, however, the
-    application of the model to concrete compiler intermediate representations
-    is required.
+    The previously introduced SSA model is generic applies to all SSA compiler
+    intermediate representations.
+    However, the model needs to be specialised to a specific compiler
+    intermediate representations in order to use it on real compiler problems.
     Arguably one of the most prevalent such SSA representations is LLVM IR.
     It will be used throughout the thesis for demonstration and evaluation
     purposes.
