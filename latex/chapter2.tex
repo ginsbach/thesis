@@ -732,15 +732,15 @@ define double @dot(double* %0, double* %1, i64 %2) {
     These are variables within a loop that are incremented by a constant value
     of one in each iteration.
     \Cref{fig:constraintsolution} shows how this can be formulated as an
-    SSA constraint problem and then demonstrates the application of it with the
+    SSA constraint problem and then demonstrates the application of it on the
     SSA model that was derived in \Cref{fig:derivemaths}.
     The top {\bf(a)} of the figure first gives an intuition about how such a
     compiler analysis task can be translated into a constraint problem, which is
     then solved in the context of an SSA model.
 
-    Simple loop iterators show up in LLVM IR as data flow cycles with a
+    Simple loop iterators show up in LLVM IR as data flow cycles between a
     $\Phi$-instruction and an addition.
-    This is expressed as a constraint problem at the top of the middle part
+    This is expressed as a constraint problem at the top of the central part
     {\bf(b)} of the figure.
     The formulation introduces the variables
     ``phi'', ``update'', and ``step'', and a predicate $C$ to describe the
@@ -749,7 +749,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     several {\em element-of} relationships that have to hold simultaneously on
     the structures of the model:
     \begin{itemize}
-        \item The step size is contant one
+        \item The iterator is incremented in steps of one
               [$(1,x_\text{step})\in C_\mathcal{F}$].
         \item The updated iterator value is computed as an addition
               [$(add,x_\text{update})\in I_\mathcal{F}$] of the previous
@@ -762,38 +762,38 @@ define double @dot(double* %0, double* %1, i64 %2) {
               $\Phi$-instruction [$(phi,x_\text{phi})\in I_\mathcal{F}$] that
               holds the current iterator value.
     \end{itemize}
-    Explicit control flow constraints for establishing the loop strucure are not
-    required, as the data flow with the $\Phi$-instruction already implies the
-    presence of a loop structure.
-    Below the predicate formulation is the SSA model from
-    \Cref{fig:derivemaths}.
+    Explicit control flow constraints for establishing the loop structure around
+    the iterator are not required, because the data flow loop given by
+    $(x_\text{phi},x_\text{update})\in DFG_\mathcal{F}^*$ and
+    $(x_\text{update},x_\text{phi})\in DFG_\mathcal{F}^*$ already implies
+    the presence of a loop.
 
-    At the bottom {\bf(c)} of the figure, the set of constraint solutions is
-    shown.
-    It contains as its only element the tuple
-    $\{\text{phi}\mapsto6,\text{update}\mapsto14,\text{step}\mapsto19\}$.
-    Note that elements of $\mathbb N^V$ can be identified as mappings
-    $V\rightarrow\mathbb N$.
-    The underlined strucures in the lower part of
-    \Cref{fig:constraintsolution} {\bf(b)} demonstrate the validity of the
+    The bottom section of \Cref{fig:constraintsolution} {\bf(b)} replicates the
+    SSA model from \Cref{fig:derivemaths}.
+    Finally, the bottom {\bf(c)} of the figure shows the constraint solutions
+    $S_{M_{dot}}(V,C)$.
+    This set contains only one tuple:
+    $\{\text{phi}\mapsto9,\text{update}\mapsto17,\text{step}\mapsto22\}$.
+    The underlined items in the SSA model evidence the validity of this
     solution:
-    $(1,22)\in C_\mathcal F$ and $(1,9,17)\in DFG_\mathcal F$ and
-    $(2,22,17)\in DFG_\mathcal F$ and $(\textit{phi},9)\in I_\mathcal F$ and
-    $(\textit{add},17)\in I_\mathcal F$ and $(2,17,9)\in DFG_\mathcal F$,
-    corresponding to the six simple constraints that make up the predicate.
+    $(1,22)\in C_\mathcal F$, $(1,9,17)\in DFG_\mathcal F$,
+    $(2,22,17)\in DFG_\mathcal F$, \mbox{$(\textit{phi},9)\in I_\mathcal F$},
+    $(\textit{add},17)\in I_\mathcal F$, and $(2,17,9)\in DFG_\mathcal F$.
+    Therefore, all six {\it element-of} conditions that make up the SSA
+    constraint problem hold.
 
-    Each solution therefore assigns an integer to each variable.
-    With the help of \Cref{fig:derivemaths}, the specific values $9,17,22$
-    can be identified with lines 14 and 17, as well as the constant 1 in the
-    LLVM IR code from \Cref{llvmirexample} {\bf b)}.
-    This corresponds to the loop iterator \texttt{i} in the C source code of the
-    \texttt{dot} function, correctly identifying the only simple loop iterator.
+    \Cref{fig:derivemaths} identifies the integer values $9$ and $17$ with the
+    instructions in lines 14 and 22 of the LLVM IR code shown in
+    \Cref{llvmirexample} {\bf(b)}.
+    These two SSA values correspond to the loop iterator \texttt{i} of the for
+    loop in lines 4--5 of the C source code in \Cref{llvmirexample} {\bf(a)},
+    correctly identifying the only simple loop iterator.
 
-    With a detailed derivation of the SSA model completed and some intuition
-    about the nature of constraint problems, only the solver $S$ in
-    \Cref{fig:constraintsolution} remains a black box.
-    The next sections derive how a backtracking solver can
-    be used to efficiently compute the set of solutions.
+    After the detailed derivation of the SSA model and some intuition about the
+    nature of constraint problems, only the solver $S$ in
+    \Cref{fig:constraintsolution} remains unexplained.
+    The next sections derive how a backtracking solver can be used to
+    compute the set of solutions efficiently.
 
 \section{Solving of SSA Constraint Problems}
 \label{sec:constraintsolving}
