@@ -951,9 +951,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
     This is optimal in the sense that the backtracking algorithm will only ever
     backtrack immediately after yielding a result.
     In the theorem, the backtracking solution is not defined directly.
-    Instead, a helper construct $R_k$ is introduced.
-    This is used in the later \Cref{subsec:impl} to derive an efficient
-    implementation.
+    Instead, it uses a helper construct $R_k$.
+    \Cref{subsec:impl} uses this to derive an efficient implementation.
 
     \Cref{theo:theo2} introduces backtracking solutions for conjunction
     constraint problems.
@@ -964,11 +963,11 @@ define double @dot(double* %0, double* %1, i64 %2) {
     The additional structure $R_k$ is used to keep track whether the current
     partial solution satisfies $C$ or $C'$ so far
     (this was a given for conjunctions).
-    The partial solution at $k$ is then the union only of those underlying
-    partial solutions at $k$ where the corresponding element in $R_k$
+    The backtracking solution at $k$ is then the union only of those underlying
+    backtracking solutions at $k$ where the corresponding element in $R_k$
     signals validity.
     Finally, \Cref{theo:theo3} shows that backtracking solutions for extensions
-    of constraint problems can be constructed by essentially skipping the
+    of constraint problems can be constructed by skipping the
     additional variables.
 
 \subsection{Backtracking Example}
@@ -985,19 +984,36 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     \Cref{fig:backtracsol} shows how backtracking is used to algorithmically
     determine the solution of the SSA constraint problem that was introduced in
-    \Cref{fig:constraintsolution}.
+    \Cref{fig:constraintsolution}.    
     The original SSA constraint problem is shown again at the top of the figure.
     It is entirely constructed via conjunctions of element-of constraint
     problems.
-    The constraint problem can therefore be expressed entirely according to
-    \Cref{def:elementofconstr,def:conjconstr,def:constrext}.
 
-    This means that \Cref{theo:theo1,theo:theo2,theo:theo4} can be used to
-    construct a backtracking solution $(P_k[C])_{k=1\dots3}$ of the constraint
-    problem.
-    The lower part of the figure demonstrates how this backtracking solution is
-    used to determine the solution.
+    The bottom left part of the figure shows the backtracking solution.
+    It is constructed entirely according to
+    \Cref{theo:theo1,theo:theo2,theo:theo4}.
+    For example, the condition
+    ``$(x_\text{step},x_\text{update})\in DFG_\mathcal F^*$'' is the
+    element-of constraint problem $E_S$ with
+    $S=\{x\in\mathbb N^{\{\text{step},\text{update}\}}\mid (x_\text{step},x_\text{update})\in DFG_\mathcal F^*\}$.
+    Following \Cref{theo:theo1}, the enumeration $(\text{update},\text{step})$
+    gives
+    \begin{align*}
+    R_1(M)=rev(DFG_\mathcal F^*)&&
+    R_2(M,x_1)=select(x_1,rev(DFG_\mathcal F^*)).
+    \end{align*}
+    Therefore, the backtracking solution is given by
+    \begin{align*}
+        B_1[E_S](M)={}&heads(rev(DFG_\mathcal F^*))\\
+        B_2[E_S](M,x_1)={}&heads(select(x_1,head(rev(DFG_\mathcal F^*))))
+    \end{align*}
+    This backtracking solution is now extended to $V$ according to
+    \Cref{theo:theo4}, meaning that $B_1[E_S]$ features in
+    $B_1[C]$ and $B_2[E_S]$ features in $B_2[C]$, but $B_3[C]$ is entirely
+    independent of $E_S$.
 
+    Finally, the bottom right of the figure shows the backtracking algorithm
+    applied to the SSA model from \Cref{fig:derivemaths}.
     Starting from the top with an empty partial solution, candidates for $x_1$
     are determined, corresponding to the variable {\em phi}.
     The SSA model contains three phi nodes, all of which also satisfy the other
@@ -1126,59 +1142,6 @@ struct Tree { vector<pair<int,Tree>> s; };
 
 \subsection{Additional SSA Constraint Problems}
 
-    There are a number of additional construction rules for SSA constraint
-    problems that are used in this thesis.
-    Some of them are less intuitive than the previously introduced definitions,
-    but allow for powerful compiler analysis.
-
-    Firstly, there are a number of very simple SSA constraint problems that
-    operate directly on the integer values, without interpreting them as indizes
-    into the value list of the SSA model.
-    These are listed in \Cref{def:auxconstr}.
-    $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$ are defined in the
-    obvious way, forcing equality/inequality.
-    Finally, there is $(\{a\}, C^{unused})$.
-    The value $|val|+1$ is the smallest integer that can no longer be
-    interpreted as a value in the SSA model.
-    Therefore, it is used by convention to signal that no value from the SSA
-    model was assigned.
-
-    Generalised graph domination constraint problems as in \Cref{def:domconstr}
-    are versatile tools for analysing SSA models.
-    The special case of $|V_1|=|V_2|=|V_2|=1$ and $V_1=\{v_1\}$,
-    with $v_1$ the control origin of the function, turns this definition into
-    the usual control flow dominance concept that is established in compiler
-    theory.
-    However, the generalisation that is used here encompasses a much larger
-    set of interesting properties.
-    Importantly, this can be applied also to data flow, which will be useful in
-    \Cref{chapter:reductions}.
-    The backtracking solution of generalised graph domination constraint
-    problems is brute force, with $P_k[D_G]\equiv 1$ for all $1\leq k<n$.
-    The checking of the condition in $P_n[D_G]$ is typically preformed in
-    $O(|val|)$ time, therefore this is a computationally expensive constraint.
-
-    Finally, collect-all constraint problem are introduced in
-    \Cref{def:collectconstr}.
-    Given a constraint problem $(V,C)$, the variables $V$ are divided into
-    two subsets.
-    The collect-all constraint problem identifies all possible solutions over
-    one of the variable subsets, given that the other variable subset is fixed.
-    The parameter $N$ gives an upper limit to the number of these solutions.
-    Collect-all constraint problems are used to approximate logical quantifiers.
-    This is discussed in more detail in \Cref{chapter:candl}.
-
-    In order to calculate a backtracking solution of collect-all constraint
-    problems, the order on $W$ needs to satisfy the property
-    $w_a\in U,w_b\notin U\implies a<b$.
-    For values in $U$, the backtracking solution simply passes through to the
-    underlying constraint.
-    Whenever a partial solution is determined over all values in $U$, a nested
-    call to the solver is performed in order to identify all possible partial
-    solutions over $V\setminus U$.
-    The remaining steps of the backtracking solution then simply enforce this
-    precomputed list of solutions.
-
 \begin{figure}[p]
     \begin{definition}{Simple Integer Constraint Problems}{auxconstr}
         The SSA constraint problems $(\{a,b\}, C^=)$, $(\{a,b\}, C^{\neq})$
@@ -1237,6 +1200,59 @@ struct Tree { vector<pair<int,Tree>> s; };
 %        $R(M,x)\subset\mathbb N^{(n-m)N}$ is given by
 %    \end{theorem}
 \end{figure}
+
+    There are a number of additional construction rules for SSA constraint
+    problems that are used in this thesis.
+    Some of them are less intuitive than the previously introduced definitions,
+    but allow for powerful compiler analysis.
+
+    Firstly, there are a number of very simple SSA constraint problems that
+    operate directly on the integer values, without interpreting them as indizes
+    into the value list of the SSA model.
+    These are listed in \Cref{def:auxconstr}.
+    $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$ are defined in the
+    obvious way, forcing equality/inequality.
+    Finally, there is $(\{a\}, C^{unused})$.
+    The value $|val|+1$ is the smallest integer that can no longer be
+    interpreted as a value in the SSA model.
+    Therefore, it is used by convention to signal that no value from the SSA
+    model was assigned.
+
+    Generalised graph domination constraint problems as in \Cref{def:domconstr}
+    are versatile tools for analysing SSA models.
+    The special case of $|V_1|=|V_2|=|V_2|=1$ and $V_1=\{v_1\}$,
+    with $v_1$ the control origin of the function, turns this definition into
+    the usual control flow dominance concept that is established in compiler
+    theory.
+    However, the generalisation that is used here encompasses a much larger
+    set of interesting properties.
+    Importantly, this can be applied also to data flow, which will be useful in
+    \Cref{chapter:reductions}.
+    The backtracking solution of generalised graph domination constraint
+    problems is brute force, with $P_k[D_G]\equiv 1$ for all $1\leq k<n$.
+    The checking of the condition in $P_n[D_G]$ is typically preformed in
+    $O(|val|)$ time, therefore this is a computationally expensive constraint.
+
+    Finally, collect-all constraint problem are introduced in
+    \Cref{def:collectconstr}.
+    Given a constraint problem $(V,C)$, the variables $V$ are divided into
+    two subsets.
+    The collect-all constraint problem identifies all possible solutions over
+    one of the variable subsets, given that the other variable subset is fixed.
+    The parameter $N$ gives an upper limit to the number of these solutions.
+    Collect-all constraint problems are used to approximate logical quantifiers.
+    This is discussed in more detail in \Cref{chapter:candl}.
+
+    In order to calculate a backtracking solution of collect-all constraint
+    problems, the order on $W$ needs to satisfy the property
+    $w_a\in U,w_b\notin U\implies a<b$.
+    For values in $U$, the backtracking solution simply passes through to the
+    underlying constraint.
+    Whenever a partial solution is determined over all values in $U$, a nested
+    call to the solver is performed in order to identify all possible partial
+    solutions over $V\setminus U$.
+    The remaining steps of the backtracking solution then simply enforce this
+    precomputed list of solutions.
 
 \subsection{Satifiability Modulo Theory}
 
