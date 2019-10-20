@@ -443,13 +443,14 @@
     although they overlap significantly.
     This chapter aims to capture commonalities of SSA representations, the study
     of instruction sets and type systems is orthogonal to this.
-    Therefore, these structures remain opaque at this point and are modelled as
-    arbitrary sets as in \Cref{def:isatypes}.
+    Therefore, these structures  are modelled as obaque sets as in
+    \Cref{def:isatypes}.
 
 \begin{figure}[h]
-\begin{definition}{Instruction Set and Type System}{isatypes}
-    For an SSA compiler intermediate representation $L$, the
-    {\it set of opcodes} is $Opcodes_L$ and the {\it set of types} is $Types_L$.
+\begin{definition}{Representation Specific Sets}{isatypes}
+    $Opcodes_L$ is the set of all opcodes available in the SSA language $L$,
+    $Types_L$ is the set of all types in $L$,
+    and $GlobalNames_L$ is the set of all available names for global values.
 \end{definition}
 \end{figure}
 
@@ -494,14 +495,12 @@
     Finally, the {\it parameter model} and {\it global model} are encoding which
     elements in the set of used values of $\mathcal F$ are parameters and
     globals, respectively.
-    They mark all the values that are function parameters or globals without
-    attaching any extra information.
-    This is sufficient for parameters because their names carry no significance
-    and their positionality distinguishes them.
-    However, from a program-wide perspective, global variable names are
-    significant.
-    The SSA model operates per function, but global names can in practice still
-    be convenient in some cases.
+    Parameter names are not significant, because their positionality
+    already identifies parameters uniquely within the function signature.
+    Therefore, the {\it parameter model} identifies all parameters, but attaches
+    no additional data.
+    For global values, on the other hand, the names are attached by the
+    {\it global model} as elements from the set $GlobalNames$.
     This is particularly true for the names of standard library functions.
     When required, these can be encoded in the type model, as in
     \Cref{chapter:candl}.

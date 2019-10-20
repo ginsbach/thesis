@@ -1,38 +1,40 @@
 \begin{definition}{Mathematical Model of SSA programs}{ssamodel}
-    The {\em SSA model} of the function $\mathcal F$ is the tuple
-    \begin{align*}
+    The tuple     $
         (DFG_\mathcal{F},
          CFG_\mathcal{F},
          T_\mathcal{F},
          P_\mathcal{F},
          I_\mathcal{F},
          G_\mathcal{F},
-         C_\mathcal{F}),
-    \end{align*}
-    where
-
+         C_\mathcal{F})
+    $
+    is the {\em SSA model} of the function $\mathcal F$, where
     \begin{itemize}
     \item $DFG_\mathcal{F}\subset\mathbb N^3$ and
           $CFG_\mathcal{F}\subset\mathbb N^3$ are the data flow and control
-          flow graph.
+          flow graph,
     \item $T_\mathcal F\subset Types\times\mathbb N$ is the {\it type model},
           defined by the property
           \begin{align*}
               (t,k)\in T_\mathcal F\iff 1\leq k\leq |val|
                   \mathrel{\land}(val_k\text{ has type }t).
           \end{align*}
-    \item $P_\mathcal F\subset\mathbb N$ and $G_\mathcal F\subset\mathbb N$
-          are the {\it parameter model} and {\it global model}, defined by the
-          properties
+    \item $P_\mathcal F\subset\mathbb N$ is the {\it parameter model}, defined
+          by the property
           \begin{align*}
-              k\in P_\mathcal F\iff&1\leq k\leq|par|\\
-              k\in G_\mathcal F\iff&1\leq k-(|par|+|ins|)\leq|glb|.
+              k\in P_\mathcal F\iff&1\leq k\leq|par|.
           \end{align*}
     \item $I_\mathcal F\subset Opcodes\times \mathbb N$ is the
           {\it instruction model}, defined by the property
           \begin{align*}
               (c,k)\in I_\mathcal F\iff1\leq k-|par|\leq|ins|
                   \mathrel{\land}(ins_{k-|par|}\text{ has opcode }c).
+          \end{align*}
+    \item $G_\mathcal F\subset GlobalNames\times\mathbb N$ is the
+          {\it global model}, defined by the property
+          \begin{align*}
+              (n,k)\in G_\mathcal F\iff&1\leq k-(|par|+|ins|)\leq|glb|
+                  \mathrel{\land}(glb_{k-|par|+|ins|}\text{ has name }n).
           \end{align*}
     \item $C_\mathcal F\subset\mathbb R\times\mathbb N$ is the
           {\it constant model}, defined by the property
