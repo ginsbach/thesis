@@ -501,24 +501,21 @@
     no additional data.
     For global values, on the other hand, the names are attached by the
     {\it global model} as elements from the set $GlobalNames$.
-    This is particularly true for the names of standard library functions.
-    When required, these can be encoded in the type model, as in
-    \Cref{chapter:candl}.
 
-\subsection{Graph Projections}
+\subsection{Additional Notation}
 
-    The individual components in the SSA model are each expressed as a set of
-    tuples.
+    The seven individual components of the SSA model are each expressed as a
+    set of tuples.
     In order to conveniently manipulate these structures, 
-    \Cref{def:convenience} introduces some notation.
+    \Cref{def:convenience} introduces several functions and shorthand notation.
 
     For a set of tuples, the function $head$ returns the set of all the first
     elements of the tuples.
     For example, $head(I_\mathcal F)$ yields all the opcodes that are used in
     the function $\mathcal F$.
-    Correspondingly, $tails$ removes the first element of all tuples within a
-    set.
-    For example, $tails(I_\mathcal F)$ identifies the indices of all
+    Correspondingly, the function $tails$ removes the first element of all
+    tuples within a set.
+    For example, $tails(I_\mathcal F)$ identifies the indices of all the
     instructions within the set of used values of $\mathcal F$, but removes the
     information about their opcodes.
     Finally, the $select$ function is used to filter a set for only those tuples
@@ -527,78 +524,77 @@
     For example, $select(add,I_\mathcal F)$ gives the indices of all $add$
     instructions within the set of used values of the function $\mathcal F$.
 
-    The representation of data flow and control flow as labelled multigraphs
+    The representation of data flow and control flow using labelled multigraphs
     contains more information than is required for some tasks.
     The simplified versions $DFG_\mathcal F^*$ and $CFG_\mathcal F^*$ are
     constructed with the $tails$ function, effectively removing the labels and
-    resulting in a ordinary graph structures.
+    resulting in ordinary graph structures.
+    Similarly, the sets $I_\mathcal F^*$ and $C_\mathcal F^*$ are used for
+    shorter notation.
 
 \subsection{The LLVM Compiler Framework}
 
-    The previously introduced SSA model is generic applies to all SSA compiler
-    intermediate representations.
-    However, the model needs to be specialised to a specific compiler
-    intermediate representations in order to use it on real compiler problems.
-    Arguably one of the most prevalent such SSA representations is LLVM IR.
+    The previously introduced SSA model is generic and applies to all SSA
+    compiler intermediate representations.
+    However, the model needs to be specialised to a specific representation in
+    order to use it on real compiler problems.
+    LLVM IR is one of the most common languages in that class, as it is
+    used as the foundation of the popular LLVM compiler framework by
+    \citet{lattner2004llvm}.
     It will be used throughout the thesis for demonstration and evaluation
     purposes.
 
-    LLVM is a comprehensive compiler infrastructure project, with the the LLVM
-    intermediate representation as its central component.
+    LLVM is a comprehensive compiler infrastructure project, using the LLVM
+    intermediate representation as its central abstraction.
     The name of the project was originally an acronym for
-    ``Low Level Virtual Machine''.
-    The intermediate representation was hence conceptualised as a typed assembly
-    style language of a virtual machine.
-    The instruction set is vaguely aligned to C semantics, however the project
-    has matured beyond this background.
+    ``Low Level Virtual Machine'', as the intermediate representation was
+    conceptualised as a typed assembly-style language for a virtual machine.
+    The instruction set is vaguely aligned to the semantics of C style
+    programming languages, but the project has matured beyond this background.
     It is now a widely influential framework, with compiler front ends existing
-    for a diverse set of langauges including C/C++, Haskell, Julia, Objective-C,
+    for a diverse set of languages including C/C++, Haskell, Julia, Objective-C,
     Rust, Scala and CUDA.
 
-    Many other mainstream compilers, particularly the gcc project, in effect
-    utilise very similar representations internally.
+    Other mainstream compilers, such as the GCC project, use very similar
+    representations internally.
     However, LLVM is particular in understanding the intermediate
-    representation as an advertised and well documented interface within the
+    representation as an advertised and documented interface within the
     toolchain, as opposed to an obscure internal abstraction.
     This makes it very suitable for research implementations.
 
 \subsection{LLVM Example}
 
-    LLVM IR is a complex language, and it is cannot be the aim to introduce it
-    here in its entirety.
-    Instead, some crucial features for the context of this thesis are
-    demonstrated on an example.
-
-    Consider \Cref{llvmirexample}.
+    Some crucial features of LLVM IR for the context of this thesis are
+    demonstrated on an example in \Cref{llvmirexample}.
     At the top {\bf (a)} of the figure, a dot product is implemented as a
     function in C.
-    The function receives as arguments two pointers {\tt a,b} to arrays of
-    double precision floating point values, representing the input vectors, as
-    well as an unsigned integer $n$ that gives the size of the arrays.
+    This function takes as arguments two pointers {\tt a,b} to arrays of
+    double-precision floating-point values, representing the input vectors, and
+    an unsigned integer $n$, giving the size of the arrays.
     Within a single loop in lines $4$--$5$, the dot product is accumulated in
-    the variable {\tt d}, which is eventually returned as the function result in
-    the penultimate line $6$.
+    the variable {\tt d}, which is eventually returned as the result of the
+    function in the penultimate line $6$.
 
     At the bottom {\bf (b)} of the figure is the corresponding LLVM intermediate
-    code, captured after optimisations from the mid end of the LLVM-based clang
-    compiler.
+    code, captured after optimisations from the middle end of the LLVM-based
+    clang compiler.
     Additional comments were inserted manually.
-    LLVM IR maintains the concept of functions from C, with an essentially
-    identical interface in line $1$ and a corresponding return statement in
-    line $8$.
-    The logic within the function is in SSA form: C expressions are translated
-    into lists of instructions, and the control flow appears in the form of
-    jumps between four basic blocks.
-
-    Lines 2--4 are the result of an optimisation.
-    If the array is empty, the loop is skipped entirely and the program returns
-    zero via lines 6--8.
+    Lines 2--4 are the result of an optimisation called ``loop inversion''.
+    If the arrays are empty, the loop is skipped entirely, and the program
+    returns zero via lines 6--8.
     Otherwise, the loop in lines 13--24 is entered via the basic block in lines
     10--11, which exists for normalisation purposes as the dedicated loop entry
     block.
-    The comments in lines 16--17 explain the formulation of memory access in
-    arrays.
 
+    Memory access in LLVM is strictly separated from index calculations.
+    This is visible in lines 16--19.
+    The {\tt getelementptr} instruction is used to calculate the memory
+    addresses of the array elements {\tt a[i]} and {\tt b[i]}.
+    The {\tt load} instruction then reads the memory at the calculated
+    addresses.
+    This scheme simplifies the effectful memory access instructions, pushing the
+    considerable complexity of index calculations into the {\tt getelementptr}
+    instruction.
 
 \begin{figure}[p]
 \vspace{-0.09cm}
@@ -643,7 +639,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
   br i1 %18, label %5, label %8
 }
 \end{lstlisting}
-\caption{The correspondence between C and LLVM IR on an example function.
+\caption{The correspondence between C and LLVM IR on an example function:
          The function computes the dot product of two vectors in a simple
          reduction loop.
          In the LLVM IR -- generated by clang -- pointer calculations and memory
@@ -651,26 +647,23 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \label{llvmirexample}
 \end{figure}
 
-\newpage
-
     \Cref{fig:derivemaths} shows in detail how the SSA model is derived from the
     LLVM IR representation of the program in \Cref{llvmirexample}.
     In the top left, implementations of the dot product function are shown
     in three programming languages that LLVM supports: Fortran, C and C++.
     On the top right is the corresponding LLVM IR code.
-    While this will not be precisely identical for the different
-    implementations, the basic structure of it is independent of source
-    language.
+    While this is not precisely identical for different implementations,
+    the basic structure of it is independent of the source language.
 
-    In the middle row, the information from the the SSA representation is split
-    into three components:
+    In the middle row, the structure of the LLVM IR code is separated into three
+    components:
     Labeled multigraphs for the data flow and control flow, as well as
     the per-instruction properties as a list.
-    This constains all semantically relevant information of the program, as was
-    demonstrated previously.
+    This captures all semantically relevant information of the program,
+    as previously demonstrated.
     In the bottom row, the mathematical representation of the function is shown,
     adhering to \Cref{def:ssamodel}.
-    The labeled multigraphs for the control flow and data flow graphs are
+    The labelled multigraphs for the control flow and data flow graphs are
     represented as sets of $3$-tuples of integers.
 
 \begin{figure}[p]
@@ -685,26 +678,26 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \section{Constraint Programming on SSA Programs}
 \label{sec:constraintprogramming}
 
-    With a mathematical model of SSA programs in place, properties of such
-    programs can now be formulated as constraint problems.
-    For this purpose, \Cref{def:modelrepresentations} is introduced first,
-    followed by the actual definition of {\em SSA constraint problem}s in
-    \Cref{def:cprob}.
+    Properties of SSA programs can now be formulated as constraint problems on
+    the SSA model.
+    For this purpose, the {\it set of SSA models} is introduced in
+    \Cref{def:modelrepresentations}, which \Cref{def:cprob} then uses to
+    formulate {\em SSA constraint problem}s.
 
 \begin{figure}[H]
 \begin{definition}{Set of SSA Models}{modelrepresentations}
-    Given a specific SSA representation (LLVM, Hydrogen, MIR, $\dots$), then
+    Given a specific SSA representation (LLVM, Hydrogen, MIR, $\dots$),
     denote $F$ the set of all valid functions that can be expressed in it.
 
     The {\em set of SSA models} $\mathcal M$ is defined as
     \begin{align*}
-        \mathcal M := \{M\mid M \text{ is the SSA Model of some }\mathcal F\in F\}
+        \mathcal M=\{M\mid M \text{ is the SSA model of some }\mathcal F\in F\}
     \end{align*}
 \end{definition}
 
 \begin{definition}{SSA constraint problem}{cprob}
-    An SSA constraint problem $(V,C)$ is made up of a finite set of variables
-    $V$ and a boolean predicate
+    An {\it SSA constraint problem} $(V,C)$ is a pair of a finite set of
+    variables $V$ and a boolean predicate
     $C\colon\mathcal M\times\mathbb N^V\mapsto\{1,0\}$.
     The set of {\em constraint solutions} for a given constraint problem and a
     specific SSA model $M\in\mathcal M$ is given as
@@ -715,33 +708,15 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \end{figure}
 
     Some intuition is required here.
-    The predicate function $C$ takes two arguments, firstly a tuple of integers
-    and secondly a model of a function.
-    The finite set $V$ identifies the elements withing the tuples, it can be
-    thought of as a set of labels.
-    The tuples of integers in $\mathbb N^V$ correspond to tuples of values
-    within the function.
-    The predicate function determines whether these values stand in a specific
-    relationship to each other.
-    Finally, the set of constraint solutions lists all those tuples, for which
+    The predicate function $C$ takes two arguments, firstly the model of a
+    function and secondly a tuple of integers from $\mathbb N^V$.
+    The tuple has one integer for each element in $V$ and each integer
+    corresponds to a value in the function that $M$ models via indexing
+    into the set of used values.
+    The predicate function determines whether these values are in a specific
+    relationship to each other in the SSA model.
+    Finally, the set of constraint solutions lists all those tuples for which
     the predicate holds.
-
-    The two parameters of $C$ -- integer tuple and model -- should be
-    interpreted as two very different beasts here.
-    The predicate evaluates whether a condition holds for the tuple of integers,
-    the model on the other hand serves as the context for this evaluation.
-    This is reflected in the definition of the set of constraint solutions,
-    which is the set of all {\em true} evaluations given a fixed model.
-    More pointedly, it makes sense to query ``all loops in a given function'',
-    yet to ask for ``all functions with a specific loop'' is meaningless.
-
-    The interesting aspect of this defition is now the structure of predicates
-    $C$.
-    This section will concern it self with how meaningful predicates can be
-    composed from small building blocks and how the internal structure of the
-    predicate can lead to efficient solver approaches.
-    In order to evoke an intuition about these challenges, there will first be
-    an example.
 
 \subsection{Constraint Program Example}
 
