@@ -1,56 +1,52 @@
 \begin{theorem}{Backtracking Solution for Element-of Constraint Problems}{theo1}
-    For $S\subset\mathbb N^V$, the functions $(P_k[E_S])_{k=1\dots n}$,
-    $P_k[E_S]\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
-    defined by
+    For $S(M)\subset\mathbb N^V$, the collection $(B_k[E_S])_{k=1\dots n}$ of
+    functions
+    $B_k[E_S]\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
+    is a backtracking solution of $(V,E_S)$ when defined by
     \begin{align*}
-        P_k[E_S](M,x)=head(R_k(M,x))
-    \end{align*}
-    give a backtracking solution of $(V,E_S)$, where
-    $R_k(M,x)\subset\mathbb N^{n-k+1}$ is given by
-    \begin{align*}
-        R_k(M)={}&\{p_n(s)\mid s\in S(M)\}\\
+        B_k[E_S](M,x)={}&head(R_k(M,x))\\
+        R_1(M)={}&\{p_n(s)\mid s\in S(M)\}\\
         R_{k+1}(M,x)={}&select(x_k,R_k(M,(x_1,\dots,x_{k-1}))).
     \end{align*}
     \tcblower
     \paragraph*{Proof:} By definition,
-    $E_S(M,x)=1\iff x\in S(M)\iff p_n(x)\in\{p_n(s)\mid s\in S(M)\}$.
-    It is also clear that for all $1\leq k\leq n$ holds
+    $E_S(M,x)=1\iff x\in S(M)\iff p_n(x)\in R_1(M)$.\\
+    It is also clear that for all $1<k\leq n$ holds
     \begin{align*}
         p_n(x)\in\{p_n(s)\mid s\in S(M)\}\iff p_n(x)\in\{p_n(s)\mid s\in S(M),p_{k-1}(s)=p_{k-1}(x)\}.
     \end{align*}
-    For all $1\leq k\leq n$, this together gives
+    For all $1<k\leq n$, this gives
     \begin{align*}
-        E_S(M,x)=1\implies x_{v_k}\in\{s_{v_k}\mid s\in S(M),p_{k-1}(s)=p_{k-1}(x)\}=P_k[E_S](M,p_{k-1}(x)).
+        E_S(M,x)=1\implies x_{v_k}\in\{s_{v_k}\mid s\in S(M),p_{k-1}(s)=p_{k-1}(x)\}=B_k[E_S](M,p_{k-1}(x)).
     \end{align*}
-
     This gives ``$\implies$'' for the equation in \Cref{def:backtracking}.
     The reverse is true for $k=n$, as
     \begin{align*}
-        x_{v_n}\in{}&\{s_{v_n}\mid s\in S(M),p_{k-1}(s)=p_{k-1}(x)\}\implies x\in S(M).
+        x_{v_n}\in B_n[E_S](M,p_{n-1}(x))=\{s_{v_n}\mid s\in S(M),p_{n-1}(s)=p_{n-1}(x)\}\implies x\in S(M).
     \end{align*}
     Therefore, the equivalence from \Cref{def:backtracking} holds in both directions.
 \end{theorem}
 \begin{theorem}{Backtracking Solution for Conjunction Constraint problems}{theo2}
     For SSA constraint problems $(V,C)$ and $(V,C')$ with backtracking
-    solutions $(P_k)_{k=1\dots n}$, $(P'_k)_{k=1\dots n}$, the
-    functions $(P_k[C\mathrel\land C'])_{k=1\dots n}$,
-    $P_k[C\mathrel\land C']\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
-    defined by
+    solutions $(B_k)_{k=1\dots n}$, $(B'_k)_{k=1\dots n}$, the collection
+    $(B_k[C\hspace{-0.5mm}\land\hspace{-0.5mm}C'])_{k=1\dots n}$ of functions
+    \mbox{$B_k[C\hspace{-0.5mm}\land\hspace{-0.5mm}C']\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$}
+    is a backtracking solution of
+    $(V,C\hspace{-0.5mm}\land\hspace{-0.5mm}C')$ when defined by
     \begin{align*}
-        P_k[C\mathrel\land C'](M,x)=P_k(M,x)\mathrel\cap P'_k(M,x)
+        B_k[C\hspace{-0.5mm}\land\hspace{-0.5mm}C'](M,x)=B_k(M,x)\mathrel\cap B'_k(M,x).
     \end{align*}
-    give a backtracking solution of $(V,C\mathrel\land C')$.
     \tcblower
     \paragraph*{Proof:}
-    The definition of $(V,C\mathrel\land C')$ together with the
-    assumption that \Cref{def:backtracking} holds for the two given
+    The definition of $(V,C\hspace{-0.5mm}\land\hspace{-0.5mm} C')$ together
+    with the assumption that \Cref{def:backtracking} holds for the two given
     backtracking solutions gives
     \begin{align*}
-        C\mathrel\land C'(M,x)=1\iff{}&\left[x_{v_k}\in P_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n\right]\\
-                              \mathrel\land{}&\left[x_{v_k}\in P'_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n\right].
+        C\hspace{-0.5mm}\land\hspace{-0.5mm}C'(M,x)=1\iff{}&\left[x_{v_k}\in B_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n\right]\\
+                                            \mathrel\land{}&\left[x_{v_k}\in B'_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n\right].
     \end{align*}
-    With the definition of $P_k[C\mathrel\land C']$, this immediately gives
+    With the definition of $B_k[C\hspace{-0.5mm}\land\hspace{-0.5mm}C']$, this immediately gives
     \begin{align*}
-        C\mathrel\land C'(M,x)=1\iff\left[x_{v_k}\in P_k[C\mathrel\land C'](M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})\text{ for all }1\leq k\leq n\right].
+        C\hspace{-0.5mm}\land\hspace{-0.5mm}C'(M,x)=1\iff\left[x_{v_k}\in B_k[C\hspace{-0.5mm}\land\hspace{-0.5mm}C'](M,(x_{v_1},\dots,x_{v_{k-1}}),x_{v_k})\text{ for all }1\leq k\leq n\right].
     \end{align*}
 \end{theorem}

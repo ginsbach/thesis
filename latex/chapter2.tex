@@ -909,15 +909,17 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     \begin{definition}{Conjunction and Disjunction Constraint Problems}{conjconstr}
         For two SSA constraint problems $(V,C)$ and $(V,C')$, the
-        conjunction constraint problem $(V,C\mathrel\land C')$ and the
-        disjunction constraint problem $(V,C\mathrel\lor C')$ are given by
+        conjunction constraint problem
+        $(V,C\hspace{-0.5mm}\land\hspace{-0.5mm}C')$ and the disjunction
+        constraint problem $(V,C\hspace{-0.5mm}\lor\hspace{-0.5mm}C')$ are given
+        by
         \begin{align*}
-            &C\mathrel\land C'(M,x)=\left\{
+            &C\hspace{-0.5mm}\land\hspace{-0.5mm}C'(M,x)=\left\{
                 \begin{array}{l}
                     1\text{\quad if }C(M,x)=1\mathrel\land C'(M,x)=1\\
                     0\text{\quad otherwise}
                 \end{array}\right.\\
-            &C\mathrel\lor C'(M,x)=\left\{
+            &C\hspace{-0.5mm}\lor\hspace{-0.5mm}C'(M,x)=\left\{
                 \begin{array}{l}
                     1\text{\quad if }C(M,x)=1\mathrel\lor C'(M,x)=1\\
                     0\text{\quad otherwise}.

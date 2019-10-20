@@ -1,71 +1,73 @@
 \begin{theorem}{Backtracking Solution for Disjunction Constraint problems}{theo4}
     For SSA constraint problems $(V,C)$ and $(V,C')$ with backtracking
-    solutions $(P_k)_{k=1\dots n}$, $(P'_k)_{k=1\dots n}$, the
-    functions $(P_k[C\mathrel\lor C'])_{k=1\dots n}$,
-    $P_k[C\mathrel\land C']\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
-    defined by
+    solutions $(B_k)_{k=1\dots n}$, $(B'_k)_{k=1\dots n}$, the collection
+    $(B_k[C\hspace{-0.5mm}\lor\hspace{-0.5mm}C'])_{k=1\dots n}$ of functions
+    \mbox{$B_k[C\hspace{-0.5mm}\lor\hspace{-0.5mm}C']\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$}
+    is a backtracking solution of
+    $(V,C\hspace{-0.5mm}\lor\hspace{-0.5mm}C')$ when defined by
     \begin{align*}
-        P_k[C\mathrel\lor C'](M,x)=\left(\left\{
+        B_k[C\hspace{-0.5mm}\lor\hspace{-0.5mm}C'](M,x)=\left(\left\{
             \begin{array}{ll}
-                P_k(M,x)&\text{if }R_{k,1}(M,x)\\
+                B_k(M,x)&\text{if }R_{k,1}(M,x)\\
                 \emptyset&\text{otherwise}
             \end{array}\right.
             \right)\cup\left(\left\{
             \begin{array}{ll}
-                P'_k(M,x)&\text{if }R_{k,2}(M,x)\\
+                B'_k(M,x)&\text{if }R_{k,2}(M,x)\\
                 \emptyset&\text{otherwise}
             \end{array}\right.
             \right)
     \end{align*}
-    give a backtracking solution of $(V,C\mathrel\lor C')$, were
-    $R_k(M,x)\in\{0,1\}^2$ is given by 
+    \vspace{-0.2cm}
     \begin{align*}
-        R_0(M)=(1,1)&&
+        R_1(M)=\left(\begin{array}{l}1\\1\end{array}\right)&&
         R_{k+1}(M,x,x_k)=\left(
             \begin{array}{l}
-                R_{k,1}(M,x)\mathrel\land x_k\in P_k(M,x)\\
-                R_{k,2}(M,x)\mathrel\land x_k\in P'_k(M,x)
+                R_{k,1}(M,x)\mathrel\land x_k\in B_k(M,x)\\
+                R_{k,2}(M,x)\mathrel\land x_k\in B'_k(M,x)
             \end{array}\right).
     \end{align*}
     \tcblower
-    \paragraph*{Proof:} The equivalence from \Cref{def:backtracking}
-                        holds for the backtracking solutions
-                        of $(V,C)$, $(V,C')$ by assumption.
-                        With $C\mathrel\lor C'(M,x)=1\iff C(M,x)=1\mathrel\lor C'(M,x)=1$,
-                        this gives
+    \paragraph*{Proof:}
+    The equivalence from \Cref{def:backtracking} holds for the backtracking
+    solutions of $(V,C)$, $(V,C')$ by assumption.
+    With $C\hspace{-0.5mm}\lor\hspace{-0.5mm}C'(M,x)=1\iff C(M,x)=1\mathrel\lor C'(M,x)=1$,
+    this gives
     \begin{align*}
-        C\mathrel\lor C'(M,x)=1\iff{}&x_{v_k}\in P_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n\\
-                              \mathrel\lor{}&x_{v_k}\in P'_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n.
+        C\hspace{-0.5mm}\lor\hspace{-0.5mm}C'(M,x)=1\iff{}&x_{v_k}\in B_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n\\
+                                            \mathrel\lor{}&x_{v_k}\in B'_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq n.
     \end{align*}
     After expanding $R_k$, this directly corresponds to the definition of
-    $P_n[C\mathrel\lor C']$.
+    $B_n[C\hspace{-0.5mm}\lor\hspace{-0.5mm}C']$.
     Therefore
     \begin{align*}
-        C\mathrel\lor C'(M,x)=1\iff{}x_{v_n}\in P_n[C\mathrel\lor C'](M,p_{n-1}(x)).
+        C\hspace{-0.5mm}\lor\hspace{-0.5mm}C'(M,x)=1\iff{}x_{v_n}\in B_n[C\hspace{-0.5mm}\lor\hspace{-0.5mm}C'](M,p_{n-1}(x)).
     \end{align*}
     This is sufficient for the equivalence in \Cref{def:backtracking} to hold
     in both directions, as for all $1\leq k\leq n$, the definition of
-    $P_k[C\mathrel\lor C']$ with expanded $R_k$ directly gives
+    $B_k[C\hspace{-0.5mm}\lor\hspace{-0.5mm}C']$ with expanded $R_k$ directly
+    gives
     \begin{align*}
-        x_{v_n}\in P_n[C\mathrel\lor C'](M,p_{n-1}(x))\implies x_{v_k}\in P_k[C\mathrel\lor C'](M,p_{k-1}(x)).
+        x_{v_n}\in B_n[C\hspace{-0.5mm}\lor\hspace{-0.5mm}C'](M,p_{n-1}(x))\implies x_{v_k}\in B_k[C\hspace{-0.5mm}\lor\hspace{-0.5mm}C'](M,p_{k-1}(x)).
     \end{align*}
 \end{theorem}
 \begin{theorem}{Backtracking Solution for Extensions of Constraint Problems}{theo3}
     For an SSA constraint problem $(V,C)$ with a backtracking
-    solution $(P_k)_{k=1\dots n}$ and a set $W$ with an injection
-    $i:V\hookrightarrow W$ and an order $W=\{w_1,\dots,w_n\}$ that is
-    compatible with the order on $V$ in the sense that $v_k=w_{t(k)}$ with
-    some $t:\mathbb N\rightarrow\mathbb N$ strictly increasing, the functions
-    $(P_k[C^W])_{k=1\dots |W|}$,$P_k[C^W]\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
-    defined by
+    solution $(B_k)_{k=1\dots n}$ and a set $W$ with an injection
+    $i:V\hookrightarrow W$ and an enumeration of $W=\{w_1,\dots,w_{|W|}\}$ that
+    is compatible with the enumeration of $V$ such that $i(v_k)=w_{t(k)}$ with
+    some $t:\mathbb N\rightarrow\mathbb N$ strictly increasing, the collection
+    $(B_k[C^W])_{k=1\dots |W|}$ of functions
+    $B_k[C^W]\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
+    is a backtracking solution of $(V,C^W)$ when defined by
     \begin{align*}
-        P_k[C^W](M,x)=\left\{
+        B_k[C^W](M,x)=\left\{
             \begin{array}{ll}
-                P_k\left(M,\left(x_{t(1)},\dots,x_{t(k'-1)}\right)\right)&\text{if }w_k\in V\text{ and therefore }k=t(k')\\
+                B_k\left(M,\left(x_{t(1)},\dots,x_{t(k'-1)}\right)\right)&\text{if }k=t(k')\text{ for some }1\leq k'\leq|V|\\
                 \mathbb N&\text{otherwise}\\
-            \end{array}\right.
+            \end{array}\right..
     \end{align*}
-    give a backtracking solution of $(V,C^W)$.
     \tcblower
-    \paragraph*{Proof:} Follows immediately from \Cref{def:backtracking} and \Cref{def:constrext}.
+    \paragraph*{Proof:}
+    This follows immediately from \Cref{def:backtracking} and \Cref{def:constrext}.
 \end{theorem}
