@@ -17,8 +17,8 @@
     codebase to detect the appropriate places for applying peephole
     optimisations, and bugs in this functionality can result in corrupted user
     programs.
-    This is a barrier to the rapid prototyping and evaluation of innovative new
-    compiler optimisations.
+    These conditions are a barrier to the rapid prototyping and evaluation of
+    innovative new compiler optimisations.
 
     CAnDL enables a workflow that is much more amenable to efficient compiler
     development.
@@ -34,7 +34,7 @@
     Several case studies are presented that range from the detection of
     peephole optimisation opportunities, over graphics shader optimisations,
     to fully capturing static control flow regions for polyhedral code analysis.
-    These tasks can all be expressed more briefly in CAnDL than with competing
+    These tasks can all be expressed more briefly in CAnDL than with existing
     approaches.
 
 \section{Introduction}
@@ -43,17 +43,17 @@
     efficient code.
     They transform input source code through several compilation stages,
     resulting in a binary program.
-    In order to generate fast programs, modern compilers rely on a complex mid
-    end.
-    In this mid end, user code typically takes the form of a static single
-    assignment intermediate representation and it is optimised by successively
-    applying a wide range of optimisation passes.
+    In order to generate fast programs, modern compilers rely on a complex
+    middle end.
+    In this stage, user code is typically expressed in as SSA intermediate
+    representation, and it is improved by successively applying a wide range of
+    optimisations.
 
     Most compiler optimisations require two steps:
     analysis and transformation.
     First, analysis routines find sections in user programs that enable the
     application of specific transformations.
-    They further verify the necessary conditions to insure the transformation
+    They further verify the necessary conditions to ensure the transformation
     can be applied legally, without changing the program semantics.
     It is crucial that optimisations retain the semantics of the original
     program, as otherwise the resulting binary might be corrupted.
@@ -69,26 +69,25 @@
     transformations being simple.
     Furthermore, this is an important source of bugs, and bugs in this stage of
     the compiler are particularly pernicious.
-    They tamper with the user programs, but can remain unnoticed and often only
+    They tamper with the user programs but can remain unnoticed and often only
     trigger in corner cases.
     Ideally, there would be a simpler way of implementing such analysis that
-    reduces boiler-plate code and opens the way for new compiler optimisation
+    reduces boilerplate code and opens the way for new compiler optimisation
     innovation.
 
     This chapter presents the Compiler Analysis Description Language (CAnDL), a
-    domain specific language for compiler analysis.
-    It is a constraint programming language, operating on the static single
-    assignment intermediate representation of the LLVM compiler infrastructure
-    (LLVM IR).
+    domain-specific language for compiler analysis.
+    It is a constraint programming language, operating on the SSA intermediate
+    representation of the LLVM compiler infrastructure (LLVM IR).
     Instead of writing compiler analysis code inside the main codebase of the
-    compiler infrastructure, it enables compiler writers to specify optimization
-    functionality external to the main C++ code base.
+    compiler infrastructure, it lets compiler writers specify optimisation
+    functionality external to the main C++ codebase.
     The CAnDL compiler then generates C++ functions that are linked together
-    with the clang compiler binary and that implement LLVM passes.
-    The formulation of optimizing transformations in CAnDL is faster, simpler
-    and less error prone than writing them in C++.
-    It has a strong emphasis on modularity, which enables debugging and the
-    formulation of highly readable code.
+    with the clang compiler binary and that implement LLVM analysis passes.
+    The formulation of optimising transformations in CAnDL is faster, simpler
+    and less error-prone than writing them in C++.
+    The language has a strong emphasis on modularity, which enables debugging
+    and the formulation of highly readable code.
 
     CAnDL is based on the constraint programming methodology introduced in
     \Cref{chapter:theory}.
@@ -96,7 +95,7 @@
     CAnDL is developed as a complete programming language, with a full parser
     and code generator.
     The system is evaluated on a range of use cases from
-    different domains, including: standard LLVM optimisation passes,
+    different domains, including standard LLVM optimisation passes,
     custom optimisations for graphics shader programs and the detection static
     control flow regions for polyhedral program transformations.
 
@@ -120,7 +119,7 @@ End
 \end{minipage}
 \end{figure}
 
-    As an example of the CAnDL workflow, consider \Cref{fig:root}.
+    For an example of the CAnDL workflow, consider \Cref{fig:root}.
     This basic algebraic equation can be interpreted as a recipe for a compiler
     optimisation:
     Assuming an environment without the particularities of floating point
@@ -248,7 +247,7 @@ End
     representations.
 
     The expressed structures can scale from simple instruction patterns that are
-    suited for peephole optimizations, over control flow structures such
+    suited for peephole optimisations, over control flow structures such
     as loops, to complex algorithmic concepts such as code regions that are
     suitable for polyhedral code transformations.
 
