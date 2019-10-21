@@ -25,14 +25,14 @@
     \centering
     {\Large\bf Backtracking Solution:}
 
-    $k=1$\quad$v_1=phi$
+    $k=1$\quad$v_1=\text{phi}$
     \begin{graybox}
         \setlength{\abovedisplayskip}{0pt}
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
         \begin{align*}
-            P_1[C](M)={}&heads(DFG_\mathcal{F}^*)\\
-                \mathrel\cap{}&select(phi,I_\mathcal{F})\\
+            B_1[C](M)={}&heads(DFG_\mathcal{F}^*)\\
+                \mathrel\cap{}&heads(select(phi,I_\mathcal{F}))\\
                 \mathrel\cap{}&heads(rev(DFG_\mathcal{F}^*))
         \end{align*}
     \end{graybox}
@@ -43,16 +43,16 @@
     \hspace{0.3cm}
     \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
 
-    $k=2$\quad$v_2=update$
+    $k=2$\quad$v_2=\text{update}$
     \begin{graybox}
         \setlength{\abovedisplayskip}{0pt}
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
         \begin{align*}
-            P_2[C]&(M,x)=\\
+            B_2[C]&(M,x)=\\
                             {}&heads(select(x_1,DFG_\mathcal{F}^*))\\
                 \mathrel\cap{}&heads(rev(DFG_\mathcal{F}^*))\\
-                \mathrel\cap{}&select(add,I_\mathcal{F})\\
+                \mathrel\cap{}&heads(select(add,I_\mathcal{F}))\\
                 \mathrel\cap{}&heads(select(x_1,rev(DFG_\mathcal{F}^*)))
         \end{align*}
     \end{graybox}
@@ -63,13 +63,13 @@
     \hspace{0.3cm}
     \phantom{\Huge\rotatebox[origin=c]{30}{$\downarrow$}}
 
-    $k=3$\quad$v_3=step$
+    $k=3$\quad$v_3=\text{step}$
     \begin{graybox}
         \setlength{\abovedisplayskip}{0pt}
         \setlength{\belowdisplayskip}{0pt}
         \vspace{-0.5em}
         \begin{align*}
-            P_3[C]&(M,x)=select(1,C_\mathcal{F})\\
+            B_3[C]&(M,x)=select(1,C_\mathcal{F})\\
                 \mathrel\cap{}&heads(select(x_2,rev(DFG_\mathcal{F}^*)))
         \end{align*}
     \end{graybox}
@@ -94,7 +94,7 @@
             \setlength{\belowdisplayskip}{0pt}
             \vspace{-0.5em}
             \begin{gather*}
-                \\P_1[C](M)=\{6,9,10\}\\
+                \\B_1[C](M)=\{6,9,10\}\\
             \end{gather*}
         \end{graybox}
         \vspace{-0.75em}
@@ -114,7 +114,7 @@
             \setlength{\belowdisplayskip}{0pt}
             \vspace{-0.5em}
             \begin{gather*}
-                \\P_2[C](M,6)\\=\\\{\}\\
+                \\B_2[C](M,6)\\=\\\{\}\\
             \end{gather*}
         \end{graybox}
         {\large\bf backtrack!}
@@ -128,7 +128,7 @@
             \setlength{\belowdisplayskip}{0pt}
             \vspace{-0.5em}
             \begin{gather*}
-                \\P_2[C](M,9)\\=\\\{17\}\\
+                \\B_2[C](M,9)\\=\\\{17\}\\
             \end{gather*}
         \end{graybox}
         \vspace{-0.75em}
@@ -145,7 +145,7 @@
             \setlength{\belowdisplayskip}{0pt}
             \vspace{-0.5em}
             \begin{gather*}
-                \\P_2[C](M,10)\\=\\\{\}\\
+                \\B_2[C](M,10)\\=\\\{\}\\
             \end{gather*}
         \end{graybox}
         {\large\bf backtrack!}
@@ -161,7 +161,7 @@
             \vspace{-0.5em}
             \begin{gather*}
                 \\[-3.75mm]
-                P_3[C](M,9,17)=\{22\}
+                B_3[C](M,9,17)=\{22\}
                 \\[-3.75mm]
             \end{gather*}
         \end{graybox}

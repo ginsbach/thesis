@@ -952,11 +952,11 @@ define double @dot(double* %0, double* %1, i64 %2) {
     backtrack immediately after yielding a result.
     In the theorem, the backtracking solution is not defined directly.
     Instead, it uses a helper construct $R_k$.
-    \Cref{subsec:impl} uses this to derive an efficient implementation.
+    \Cref{subsec:impl} derives an efficient implementation of $R_k$.
 
     \Cref{theo:theo2} introduces backtracking solutions for conjunction
     constraint problems.
-    These are constructed in the obvious way, by taking the intersection set of
+    These are constructed in an obvious way, by taking the intersection set of
     the underlying backtracking solutions at each $k$.
     This is not possible for disjunction constraint problems, which are dicussed
     in \Cref{theo:theo3}.
@@ -974,43 +974,53 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \begin{figure}[p]
     \input{latex/figure_backtrackexample}
-    \caption{Backtracking is used to find the single solution of the SSA
-             constraint problem from \Cref{fig:constraintsolution}.
-             The partial solution is extended in three steps from top to bottom.
-             The backtracking solution $(P_k[C])_{k=1\dots3}$ is contructed
-             according to \Cref{theo:theo1,theo:theo2,theo:theo4}.}
+    \caption{Backtracking is used to find the single solution of the
+             SSA constraint problem for simple loop iterators from
+             \Cref{fig:constraintsolution}.
+             The backtracking solution $(B_k[C])_{k=1\dots3}$ is constructed
+             with \Cref{theo:theo1,theo:theo2,theo:theo4}.
+             The partial solution $x$  is extended in three steps, from top to
+             bottom.\parfillskip=0pt}
     \label{fig:backtracsol}
 \end{figure}
 
-    \Cref{fig:backtracsol} shows how backtracking is used to algorithmically
+    \Cref{fig:backtracsol} demonstrates how backtracking can algorithmically
     determine the solution of the SSA constraint problem that was introduced in
-    \Cref{fig:constraintsolution}.    
-    The original SSA constraint problem is shown again at the top of the figure.
-    It is entirely constructed via conjunctions of element-of constraint
-    problems.
+    \Cref{fig:constraintsolution} for recognising simple loop iterators.
+    This SSA constraint problem is replicated at the top of the figure.
+    Its construction follows the rules in
+    \Cref{def:elementofconstr,def:conjconstr,def:constrext}, using conjunctions
+    of element-of constraint problems.
 
-    The bottom left part of the figure shows the backtracking solution.
-    It is constructed entirely according to
+    The bottom left part of the figure shows the backtracking solution
+    of the SSA constraint problem that is obtained by applying
     \Cref{theo:theo1,theo:theo2,theo:theo4}.
-    For example, the condition
-    ``$(x_\text{step},x_\text{update})\in DFG_\mathcal F^*$'' is the
-    element-of constraint problem $E_S$ with
-    $S=\{x\in\mathbb N^{\{\text{step},\text{update}\}}\mid (x_\text{step},x_\text{update})\in DFG_\mathcal F^*\}$.
-    Following \Cref{theo:theo1}, the enumeration $(\text{update},\text{step})$
-    gives
+    The construction, according to these theorems, guarantees that the defining
+    condition in \Cref{def:backtracking} holds for $(P_k[C])_{k=1\dots3}$, and
+    that \Cref{backtrackalg} can be applied.
+    The construction of one building block in the backtracking solution is
+    explained in detail as follows:
+    The condition ``$(x_\text{update},x_\text{phi})\in DFG_\mathcal F^*$''
+    corresponds to the \mbox{element-of} constraint problem $E_S$ with
+    $S=\{x\in\mathbb N^{\{\text{update},\text{phi}\}}\mid (x_\text{update},x_\text{phi})\in DFG_\mathcal F^*\}$.
+    Following \Cref{theo:theo1}, the enumeration of the variables gives
     \begin{align*}
-    R_1(M)=rev(DFG_\mathcal F^*)&&
-    R_2(M,x_1)=select(x_1,rev(DFG_\mathcal F^*)).
+    v_1={}&\text{phi}&v_2={}&\text{update}\\
+    R_1(M)={}&rev(DFG_\mathcal F^*)&
+    R_2(M,x_1)={}&select(x_1,rev(DFG_\mathcal F^*)).
     \end{align*}
     Therefore, the backtracking solution is given by
     \begin{align*}
         B_1[E_S](M)={}&heads(rev(DFG_\mathcal F^*))\\
         B_2[E_S](M,x_1)={}&heads(select(x_1,head(rev(DFG_\mathcal F^*))))
     \end{align*}
-    This backtracking solution is now extended to $V$ according to
-    \Cref{theo:theo4}, meaning that $B_1[E_S]$ features in
-    $B_1[C]$ and $B_2[E_S]$ features in $B_2[C]$, but $B_3[C]$ is entirely
-    independent of $E_S$.
+    This backtracking solution for $E_S$ is extended to the entire set $V$ using
+    \Cref{theo:theo4}, yielding the additional function
+    $B_3[E_S^V](M,x)=\mathbb N$.
+    Finally \Cref{theo:theo2} embeds $B_1[S_S^V]$ in $B_1[C]$ and
+    $B_2[S_S^V]$ in $B_2[C]$ using set intersections with the other terms.
+    The third term $B_3[E_S^V]=\mathbb N$ disappears in the assembled
+    backtracking solution, as the intersection with $\mathbb N$ is redundant.
 
     Finally, the bottom right of the figure shows the backtracking algorithm
     applied to the SSA model from \Cref{fig:derivemaths}.
