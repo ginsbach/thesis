@@ -236,7 +236,9 @@
     In LLVM, this is 47 lines of code inside the \texttt{instcombine} pass.
 
 \begin{figure}[t]
-\begin{lstlisting}[language={constraints},escapechar=|]
+\begin{lstlisting}[language={constraints},escapechar=|,
+                   label={fig:IDLfactorization},caption=
+   {IDL formulation of $\protect{(x*y)+(x*z)}$ pattern}]
 Constraint FactorizationOpportunity
 ( {sum} is add instruction and
   {left_addend} is first argument of {sum} and
@@ -249,9 +251,6 @@ Constraint FactorizationOpportunity
   |\label{line:factorSecondRight}|  {factor} is second argument of {right_addend}))
 End
 \end{lstlisting}
-\vspace{-0.3cm}
-\caption{IDL formulation of (x*y)+(x*z) pattern}
-\label{fig:IDLfactorization}
 \end{figure}
 
     With IDL, we can formulate this in only a few lines of an easily
@@ -368,7 +367,7 @@ Therefore, the solution at the bottom of \Cref{fig:firstexample} is the only fac
     The original code is then cut out and replaced with this function call.
     The cuSPARSE library is then linked with the object code produced by the
     LLVM compiler, resulting in a speedup of $17\times$ on a GPU as described in
-    \Cref{sec:results}.
+    \Cref{sec:idiomresults}.
 
     Central to our approach is the ability to detect idioms.
     In the next section we introduce a powerful description language that is
@@ -477,7 +476,8 @@ Therefore, the solution at the bottom of \Cref{fig:firstexample} is the only fac
     non-obvious considerations.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,label={candl_sese},caption=
+   {Single Entry Single Exit Regions}]
 Constraint SESE
 ( {precursor} is branch instruction and
   {precursor} has control flow to {begin} and
@@ -491,8 +491,6 @@ Constraint SESE
   all control flow from {successor} to {end} passes through {begin})
 End
 \end{lstlisting}
-\caption{Single Entry Single Exit Regions}
-\label{candl_sese}
 \end{figure}
 
     The necessity for {\tt begin} and {\tt end} is clear, these are the
@@ -523,14 +521,13 @@ End
     definition: A Loop is simply a SESE region with a backedge.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,label={candl_loop},caption=
+   {Loop in CAnDL}]
 Constraint Loop
 ( inherits SESE and
   {end} has control flow to {begin})
 End
 \end{lstlisting}
-\caption{Loop in CAnDL}
-\label{candl_loop}
 \end{figure}
 
     More interesting are for loops with well behaved interation spaces.
@@ -540,7 +537,8 @@ End
     \Cref{candl_forloop}.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,
+                   label={candl_forloop},caption={For Loop in IDL}]
 Constraint ForLoop
 ( inherits Loop at {loop} and
   inherits InductionVar
@@ -561,8 +559,6 @@ Constraint ForLoop
        and {iter_end}   as {limit} at {loop} and
 End
 \end{lstlisting}
-\caption{For Loop in CAnDL}
-\label{candl_forloop}
 \end{figure}
 
     As opposed to the previous CAnDL programs, this one makes extensive use of
@@ -645,7 +641,7 @@ For example, there are two syntactically distinct programs in \Cref{fig:gemmexam
 The IDL in \Cref{fig:gemm} discovers they are both instances of GEMM and they can both be replaced with an API call to GEMM.
 
 \begin{figure}[ht]
-\begin{lstlisting}[numbers=none,basicstyle=\linespread{1.133}\footnotesize\ttfamily]
+\begin{lstlisting}[language=C]
 for (int mm = 0; mm < m; ++mm) {
   for (int nn = 0; nn < n; ++nn) {
     float c = 0.0f;
@@ -659,17 +655,14 @@ for (int mm = 0; mm < m; ++mm) {
   }
 }
 \end{lstlisting}
-\vspace{1em}
-\begin{lstlisting}[numbers=none,basicstyle=\linespread{1.133}\footnotesize\ttfamily]
+\begin{lstlisting}[language=C,label={fig:gemmexamples},caption=
+   {Two matching instances of GEMM}]
 for(int i = 0; i < 1000; i++)
     for(int j = 0; j < 1000; j++) {
         M3[i][j] = 0.0f;
         for(int k = 0; k < 1000; k++)
            M3[i][j]+=M1[i][k]*M2[k][j]; }
 \end{lstlisting}
-\vspace{-0.3cm}
-\caption{Two matching instances of GEMM}
-\label{fig:gemmexamples}
 \end{figure}
 
     There are limitations to this semantic matching.
@@ -800,7 +793,9 @@ We therefore implemented a rudimentary LLVM IR to C backend for generating this 
 \paragraph{Halide} is a language embedded in C++, it requires a syntax tree of the kernel functions built using a class hierarchy.
 
 \begin{figure}[ht]
-\begin{lstlisting}[language=C,escapechar=|]
+\begin{lstlisting}[language={},escapechar=|,
+                   label={fig:liftmxm},caption=
+   {Example of matrix multiplication in Lift}]
 float mult(float x, float y) { return x*y; }
 float add(float x, float y) { return x+y; }
 
@@ -813,10 +808,6 @@ gemm_in_lift(A, B, C, alpha, beta) {
  }, zip(A, C))
 }
 \end{lstlisting}
-\vspace{-.3cm}
-\caption{Example of matrix multiplication in Lift.}
-\label{fig:liftmxm}
-\vspace{-1em}
 \end{figure}
 
 \paragraph{}
@@ -884,6 +875,7 @@ Finally, we again replace the idiom code in the user's code with a call to the c
     considered parallelizable.
 
 \section{Results}
+\label{sec:idiomresults}
 
     We first evaluate how often our approach is able to detect idioms and its
     compile time cost.
