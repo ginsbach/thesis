@@ -667,15 +667,15 @@ Due to space we omit further details.
    {CAnDL Formulation of Kernel Functions}]
 Constraint KernelFunction
 ( collect i N
-([$\tt \land$]) ( include LocalConst({outer}->{begin}*@*{closure[i]}
-  ([$\tt \land$]) ir_type{closure[i].value} != literal
-  ([$\tt \land$]) {closure[i].use} ([$\tt \in$]) {closure[i].value}.args
-  ([$\tt \land$]) domination({inner}, {closure[i].use}))
-([$\tt \land$]) collect i N data_origin{tainted1[i]}
-([$\tt \land$]) collect i N
-([$\tt \land$]) ( domination({outer}, {tainted2[i]})
-  ([$\tt \land$]) strict_domination({tainted2[i]}, {inner}))
-([$\tt \land$]) calculated_from(
+([$\tt\land$]) ( include LocalConst({outer}->{begin}*@*{closure[i]}
+  ([$\tt\land$]) ir_type{closure[i].value} != literal
+  ([$\tt\land$]) {closure[i].use} ([$\tt \in$]) {closure[i].value}.args
+  ([$\tt\land$]) domination({inner}, {closure[i].use}))
+([$\tt\land$]) collect i N data_origin{tainted1[i]}
+([$\tt\land$]) collect i N
+([$\tt\land$]) ( domination({outer}, {tainted2[i]})
+  ([$\tt\land$]) strict_domination({tainted2[i]}, {inner}))
+([$\tt\land$]) calculated_from(
    {tainted1[0..N],tainted2[0..N]},
    {origin[0..N],closure[0..N].value,input[0..N]},
    {output}))

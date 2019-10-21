@@ -1,13 +1,13 @@
 \begin{lstlisting}[language=CAnDL]
 Constraint Sum
 ( opcode{out} = add
-([$\tt \land$]) {in1} = {out}.args[0]
-([$\tt \land$]) {in2} = {out}.args[1])
+([$\tt\land$]) {in1} = {out}.args[0]
+([$\tt\land$]) {in2} = {out}.args[1])
 End
 Constraint SumOfSums
 ( include Sum@{sum1}
-([$\tt \land$]) include Sum@{sum2}
-([$\tt \land$]) include Sum({sum1.out}->{in1},{sum2.out}->{in2}))
+([$\tt\land$]) include Sum@{sum2}
+([$\tt\land$]) include Sum({sum1.out}->{in1},{sum2.out}->{in2}))
 End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL,
@@ -16,13 +16,13 @@ End
     Both specifications are equivalent.\parfillskip=0pt}]
 Constraint SumOfSums
 ( opcode{sum1.out} = add
-([$\tt \land$]) {sum1.in1} = {sum1.out}.args[0]
-([$\tt \land$]) {sum1.in2} = {sum1.out}.args[1]
-([$\tt \land$]) opcode{sum2.out} = add
-([$\tt \land$]) {sum2.in1} = {sum2.out}.args[0]
-([$\tt \land$]) {sum2.in2} = {sum2.out}.args[1]
-([$\tt \land$]) opcode{out} = add
-([$\tt \land$]) {sum1.out} = {out}.args[0]
-([$\tt \land$]) {sum2.out} = {out}.args[1])
+([$\tt\land$]) {sum1.in1} = {sum1.out}.args[0]
+([$\tt\land$]) {sum1.in2} = {sum1.out}.args[1]
+([$\tt\land$]) opcode{sum2.out} = add
+([$\tt\land$]) {sum2.in1} = {sum2.out}.args[0]
+([$\tt\land$]) {sum2.in2} = {sum2.out}.args[1]
+([$\tt\land$]) opcode{out} = add
+([$\tt\land$]) {sum1.out} = {out}.args[0]
+([$\tt\land$]) {sum2.out} = {out}.args[1])
 End
 \end{lstlisting}

@@ -1095,7 +1095,6 @@ define double @dot(double* %0, double* %1, i64 %2) {
     discussed types of SSA constraint problems to be implemented efficiently
     within the {\tt BacktrackingPart} interface.
 
-    \pagebreak
     \begin{itemize}
     \item For element-of constraint problems, $R_k$ can be implemented as a
           tree structure, built around a sorted array of pairs.
@@ -1126,6 +1125,11 @@ struct Tree { vector<pair<int,Tree>> s; };
           that are enabled in $R_k$.
     \end{itemize}
 
+\begin{figure}[p]
+\vspace{15cm}
+\caption{Implementation of the constraint problems}
+\end{figure}
+
     While the chosen data structures allow for very efficient implementations
     of the individual functions that are used to search for solutions, no
     meaningful limits can be put on computational complexity in general.
@@ -1144,6 +1148,60 @@ struct Tree { vector<pair<int,Tree>> s; };
     complexity assumptions.
 
 \subsection{Additional SSA Constraint Problems}
+
+    There are a number of additional construction rules for SSA constraint
+    problems that are used in this thesis.
+    Some of them are less intuitive than the previously introduced definitions,
+    but allow for powerful compiler analysis.
+
+    Firstly, there are a number of very simple SSA constraint problems that
+    operate directly on the integer values, without interpreting them as indizes
+    into the value list of the SSA model.
+    These are listed in \Cref{def:auxconstr}.
+    $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$ are defined in the
+    obvious way, forcing equality/inequality.
+    Finally, there is $(\{a\}, C^{unused})$.
+    The value $|val|+1$ is the smallest integer that can no longer be
+    interpreted as a value in the SSA model.
+    Therefore, it is used by convention to signal that no value from the SSA
+    model was assigned.
+
+    Generalised graph domination constraint problems as in \Cref{def:domconstr}
+    are versatile tools for analysing SSA models.
+    The special case of $|V_1|=|V_2|=|V_2|=1$ and $V_1=\{v_1\}$,
+    with $v_1$ the control origin of the function, turns this definition into
+    the usual control flow dominance concept that is established in compiler
+    theory.
+    However, the generalisation that is used here encompasses a much larger
+    set of interesting properties.
+    Importantly, this can be applied also to data flow, which will be useful in
+    \Cref{chapter:reductions}.
+    The backtracking solution of generalised graph domination constraint
+    problems is brute force, with $P_k[D_G]\equiv 1$ for all $1\leq k<n$.
+    The checking of the condition in $P_n[D_G]$ is typically preformed in
+    $O(|val|)$ time, therefore this is a computationally expensive constraint.
+
+    Finally, collect-all constraint problem are introduced in
+    \Cref{def:collectconstr}.
+    Given a constraint problem $(V,C)$, the variables $V$ are divided into
+    two subsets.
+    The collect-all constraint problem identifies all possible solutions over
+    one of the variable subsets, given that the other variable subset is fixed.
+    The parameter $N$ gives an upper limit to the number of these solutions.
+    Collect-all constraint problems are used to approximate logical quantifiers.
+    This is discussed in more detail in \Cref{chapter:candl}.
+
+    In order to calculate a backtracking solution of collect-all constraint
+    problems, the order on $W$ needs to satisfy the property
+    $w_a\in U,w_b\notin U\implies a<b$.
+    For values in $U$, the backtracking solution simply passes through to the
+    underlying constraint.
+    Whenever a partial solution is determined over all values in $U$, a nested
+    call to the solver is performed in order to identify all possible partial
+    solutions over $V\setminus U$.
+    The remaining steps of the backtracking solution then simply enforce this
+    precomputed list of solutions.
+
 
 \begin{figure}[p]
     \begin{definition}{Simple Integer Constraint Problems}{auxconstr}
@@ -1203,59 +1261,6 @@ struct Tree { vector<pair<int,Tree>> s; };
 %        $R(M,x)\subset\mathbb N^{(n-m)N}$ is given by
 %    \end{theorem}
 \end{figure}
-
-    There are a number of additional construction rules for SSA constraint
-    problems that are used in this thesis.
-    Some of them are less intuitive than the previously introduced definitions,
-    but allow for powerful compiler analysis.
-
-    Firstly, there are a number of very simple SSA constraint problems that
-    operate directly on the integer values, without interpreting them as indizes
-    into the value list of the SSA model.
-    These are listed in \Cref{def:auxconstr}.
-    $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$ are defined in the
-    obvious way, forcing equality/inequality.
-    Finally, there is $(\{a\}, C^{unused})$.
-    The value $|val|+1$ is the smallest integer that can no longer be
-    interpreted as a value in the SSA model.
-    Therefore, it is used by convention to signal that no value from the SSA
-    model was assigned.
-
-    Generalised graph domination constraint problems as in \Cref{def:domconstr}
-    are versatile tools for analysing SSA models.
-    The special case of $|V_1|=|V_2|=|V_2|=1$ and $V_1=\{v_1\}$,
-    with $v_1$ the control origin of the function, turns this definition into
-    the usual control flow dominance concept that is established in compiler
-    theory.
-    However, the generalisation that is used here encompasses a much larger
-    set of interesting properties.
-    Importantly, this can be applied also to data flow, which will be useful in
-    \Cref{chapter:reductions}.
-    The backtracking solution of generalised graph domination constraint
-    problems is brute force, with $P_k[D_G]\equiv 1$ for all $1\leq k<n$.
-    The checking of the condition in $P_n[D_G]$ is typically preformed in
-    $O(|val|)$ time, therefore this is a computationally expensive constraint.
-
-    Finally, collect-all constraint problem are introduced in
-    \Cref{def:collectconstr}.
-    Given a constraint problem $(V,C)$, the variables $V$ are divided into
-    two subsets.
-    The collect-all constraint problem identifies all possible solutions over
-    one of the variable subsets, given that the other variable subset is fixed.
-    The parameter $N$ gives an upper limit to the number of these solutions.
-    Collect-all constraint problems are used to approximate logical quantifiers.
-    This is discussed in more detail in \Cref{chapter:candl}.
-
-    In order to calculate a backtracking solution of collect-all constraint
-    problems, the order on $W$ needs to satisfy the property
-    $w_a\in U,w_b\notin U\implies a<b$.
-    For values in $U$, the backtracking solution simply passes through to the
-    underlying constraint.
-    Whenever a partial solution is determined over all values in $U$, a nested
-    call to the solver is performed in order to identify all possible partial
-    solutions over $V\setminus U$.
-    The remaining steps of the backtracking solution then simply enforce this
-    precomputed list of solutions.
 
 \subsection{Satifiability Modulo Theory}
 
