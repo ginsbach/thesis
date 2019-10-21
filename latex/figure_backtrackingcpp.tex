@@ -1,4 +1,13 @@
-\begin{lstlisting}[language=C++,,basicstyle=\linespread{0.9784}\ttfamily]
+\begin{lstlisting}[language=C++,
+                   label={cppsolver},caption=
+  {Complete C++ implementation of \Cref{backtrackalg}:
+    The if-else statements in lines 19--41 precisely correspond to those
+    in lines 5--17 of that algorithm.
+    The \texttt{BacktrackingPart} objects iterate over $\protect{B_k[C](M,x)}$ via the
+    \texttt{skip\_invalid} method.
+    The remaining member function calls in lines
+    $\text{23},\text{27},\text{29},\text{36}$ precompute structures that are
+    used in \texttt{skip\_invalid} for quick evaluation.\parfillskip=0pt}]
 // This class corresponds to Definition 2.7.
 class BacktrackingPart {
 public:

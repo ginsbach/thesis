@@ -1058,52 +1058,44 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \subsection{Implementation, Data Structures and Complexity}
 \label{subsec:impl}
 
-    With the concrete backtracking solutions that were derived in
-    \Cref{theo:theo1,theo:theo2,theo:theo3,theo:theo4}, it is possible to
-    identify suitable data structures efficiently implementing the backtracking
-    algorithm in real code.
-    This first requires rephrasing the backtracking algorithm first
-    introduced in \Cref{backtrackalg}.
-    \Cref{cppsolver} shows how this backtracking solver is implemented as a C++
-    function.
-    Most of the \texttt{solver} function in lines 12--43 maps directly onto
-    \Cref{backtrackalg}, and needs no further explanation.
-    However, there are some crucial details that need elaboration, mostly
-    relating to the iteration over the backtracking solution in line 4 of
-    \Cref{backtrackalg}.
-
-    \texttt{BacktrackingPart} corresponds to the backtracking solution in
-    \Cref{def:backtracking}.
-    The class provides four member functions.
-    Most importantly, \texttt{skip\_invalid} is used for implementing the
-    evaluation of
-    $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
-    in line 4 of \Cref{backtrackalg}.
-    More precisely, it increases the argument to the smallest value that is
-    part of a partial solution.
-
 \begin{figure}[p]
     \input{latex/figure_backtrackingcpp}
-    \caption{Complete C++ implementation of \Cref{backtrackalg}.
-             The if-else statements in lines 20--41 precisely correspond
-             to those in lines 5--17 of that algorithm.
-             The \texttt{BacktrackingPart} class provides
-             $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
-             via \texttt{skip\_invalid}.
-             The remaining member functions precompute structures that
-             are used in \texttt{skip\_invalid} for quick evaluation.}
-    \label{cppsolver}
 \end{figure}
 
-    The three other member function of \texttt{BacktrackingPart} manipulate
-    state that is shared by the individual \texttt{BacktrackingPart} objects.
-    This allows computations that would otherwise be performed repeatedly by
-    the \texttt{skip\_invalid} function to instead of performed ahead of time.
-    More specifically, this corresponds directly to $R_k(M,x)$ in both
-    \Cref{theo:theo1} and \Cref{theo:theo4}.
-    Crucially, this distribution of the computation allows all previously
-    discussed types of SSA constraint problems to be implemented efficiently as
-    follows.
+    With the explicit construction rules for backtracking solutions in
+    \Cref{theo:theo1,theo:theo2,theo:theo3,theo:theo4}, suitable data structures
+    can be selected for efficiently implementing the
+    backtracking algorithm in code.
+    This requires a slight rephrasing of \Cref{backtrackalg} to provide
+    interfaces for computing the supporting structures $R_k$ from
+    \Cref{theo:theo1,theo:theo3}.
+    \Cref{cppsolver} shows how the backtracking algorithm with those hooks is
+    implemented as a C++ function.
+    Most of the \texttt{solver} function in lines 12--43 maps directly onto
+    \Cref{backtrackalg}, and needs no further explanation.
+    However, some crucial details need elaboration, mostly relating to the
+    iteration over the backtracking solution in line 4 of \Cref{backtrackalg}.
+
+    {\tt BacktrackingPart} provides the C++ interface for the individual
+    functions in backtracking solutions as defined in \Cref{def:backtracking}.
+    They have to implement four member functions.
+    Most importantly, \texttt{skip\_invalid(x[k])} calculates
+    $x_k\gets min\{y\in B_k(M,p_{k-1}(x))\mid y\geq x_k\}$
+    from line 4 of \Cref{backtrackalg}.
+
+    The other three member function of \texttt{BacktrackingPart} manipulate
+    state that is shared by the \texttt{BacktrackingPart} objects
+    that together comprise a backtracking solution.
+    This allows computations that otherwise would have to be performed
+    repeatedly by \texttt{skip\_invalid}, to be instead done ahead
+    of time.
+    More specifically, this corresponds to $R_k$ in
+    \Cref{theo:theo1,theo:theo4}.
+    Crucially, this distribution of the computations allows all previously
+    discussed types of SSA constraint problems to be implemented efficiently
+    within the {\tt BacktrackingPart} interface.
+
+    \pagebreak
     \begin{itemize}
     \item For element-of constraint problems, $R_k$ can be implemented as a
           tree structure, built around a sorted array of pairs.
