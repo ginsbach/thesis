@@ -255,7 +255,7 @@ End
 
     With IDL, we can formulate this in only a few lines of an easily
     understandable program (\Cref{fig:IDLfactorization}).
-    For this example, the underlying constraint problem is immediately visible:
+    For this example, the underlying constraint problem is directly visible:
     There are four variables \texttt{sum}, \texttt{left\_addend},
     \texttt{right\_addend}, \texttt{factor} and nine individual constraints
     that are combined with boolean operators.
@@ -338,7 +338,7 @@ Therefore, the solution at the bottom of \Cref{fig:firstexample} is the only fac
     program analysis, we want to detect much more complex idioms and 
     map them to existing APIs.
 
-    The C code in \Cref{fig:spmvexample1} shows the performance bottleneck of
+    The code in \Cref{fig:spmvexample1} shows the performance bottleneck of
     the NAS \emph{Conjugate Gradient (GC)} benchmark, as well as the
     corresponding LLVM IR code.
     It implements a standard operation from sparse linear algebra, namely a
@@ -362,8 +362,8 @@ Therefore, the solution at the bottom of \Cref{fig:firstexample} is the only fac
 
     \Cref{fig:spmvexample3} shows how this solution is used to generate a
     call to a cuSPARSE procedure.
-    The solution variables are inserted into the {\tt cusparseDcsrmv} code
-    template as function arguments. 
+    The individual solution variables are inserted into the {\tt cusparseDcsrmv}
+    code template as function arguments. 
     The original code is then cut out and replaced with this function call.
     The cuSPARSE library is then linked with the object code produced by the
     LLVM compiler, resulting in a speedup of $17\times$ on a GPU as described in
@@ -561,7 +561,7 @@ End
 \end{lstlisting}
 \end{figure}
 
-    As opposed to the previous CAnDL programs, this one makes extensive use of
+    Other than the previous CAnDL programs, this one makes extensive use of
     the modularity and simply binds together a range of simpler construct into
     a high level definition.
     Several additional variables are introduced: {\tt increment} is instruction
@@ -1149,7 +1149,7 @@ A simple interchange of two loops improved performance by almost 20 times.
 \paragraph*{Generation of Performance Portable Code for Heterogeneous Hardware}
     Recent research has highlighted the challenges of generating code that
     performs well on different heterogeneous hardware architectures.
-    PetaBricks~\cite{PhothilimthanaARA13} is one of the first languages to
+    PetaBricks by \citet{PhothilimthanaARA13} is one of the first languages to
     address this performance portability challenge by encoding algorithmic
     choices which are then empirically evaluated and automatically taken by the
     compiler.

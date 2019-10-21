@@ -1,4 +1,4 @@
-\begin{lstlisting}[escapechar=|,language=C]
+\begin{lstlisting}[escapechar=|,language=C,basicstyle=\linespread{0.75}\small\ttfamily]
 for (j = 0; j < |{\bf m}|; j++) {
   d = 0.0;
   for (k = |{\bf rowstr }|[j]; k < |{\bf rowstr}|[j+1]; k++)
@@ -6,7 +6,8 @@ for (j = 0; j < |{\bf m}|; j++) {
   |{\bf r}|[j] = d; }
 \end{lstlisting}
 \vspace{-1em}
-\begin{lstlisting}[escapechar=|,language={LLVM},basicstyle=\linespread{0.939}\tiny\ttfamily]
+\begin{lstlisting}[language={LLVM},escapechar=|,basicstyle=\linespread{0.8}\tiny\ttfamily,
+                   label={fig:spmvexample1},caption={Sparse linear algebra in C and LLVM IR}]
 ; <label>:2:
   %j = phi i64 [ %j_next, %12 ], [ 0, %1 ]
   %j_cond = icmp slt i64 %j, |{\bf \%m}|
@@ -43,8 +44,6 @@ for (j = 0; j < |{\bf m}|; j++) {
   br label %2
 \end{lstlisting}
 \vspace{-0.287cm}
-\caption{Sparse linear algebra in C and LLVM IR}
-\label{fig:spmvexample1}
 %\end{figure}
 
 \centering
@@ -130,12 +129,11 @@ indir\_read.base\_pointer   & \texttt{\%\bf z}\\
 
 
 %\begin{figure}
-\begin{lstlisting}[escapechar=|,mathescape,commentstyle=\color{gray}\itshape,language=C]
+\begin{lstlisting}[escapechar=|,mathescape,commentstyle=\color{gray}\itshape,language=C,basicstyle=\linespread{0.75}\small\ttfamily,
+                   label={fig:spmvexample3},caption={Generated function call to cuSPARSE}]
 cusparseDcsrmv(context,
     CUSPARSE_OPERATION_NON_TRANSPOSE, |{\bf m}|, n,
     |{\bf rowstr}|[|{\bf m}|+1]-|{\bf rowstr}|[0], &gpu_1, descr, gpu_|{\bf a}|,
     gpu_|{\bf rowstr}|, gpu_|{\bf colidx}|, gpu_|{\bf z}|, &gpu_0, gpu_|{\bf r}|);
 \end{lstlisting}
 \vspace{-0.287cm}
-\caption{Generated function call to cuSPARSE}
-\label{fig:spmvexample3}
