@@ -1017,59 +1017,60 @@ define double @dot(double* %0, double* %1, i64 %2) {
     This backtracking solution for $E_S$ is extended to the entire set $V$ using
     \Cref{theo:theo4}, yielding the additional function
     $B_3[E_S^V](M,x)=\mathbb N$.
-    Finally \Cref{theo:theo2} embeds $B_1[S_S^V]$ in $B_1[C]$ and
+    Finally, \Cref{theo:theo2} embeds $B_1[S_S^V]$ in $B_1[C]$ and
     $B_2[S_S^V]$ in $B_2[C]$ using set intersections with the other terms.
     The third term $B_3[E_S^V]=\mathbb N$ disappears in the assembled
     backtracking solution, as the intersection with $\mathbb N$ is redundant.
 
-    Finally, the bottom right of the figure shows the backtracking algorithm
-    applied to the SSA model from \Cref{fig:derivemaths}.
-    Starting from the top with an empty partial solution, candidates for $x_1$
-    are determined, corresponding to the variable {\em phi}.
-    The SSA model contains three phi nodes, all of which also satisfy the other
-    conditions of being the source and target of some edge in the data flow
-    graph.
+    The bottom right of the figure shows the backtracking algorithm applied to
+    the SSA model from \Cref{fig:derivemaths}.
+    Starting from the top with an empty partial solution $x=()$, candidates for
+    $x_1$ are determined, corresponding to the variable ``phi''.
+    The SSA model contains three $\Phi$-instruction, all of which also satisfy
+    the other conditions of being the source and target of some edge in the data
+    flow graph.
     Therefore, the algorithm continues with the partial solutions $x=(6)$,
     $x=(9)$ and $x=(10)$ one level further down in the figure.
 
-    For $k=2$, which corresponds to the variable {\em update}, the backtracking
+    For $k=2$, which corresponds to the variable ``update'', the backtracking
     solution requires $x_2$ to form a data flow loop with $x_1$.
-    Futhermore, it requires it to be an $add$ instruction.
-    The partial solution $(6)$ corresponds to a phi node that is not part of
-    any data flow loop, therefore the algorithm backtracks.
-    For the partial solution $(10)$, the phi node is part of a data flow loop
-    only with the value $16$, but that value is an $fadd$ instruction.
+    This is expressed  in the first and last line of the condition in
+    $B_2[C](M,x)$.
+    Furthermore, the value $x_2$ has to be an ``$add$'' instruction.
+    The partial solution~$(6)$ corresponds to a $\Phi$-instruction that is not
+    part of any data flow loop.
+    Therefore, the algorithm backtracks.
+    For the partial solution $(10)$, the $\Phi$-instruction is part of a data
+    flow loop only with the value $16$, but that value is an ``$fadd$''
+    instruction.
     The partial solution $(9)$, however, can be extended according to the
     backtracking solution with the value $17$.
-    Therefore, the algorithm continues at the bottom of the figure with only
-    this single partial solution $(9,17)$.
+    Therefore, the algorithm only continues at the bottom of the figure with
+    this one partial solution $(9,17)$.
 
     In order to complete this partial solution, $P_3[C]$ requires the value for
-    the $step$ variable to be a constant of value $1$.
-    Furthermore, is needs to be used as an argument to $x_2$, i.e.\ the
-    $update$ variable.
+    the ``step'' variable to be a constant of value $1$.
+    Furthermore, it needs to be used as an argument to $x_2$, i.e.\ the
+    ``update'' variable.
     Both of these conditions hold for the value $22$, yielding a complete
-    solution at the bottom of the figure.
+    solution.
 
 \subsection{Implementation, Data Structures and Complexity}
 \label{subsec:impl}
 
     With the concrete backtracking solutions that were derived in
     \Cref{theo:theo1,theo:theo2,theo:theo3,theo:theo4}, it is possible to
-    identify suitable data structures and algorithmic decisions for efficiently
-    implementing the corresponding functionality in real code.
-    This first requires a revisiting of the backtracking algorithm first
+    identify suitable data structures efficiently implementing the backtracking
+    algorithm in real code.
+    This first requires rephrasing the backtracking algorithm first
     introduced in \Cref{backtrackalg}.
-    \Cref{cppsolver} shows how this backtracking solver can be implemented as
-    a C++ function.
+    \Cref{cppsolver} shows how this backtracking solver is implemented as a C++
+    function.
     Most of the \texttt{solver} function in lines 12--43 maps directly onto
     \Cref{backtrackalg}, and needs no further explanation.
-    However, there are some crucial details that are made explicit here, which
-    need elaboration.
-    They mostly relate to the calculation of
-    $min\{y\in\mathbb N\mid y\geq x_k\mathrel\land P_k(\{x_1,\dots,x_{k-1},y\},M)=1\}$
-    in line 4 of \Cref{backtrackalg}, which was previously left as a black
-    box.
+    However, there are some crucial details that need elaboration, mostly
+    relating to the iteration over the backtracking solution in line 4 of
+    \Cref{backtrackalg}.
 
     \texttt{BacktrackingPart} corresponds to the backtracking solution in
     \Cref{def:backtracking}.
