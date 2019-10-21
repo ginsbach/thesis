@@ -1,26 +1,28 @@
 
-    The Compiler Analysis Description Language (CAnDL) in the previous chapter
-    makes the constraint programming methodology introduced in
+    The Compiler Analysis Description Language (CAnDL)
+    makes the constraint methodology introduced in
     \Cref{chapter:theory}
-    directly available within the LLVM infrastructure.
-    The previous chapter already showed how this enables complex compiler
-    analysis generation, by reimplementing peephole optimisations and even a
-    complete routine that detects code suitable for polyhedral analysis.
+    directly available to the LLVM infrastructure and the Clang compiler.
+    The previous chapter showed how this enables powerful compiler analysis
+    generation for many established compiler analysis tasks,
+    from reimplementing peephole optimisations to detecting well-behaved code
+    suitable for polyhedral analysis.
 
     This chapter uses CAnDL to go beyond established analysis methods and
     implement novel detection functionality that is used for automatic
     parallsisation of a wide class of programs.
     The previously neglected ``complex reduction and histogram computations''
     are identified as an important class of parallelisation opportunities that
-    are not accessible via conventional analysis methods.
+    are not accessible via conventional analysis approaches.
     Complex reductions and histogram computations may contain indirect memory
     access and kernel computations with non-trivial control flow.
 
-    Complex reduction and histogram computations are not conventionally thought
-    of as a single class of calculations that can be treated similarly.
-    However, this chapter demonstrates that several important benchmark programs
-    can be reinterpreted as complex reduction and histogram computations.
-    Furthermore, they can be mechanically parallelised in the same way, allowing
+    Complex reduction and histogram computations are not conventionally
+    interpreted as a single class of calculations that can be treated similarly.
+    However, this chapter demonstrates that several common benchmark programs
+    are dominated by loops that can be classified as complex reduction and
+    histogram computations.
+    Furthermore, they can be parallelised in the same way, allowing
     for automatic parallelisation of programs that were previously largely
     inaccessible to compiler analysis.
 
