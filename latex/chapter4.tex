@@ -83,7 +83,7 @@
     compiler infrastructure, it lets compiler writers specify optimisation
     functionality external to the main C++ codebase.
     The CAnDL compiler then generates C++ functions that are linked together
-    with the clang compiler binary and that implement LLVM analysis passes.
+    with the Clang compiler binary and that implement LLVM analysis passes.
     The formulation of optimising transformations in CAnDL is faster, simpler
     and less error-prone than writing them in C++.
     The language has a strong emphasis on modularity, which enables debugging
@@ -144,7 +144,7 @@ End
     even this simple pattern requires some care when implementing it manually in
     a sophisticated codebase such as LLVM.
 
-    The traditional approach in the clang compiler is to implement it in the
+    The traditional approach in the Clang compiler is to implement it in the
     \texttt{instcombine} pass, which applies a collection of such
     peephole optimisations and already extends to $\sim30000$ lines of
     C++ code.
@@ -171,7 +171,7 @@ End
     \Cref{fig:candlspec} to a user program.
     The input program ({\bf a}) is a simple C function that calls the
     \texttt{sqrt} function twice with squares of floating-point values.
-    This is translated using the clang compiler into LLVM IR code ({\bf b}),
+    This is translated using the Clang compiler into LLVM IR code ({\bf b}),
     using standard optimisation passes during the compilation.
     The expression from the user program is here represented as a list of
     individual instructions and register assignments, with the two occurrences
@@ -835,9 +835,9 @@ Constraint LoopWithOnlyArrayAccesses
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.59\textwidth]{figures/compilerFlow2.pdf}
-\caption{CAnDL in the LLVM/clang system: The CAnDL code gets parsed by the
+\caption{CAnDL in the LLVM/Clang system: The CAnDL code gets parsed by the
          CAnDL compiler and turned into C++, which is compiled directly
-         into LLVM and then used by clang.
+         into LLVM and then used by Clang.
          \parfillskip=0pt}
 \label{fig:build2}
 \end{figure}
@@ -853,13 +853,13 @@ Constraint LoopWithOnlyArrayAccesses
     base.
     The generated code is compiled and linked together with the existing LLVM
     libraries.
-    The clang compiler, which is built on LLVM, then automatically invokes this
+    The Clang compiler, which is built on LLVM, then automatically invokes this
     solver during the compilation of user programs, after the standard
     optimisation passes.
     The evaluation at the end of the chapter will show that this solver adds
     little compile-time overhead in practice.
 
-    The resulting modified version of the clang compiler uses the solver to
+    The resulting modified version of the Clang compiler uses the solver to
     search for the specified computational structures and outputs the found
     instances into report files.
     It also makes the results available to ensuing transformation passes in the
@@ -1006,7 +1006,7 @@ result[2] = make_pair("right",    select<1>(constr2));
     The GUI was configured to look for static control regions (SCoPs), as
     described later.
     The user has clicked the ``analyze'' button, which triggered the analysis to
-    run by invoking the modified clang compiler.
+    run by invoking the modified Clang compiler.
     The GUI then read the report file, and printed the results in the right
     hand part of the figure.
 
@@ -1106,7 +1106,7 @@ Constraint ComplexFactorisation
 
     The standard LLVM optimisation was then disabled, and the CAnDL generated
     detection functionality was used instead.
-    The same application programs were compiled with the same version of clang
+    The same application programs were compiled with the same version of Clang
     and identical compiler options, reporting the number of factorisations
     found, and again measuring the total compilation time.
     Note that this compilation time includes all the other passes within LLVM

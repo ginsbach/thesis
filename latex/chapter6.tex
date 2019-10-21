@@ -26,7 +26,7 @@
     generator with libraries and domain specific languages:
     BLAS implementations, cuSPARSE, clSPARSE, Halide and Lift.
     The funcionality is directly accessible in a modified version of the widely
-    used clang C/C++ compilers.
+    used Clang C/C++ compilers.
     The evaluation can therefore be performed on the well established benchmark
     suites NAS and Parboil, where 60 idiom instances are detected.
     In those cases where idioms are a significant part of the sequential
@@ -164,7 +164,7 @@
     The approach is automatic and has been implemented inside the LLVM compiler
     infrastructure.
     It takes arbitrary sequential C/C++ programs as input.
-    Using the clang compiler, the input source code is compiled into a static
+    Using the Clang compiler, the input source code is compiled into a static
     single assignment (SSA) intermediate representation.
     In theis representation, the specified idioms are identified and replaced
     with calls to specific APIs.
