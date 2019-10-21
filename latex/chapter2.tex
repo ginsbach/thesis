@@ -1126,8 +1126,65 @@ struct Tree { vector<pair<int,Tree>> s; };
     \end{itemize}
 
 \begin{figure}[p]
-\vspace{15cm}
-\caption{Implementation of the constraint problems}
+\begin{lstlisting}[language=C++,basicstyle=\linespread{0.90}\ttfamily]
+struct Tree { vector<pair<int,Tree>> s; }
+template<int n>
+struct ElementOfShared { Tree S; array<Tree*,n> R; };
+
+template<int n, int k>
+class ElementOfPart : public BacktrackingPart {
+public:
+    SkipResult skip_invalid(unsigned& c) const {
+        while(index < shared->R[k].size()
+           && c > shared->R[k][index].first) index++;
+        if(index == shared->R[k].size())
+            return SkipResult::FAIL;
+        if(shared->R[k][index].first == c)
+            return SkipResult::PASS;
+        c = shared->R[k][index].first;
+        return SkipResult::SUCCESS;
+    }
+    void begin() override { index = 0;
+        if(k == 0) shared->R[k] = &shared->S; }
+    void fixate(unsigned) override {
+        if(k < n) shared->R[k+1] = &shared->R[k][index]; }
+    void resume() override {}
+private:
+    shared_ptr<ElementOfShared<n>> shared;
+    size_t                         index;
+};
+\end{lstlisting}
+\begin{lstlisting}[language=C++,basicstyle=\linespread{0.90}\ttfamily,
+                   label={partimplementations},caption=
+   {{\tt BacktrackingPart} is implemented for element-of constraints and
+    conjunction constraints.
+    The struct {\tt ElementOfShared} corresponds to
+    $\protect{(R_k[E_S](M,x))_{k=1\dots n}}$ in \Cref{theo:theo1}.
+    \parfillskip=0pt}]
+class ConjunctionPart : public BacktrackingPart {
+public:
+    SkipResult skip_invalid(unsigned& c) const {
+        while(true) {
+            for(size_t i = 0;;) {
+                auto result = parts[i]->skip_invalid(c);
+                if(result == SkipResult::FAIL)
+                    return SkipResult::FAIL;
+                if(i+1 == parts.size())
+                    return result;
+                i = (result == SkipResult::PASS)?(i+1):0;
+            }
+        }
+    }
+    void begin() override {
+        for(auto part: parts) part->begin(); }
+    void fixate(unsigned c) override {
+        for(auto part: parts) part->begin(c); }
+    void resume() override {
+        for(auto part: parts) part->resume(); }
+private:
+    vector<shared_ptr<BacktrackingPart>> parts;
+};
+\end{lstlisting}
 \end{figure}
 
     While the chosen data structures allow for very efficient implementations
