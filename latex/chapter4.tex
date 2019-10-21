@@ -122,7 +122,7 @@ End
     For an example of the CAnDL workflow, consider \Cref{fig:root}.
     This basic algebraic equation can be interpreted as a recipe for a compiler
     optimisation:
-    Assuming an environment without the particularities of floating point
+    Assuming an environment without the particularities of floating-point
     arithmetic (i.e.\ assuming the \texttt{-ffast-math} flag is active), the
     compiler could use this equality to eliminate some square root invocations
     in user code.
@@ -138,13 +138,13 @@ End
     It should analyse the user code in order to find segments that correspond to
     the left side of the equation and then transform all those occurrences
     analogous to the right side of the equation.
-    The compiler therefore must detect occurrences of $\sqrt{a*a}$ in the
-    LLVM IR code and replace them with a call to the \texttt{abs} function.
+    The compiler, therefore, must detect $\sqrt{a*a}$ in the LLVM IR code and
+    replace it with calls to the \texttt{abs} function.
     The generation of the new function call is trivial, but the detection of
     even this simple pattern requires some care when implementing it manually in
-    a complex code base such as LLVM.
+    a sophisticated codebase such as LLVM.
 
-    The established approach in the clang compiler is to implement it in the
+    The traditional approach in the clang compiler is to implement it in the
     \texttt{instcombine} pass, which applies a collection of such
     peephole optimisations and already extends to $\sim30000$ lines of
     C++ code.
@@ -166,18 +166,18 @@ End
 
     The CAnDL compiler translates the declarative program into a C++ function,
     which is then used for the analysis step in an LLVM optimisation pass.
-    This is demonstrated in \Cref{fig:candlexample}, which shows the analysis
-    function generated from the CAnDL specification in \Cref{fig:candlspec}
-    applied to a user program as follows:
+    This is demonstrated in \Cref{fig:candlexample}, which shows the application
+    of the analysis function generated from the CAnDL specification in
+    \Cref{fig:candlspec} to a user program.
     The input program ({\bf a}) is a simple C function that calls the
-    \texttt{sqrt} function twice with squares of floating point values.
+    \texttt{sqrt} function twice with squares of floating-point values.
     This is translated using the clang compiler into LLVM IR code ({\bf b}),
-    applying standard optimisation passes during the process.
+    using standard optimisation passes during the compilation.
     The expression from the user program is here represented as a list of
     individual instructions and register assignments, with the two occurrences
     of \texttt{SqrtOfSquare} clearly visible:
     The two \texttt{fmul} instructions (lines 4 and 6) compute squares via a
-    floating point multiplication, and these are then used as arguments to
+    floating-point multiplication, and these are then used as arguments to
     \texttt{sqrt} function invocations (lines 5 and 7).
 
     The optimised LLVM IR representation ({\bf b}) is used as the input to the
