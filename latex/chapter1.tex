@@ -140,18 +140,18 @@
     launch of core workloads in the form of computational kernels, which are
     then executed as separate and opaque programs.
 
-    It may appear obvious that e.g.\ a full C++ or Java compiler cannot be
-    provided for a typical graphics processor -- after all, most graphics
+    It may appear evident that, for example, a full C++ or Java compiler cannot
+    be provided for a typical graphics processor -- after all, most graphics
     processors have hardware limitations that prevent them from implementing the
     entire language standard.
     Indeed, many accelerators are even further from Turing complete.
     However, this should not prevent a partial compiler, offloading suitable
     subprograms, while falling back on homogeneous hardware providing a full
     language implementation for the remainder.
-    After all, that is exactly the result achieved with libraries and
+    After all, that is precisely the result achieved with libraries and
     domain-specific languages as well, and likely the desirable outcome.
-    Despite the obvious convenience of such an approach, the next section shows
-    that there are important reasons why this has not been championed so far.
+    Despite the apparent convenience of such an approach, the next section gives
+    reasons why this has not been championed so far.
 
 \section{Host Compilers and Kernel Compilers}
     
