@@ -158,7 +158,8 @@
 \begin{lstlisting}[language=MyCpp,label={sum-figure},caption=
     {The most conventional example of a reduction is adding up all values in an
      array.
-     The reduction operator ``{\tt+}'' {\it reduces} the array \texttt{a} to a single element -- the reduction variable {\tt sum}.\leftskip=0pt\rightskip=0pt}]
+     The reduction operator ``{\tt+}'' {\it reduces} the array \texttt{a} to a
+     single element -- the reduction variable {\tt sum}.\parfillskip=0pt}]
 sum = 0;
 for(i = 0; i < n; i++)
   sum += a[i];
@@ -167,18 +168,18 @@ for(i = 0; i < n; i++)
 
     Simple reductions frequently occur and can be readily detected by existing
     compilers.
-    However, they rarely dominate execution in a program, and when they do, they
-    are often part of bigger algorithmic structures such as matrix
-    multiplications.
+    However, such scalar reductions rarely dominate execution in a program, and
+    when they do, they are often part of more prominent algorithms such as
+    matrix multiplications.
     In that case, outer scope parallelism is often more profitable to exploit.
-    The parallelisation of simple reductions alone therefore often has limited
-    impact on program performance.
+    The parallelisation of simple reductions alone, therefore, often has a
+    limited impact on program performance.
 
-    \Cref{complex-reduction-figure}, in contrast, shows a more complex
-    section of code that constitutes a performance bottleneck of a standard
-    benchmark program
-    (``Embarrassingly Parallel'' of the NAS Parallel Benchmarks).
-    It is not evident at first glance that this computation can be treated as a
+    \Cref{complex-reduction-figure} shows a more complex section of code that
+    constitutes a performance bottleneck of the ``Embarrassingly Parallel''
+    benchmark program in the NAS Parallel Benchmarks.
+    Note that the name of the benchmark refers to outer-loop parallelism.
+    It is not directly evident that this computation can be treated as a
     reduction.
     However, it can be parallelised similarly as the simple sum.
     Creating thread-private copies of the reduction variables again is the
@@ -241,7 +242,7 @@ for(i = 0; i < NK; i++) {
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.6\textwidth]{figures/nicepicture.png}
+\includegraphics[width=0.99\textwidth]{figures/parallelisereduction.pdf}
 \caption{Parallelisation of \Cref{complex-reduction-figure}:
          The input array \texttt{x} is distributed over two threads that operate
          on private copies of \texttt{sx}, \texttt{sy}, \texttt{q[]}.
