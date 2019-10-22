@@ -4,14 +4,14 @@
     processor development followed Moore's Law \citep{4785860} and
     Dennard Scaling \citep{1050511}.
     This meant that the density of integrated circuits approximately doubled
-    every two years, and processor clock frequencies increased proportionally,
+    every two years, and processor clock frequencies increased proportionally
     while maintaining steady power consumption.
     This enabled continual processor improvements that were driven primarily by
     rising clock frequencies and microarchitectural refinements, enabling ever
     faster computations.
 
     The physics-driven nature \citep{Hutcheson2018Moore} of these advances in
-    hardware has had major implications for software development.
+    hardware has had important implications for software development.
     Not only did the performance of computers improve exponentially, but these
     performance gains were in the form of direct speedups, available to all the
     already existing programs.
@@ -21,7 +21,7 @@
     This is best exemplified by the pervasive x86 instruction set architecture,
     which still retains backward compatibility with its original inception in
     1978, and dominates desktop processors to this day.
-    Software developers and users could therefore trust on ever increasing
+    Software developers and users could, therefore, rely on ever-increasing
     performance from hardware progress alone, without any intervention.
 
 \subsection{Via Multi-Processing to Heterogeneous Compute}
@@ -29,41 +29,36 @@
     This continual progress started breaking down around 2005 with the apparent
     end of Dennard Scaling \citep{6307773}.
     While the shrinking of transistors continued, this no longer enabled
-    proportionally increased clock frequencies with the same power power budget.
-    Processor designers instead shifted to using the increasing transistor
-    budget for additional processor cores.
+    proportionally increased clock frequencies with the same power budget.
+    Processor designers instead started using the increasing transistor
+    budget for adding additional processor cores.
     This shift toward multi-processing has left a deep mark on software
     development.
     New programming paradigms and languages, annotation systems, programming
     interfaces, libraries and compiler techniques were developed, and continue
     to evolve, to address the challenges of parallel computing.
-%    Despite immense progress in the field over many years, it remains an area
-%    of active research and automatic approaches often fall short.
 
     In recent years, transistor scaling has slowed significantly.
-    In response to this prevailing breakdown of both Dennard Scaling and Moore's
-    Law, the hardware industry has turned toward architectural innovation
-    \citep{7878935}.
+    In response to the now prevailing breakdown of both Dennard Scaling and
+    Moore's Law, the hardware industry has turned toward architectural
+    innovation \citep{7878935}.
     In particular, there is a trend toward specialised processor cores with
     that work in tandem as a heterogeneous system.
-    Specialised processor cores are able to outperform general purpose cores
-    on specific tasks.
-    Furthermore, as heat dissipation has become a major challenge, powering all
-    transistors simultaneously is often unviable, meaning that different processor
-    cores have to be masked out dynamically at runtime (dark silicon)
-    \citep{6307773}.
-    This allows for specialised accelerator processors, even if they only excel
-    at very specific tasks.
-%    Accelerator processors have therefore become widespread, first in the form
-%    of general purpose graphics processing units and now increasingly as deep
-%    learning accelerators.
-%, coinciding with the rise in popularity of convolutional neural
-  %  networks and the success of deep learning.
+    Specialised processor cores outperform general-purpose cores on specific
+    tasks.
+    Furthermore, as heat dissipation has become a major challenge,
+    simultaneously powering all transistors is often unviable, meaning that
+    different processor cores have to be masked out dynamically at runtime
+    (``dark silicon'') \citep{6307773}.
+    Disabling a subset of a homogeneous multi-core system renders some of its
+    cores redundant, whereas specialised cores can improve the system
+    performance overall even if they are disabled most of the time and only
+    used for the specific tasks at which they excel.
 
 \section{The Diminished Role of Traditional Compilers}
 
     Heterogeneous computing can help overcome the scaling limitations of
-    homogeneous, general purpose processors.
+    homogeneous, general-purpose processors.
     However, it also poses an enormous challenge to the associated software
     ecosystem, and it puts into question many of the achievements in portability
     and longevity of programs that are taken for granted in modern computing
@@ -75,39 +70,44 @@
     generation, with at most a recompilation required, new accelerators arrive
     with novel and incompatible interfaces.
 
-    In particular, the novel hardware landscape greatly diminishes the scope of
+    In particular, this new hardware landscape greatly diminishes the scope of
     responsibilities and impact that traditional compilers for languages such as
     C, C++ and Fortran can have.
     Such compilers used to be responsible for orchestrating
     program execution on the entirety of available computing resources.
-    They are now generally limited to only targeting the small
+    They are now generally limited to only targeting the relatively small
     homogeneous fraction of processor cores directly.
 
-\subsection{Libraries and Domain Specific Languages Fill the Gap}
+\subsection{Libraries and Domain-Specific Languages Fill the Gap}
 
     In order to reach peak performance on rapidly evolving and highly parallel
-    hardware, novel programming models built around libraries and domain
-    specific languages have emerged.
+    hardware, novel programming models built around libraries and
+    domain-specific languages have emerged.
     They succeed in utilising heterogeneous hardware in situations where
     traditional compilers fail.
 
-    Two examples stand characteristically for the breadth of these approaches.
-    Firstly, Basic Linear Algebra Subprograms (BLAS), a standard for library
-    function interfaces dating back to the 1970s, has been implemented for
-    almost all accelerators.
-    These implementations are widely used and offer unrivalled performance, with
-    some of them provided by hardware vendors and some from the scientific
-    community.
-    Competing implementations use a plethora of approaches to achieve as close
-    to peak performance as possible.
-    This includes manually written assembly code, but also highly advanced
-    code generation techniques, custom program representations, polyhedral
-    optimisation and many more.
+    Two examples display the diversity of these approaches:
+    Firstly, \citet{Ragan-Kelley2013Halide} developed the domain-specific
+    language Halide for image processing.
+    The Halide toolchain is able to generate fast code for heterogeneous
+    platforms by focusing on a well-understood class of computations and by
+    using a restrictive program representation.
+    After tuning programs for particular platforms, it outperforms
+    hand-optimised code, demonstrating an immense potential for domain-specific
+    compiler optimisation under circumstances of constrained semantics.
 
-    Secondly, the domain specific language Halide was developed for the domain
-    of image processing.
-    It has demonstrated an immense potential for compiler based, domain specific
-    optimisation under circumstances of highly constrained semantics.
+    Secondly, Basic Linear Algebra Subprograms (BLAS)
+    \citep{2002:USB:567806.567807}, a standard for library function interfaces
+    going back to \citet{Lawson:1979:BLA:355841.355847} in the 1970s, have been
+    implemented for most accelerators.
+    These implementations are widely used and offer unrivalled performance.
+    Some versions are provided directly by hardware vendors to support
+    accelerators \citep{mkl,cublas,clblas,apl,qml}, while others originate as
+    academic projects \citep{Wang:2013:AAG:2503210.2503219}.
+    These different competing implementations use a plethora of approaches to achieve as
+    close to peak performance as possible.
+    This includes manually written assembly code, but also highly advanced
+    code generation techniques, custom program representations and many more.
 
 \subsection{Negative Consequences of Compiler Decline}
 
