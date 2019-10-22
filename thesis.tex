@@ -79,52 +79,58 @@ colframe=white!50!black,
 lower separated=false
 }
 
-\definecolor{sh_comment}{rgb}{0.65, 0.00, 0.00 }
-\definecolor{sh_keyword}{rgb}{0.15, 0.25, 0.25}
-\definecolor{sh_string}{rgb}{0.08, 0.69, 0.08}
+\definecolor{color_strings}{HTML}{0F4D0F}
+\definecolor{color_keywords}{HTML}{191980}
+\definecolor{color_types}{HTML}{801919}
+\definecolor{color_comment}{HTML}{FF0000}
 
 \lstset{
-basicstyle         = \linespread{1}\ttfamily,
-stringstyle        = \color{sh_string},
-keywordstyle       = \color{sh_keyword}\bfseries,
-commentstyle       = \color{sh_comment}\itshape,
-numbers            = left,
-numberstyle        = \scriptsize,
-numbersep          = 10pt,
-xleftmargin        = 1.5em,
-frame              = lines,
-framexleftmargin   = 1.5em,
-framexbottommargin = 0em,
-captionpos         = b,
-escapeinside       = {([}{])}
+    basicstyle         = \linespread{1}\ttfamily,
+    stringstyle        = \color{color_strings}\bfseries,
+    keywordstyle       = \color{color_keywords}\bfseries,
+    keywordstyle       = [2]\color{color_types}\bfseries,
+    keywordstyle       = [3]\bfseries,
+    commentstyle       = \color{color_comment}\itshape,
+    numbers            = left,
+    numberstyle        = \scriptsize,
+    numbersep          = 10pt,
+    xleftmargin        = 1.5em,
+    frame              = lines,
+    framexleftmargin   = 1.5em,
+    framexbottommargin = 0em,
+    captionpos         = b,
+    escapeinside       = {([}{])},
+    literate           = {∧}{$\land$}1{∨}{$\lor$}1{∈}{$\in$}1{≠}{$\neq$}1
 }
 
-\lstdefinelanguage{CAnDL}
-{
-morekeywords = { Constraint, with, opcode, collect, include, function\_name,
-                 data\_type, ir\_type, domination, strict\_domination,
-                 post\_domination, strict\_post\_domination, foreach, forany,
-                 for, unused, is, if, not, otherwise, specified,
-                 all, control, flow, from, to, passes, through,
-                 calculated\_from, control\_origin, data\_origin, End },
-morecomment  = [s]{\{}{\}}
+\lstdefinelanguage{MyCpp}{
+    morekeywords = {return, class, struct, public, private, goto, for, if, else,
+                    virtual, override, while, template, auto, using, namespace},
+    morekeywords = [2]{const, int, double, float, bool, size\_t, unsigned, void,
+                       vector, array, shared\_ptr, pair, map, string, dyn\_cast,
+                       Instruction, CallInst, Value, Function,
+                       SkipResult, BacktrackingPart, Tree, ElementOfShared,
+                       ElementOfPart, ConjunctionPart},
+    morekeywords = [3]{true, false, FAIL, PASS, SUCCESS},
+    morecomment  = [l]{//},
+    morecomment  = [s]{/*}{*/},
+    morestring   = [b]{"}
 }
 
-\lstdefinelanguage{constraints}
-{
-morekeywords = { Constraint, with, and, or, at, as, End },
-morecomment  = [s]{\{}{\}}
+\lstdefinelanguage{CAnDL}{
+    morekeywords = { Constraint, End, include, with, collect, foreach, forany,
+                     for, unused, is, if, not, otherwise, specified},
+    morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
 }
 
-\lstdefinelanguage{LiLAC}
-{
-morekeywords = { HARNESS, IMPLEMENTS, Marshalling, PersistentVariables,
-                 BeforeFirstExecution, AfterLastExecution, CppHeaderFiles,
-                 INPUT, OUTPUT, COMPUTATION},
-morekeywords = [2]{ CudaRead, CudaWrite, spmv_csr, Maximum, cuda, mkl,
-                    dotproduct},
-morekeywords = [3]{ out, in, size },
-morecomment  = [s]{"}{"}
+\lstdefinelanguage{IDL}{
+    morekeywords = { Constraint, End, inherits, with, and, or, at, as },
+    morecomment  = [s]{\{}{\}}
+}
+
+\lstdefinelanguage{LIFT}{
+    morekeywords = {return, gemm\_in\_lift, map, fun, reduce, zip, transpose},
+    morekeywords = [2]{float}
 }
 
 \title{From Constraint Programming\\to Heterogeneous Parallelism}

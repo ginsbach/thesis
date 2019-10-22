@@ -1,5 +1,5 @@
 \begin{minipage}{0.48\textwidth}
-\begin{lstlisting}[language=C,captionpos=t,title=
+\begin{lstlisting}[language=MyCpp,captionpos=t,title=
    {{\bf(a)} {} C source function:\leftskip=0pt}]
 double sqrt(double S) {
   double x = 1.0;
@@ -8,15 +8,15 @@ double sqrt(double S) {
   return x;
 }
 \end{lstlisting}
-\begin{lstlisting}[language=C,captionpos=t,title=
+\begin{lstlisting}[language=MyCpp,captionpos=t,title=
    {{\bf(d)} {} The SSA property is introduced:\leftskip=0pt}]
 double sqrt(double S) {
-entry:
+([\bf\ttfamily entry]):
   double x = 1.0;
   int i = 0;
   goto header;
 
-header:
+([\bf\ttfamily header]):
   int i2 = /* if reached
     from line  5: i,
     from line 23: i3 */
@@ -27,21 +27,21 @@ header:
   if(test) goto loop;
       else goto exit;
 
-loop:
+([\bf\ttfamily loop]):
   double t1 = S / x2;
   double t2 = x2 + t1;
   double x3 = 0.5 * t2;
   int i3 = i2+1;
   goto header;
 
-exit:
+([\bf\ttfamily exit]):
     return x2;
 }
 \end{lstlisting}
 \end{minipage}
 \hfill
 \begin{minipage}{0.48\textwidth}
-\begin{lstlisting}[language=C,basicstyle=\linespread{1.06451612903}\ttfamily,
+\begin{lstlisting}[language=MyCpp,basicstyle=\linespread{1.06451612903}\ttfamily,
                    captionpos=t,title=
    {{\bf(b)} {} Complex expressions are broken down:\leftskip=0pt}]
 double sqrt(double S) {
@@ -55,28 +55,28 @@ double sqrt(double S) {
   return x;
 }
 \end{lstlisting}
-\begin{lstlisting}[language=C,basicstyle=\linespread{1.06451612903}\ttfamily,
+\begin{lstlisting}[language=MyCpp,basicstyle=\linespread{1.06451612903}\ttfamily,
                    captionpos=t,title=
    {{\bf(c)} {} Structured control flow is expanded:\leftskip=0pt}]
 double sqrt(double S) {
-entry:
+([\bf\ttfamily entry]):
   double x = 1.0;
   int i = 0;
   goto header;
 
-header:
+([\bf\ttfamily header]):
   bool test = i < N;
   if(test) goto loop;
       else goto exit;
 
-loop:
+([\bf\ttfamily loop]):
   double t1 = S / x;
   double t2 = x + t1;
   x = 0.5 * t2;
   i = i+1;
   goto header;
 
-exit:
+([\bf\ttfamily exit]):
     return x;
 }
 \end{lstlisting}

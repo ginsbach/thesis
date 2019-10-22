@@ -4,7 +4,7 @@
 \begin{minipage}[t]{\textwidth}
 \centering
 \vspace{-1em}
-\begin{lstlisting}[language=C,basicstyle=\small\ttfamily,
+\begin{lstlisting}[language=MyCpp,basicstyle=\small\ttfamily,
                    numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
                    captionpos=t,title={{\bf(a)} {} C program code:}]
  double example(double a, double b) {return sqrt(a*a) + sqrt(b*b); }
@@ -76,12 +76,12 @@ sqrt_fn = @sqrt
                    captionpos=t,title=
    {{\bf(e)} {} Verification of first solution:}]
 ( opcode{%4} = call
-([$\tt\land$]) {@sqrt} = {%4}.args[0]
-([$\tt\land$]) function_name{@sqrt} = sqrt
-([$\tt\land$]) {%3} = {%4}.args[1]
-([$\tt\land$]) opcode{%3} = fmul
-([$\tt\land$]) {%0} = {%3}.args[0]
-([$\tt\land$]) {%0} = {%3}.args[1])
+∧ {@sqrt} = {%4}.args[0]
+∧ function_name{@sqrt} = sqrt
+∧ {%3} = {%4}.args[1]
+∧ opcode{%3} = fmul
+∧ {%0} = {%3}.args[0]
+∧ {%0} = {%3}.args[1])
 \end{lstlisting}
 \end{minipage}
 \hfill
@@ -93,12 +93,12 @@ sqrt_fn = @sqrt
                    captionpos=t,title=
    {{\bf(f)} {} Verification of second solution:}]
 ( opcode{%6} = call
-([$\tt\land$]) {@sqrt} = {%6}.args[0]
-([$\tt\land$]) function_name{@sqrt} = sqrt
-([$\tt\land$]) {%5} = {%4}.args[1]
-([$\tt\land$]) opcode{%5} = fmul
-([$\tt\land$]) {%1} = {%5}.args[0]
-([$\tt\land$]) {%1} = {%5}.args[1])
+∧ {@sqrt} = {%6}.args[0]
+∧ function_name{@sqrt} = sqrt
+∧ {%5} = {%4}.args[1]
+∧ opcode{%5} = fmul
+∧ {%1} = {%5}.args[0]
+∧ {%1} = {%5}.args[1])
 \end{lstlisting}
 \end{minipage}
 \end{minipage}
@@ -106,7 +106,7 @@ sqrt_fn = @sqrt
 \begin{minipage}[t]{\textwidth}
 \centering
 \vspace{-0.19cm}
-\begin{lstlisting}[language=C++,captionpos=t,title=
+\begin{lstlisting}[language=MyCpp,captionpos=t,title=
    {{\bf(g)} {} C++ transformation code:}]
 using namespace std;
 using namespace llvm;

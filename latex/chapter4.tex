@@ -108,12 +108,12 @@
    {The left side of \Cref{fig:root} as specified in CAnDL\parfillskip=0pt}]
 Constraint SqrtOfSquare
 ( opcode{sqrt_call} = call
-([$\tt\land$]) {sqrt_fn} = {sqrt_call}.args[0]
-([$\tt\land$]) function_name{sqrt_fn} = sqrt
-([$\tt\land$]) {square} = {sqrt_call}.args[1]
-([$\tt\land$]) opcode{square} = fmul
-([$\tt\land$]) {a} = {square}.args[0]
-([$\tt\land$]) {a} = {square}.args[1])
+∧ {sqrt_fn} = {sqrt_call}.args[0]
+∧ function_name{sqrt_fn} = sqrt
+∧ {square} = {sqrt_call}.args[1]
+∧ opcode{square} = fmul
+∧ {a} = {square}.args[0]
+∧ {a} = {square}.args[1])
 End
 \end{lstlisting}
 \end{minipage}
@@ -518,9 +518,9 @@ End
     equivalent, but more verbose, specification below.\parfillskip=0pt}]
 Constraint ValueChain
 ( {element[0]} ([$\tt \in$]) {element[1]}.args
-([$\tt\land$]) {element[1]} ([$\tt \in$]) {element[2]}.args
-([$\tt\land$]) {element[2]} ([$\tt \in$]) {element[3]}.args
-([$\tt\land$]) {element[3]} ([$\tt \in$]) {element[4]}.args)
+∧ {element[1]} ([$\tt \in$]) {element[2]}.args
+∧ {element[2]} ([$\tt \in$]) {element[3]}.args
+∧ {element[3]} ([$\tt \in$]) {element[4]}.args)
 End
 \end{lstlisting}
 \end{figure}
@@ -658,7 +658,7 @@ End
     {\tt ins} are collected.\leftskip=0pt\rightskip=0pt}]
 Constraint CollectArguments
 ( ir_type{ins} = instruction
-([$\tt\land$]) collect i N ({arg[i]} ([$\tt \in$]) {ins}.args))
+∧ collect i N ({arg[i]} ([$\tt \in$]) {ins}.args))
 End
 \end{lstlisting}
 \end{figure}
@@ -695,9 +695,9 @@ End
     from floating point values.\leftskip=0pt\rightskip=0pt}]
 Constraint FloatingPointInstruction
 ( ir_type{ins} = instruction
-([$\tt\land$]) collect i N ( {ins} ([$\tt \in$]) {arg[i]}.args)
-([$\tt\land$]) collect i N ( {ins} ([$\tt \in$]) {arg[i]}.args
-              ([$\tt\land$]) data_type{arg[i]} = float))
+∧ collect i N ( {ins} ([$\tt \in$]) {arg[i]}.args)
+∧ collect i N ( {ins} ([$\tt \in$]) {arg[i]}.args
+              ∧ data_type{arg[i]} = float))
 End
 \end{lstlisting}
 \end{figure}
@@ -722,16 +722,16 @@ End
     to {\tt successor}.\parfillskip=0pt}]
 Constraint SESE
 ( opcode{precursor} = branch
-([$\tt\land$]) {begin} ([$\tt\in$]) {precursor}.successors
-([$\tt\land$]) opcode{end} = branch
-([$\tt\land$]) {successor} ([$\tt\in$]) {end}.successors
-([$\tt\land$]) domination({begin}, {end})
-([$\tt\land$]) post_domination({end}, {begin})
-([$\tt\land$]) strict_domination({precursor}, {begin})
-([$\tt\land$]) strict_post_domination({successor}, {end})
-([$\tt\land$]) all control flow from {begin} to {precursor}
+∧ {begin} ([$\tt\in$]) {precursor}.successors
+∧ opcode{end} = branch
+∧ {successor} ([$\tt\in$]) {end}.successors
+∧ domination({begin}, {end})
+∧ post_domination({end}, {begin})
+∧ strict_domination({precursor}, {begin})
+∧ strict_post_domination({successor}, {end})
+∧ all control flow from {begin} to {precursor}
          passes through {end}
-([$\tt\land$]) all control flow from {successor} to {end}
+∧ all control flow from {successor} to {end}
          passes through {begin}) End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
@@ -742,7 +742,7 @@ Constraint SESE
     not exit the region.\parfillskip=0pt}]
 Constraint Loop
 ( include SESE
-([$\tt\land$])  {begin} ([$\tt\in$]) {end}.successors) End
+∧  {begin} ([$\tt\in$]) {end}.successors) End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
                    label={localconstant},caption=
@@ -753,29 +753,29 @@ Constraint Loop
     variable that needs to be constrained in this way. \parfillskip=0pt}]
 Constraint LocalConst
 ( ir_type{value} = literal
-([$\tt\lor$]) ir_type{value} = argument
-([$\tt\lor$]) strict_domination({value}, {loop.begin})) End
+∨ ir_type{value} = argument
+∨ strict_domination({value}, {loop.begin})) End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
                    label={fig:arrayloop},caption=
    {Building blocks are combined to restrict the permitted memory access within
     a loop. \leftskip=0pt\rightskip=0pt}]
 Constraint PointerAccess
-( ( (opcode{access} = store ([$\tt\land$]) {pointer} = {access}.args[1])
-  ([$\tt\lor$]) (opcode{access} = load  ([$\tt\land$]) {pointer} = {access}.args[0]))
-([$\tt\land$]) domination({loop.begin}, {access})
-([$\tt\land$]) post_domination({loop.end}, {access})) End
+( ( (opcode{access} = store ∧ {pointer} = {access}.args[1])
+  ∨ (opcode{access} = load  ∧ {pointer} = {access}.args[0]))
+∧ domination({loop.begin}, {access})
+∧ post_domination({loop.end}, {access})) End
 
 Constraint ArrayAccess
 ( include PointerAccess
-([$\tt\land$]) opcode{pointer} = getelementptr
-([$\tt\land$]) {base_pointer} = {pointer}.args[0]
-([$\tt\land$]) include LocalConst({base_pointer}->{value})) End
+∧ opcode{pointer} = getelementptr
+∧ {base_pointer} = {pointer}.args[0]
+∧ include LocalConst({base_pointer}->{value})) End
 
 Constraint LoopWithOnlyArrayAccesses
 ( include Loop
-([$\tt\land$]) collect i N (include PointerAccess({}->{loop})@acc[i])
-([$\tt\land$]) collect i N (include ArrayAccess({}->{loop})@acc[i])) End
+∧ collect i N (include PointerAccess({}->{loop})@acc[i])
+∧ collect i N (include ArrayAccess({}->{loop})@acc[i])) End
 \end{lstlisting}
 \end{figure}
 
@@ -914,10 +914,10 @@ Constraint LoopWithOnlyArrayAccesses
 \begin{lstlisting}[language=CAnDL]
 Constraint SimpleAddition
 ( opcode{addition} = add
-([$\tt\land$]) {addition}.args[0] = {left}
-([$\tt\land$]) {addition}.args[1] = {right}) End
+∧ {addition}.args[0] = {left}
+∧ {addition}.args[1] = {right}) End
 \end{lstlisting}
-\begin{lstlisting}[language=C++,label={fig:codegen},caption=
+\begin{lstlisting}[language=MyCpp,label={fig:codegen},caption=
    {C++ code generation: The code is generated to first instantiate atomic
     constraints, then compose higher-level constructs and finally assemble a
     backtracking solution for the solver.\parfillskip=0pt}]
@@ -1041,15 +1041,15 @@ result[2] = make_pair("right",    select<1>(constr2));
     themselves specified in CAnDL (16 LoC).}]
 Constraint ComplexFactorisation
 ( opcode{value} = add
-([$\tt\land$]) {sum1.value} = {value}.args[0]
-([$\tt\land$]) {sum2.value} = {value}.args[1]
-([$\tt\land$]) include SumChain @ {sum1}
-([$\tt\land$]) {product1.value} = {sum1.last_factor}
-([$\tt\land$]) include MulChain @ {product1}
-([$\tt\land$]) {product1.last_factor} = {product2.last_factor}
-([$\tt\land$]) include SumChain @ {sum2}
-([$\tt\land$]) {product2.value} = {sum2.last_factor}
-([$\tt\land$]) include MulChain @ {product2}) End
+∧ {sum1.value} = {value}.args[0]
+∧ {sum2.value} = {value}.args[1]
+∧ include SumChain @ {sum1}
+∧ {product1.value} = {sum1.last_factor}
+∧ include MulChain @ {product1}
+∧ {product1.last_factor} = {product2.last_factor}
+∧ include SumChain @ {sum2}
+∧ {product2.value} = {sum2.last_factor}
+∧ include MulChain @ {product2}) End
 \end{lstlisting}
 \end{figure}
 
@@ -1163,14 +1163,14 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\
     After separating the two cases, some of the multiplications can be performed
     on scalars instead.\parfillskip=0pt}]
 Constraint FloatingPointAssociativeReorder
-( include VectorMulChain and
-([$\tt\land$]) collect j N
-([$\tt\land$]) ( {hoisted[k]} = {factors[i]} forsome i=0..N
-  ([$\tt\land$]) include ScalarHoist({hoisted[j]}->{out},
+( include VectorMulChain
+∧ collect j N
+∧ ( {hoisted[k]} = {factors[i]} forany i=0..N
+  ∧ include ScalarHoist({hoisted[j]}->{out},
                        {scalar[j]}->{in})@{hoist[j]})
-([$\tt\land$]) collect j N
-  ( {nonhoisted[j]}  = {factors[i]} forsome i=0..N
-  ([$\tt\land$]) {nonhoisted[j]} != {hoisted[i]} forall  i=0..N))
+∧ collect j N
+  ( {nonhoisted[j]}  = {factors[i]} forany  i=0..N
+  ∧ {nonhoisted[j]} != {hoisted[i]} foreach i=0..N))
 End
 \end{lstlisting}
 \end{figure}

@@ -272,14 +272,14 @@ End
     The solver then finds a single solution to the constraint problem.
 
 \begin{figure}[ht]
-\begin{lstlisting}[language={C++},captionpos=t,title=
+\begin{lstlisting}[language=MyCpp,captionpos=t,title=
    {{\bf(a)} {} Original C code:\leftskip=0pt}]
 int example(int a, int b, int c) {
     int d = a;
     return (a*b) + (c*d);
 }
 \end{lstlisting}
-\begin{lstlisting}[escapeinside={(*}{*)},language={LLVM},captionpos=t,title=
+\begin{lstlisting}[language=LLVM,captionpos=t,title=
    {{\bf(b)} {} Resulting LLVM IR:\leftskip=0pt}]
 define i32 @example(i32 %a, i32 %b, i32 %c) {
   %1 = mul i32 %a, %b
@@ -288,7 +288,7 @@ define i32 @example(i32 %a, i32 %b, i32 %c) {
   ret i32 %3
 }
 \end{lstlisting}
-\begin{lstlisting}[escapeinside={(*}{*)},language={},captionpos=t,title=
+\begin{lstlisting}[language={},captionpos=t,title=
    {{\bf(c)} {} Detected factorization opportunities:\leftskip=0pt}]
 { "sum" :          %3,
   "left_addend" :  %1,
@@ -641,7 +641,7 @@ For example, there are two syntactically distinct programs in \Cref{fig:gemmexam
 The IDL in \Cref{fig:gemm} discovers they are both instances of GEMM and they can both be replaced with an API call to GEMM.
 
 \begin{figure}[ht]
-\begin{lstlisting}[language=C]
+\begin{lstlisting}[language=MyCpp]
 for (int mm = 0; mm < m; ++mm) {
   for (int nn = 0; nn < n; ++nn) {
     float c = 0.0f;
@@ -655,7 +655,7 @@ for (int mm = 0; mm < m; ++mm) {
   }
 }
 \end{lstlisting}
-\begin{lstlisting}[language=C,label={fig:gemmexamples},caption=
+\begin{lstlisting}[language=MyCpp,label={fig:gemmexamples},caption=
    {Two matching instances of GEMM}]
 for(int i = 0; i < 1000; i++)
     for(int j = 0; j < 1000; j++) {
@@ -793,7 +793,7 @@ We therefore implemented a rudimentary LLVM IR to C backend for generating this 
 \paragraph{Halide} is a language embedded in C++, it requires a syntax tree of the kernel functions built using a class hierarchy.
 
 \begin{figure}[ht]
-\begin{lstlisting}[language={},escapechar=|,
+\begin{lstlisting}[language=LIFT,escapechar=|,
                    label={fig:liftmxm},caption=
    {Example of matrix multiplication in Lift}]
 float mult(float x, float y) { return x*y; }

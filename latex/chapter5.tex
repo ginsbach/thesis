@@ -155,7 +155,7 @@
     \texttt{sum}, which are then added together to form the final value.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=C++,label={sum-figure},caption=
+\begin{lstlisting}[language=MyCpp,label={sum-figure},caption=
     {The most conventional example of a reduction is adding up all values in an
      array.\leftskip=0pt\rightskip=0pt}]
 sum = 0;
@@ -183,7 +183,7 @@ for(i = 0; i < n; i++)
     privatisation.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=C++,label={complex-reduction-figure},caption=
+\begin{lstlisting}[language=MyCpp,label={complex-reduction-figure},caption=
    {Example of ``complex reductions and histograms'' computation:
     This bottleneck from NAS Parallel Benchmarks can be parallelised as
     reductions by privatising variables \texttt{sx}, \texttt{sy}, \texttt{q[]}.
@@ -442,22 +442,22 @@ for(i = 0; i < NK; i++) {
     functions.
 
 \begin{figure}[t]
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=MyCpp]
 sum = 0;
 for(i = 0; i < n && sum < 10; i++)
     sum += a[i];
 \end{lstlisting}
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=MyCpp]
 sum = 0;
 for(i = 0; i < n; i++)
     b[i] += a[i];
 \end{lstlisting}
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=MyCpp]
 chase = 0;
 for(i = 0; i < n; i++)
     chase = a[chase];
 \end{lstlisting}
-\begin{lstlisting}[language=C++,label={counterexamples},caption=
+\begin{lstlisting}[language=MyCpp,label={counterexamples},caption=
    {Counterexamples to the four conditions: None of these computations can be
     parallelised as scalar reductions.
     The first and last example implement the same program.\parfillskip=0pt}]
@@ -546,11 +546,11 @@ for(i = 0; i < n; i++) {
     histogram kernel.
 
 \begin{figure}[t]
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=MyCpp]
 for(i = 0; i < n; i++)
     hist[getchar()] += 1;
 \end{lstlisting}
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=MyCpp]
 active = true;
 for(i = 0; i < n; i++) {
     if(a[i] > 9)
@@ -559,7 +559,7 @@ for(i = 0; i < n; i++) {
         hist[a[i]] += 1;
 }
 \end{lstlisting}
-\begin{lstlisting}[language=C++,label={counterexamples2},caption=
+\begin{lstlisting}[language=MyCpp,label={counterexamples2},caption=
    {Counterexamples to the last three conditions:
     None of these computations can be parallelised as histograms.
     The final two example loops implement the same functionality.
@@ -669,15 +669,15 @@ Due to space we omit further details.
    {CAnDL Formulation of Kernel Functions}]
 Constraint KernelFunction
 ( collect i N
-([$\tt\land$]) ( include LocalConst({outer}->{begin}*@*{closure[i]}
-  ([$\tt\land$]) ir_type{closure[i].value} != literal
-  ([$\tt\land$]) {closure[i].use} ([$\tt \in$]) {closure[i].value}.args
-  ([$\tt\land$]) domination({inner}, {closure[i].use}))
-([$\tt\land$]) collect i N data_origin{tainted1[i]}
-([$\tt\land$]) collect i N
-([$\tt\land$]) ( domination({outer}, {tainted2[i]})
-  ([$\tt\land$]) strict_domination({tainted2[i]}, {inner}))
-([$\tt\land$]) calculated_from(
+∧ ( include LocalConst({outer}->{begin}*@*{closure[i]}
+  ∧ ir_type{closure[i].value} != literal
+  ∧ {closure[i].use} ([$\tt \in$]) {closure[i].value}.args
+  ∧ domination({inner}, {closure[i].use}))
+∧ collect i N data_origin{tainted1[i]}
+∧ collect i N
+∧ ( domination({outer}, {tainted2[i]})
+  ∧ strict_domination({tainted2[i]}, {inner}))
+∧ calculated_from(
    {tainted1[0..N],tainted2[0..N]},
    {origin[0..N],closure[0..N].value,input[0..N]},
    {output}))
@@ -849,7 +849,7 @@ Our program detected reductions in 15 out of the 19 benchmarks, with 9 reduction
 
 There were some regions that we were able to identify as reductions manually that our system did not find.
 This was generally the case when the reduction loop was not the innermost loop, e.g.\ in the following code segment from SP.
-\begin{lstlisting}
+\begin{lstlisting}[language=MyCpp]
 for (k = 1; k <= nz2; k++) {
   for (j = 1; j <= ny2; j++) {
     for (i = 1; i <= nx2; i++) {
@@ -868,7 +868,7 @@ our algorithm was able to detect 3 in NAS, 2 in Parboil and 1 in
 Rodinia.   They were still fundamentally sums but contained
 complex expressions to compute the update values.  An  example is the
 inner most loop of this code snippet from backprop.
-\begin{lstlisting}
+\begin{lstlisting}[language=MyCpp]
 for (j = 1; j <= nh; j++) {
   h = hidden[j];
   sum = 0.0;
@@ -886,7 +886,7 @@ for (j = 1; j <= nh; j++) {
 One interesting examples is tpacf from the Parboil benchmarks.
 In this reduction, the histogram index is computed via a binary search in an additional array.
 On the other hand the performance bottleneck of IS is a plain histogram without any complications.
-\begin{lstlisting}
+\begin{lstlisting}[language=MyCpp]
 for( i=0; i<NUM_KEYS; i++ )
   key_buff_ptr[key_buff_ptr2[i]]++;
 \end{lstlisting}
