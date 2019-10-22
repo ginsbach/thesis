@@ -1289,7 +1289,7 @@ End
     static control parts (SCoPs).
     These are regions of code that comprise nestings of well-behaved loops and
     conditionals with only affine data access patterns inside.
-    Detecting SCoPs is fundamental and necessary first step for any later
+    Detecting SCoPs is a fundamental and necessary first step for any later
     polyhedral optimisation.
 
     Implementations of the polyhedral model may differ in their precise
@@ -1343,34 +1343,37 @@ End
     We then use collect all \texttt{load} and \texttt{store} instructions and
     verify that both collections are identical.
 
-\pagebreak
-\phantom{placeholder}
-\pagebreak
+\begin{figure}[p]
+\vspace{20cm}
+\caption{CAnDL snippets that are used in the polyhedral definition}
+\end{figure}
 
 \subsubsection{Setup}
 
     The reliable detection of SCoPs was evaluated on the PolyBench suite by
-    \citet{polybench}.
-    For both the CAnDL based approach as well as for Polly, it was counted
+    \citet{polybench}, a collection of 31 benchmarks containing SCoPs of
+    differing complexity from several application domains.
+    For both the CAnDL-based approach and for the evaluation of Polly, it was
     counted how many of the computational kernels contained in the benchmark
-    suite were captured by the analysis.
+    suite were captured in their entirety by the respective analysis.
 
     Some post-processing of the generated constraint solutions was required to
     compare the results of CAnDL and Polly.
-    This is because the CAnDL results are not in the {\it jscop} format that
-    Polly uses, but contain instead the raw constraint solution.
+    This is because the CAnDL results are not in the JSCoP format that Polly
+    generates, but contain instead the raw constraint solution represented
+    as a JSON file.
     Also, the CAnDL implementation does not merge consecutive outer level loops
     into a single SCoP of maximum size.
     Therefore, the detected loops from the CAnDL solver were extracted and then
-    grouped together, after which it was manually verified whether they
-    precisely cover the SCoPs detected by Polly.
+    grouped together, after which it was verified whether they precisely cover
+    the SCoPs detected by Polly with a Python script.
 
 \subsubsection{Results}
 
     \Cref{fig:candlvspolly} shows that the CAnDL specification captured all the
     SCoPs that Polly detected.
-    To measure lines of code, the CAnDL version was compared with the amount of
-    code in \texttt{ScopDetection.cpp} of Polly.
+    To measure the lines of code required, the CAnDL version was compared with
+    the amount of code in \texttt{ScopDetection.cpp} of Polly.
     The same detection results were achieved with much fewer lines of code in
     CAnDL.
     Note that the line count that is given for the CAnDL program does not
@@ -1378,12 +1381,14 @@ End
     Code that is not specific to this idiom (such as loop structures) are
     considered as part of the CAnDL standard library.
     In the same way, the line count for Polly does not account for additional
-    code that Polly relies on when detecting SCoPS, e.g\ the expansive
+    code that Polly relies on when detecting SCoPS, e.g.\ the expansive
     ScalarEvolution pass.
 
-    By having a high level representation of SCoPs, we allow polyhedral compiler
+    By having a high-level representation of SCoPs, we allow polyhedral compiler
     researchers to explore the impact of relaxing or tightening the exact
     definition of SCoPs in a straightforward manner, enabling rapid prototyping.
+    Simple commenting out of constraint statements in the CAnDL specification
+    relaxes the conditions.
 
 \begin{table}[ht]
     \input{latex/figure_candlvspolly}
@@ -1399,12 +1404,12 @@ End
     generate performant code.
     The current way of implementing this functionality manually in programming
     languages such as C++ is not satisfactory, as exemplified by the overly
-    complex {\tt instcombine} pass in the LLVM compiler infrastructure.
+    complicated {\tt instcombine} pass in the LLVM compiler infrastructure.
 
-    The domain specific Compiler Analysis Description Language (CAnDL) provides
+    The domain-specific Compiler Analysis Description Language (CAnDL) provides
     a more efficient approach.
-    CAnDL programs can be used to automatically generate compiler analysis
-    passes.
+    CAnDL specifications can be used to generate compiler analysis passes
+    automatically from a declarative description using the CAnDL compiler.
     They are easier to write and significantly reduce the code size and
     complexity when comparing against manual C++ implementations.
 
@@ -1413,4 +1418,4 @@ End
     only moderate compile time increases.
     Many compiler analysis tasks are suitable for implementation with CAnDL,
     from detecting peephole optimisation opportunities to recognising large
-    code regions that are suitable for analysis with the polyhedral model.
+    code regions can be analysed with the polyhedral model.
