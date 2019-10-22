@@ -154,16 +154,23 @@
     reasons why this has not been championed so far.
 
 \section{Host Compilers and Kernel Compilers}
-    
-    An important first observation is that a specific class of compilers already
-    plays an important role in targeting heterogeneous hardware.
+
+    While mainstream compilers for languages such as C/C++, Fortran or Java
+    generally fail to exploit the full performance of heterogeneous systems, a
+    specific class of compilers already play an essential role in
+    targeting heterogeneous hardware.
     Many of the kernel programs that remain opaque to the application compilers
     are themselves products of other, specialised compilers.
     This necessitates a distinction between {\em host compilers} and {\em kernel
     compilers}.
-    This distinction is mirrored of course by the differences between {\em host
-    languages} and {\em kernel languages}.
-    The two classes of compilers have developed quite distinctly.
+    This distinction is mirrored by the differences between {\em host languages}
+    and {\em kernel languages}.
+    {\em Host compilers} translate full programs written in
+    {\em host languages},
+    such as the previously mentioned C/C++, Fortran and Java, while
+    {\em kernel compilers} handle small computational kernels that are expressed
+    in dedicated domain-specific programming languages.
+    The two classes of compilers have developed distinctly.
     Kernel compilers successfully apply many of the techniques that have had
     only limited success for host compilers.
     They reason automatically about parallelism, understand data dependencies at
