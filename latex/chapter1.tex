@@ -126,14 +126,17 @@
     hand, complete rewrites are required in entirely novel ecosystems, with an
     entirely unclear future of support.
 
-    These problems arise because compilers are unable to efficiently map
-    existing programs to heterogeneous platforms.
-    They are therefore increasingly downgraded to merely coordinating the launch
-    of core workloads in the form of computational kernels, which are
-    executed as separate and opaque programs.
-    It is important to reflect on an abstract level the reasons why no compiler
-    exists that can efficiently target heterogeneous hardware from legacy
-    programs.
+    On heterogeneous systems, programmers relied on compilers for mainstream
+    programming languages to evolve alongside processor development.
+    Even decades-old C++ source code can be compiled into efficient programs for
+    the newest generation x86 processors.
+    The pervasive requirement for domain specific-languages and libraries only
+    arises because compilers are unable to map programs to specialised cores.
+    Compilers are therefore increasingly downgraded to merely coordinating the
+    launch of core workloads in the form of computational kernels, which are
+    then executed as separate and opaque programs.
+    In order to improve this situation, it is important to consider from a
+    distance the reasons for these compiler shortcomings.
 
     It may appear obvious that e.g.\ a full C++ or Java compiler cannot be
     provided for a typical graphics processor -- after all, most graphics
@@ -143,17 +146,15 @@
     However, this should not prevent a partial compiler, offloading suitable
     subprograms, while falling back on homogeneous hardware providing a full
     language implementation for the remainder.
-    After all, that is exactly the result achieved with libraries and domain
-    specific languages as well, and likely the desirable outcome.
-
-    Despite the obvious convenience of such an approach, there are important
-    reasons why this has not been championed so far.
-    To understand this, an important first observation is that a specific class
-    of compilers already plays an important role in targeting heterogeneous
-    hardware.
+    After all, that is exactly the result achieved with libraries and
+    domain-specific languages as well, and likely the desirable outcome.
+    Despite the obvious convenience of such an approach, the next section shows
+    that there are important reasons why this has not been championed so far.
 
 \section{Host Compilers and Kernel Compilers}
-
+    
+    An important first observation is that a specific class of compilers already
+    plays an important role in targeting heterogeneous hardware.
     Many of the kernel programs that remain opaque to the application compilers
     are themselves products of other, specialised compilers.
     This necessitates a distinction between {\em host compilers} and {\em kernel
