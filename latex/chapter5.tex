@@ -728,12 +728,12 @@ placeholder
     It uses the detected constraint solution and parallelises the corresponding
     loops.
     For each reduction that is found, all the relevant input arrays and scope
-    variables are identified and packed into a structure together with the
-    histogram array and some additional parameters.
+    variables are taken from the solution and packed into a structure together
+    with potential histogram arrays and some additional parameters.
     A function is generated that takes this structure as its only parameter.
     Depending on the amount of processors in the system and the recursion
     depth, the function decides whether to bisect its workload recursively.
-    If not, it simple executes the histogram functionality.
+    If not, it simply executes the histogram functionality.
     Otherwise it uses \texttt{pthread\_create} to offload half of its
     workload into another thread.
     For this, it copies its parameter array but replaces the histogram array
