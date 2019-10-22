@@ -720,8 +720,10 @@ placeholder
 %% More precisely we implemented a code transformation pass that automatically parallelizes histogram reductions.
 %% We did not implement equivalent functionality for scalar reductions as preliminary runtime coverage results showed them to be almost irrelevant for the performance of many benchmark programs.
 
-    The code generation pass to parallelise the detected computations was
-    implemented as an LLVM pass immediately following the detection pass.
+    The code generation pass immediately follows the CAnDL-generated detection
+    pass.
+    It uses the detected constraint solution and parallelises the corresponding
+    loops.
     For each reduction that is found, all the relevant input arrays and scope
     variables are identified and packed into a structure together with the
     histogram array and some additional parameters.
