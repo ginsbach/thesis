@@ -109,21 +109,22 @@
     This includes manually written assembly code, but also highly advanced
     code generation techniques, custom program representations and many more.
 
-\subsection{Negative Consequences of Compiler Decline}
+\subsection{Negative Consequences of Declining Compiler Scope}
 
-    These success stories, however, still leave many important problems
-    unaddressed.
-    Adoption costs are significant, requiring application rewrites for
+    Domain-specific languages and library interface make the full
+    performance of heterogeneous systems accessible to programs.
+    These success stories, however, leave significant problems unaddressed.
+    The adoption costs are high, requiring application rewrites for
     accelerators.
-    This coincides with often uncertain long-term prospects and very limited
+    This coincides with often uncertain long-term prospects and minimal
     cross-platform portability.
-    Even in the case of the generally agreed upon BLAS standard -- arguably the
-    best case scenario -- adoption of novel implementations is non-trivial in
-    practice, due to interface extensions for device handlers and memory
-    synchronisation.
-    For academic-backed approaches like Halide on the other hand, complete
-    rewrites are required in entirely novel ecosystems, with an unclear future
-    of support.
+    Even in the case of the agreed-upon BLAS standard -- arguably the best case
+    scenario -- adoption of novel implementations is non-trivial in practice,
+    due to the frequently encountered interface extensions for managing device
+    handlers and memory synchronisation.
+    For academic-backed domain-specific languages like Halide, on the other
+    hand, complete rewrites are required in entirely novel ecosystems, with an
+    entirely unclear future of support.
 
     These problems arise because compilers are unable to efficiently map
     existing programs to heterogeneous platforms.
