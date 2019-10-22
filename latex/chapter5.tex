@@ -157,7 +157,8 @@
 \begin{figure}[h]
 \begin{lstlisting}[language=MyCpp,label={sum-figure},caption=
     {The most conventional example of a reduction is adding up all values in an
-     array.\leftskip=0pt\rightskip=0pt}]
+     array.
+     The reduction operator ``{\tt+}'' {\it reduces} the array \texttt{a} to a single element -- the reduction variable {\tt sum}.\leftskip=0pt\rightskip=0pt}]
 sum = 0;
 for(i = 0; i < n; i++)
   sum += a[i];
@@ -173,14 +174,15 @@ for(i = 0; i < n; i++)
     The parallelisation of simple reductions alone therefore often has limited
     impact on program performance.
 
-    \Cref{complex-reduction-figure} in contrast shows a more complex
+    \Cref{complex-reduction-figure}, in contrast, shows a more complex
     section of code that constitutes a performance bottleneck of a standard
     benchmark program
     (``Embarrassingly Parallel'' of the NAS Parallel Benchmarks).
-    It is not obvious at first glance that this computation can be treated as a
+    It is not evident at first glance that this computation can be treated as a
     reduction.
-    However, it can be parallelised in a similar way as the simple sum using
-    privatisation.
+    However, it can be parallelised similarly as the simple sum.
+    Creating thread-private copies of the reduction variables again is the
+    critical step.
 
 \begin{figure}[h]
 \begin{lstlisting}[language=MyCpp,label={complex-reduction-figure},caption=
