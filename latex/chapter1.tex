@@ -123,20 +123,22 @@
     due to the frequently encountered interface extensions for managing device
     handlers and memory synchronisation.
     For academic-backed domain-specific languages like Halide, on the other
-    hand, complete rewrites are required in entirely novel ecosystems, with an
-    entirely unclear future of support.
+    hand, complete rewrites are required in entirely novel software ecosystems,
+    with an unclear future of support.
 
-    On heterogeneous systems, programmers relied on compilers for mainstream
-    programming languages to evolve alongside processor development.
-    Even decades-old C++ source code can be compiled into efficient programs for
-    the newest generation x86 processors.
-    The pervasive requirement for domain specific-languages and libraries only
-    arises because compilers are unable to map programs to specialised cores.
-    Compilers are therefore increasingly downgraded to merely coordinating the
+    On heterogeneous systems, programmers can rely on compilers for existing
+    programming languages to evolve in lockstep with processor development.
+    For example, even decades-old C++ source code compiles into efficient
+    programs for the newest generation of x86 processors.
+    Libraries and domain-specific languages are useful on homogeneous systems
+    for achieving absolute maximum performance, but they become essential only
+    in the context of heterogeneity.
+    Therefore, the pervasive requirement for domain specific-languages and
+    libraries only arises because compilers are unable to map programs onto
+    specialised cores.
+    Instead, compilers are increasingly downgraded to merely coordinating the
     launch of core workloads in the form of computational kernels, which are
     then executed as separate and opaque programs.
-    In order to improve this situation, it is important to consider from a
-    distance the reasons for these compiler shortcomings.
 
     It may appear obvious that e.g.\ a full C++ or Java compiler cannot be
     provided for a typical graphics processor -- after all, most graphics
