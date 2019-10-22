@@ -165,19 +165,21 @@
     compilers}.
     This distinction is mirrored by the differences between {\em host languages}
     and {\em kernel languages}.
-    {\em Host compilers} translate full programs written in
-    {\em host languages},
-    such as the previously mentioned C/C++, Fortran and Java, while
-    {\em kernel compilers} handle small computational kernels that are expressed
-    in dedicated domain-specific programming languages.
+    Host compilers translate full programs written in host languages,
+    such as the previously mentioned C/C++, Fortran and Java, while kernel
+    compilers handle small computational kernels that are expressed in dedicated
+    domain-specific programming languages.
     The two classes of compilers have developed distinctly.
     Kernel compilers successfully apply many of the techniques that have had
-    only limited success for host compilers.
-    They reason automatically about parallelism, understand data dependencies at
-    a deeper level, and they incorporate iterative compilation.
+    limited success for host compilers.
+    They reason automatically about parallelism
+    \citep{Steuwer:2017:LFD:3049832.3049841}, have more sophisticated models to
+    track data dependencies \citep{Baghdadi:2019:TPC:3314872.3314896}, and they
+    incorporate iterative compilation techniques
+    \citep{Ansel:2014:OEF:2628071.2628092}.
 
     This is made possible by a combination of factors that apply uniquely to
-    kernel compilers.
+    kernel compilers:
     Smaller programs allow for more expensive compilation techniques;
     more restrictive languages and intermediate representations allow for
     stronger reasoning;
@@ -187,10 +189,10 @@
     embedded in custom compiler technology, without requiring their validity
     on generic programs.
     Furthermore, kernel compilers often run in more controlled environments,
-    with less need for predictability, reproducibility and stability.
-    The range of input programs might even be small enough to leave compilation
-    to experts and vendors, which may share the results in the form of already
-    compiled library functions.
+    with less need for predictability, reproducibility, and stability.
+    The range of input programs might even be small enough to ship them in
+    already compiled form, making the compiler merely a tool in a
+    library-implementation process.
 
     As host compilers operate under less forgiving conditions, it is
     unsurprising that they have lagged behind these developments.
@@ -208,9 +210,9 @@
     Compilers are provided for many structurally different processors.
     However, as a consequence of being a relatively unrestricted language, the
     compilers often underperform and the language is notoriously lacking in
-    performance portability.
+    performance portability \citep{Falch:2015:MLB:2863697.2864570}.
     Partial compilers that require the same kinds of compromises as OpenCL --
-    unable to utilize the restricted nature of input programs -- would suffer
+    unable to utilise the restricted nature of input programs -- would suffer
     the same shortcomings.
 
 \subsection{The Spectrum of Specialisation}
