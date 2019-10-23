@@ -181,7 +181,7 @@
 \label{fig:ssaoverview}
 \end{figure}
 
-\subsection{The Emergence of Static Single Assignment Form}
+\subsection{SSA Emerges During Compilation}
 
     \Cref{ssaexample} shows how critical features of SSA form emerge from
     simplification steps of source code.
@@ -675,7 +675,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \label{fig:derivemaths}
 \end{figure}
 
-\section{Constraint Programming on SSA Programs}
+\section{Constraint Programming on the SSA Model}
 \label{sec:constraintprogramming}
 
     Properties of SSA programs can now be formulated as constraint problems on
@@ -795,7 +795,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     The next sections derive how a backtracking solver can be used to
     compute the set of solutions efficiently.
 
-\section{Solving of SSA Constraint Problems}
+\section{Solving SSA Constraint Problems}
 \label{sec:constraintsolving}
 
     The solver for SSA constraint problems should efficiently compute $S_M(V,C)$
@@ -882,7 +882,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \label{backtrackalg}
 \end{algorithm}
 
-\subsection{Structure of Basic SSA Constraint Problems}
+\subsection{The Structure of SSA Constraint Problems}
 
     Basic construction rules for SSA constraint problems are the element-of
     constraint problem in \Cref{def:elementofconstr},
