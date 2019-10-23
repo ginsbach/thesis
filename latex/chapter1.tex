@@ -154,6 +154,7 @@
     reasons why this has not been championed so far.
 
 \section{Host Compilers and Kernel Compilers}
+\label{sec:hostkernel}
 
     While mainstream compilers for languages such as C/C++, Fortran or Java
     generally fail to exploit the full performance of heterogeneous systems, a
@@ -282,39 +283,38 @@
     representations, the domain-specific reasoning from kernel compilers could
     be applied in the host compiler.
 
-    This thesis derives a novel approach for detecting such program sections.
-
-    Conceptually, this approach has been applied in specific domains before.
-    Some polyhedral compilers take as input arbitrary code, but they recognise
-    whether parts of code are actually expressible in the much more restricted
-    polyhedral model.
-    If possible, they reformulate the code into this system and continue
-    optimisation with domain knowledge, thus resulting in better code.
-    This thesis will develop a broad generalization of this concept, extending
-    far beyond polyhedral code regions and encompassing a methodology that
-    needs no commitment to one specific model.
-
-\subsection{Program Specialization with Constraints}
-
-    Program code typically passes through a whole range of representations
-    during compilation with a modern, general purpose compiler.
-    Starting from the textual source code, an abstract syntax tree is built,
-    from which a serialised intermediate representation is constructed,
-    which is then passed on to the compiler back end for code generation.
-    The intermediate representation -- typically in static single assignment
-    form -- is used for the majority of optimising code transformations.
-    This best represents the semantic model, and therefore the set of
-    assumptions and capabilities, that the compiler uses to represent the
-    program.
-
-    Static single assignment form representations are accessible to mathematical
-    reasoning, with most of their interesting properties based on graph and list
-    structures.
+    This thesis derives a new approach for automatically recongising such
+    constrained program sections.
+    The approach emerges from an analysis of the program model that traditional
+    host compilers use: Static Single Assignment (SSA) form intermediate
+    representation.
+    SSA form representations are accessible to mathematical reasoning.
+    Most of their interesting properties are based on graph and list structures.
     With this in mind, structural restrictions on intermediate representation
     code -- corresponding to restricted, domain specific models -- can be
     precisely formulated as mathematical constraints.
     Established methods around constraint solvers then make an automatic
     detection of adhering code regions feasible.
+
+    Detecting restricted models in general-purpose code has been done previously
+    only for individual domains, and this involved extensive hand-written
+    compiler analysis functionality.
+    For example, polyhedral compilers such as \citet{Lengauer2012Polly} take as
+    input arbitrary code and then recognise whether parts of code are actually
+    expressible in the more restrictive polyhedral model
+    \citep{benabderrahmane2010polyhedral}.
+    If possible, they reformulate the code into this system and continue
+    optimisation with domain knowledge, resulting in better code.
+    This confirms the predictions of \Cref{sec:hostkernel}.
+
+    The approach in this work does not focus on such a specific code model.
+    Instead, a flexible constraint programming language is introduced that can
+    express many different such models, and a corresponding toolchain is
+    developed that uses these specifications to automatically detect
+    corresponding code sections.
+    The polyhedral model can be formulated in this system, but also stencil
+    computations, sparse linear algbera, complex histogram computations and
+    many more.
 
     This constraint programming methodology needs to capture the spectrum from
     \Cref{specialgradient}.
