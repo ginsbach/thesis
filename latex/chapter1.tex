@@ -422,54 +422,61 @@
 \section{Structure of the Thesis}
 
     This thesis is divided into six chapters.
-    Following this introduction, the core methodology of this work is developed
-    in {\bf\Cref{chapter:theory}}.
-    This forms the basis of the later
+    Following the introduction, the underlying methodology of this work is
+    established in {\bf\Cref{chapter:theory}} and put in the context of
+    conventional compiler analyis.
+    Based on a mathematical model of Static Single Assignment (SSA) form
+    compiler intermediate representations, the chapter derives a novel
+    constraint programming approach to express algorithmic program
+    structures as constraint formulas.
+    Finally, the chapter discusses implementation decisions,
+    algorithmic complexity, and the relation to established Satisfyability
+    Modulo Theory (SMT) problems.
+    This forms the methodological basis for
     {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions}}.
-    Based on a novel mathematical model of established Static Single Assignment
-    form compiler intermediate representations, a constraint programming
-    approach is derived and some particular challenges are discussed in detail.
 
     {\bf\Cref{chapter:literature}} gives a broad overview of the related work.
     This literature survey covers the four main areas of research that this work
     is placed in.
-    Firstly, {\em constraint programming} is the basis of the methodology for
-    most of this research.
-    Secondly, {\em compiler analysis and compiler auto-parallelisation}, against
-    which the results in this thesis are evaluated.
-    Thirdly {\em heterogeneous computing}, which motivates many of the compiler
-    approaches that this research enables.
-    Lastly {\em computational idioms}, a term for several overlapping concepts
-    of algorithmic patterns.
+    Firstly, {\em constraint programming} underpins the methodology of this
+    thesis.
+    Secondly, {\em compiler analysis and auto-parallelisation} provides
+    competing approaches against which the results in this thesis are evaluated.
+    Thirdly, {\em heterogeneous computing} and the corresponding challenges
+    motivates many of the compiler approaches that this research implements.
+    Finally, {\em computational idioms} is a term for several overlapping
+    concepts of algorithmic patterns that capture progamming models on different
+    positions in the spectrum of specialisation.
 
     {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions}}
     are each based on a published research article and elaborate on different
     applications of constraint programming in compilers.
 
     {\bf\Cref{chapter:candl}} develops a full-fledged constraint programming
-    language called CAnDL, with an implementation in the LLVM compiler
+    language called CAnDL, with an implementation in the LLVM compiler,
     infrastructure that automatically generates compiler analysis passes from
-    declarative descriptions.
-    Using CAnDL, the chapter explores several complex compiler analysis
-    challenges, concluding with a full polyhedral code analysis.
-    The work of this chapter has been published as
-    {\bf\citet{Ginsbach:2018:CDS:3178372.3179515}}.
+    declarative specifications.
+    The chapter explores several compiler analysis challenges using CAnDL,
+    including the rapid implementation of peephole optimisations and the
+    prototypying of graphics shader optimisations.
+    The chapter is based on published research in
+    \citet{Ginsbach:2018:CDS:3178372.3179515}.
 
     {\bf\Cref{chapter:reductions}} develops an auto-parallelising compiler for
     complex reduction and histogram computations using CAnDL-powered analysis
     functionality.
     This covers many computations that are inaccessible to established
-    approaches based on data flow or polyhedral analysis and is to demonstrate
-    the greater flexibility of constraint programming.
-    The work of this chapter has been published as
-    {\bf\citet{ginsbach2017discovery}}.
+    approaches based on data flow and polyhedral analysis due to indirect memory
+    accesses, demonstrating the greater flexibility of constraint programming.
+    The chapter is based on published research in
+    \citet{ginsbach2017discovery}.
 
     {\bf\Cref{chapter:idioms}} extends CAnDL into the Idiom Description Language
-    (IDL) and applies it to algorithmic concepts that go beyond traditional
-    compiler analysis: stencil computations, complex reductions and histograms
-    as well as sparse and dense linear algebra.
-    The resulting automatic detection passes in LLVM enable automatic
-    heterogeneous acceleration of sequential code and result in significant
-    speedups on established benchmark suites.
-    The work of this chapter has been published as
-    {\bf\citet{Ginsbach:2018:AML:3173162.3173182}}.
+    (IDL) and applies it for detecting algorithmic structures that go beyond the
+    scope of traditional compiler analysis: stencil computations, complex
+    reductions and histograms as well as sparse and dense linear algebra.
+    The resulting detection passes in LLVM enable automatic heterogeneous
+    acceleration of sequential code and result in significant speedups on
+    established benchmark suites.
+    The chapter is based on published research in
+    \citet{Ginsbach:2018:AML:3173162.3173182}.
