@@ -334,8 +334,22 @@
 
 \section{Summary}
 
-    This thesis develops a framework to formulate a wide range of restricted
-    program models using constraints.
+    The end of Moore's Law and Dennard Scaling has resulted in a shift away from
+    homogeneous multi-processing, toward architectural innovation and
+    specialised processor cores.
+    The rising heterogeneity of computing resources poses a challenge to
+    established compiler toolchains, which often only access the increasingly
+    marginal homogeneous fraction of processing power.
+    Therefore, programmers depend on domain-specific languages and libraries,
+    which leverage domain knowledge from their restricted operating domains, to
+    generate efficient code for this new hardware landscape.
+
+    This domain knowledge can be made available to host compilers with
+    approaches that automatically specialise general-purpose code and
+    reformulate it in more restrictive program models.
+    Previous work has established this on individual models, but this thesis
+    develops a framework to formulate a wide range of restricted program models
+    using a systematic approach based on constraints.
     For this purpose, a custom constraint programming language is introduced
     and successively extended.
     Starting from theoretical foundations, the methodology is developed into
@@ -344,14 +358,14 @@
     In the later chapters, this core system is then applied in combination
     with other techniques in a range of different contexts.
     This includes the rapid prototyping of compiler optimisations, the
-    automatic parallelisation of program structures with indirect memory
+    automatic parallelisation of some program structures with indirect memory
     accesses, a new formulation of the polyhedral model and the detection of
     computational structures that cover important bottlenecks in typical
     scientific programs.
-    
-    Eventually, the techniques are combined with memory synchronisation
-    approaches to result in a fully integrated, extensible compiler tool for
-    efficiently mapping sequential programs onto heterogeneous systems.
+
+    Eventually, the techniques are combined into a fully integrated, extensible
+    compiler tool for efficiently mapping sequential programs onto heterogeneous
+    systems.
     This develops the thesis all the way from theoretical discussions of
     constraint programming approaches in compilers to the evaluation of real
     performance improvements on established benchmark suites and scientific
