@@ -274,7 +274,7 @@
     host compilers.
     }
 
-\section{The Contributions of this Thesis}
+\section{Moving on the Spectrum of Specialisation}
 
     To combine the positive aspects of both sides of the spectrum of
     specialistion, host compilers need methods to automatically capture
@@ -283,38 +283,44 @@
     representations, the domain-specific reasoning from kernel compilers could
     be applied in the host compiler.
 
-    This thesis derives a new approach for automatically recongising such
-    constrained program sections.
-    The approach emerges from an analysis of the program model that traditional
-    host compilers use: Static Single Assignment (SSA) form intermediate
-    representation.
-    SSA form representations are accessible to mathematical reasoning.
-    Most of their interesting properties are based on graph and list structures.
-    With this in mind, structural restrictions on intermediate representation
-    code -- corresponding to restricted, domain specific models -- can be
-    precisely formulated as mathematical constraints.
-    Established methods around constraint solvers then make an automatic
-    detection of adhering code regions feasible.
-
-    Detecting restricted models in general-purpose code has been done previously
-    only for individual domains, and this involved extensive hand-written
-    compiler analysis functionality.
-    For example, polyhedral compilers such as \citet{Lengauer2012Polly} take as
-    input arbitrary code and then recognise whether parts of code are actually
-    expressible in the more restrictive polyhedral model
-    \citep{benabderrahmane2010polyhedral}.
-    If possible, they reformulate the code into this system and continue
-    optimisation with domain knowledge, resulting in better code.
+    Such an approach of detecting restricted models in general-purpose code has
+    previously been used only for specific individual domains, and this involved
+    extensive hand-implemented compiler analysis functionality.
+    For example, the Polly compiler by \citet{Lengauer2012Polly} takes as
+    input arbitrary C/C++ code and then recognises whether parts of the code are
+    actually expressible in the more restrictive polyhedral model
+    \citep{Karp:1967:OCU:321406.321418,benabderrahmane2010polyhedral}.
+    The compiler then reformulates the relevant code in this system, which
+    makes advanced optimisation techniques applicable that use the available
+    domain knowledge of the restricted model for generating faster code 
+    \citep{Moll:2016:ISS:2892208.2892217,Doerfert2015Polly}.
     This confirms the predictions of \Cref{sec:hostkernel}.
 
-    The approach in this work does not focus on such a specific code model.
-    Instead, a flexible constraint programming language is introduced that can
-    express many different such models, and a corresponding toolchain is
-    developed that uses these specifications to automatically detect
+\subsection{Contributions of this Thesis}
+
+    This thesis derives a new approach for automatically recognising constrained
+    program sections using a generic approach that is not tied to a particular
+    model.
+    The approach emerges from the analysis of a common program model that host
+    compilers use: Static Single Assignment (SSA) form intermediate
+    representations.
+    These SSA form representations are accessible to mathematical reasoning,
+    with their most interesting features based on graph and list structures.
+    With this in mind, structural restrictions on intermediate representation
+    code -- corresponding to restricted, domain specific models -- can be
+    precisely formulated as mathematical constraints on a model of SSA form
+    representations.
+    The use of constraint solver techniques then make an automatic detection of
+    adhering code regions feasible.
+
+    Instead of manually implementing compiler analysis passes to recognise
+    restricted models, a flexible constraint programming language is introduced
+    that can express many different such models, and a corresponding toolchain
+    is developed that uses these specifications to automatically detect
     corresponding code sections.
     The polyhedral model can be formulated in this system, but also stencil
-    computations, sparse linear algbera, complex histogram computations and
-    many more.
+    computations, sparse and dense linear algbera, complex reduction and
+    histogram computations and many more.
 
     This constraint programming methodology needs to capture the spectrum from
     \Cref{specialgradient}.
@@ -325,7 +331,6 @@
     Stencil kernels or reductions fall into this category.
     More generic again are programs that merely follow specific structural
     restrictions.
-    Polyhedral code sections fall under this domain.
 
 \section{Summary}
 
