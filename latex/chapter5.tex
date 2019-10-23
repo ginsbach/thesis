@@ -39,7 +39,7 @@
 
     Reductions occur widely in numerical applications, and there are established
     techniques for parallelising them \citep{Jradi2017fast}.
-    Typical reduction operations successively apply an arithmetic operator to an
+    Typical reductions successively apply an arithmetic operator to an
     array of numeric values, in order to compute, for example, the sum of a set
     of floating point numbers.
     Perhaps most prominently, a reduction features in the innermost loop of the
@@ -64,7 +64,7 @@
     While some work has been published on parallelising such computations,
     automatic detection mostly evades the common compiler analysis methods.
     The reason is that histogram reductions intrinsically contain indirect
-    memory accesses, which poses a great challenge to compilers that use
+    memory accesses, which poses a challenge to compilers that use
     data dependence \citep{kuck1981dependence} or polyhedral
     representation \citep{benabderrahmane2010polyhedral} as the basis for
     their analysis.

@@ -236,7 +236,7 @@
     In LLVM, this is 47 lines of code inside the \texttt{instcombine} pass.
 
 \begin{figure}[t]
-\begin{lstlisting}[language={constraints},escapechar=|,
+\begin{lstlisting}[language=IDL,escapechar=|,
                    label={fig:IDLfactorization},caption=
    {IDL formulation of $\protect{(x*y)+(x*z)}$ pattern}]
 Constraint FactorizationOpportunity
@@ -475,7 +475,7 @@ Therefore, the solution at the bottom of \Cref{fig:firstexample} is the only fac
     \Cref{candl_sese} shows the specification, which contains some
     non-obvious considerations.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \begin{lstlisting}[language=CAnDL,label={candl_sese},caption=
    {Single Entry Single Exit Regions}]
 Constraint SESE
@@ -484,11 +484,16 @@ Constraint SESE
   {end} is branch instruction and
   {end} has control flow to {successor} and
   {begin} control flow dominates {end} and
-  {end} control flow post dominates {begin} and
-  {precursor} strictly control flow dominates {begin} and
-  {successor} strictly control flow post dominates {end} and
-  all control flow from {begin} to {precursor} passes through {end} and
-  all control flow from {successor} to {end} passes through {begin})
+  {end} control flow post
+        dominates {begin} and
+  {precursor} strictly control flow
+              dominates {begin} and
+  {successor} strictly control flow post
+              dominates {end} and
+  all control flow from {begin} to {precursor}
+         passes through {end} and
+  all control flow from {successor} to {end}
+         passes through {begin})
 End
 \end{lstlisting}
 \end{figure}
@@ -536,7 +541,7 @@ End
     expressed in CAnDL using a set of further constraints shown in
     \Cref{candl_forloop}.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \begin{lstlisting}[language=CAnDL,
                    label={candl_forloop},caption={For Loop in IDL}]
 Constraint ForLoop
