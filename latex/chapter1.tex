@@ -253,7 +253,7 @@
 \end{figure}
 
     In conclusion, the superior optimisation potential of libraries and
-    domain-specific kernel compilers is a consequence of operating under more
+    domain-specific kernel compilers is a consequence of operating in more
     constrained conditions than host compilers.
     While expert programmers can often apply domain knowledge themselves
     when using versatile general-purpose languages, this potential can be
@@ -273,15 +273,16 @@
     host compilers.
     }
 
-\section{Moving Between Abstraction Levels}
+\section{The Contributions of this Thesis}
 
-    To combine the positive features on both ends of the spectrum in
-    \Cref{specialgradient}, host compilers need the ability to recognise
-    restricted programming models within general purpose code and to transform
-    adhering code sections into domain specific representations.
-    After these transformations, host compilers would be able to tap into the
-    extensive knowhow that already exists by utilising specialised code
-    generation techniques.
+    To combine the positive aspects of both sides of the spectrum of
+    specialistion, host compilers need methods to automatically capture
+    restricted programming models within general-purpose code.
+    After reformulating the adhering code sections in domain-specific
+    representations, the domain-specific reasoning from kernel compilers could
+    be applied in the host compiler.
+
+    This thesis derives a novel approach for detecting such program sections.
 
     Conceptually, this approach has been applied in specific domains before.
     Some polyhedral compilers take as input arbitrary code, but they recognise
@@ -326,7 +327,7 @@
     restrictions.
     Polyhedral code sections fall under this domain.
 
-\section{Conclusion}
+\section{Summary}
 
     This thesis develops a framework to formulate a wide range of restricted
     program models using constraints.
@@ -396,6 +397,9 @@
 %    allow the expression of any other system.
 
 \newpage
+\phantom{placeholder}
+\newpage
+
 \section{Structure of the Thesis}
 
     This thesis is divided into six chapters.
