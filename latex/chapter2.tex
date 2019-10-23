@@ -1026,9 +1026,9 @@ define double @dot(double* %0, double* %1, i64 %2) {
     the SSA model from \Cref{fig:derivemaths}.
     Starting from the top with an empty partial solution $x=()$, candidates for
     $x_1$ are determined, corresponding to the variable ``phi''.
-    The SSA model contains three $\Phi$-instruction, all of which also satisfy
-    the other conditions of being the source and target of some edge in the data
-    flow graph.
+    There are three $\Phi$-instructions in the SSA model, all of which also
+    satisfy the other conditions of being the source and destination of some
+    edge in the data flow graph.
     Therefore, the algorithm continues with the partial solutions $x=(6)$,
     $x=(9)$ and $x=(10)$ one level further down in the figure.
 
