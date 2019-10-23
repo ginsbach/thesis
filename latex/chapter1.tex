@@ -244,7 +244,7 @@
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.95\textwidth]{figures/DSLgradient}
+\includegraphics[width=\textwidth]{figures/DSLgradient}
 \caption{Domain specific languages on a spectrum between general purpose
          languages and libraries.
          Decreasing flexibility allows for stronger reasoning and greater
@@ -263,14 +263,14 @@
     code.
 
     {\bf
-    When compilers operate on more constrained models, they have more
-    optimisation opportunities and they achieve higher performance and better
-    portability.
-    The models that compilers use are mostly a reflection of the input
-    programming language.
-    However, if host compiler could recognise program parts that adhere
-    to a stronger model with more restrictions, their disadvantage against
-    kernel compilers and libraries should vanish.
+    More restrictive program models result in additional optimisation
+    opportunities and increased portability.
+    Compilers use program models that correspond closely to their input
+    programming languages.
+    This correspondence could be decoupled by automatically recognising program
+    parts that adhere to more constrained models, making the powerful
+    domain-specific optimisation techniques of kernel compilers available to
+    host compilers.
     }
 
 \section{Moving Between Abstraction Levels}
