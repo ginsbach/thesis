@@ -1202,9 +1202,10 @@ private:
     isomorphism problem.
     Any subgraph can be specified using conjunctions of element-of constraints,
     and the solver will search for these within any provided SSA model.
-    \citet{Cook:1971:CTP:800157.805047} showed that this problem is NP-hard.
-    Therefore, the computational complexity has an exponential worst case when
-    evaluated in general.
+    \citet{Cook:1971:CTP:800157.805047} showed that this problem is NP-hard
+    \citep{Leeuwen:1990:HTC:574797}.
+    Therefore, the computational complexity has an exponential
+    (in the number of variables) worst case when evaluated in general.
 
     However, this is no impediment due to the particular use case of
     SSA constraint problems.
