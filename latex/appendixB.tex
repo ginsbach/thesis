@@ -1,69 +1,98 @@
-\begin{lstlisting}[language=CAnDL]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.85}\small\ttfamily]
 Constraint SCoP
 ( include For
 ∧ include StructuredControlFlowPart({body.begin}->{begin},
-                                    {body.end}  ->{end})
-                                  @ {constraint_control}
+                                      {body.end}->{end})
+                                 @ {constraint_control}
 ∧ include SideEffectFreePart({begin}->{begin},
-                             {end}  ->{end})
-                           @ {constraint_effects}
-∧ {constraint_memory.input[0]}   = {iterator}
+                               {end}->{end})
+                     @ {constraint_effects}
+∧ {constraint_memory.input[0]} = {iterator}
 ∧ {constraint_memory.input[i+1]} =
-    {constraint_control.loop[i].iterator} foreach i=0..7
+      {constraint_control.loop[i].iterator} foreach i=0..7
 ∧ include AffineMemoryAccessPart({begin}->{begin},
-                                 {end}  ->{end})
-                               @ {constraint_memory}
+                                   {end}->{end})
+                          @ {constraint_memory}
 ∧ include AffineControlFlowPart({body.begin}->{begin},
-                                  {constraint_memory.input}->{input})
-                                @ {constraint_control}
+                   {constraint_memory.input}->{input})
+                               @ {constraint_control}
 )
 End
 
 Constraint StructuredControlFlowPart
 ( collect i 16 ( opcode{branch[i].value} = branch
-               ∧ {branch[i].dummy} = {branch[i].value}.successors[1]
-               ∧ include LocalValue({branch[i].value}->{value}))
+               ∧ {branch[i].dummy} =
+                     {branch[i].value}.successors[1]
+               ∧ include LocalValue(
+                          {branch[i].value}->{value}))
 ∧ collect i  8 ( include For @ {loop[i]}
                ∧ domination({begin}, {loop[i].begin})
                ∧ post_domination({end}, {loop[i].end}))
 ∧ collect i  8 ( include IfBlock @ {conditional[i]}
-               ∧ domination({begin}, {conditional[i].precursor})
-               ∧ post_domination({end}, {conditional[i].successor}))
-∧ {loop[0..8].end,conditional[0..8].precursor} is the same set as {branch[0..16].value})
+               ∧ domination({begin},
+                            {conditional[i].precursor})
+               ∧ post_domination({end},
+                                 {conditional[i].successor}))
+∧ {loop[0..8].end,conditional[0..8].precursor}
+      is the same set as {branch[0..16].value})
 End
 
 Constraint SideEffectFreePart
-( collect i 32 ( include LocalFunctionCall({begin}->{begin},{end}->{end}) @ {call[i]}) 
-∧ collect i 32 ( include LocalFunctionCall({begin}->{begin},{end}->{end}) @ {call[i]}
+( collect i 32 ( include LocalFunctionCall({begin}->{begin},
+                                             {end}->{end})
+                                              @ {call[i]}) 
+∧ collect i 32 ( include LocalFunctionCall({begin}->{begin},
+                                             {end}->{end})
+                                              @ {call[i]}
                ∧ {call[i].function} has attribute pure))
 End
 
 Constraint AffineMemoryAccessPart
-( collect x 24 ( include MemoryAccess({begin}->{begin},{end}->{end}) @ {newaccess[x]})
-∧ collect x 24 ( include MemoryAccess({begin}->{begin},{end}->{end}) @ {newaccess[x]}
+( collect x 24 ( include MemoryAccess({begin}->{begin},
+                                        {end}->{end})
+                                    @ {newaccess[x]})
+∧ collect x 24 ( include MemoryAccess({begin}->{begin},
+                                        {end}->{end})
+                                    @ {newaccess[x]}
                ∧ ( ( opcode{newaccess[x].pointer} = gep
                    ∧ domination({begin}, {newaccess[x].pointer})
-                   ∧ {newaffine[x].value} = {newaccess[x].pointer}.args[1]
+                   ∧ {newaffine[x].value} =
+                         {newaccess[x].pointer}.args[1]
                    ∧ ir_type{begin} = instruction)
-                 ∨ ( include LocalConst({newaccess[x].pointer}->{value})
+                 ∨ ( include LocalConst(
+                              {newaccess[x].pointer}->{value})
                    ∧ {newaffine[x].value} is unused))
-               ∧ include AffineCalculation[M=8,N=6]({input}->{input},{begin}->{begin}) @ {newaffine[x]}))
+               ∧ include AffineCalculation[M=8,N=6](
+                          {input}->{input},
+                          {begin}->{begin}) @ {newaffine[x]}))
 End
 
 Constraint AffineControlFlowPart
-( include AffineCalculation[M=8,N=1]({conditional[i].compare_left}->{value},
-                                     {input}->{input},{begin}->{begin})@{conditional_affine_left[i]} foreach i=0..8
-∧ include AffineCalculation[M=8,N=1]({conditional[i].compare_right}->{value},
-                                     {input}->{input},{begin}->{begin})@{conditional_affine_right[i]} foreach i=0..8
-∧ include AffineCalculation[M=8,N=1]({loop[i].iter_begin}->{value},
-                                     {input}->{input},{begin}->{begin})@{loop_affine_begin[i]} foreach i=0..8
-∧ include AffineCalculation[M=8,N=1]({loop[i].iter_end}->{value},
-                                     {input}->{input},{begin}->{begin})@{loop_affine_end[i]} foreach i=0..8)
+( include AffineCalculation[M=8,N=1](
+           {conditional[i].compare_left}->{value},
+                                 {input}->{input},
+                                 {begin}->{begin})
+                    @{conditional_affine_left[i]} foreach i=0..8
+∧ include AffineCalculation[M=8,N=1](
+          {conditional[i].compare_right}->{value},
+                                 {input}->{input},
+                                 {begin}->{begin})
+                   @{conditional_affine_right[i]} foreach i=0..8
+∧ include AffineCalculation[M=8,N=1](
+           {loop[i].iter_begin}->{value},
+                        {input}->{input},
+                        {begin}->{begin})
+                 @{loop_affine_begin[i]} foreach i=0..8
+∧ include AffineCalculation[M=8,N=1](
+           {loop[i].iter_end}->{value},
+                      {input}->{input},
+                      {begin}->{begin})
+                 @{loop_affine_end[i]} foreach i=0..8)
 End
 
 Constraint For
 ( include Loop
-∧ {increment} reaches phi node {iterator} from {body.end}
+∧ {increment} -> {iterator} Φ {body.end}
 ∧ {increment} ∈ {comparison}.args
 ∧ opcode{comparison} = icmp
 ∧ {comparison} ∈ {end}.args
@@ -108,15 +137,19 @@ else
         ∧ {l.value} = {value}.args[1]
         ∧ {r.value} = {value}.args[2])
       ∨ ( opcode{value} = mul
-        ∧ include ArgumentsPermuted({l.value}->{src1},{r.value}->{src2},{value}->{dst})
+        ∧ include ArgumentsPermuted({l.value}->{src1},
+                                    {r.value}->{src2},
+                                      {value}->{dst})
         ∧ ir_type{l.value} = preexecution
         ∧ ir_type{r.value} = instruction))
     ∧ ir_type{begin} = instruction
     ∧ domination({begin}, {value})
     ∧ ( data_type{input[j]} = integer
       ∨ {input[j]} is unused) foreach j=0..M))
-∧ include AffineCalculation[M=M,N=N-1]({input}->{input},{begin}->{begin}) @ {l}
-∧ include AffineCalculation[M=M,N=N-1]({input}->{input},{begin}->{begin}) @ {r})
+∧ include AffineCalculation[M=M,N=N-1]({input}->{input},
+                                       {begin}->{begin}) @ {l}
+∧ include AffineCalculation[M=M,N=N-1]({input}->{input},
+                                       {begin}->{begin}) @ {r})
 endif
 End
 
@@ -145,8 +178,10 @@ Constraint PotentialSESE
 ∧ {end} ∈ {successor}.successors
 ∧ ( ( domination({begin}, {end})
     ∧ post_domination({end}, {begin})
-    ∧ all control flow from {begin} to {precursor} passes through {end}
-    ∧ all control flow from {successor} to {end} passes through {begin})
+    ∧ all control flow from {begin} to {precursor}
+                        passes through {end}
+    ∧ all control flow from {successor} to {end}
+                            passes through {begin})
   ∨ ( {begin} = {end}
     ∧ {precursor} ∈ {begin}.successors
     ∧ {end} ∈ {successor}.successors)
@@ -176,7 +211,9 @@ Constraint SumChain
 ( data_type{value} = integer
 ∧ {value} = {results[0]}
 ∧ ( ( opcode{results[i]} = add
-    ∧ include ArgumentsPermuted({results[i]}->{dst},{results[i+1]}->{src1},{factors[i]}->{src2})
+    ∧ include ArgumentsPermuted({results[i]}->{dst},
+                              {results[i+1]}->{src1},
+                                {factors[i]}->{src2})
     ∧ data_type{last_factor} = integer)
   ∨ ( ( ( data_type{results[i]} = integer
         ∧ {last_factor} = {factors[i]})
@@ -193,7 +230,9 @@ Constraint MulChain
 ( data_type{value} = integer
 ∧ {value} = {results[0]}
 ∧ ( ( opcode{results[i]} = mul
-    ∧ include ArgumentsPermuted({results[i]}->{dst},{results[i+1]}->{src1},{factors[i]}->{src2})
+    ∧ include ArgumentsPermuted({results[i]}->{dst},
+                              {results[i+1]}->{src1},
+                                {factors[i]}->{src2})
     ∧ data_type{last_factor} = integer)
   ∨ ( ( ( data_type{results[i]} = integer
         ∧ {last_factor} = {factors[i]})
@@ -225,7 +264,7 @@ End
 
 Constraint ForWithIteratorTest
 ( include Loop
-∧ {increment} reaches phi node {iterator} from {body.end}
+∧ {increment} -> {iterator} Φ {body.end}
 ∧ {iterator} ∈ {comparison}.args
 ∧ opcode{comparison} = icmp
 ∧ {comparison} ∈ {end}.args
@@ -250,7 +289,7 @@ Constraint Loop
 End
 
 Constraint InductionVar
-{new_ind} reaches phi node {old_ind} from {end}
+{new_ind} -> {old_ind} Φ {end}
 End
 
 Constraint LocalConst
@@ -270,7 +309,9 @@ Constraint SESE
 ∧ post_domination({end}, {begin})
 ∧ strict_domination({precursor}, {begin})
 ∧ strict_post_domination({successor}, {end})
-∧ all control flow from {begin} to {precursor} passes through {end}
-∧ all control flow from {successor} to {end} passes through {begin})
+∧ all control flow from {begin} to {precursor}
+                    passes through {end}
+∧ all control flow from {successor} to {end}
+                        passes through {begin})
 End
 \end{lstlisting}
