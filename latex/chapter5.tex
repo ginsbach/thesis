@@ -244,8 +244,8 @@ for(i = 0; i < NK; i++) {
 \centering
 \includegraphics[width=0.99\textwidth]{figures/parallelisereduction.pdf}
 \caption{Parallelisation of \Cref{complex-reduction-figure}:
-         The input array \texttt{x} is distributed over two threads that operate
-         on private copies of \texttt{sx}, \texttt{sy}, \texttt{q[]}.
+         The input array \texttt{x} is split over two threads (red/blue)
+         that operate on private copies of \texttt{sx}, \texttt{sy}, \texttt{q[]}.
          These copies are then merged after synchronisation.\parfillskip=0pt}
 \label{nice-picture}
 \end{figure}
