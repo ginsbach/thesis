@@ -832,30 +832,20 @@ Constraint LoopWithOnlyArrayAccesses
     This is crucial to define advanced compiler analysis passes, such as the
     detection of regions suitable for polyhedral code analysis.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.59\textwidth]{figures/compilerFlow2.pdf}
-\caption{CAnDL in the LLVM/Clang system: The CAnDL code gets parsed by the
-         CAnDL compiler and turned into C++, which is compiled directly
-         into LLVM and then used by Clang.
-         \parfillskip=0pt}
-\label{fig:build2}
-\end{figure}
-
 \section{Implementation}
 
-    CAnDL is embedded in the LLVM framework, as shown in \Cref{fig:build2}.
+    CAnDL is integrated into the LLVM framework.
     CAnDL programs are read by the CAnDL compiler during LLVM build time, which
     then generates C++ source code to implement the specified LLVM analysis
     functionality.
     This code depends on the generic backtracking solver derived in
-    \Cref{chapter:theory}, which is incorporated directly into the LLVM code
-    base.
+    \Cref{chapter:theory}, which is incorporated directly into the LLVM
+    codebase.
     The generated code is compiled and linked together with the existing LLVM
     libraries.
     The Clang compiler, which is built on LLVM, then automatically invokes this
-    solver during the compilation of user programs, after the standard
-    optimisation passes.
+    solver during the compilation of user programs, after the optimisation
+    passes.
     The evaluation at the end of the chapter will show that this solver adds
     little compile-time overhead in practice.
 
@@ -865,6 +855,47 @@ Constraint LoopWithOnlyArrayAccesses
     It also makes the results available to ensuing transformation passes in the
     form of C++ structures.
 
+    \subsection{Normalisation of LLVM IR}
+
+    For reliable detection of code structures, the normalisation of LLVM IR via
+    optimisation passes is critical.
+    Loop independent code motion, constant folding memory-to-register
+    transformation, loop normalisations, and many other standard
+    tools, result in predictable code structures that simplify the formulation
+    of CAnDL specifications significantly.
+    The CAnDL-enabled clang compiler invokes the detection functionality
+    directly after optimisations and expects the flags
+    {\tt -Os -fno-unroll-loops -fno-vectorize -fno-slp-vectorize -ffast-math}.
+
+    In addition to standard optimisations, the CAnDL-enabled compiler applies
+    some custom transformations in order to pass on predictable LLVM IR code
+    to the solver:
+    \begin{itemize}
+        \item Two strength reduction optimisations are reversed:
+              {\tt add}$\mapsto${\tt or} and {\tt mul}$\mapsto${\tt shift}.
+        \item Some interactions between {\tt hoist} and {\tt getelementptr}
+              instructions are transformed as
+              {\tt (c?a[i]:a[j])}$\mapsto${\tt a[c?i:j]}.
+              The analysis for this is itself implemented in CAnDL.
+        \item Most importantly, all complex {\tt getelementptr} instructions are 
+              simplified to adding an offset to a raw pointer.
+              The index calculations are then performed entirely as integer
+              arithmetic on the indices.
+              This also applied to multi-dimensional array access, which is
+              effectively flattened.
+              Furthermore, chains of {\tt getelementptr} instructions are merged
+              into one, again resulting in additional integer arithmetic
+              instead.
+    \end{itemize}
+    Finally, some structures in the LLVM IR are not modified by normalising
+    transformations but are omitted in the SSA model that underpins the
+    CAnDL specifications.
+    This is true for all {\tt zext}, {\tt sext}, {\tt trunc} instructions and
+    for all pointer conversions.
+    Without these omissions, the pervasive use of 32-bit integers on 64-bit
+    machines would make programming CAnDL inconvenient in practice.
+
+\pagebreak
 \subsection{The CAnDL Compiler}
 
 \begin{figure}[t]
@@ -971,7 +1002,9 @@ result[2] = make_pair("right",    select<1>(constr2));
     This vector corresponds to the backtracking solution of the constraint
     problem and is passed to the solver.
 
-\begin{figure*}[ht]
+\subsection{Developer Tools}
+
+\begin{figure*}[t]
 \centering
 \includegraphics[width=0.98\textwidth]{figures/visual_gui2.png}
 \caption{Interactive CAnDL test tool: The left hand panel shows a static control
@@ -980,8 +1013,6 @@ result[2] = make_pair("right",    select<1>(constr2));
         \parfillskip=0pt}
 \label{fig:gui}
 \end{figure*}
-
-\subsection{Developer Tools}
 
     CAnDL simplifies the construction of compiler analysis functionality
     drastically, but reasoning about the semantics of compiler intermediate
