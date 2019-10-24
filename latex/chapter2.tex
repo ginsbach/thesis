@@ -895,9 +895,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \begin{figure}[p]
     \begin{definition}{Element-of Constraint Problem}{elementofconstr}
-        For a set of tuples $S(M)\subset\mathbb N^V$ that is potentially
-        dependent on the SSA model $M\in\mathcal M$
-        (e.g.\ $S(M)\approx DFG_\mathcal F^*$),
+        For a set of tuples $S(M)\subset\mathbb N^V$ that can be dependent on
+        the SSA model $M\in\mathcal M$ (e.g.\ $S(M)\approx DFG_\mathcal F^*$),
         the element-of constraint problem $(V,E_S)$ is given by
         \begin{align*}
             E_S(M,x)=\left\{\begin{array}{l}
