@@ -1281,67 +1281,68 @@ End
 
 \subsection{Case Study 3: Detection of Polyhedral SCoPs}
 
-    The polyhedral model allows compilers to utilise powerful mathematical
-    reasoning to detect parallelism opportunities in sequential code and to
-    implement code transformations for well structured nested
-    loops.
-    Conventional polyhedral code transformations are applicable to
-    static control parts (SCoPs).
-    These are regions of code that comprise nestings of well-behaved loops and
-    conditionals with only affine data access patterns inside.
+    The polyhedral model
+    \citep{Karp:1967:OCU:321406.321418,benabderrahmane2010polyhedral} allows
+    compilers to utilise powerful mathematical reasoning to detect parallelism
+    opportunities in sequential code and to implement code transformations.
+    However, this applies only for a restrictive class of well-structured loop
+    nests.
+    More precisely, conventional polyhedral code transformations are applicable
+    to Static Control Parts (SCoPs).
     Detecting SCoPs is a fundamental and necessary first step for any later
     polyhedral optimisation.
 
     Implementations of the polyhedral model may differ in their precise
     definition of SCoPs.
-    In this work, the definition of Semantic SCoPs from
-    \citet{Lengauer2012Polly} was used for reference.
+    The definition of Semantic SCoPs from the Polly compiler by
+    \citet{Lengauer2012Polly} was used for reference here.
     SCoP detection functionality was implemented in CAnDL and compared against
-    Polly \citep{Lengauer2012Polly}, which is a polyhedral compiler that is
-    implemented as an extension to LLVM.
+    Polly, which is also implemented as an extension to LLVM.
     The use of the same definition for SCoPS and the implementation in the same
     compiler infrastructure allow for a direct comparison between Polly and
     CAnDL.
     The specification of SCoPs is significantly more complex than the required
     CAnDL code for the previous case studies.
-    However, it can be broken into several components
+    However, it can be broken into several components, with some of them shown
+    in \Cref{polyhedralCAnDL}
     \footnote{The complete CAnDL code for this section can be found in
     Appendix~\ref{appendix:CAnDLpoly}.}.
 
     \paragraph*{Structured Control Flow}
-    SCoPs require well structured control flow.
-    Technically speaking, this means that every conditional jump within the
-    corresponding piece of IR is accounted for by for loops and conditionals.
-    This is enforced with the \texttt{collect} statement that was introduced in
+    SCoPs require well-structured control flow.
+    Technically speaking, this means that each conditional jump within the
+    corresponding piece of LLVM IR is accounted for by for-loops and
+    conditionals.
+    This is ensured with the \texttt{collect} statement, as in
     \Cref{fig:collectexample}.
-    It is used in CAnDL programs \texttt{ForLoop} and
+    The construct is used with the CAnDL specifications \texttt{ForLoop} and
     \texttt{Conditional} that describe the control flow of for loops and
-    conditionals and extract the involved conditional jump instructions.
-    Another \texttt{collect} is then used to verify that these are indeed all
+    conditionals.
+    All the involved conditional jump instructions are extracted, and  another
+    \texttt{collect} is then used to verify that these are indeed all
     conditional jumps within the potential SCoP.
 
     Once the control flow has been established, the iterators that are
     involved in the loops are used to define affine integer computations in the
     loop.
     This is done in a brute force fashion with a recursive constraint program.
-    Using this analysis we then check that the iteration domain of all the for
-    loops is well behaved, i.e.\ the boundaries are affine in the loop
-    iterators.
+    It is then checked that the iteration domain of all the for-loops is
+    well-behaved, i.e.\ the boundaries are affine in the loop iterators.
 
     \paragraph*{Affine Memory Access}
     All memory access in the SCoP has to be affine.
-    For this to be true, it needs to be verified that for each load and store
-    instruction, the base pointer is loop invariant and the index is calculated
-    affinely.
+    For this to be true, it needs to be verified that for each {\tt load} and
+    {\tt store} instruction, the base pointer is loop invariant and the index is
+    calculated affinely.
     The loop invariant base pointer is easily guaranteed using the
     \texttt{LocalConst} program from \Cref{localconstant}.
 
     Checking the index calculations is more involved and is again based on the
-    \texttt{collect} method that was demonstrated in \Cref{fig:collectexample}.
-    The \texttt{collect} construct is used to to find all of the affine memory
+    {\tt collect} method that was demonstrated in \Cref{fig:collectexample}.
+    The {\tt collect} construct is used to find all of the affine memory
     accesses in all the loop nests.
-    We then use collect all \texttt{load} and \texttt{store} instructions and
-    verify that both collections are identical.
+    Then another {\tt collect} gathers all \texttt{load} and \texttt{store}
+    instructions, and it is verified that both collections are identical.
 
 \begin{figure}[p]
 \begin{lstlisting}[language=CAnDL,basicstyle=\linespread{1}\small\ttfamily,
@@ -1440,9 +1441,10 @@ End
     code that Polly relies on when detecting SCoPS, e.g.\ the expansive
     ScalarEvolution pass.
 
-    By having a high-level representation of SCoPs, we allow polyhedral compiler
-    researchers to explore the impact of relaxing or tightening the exact
-    definition of SCoPs in a straightforward manner, enabling rapid prototyping.
+    With a high-level representation of SCoPs, CAnDL allows polyhedral
+    compiler researchers to explore the impact of relaxing or tightening the
+    exact definition of SCoPs in a straightforward manner, enabling rapid
+    prototyping.
     Simple commenting out of constraint statements in the CAnDL specification
     relaxes the conditions.
 
