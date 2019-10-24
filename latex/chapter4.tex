@@ -1344,8 +1344,64 @@ End
     verify that both collections are identical.
 
 \begin{figure}[p]
-\vspace{20cm}
-\caption{TBD: CAnDL snippets that are used in the polyhedral definition}
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{1}\small\ttfamily,
+                   label=polyhedralCAnDL, caption=
+   {Fragments from the specification of Scalar Control Parts (SCoPs) in CAnDL:
+    In lines 1--18, SCoPs are defined by combining multiple restrictions on
+    loop nests.
+    These restrictions are then individually implemented in CAnDL, including the
+    {\tt SideEffectFreePart} and {\tt AffineMemoryAccessPart}
+    conditions that are shown.
+    The entire listing is in Appendix \ref{appendix:CAnDLpoly}.\parfillskip=0pt}]
+Constraint SCoP
+( include For
+∧ include StructuredControlFlowPart({body.begin}->{begin},
+                                      {body.end}->{end})
+                                 @ {constraint_control}
+∧ include SideEffectFreePart({begin}->{begin},
+                               {end}->{end})
+                     @ {constraint_effects}
+∧ {constraint_memory.input[0]} = {iterator}
+∧ {constraint_memory.input[i+1]} =
+      {constraint_control.loop[i].iterator} foreach i=0..7
+∧ include AffineMemoryAccessPart({begin}->{begin},
+                                   {end}->{end})
+                          @ {constraint_memory}
+∧ include AffineControlFlowPart({body.begin}->{begin},
+                   {constraint_memory.input}->{input})
+                               @ {constraint_control})
+End
+
+Constraint SideEffectFreePart
+( collect i 32 ( include LocalFunctionCall({begin}->{begin},
+                                             {end}->{end})
+                                              @ {call[i]}) 
+∧ collect i 32 ( include LocalFunctionCall({begin}->{begin},
+                                             {end}->{end})
+                                              @ {call[i]}
+               ∧ {call[i].function} has attribute pure))
+End
+
+Constraint AffineMemoryAccessPart
+( collect x 24 ( include MemoryAccess({begin}->{begin},
+                                        {end}->{end})
+                                    @ {newaccess[x]})
+∧ collect x 24 ( include MemoryAccess({begin}->{begin},
+                                        {end}->{end})
+                                    @ {newaccess[x]}
+               ∧ ( ( opcode{newaccess[x].pointer} = gep
+                   ∧ domination({begin}, {newaccess[x].pointer})
+                   ∧ {newaffine[x].value} =
+                         {newaccess[x].pointer}.args[1]
+                   ∧ ir_type{begin} = instruction)
+                 ∨ ( include LocalConst(
+                              {newaccess[x].pointer}->{value})
+                   ∧ {newaffine[x].value} is unused))
+               ∧ include AffineCalculation[M=8,N=6](
+                          {input}->{input},
+                          {begin}->{begin}) @ {newaffine[x]}))
+End
+\end{lstlisting}
 \end{figure}
 
 \subsubsection{Experimental Setup}
