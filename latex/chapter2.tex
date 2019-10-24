@@ -1095,35 +1095,42 @@ define double @dot(double* %0, double* %1, i64 %2) {
     discussed types of SSA constraint problems to be implemented efficiently
     within the {\tt BacktrackingPart} interface.
 
-    \begin{itemize}
-    \item For element-of constraint problems, $R_k$ can be implemented as a
-          tree structure, built around a sorted array of pairs.
-          Each subtree in the array corresponds to a potential $R_{k+1}$.
-          \begin{lstlisting}[language=C++]
-struct Tree { vector<pair<int,Tree>> s; };
-          \end{lstlisting}
-          The \texttt{BacktrackingPart} implementation keeps an index into
-          the array, which \texttt{begin} initialises.
-          Each time \texttt{skip\_invalid} is called, the index is incremented
-          until it either points to an entry $\geq$ the lower bound \texttt{c}
-          or hits the end of the array.
-          Finally, \texttt{resume} does nothing, and \texttt{fixate} simply
-          accesses the array at the current index for the subtree $R_{k+1}$.
-    \item For conjunction constraint problems, \texttt{begin}, \texttt{fixate}
-          and \texttt{resume} call the corresponding members of the underlying
-          \texttt{BacktrackingPart} objects, and \texttt{skip\_invalid}
-          alternates between them until a fixpoint is reached or
-          either of them fail.
-    \item For disjunction constraints, $R_k$ is a pair of booleans.
-          Calls to \texttt{skip\_invalid} are passed on to those underlying
-          \texttt{BacktrackingPart} objects that are not disabled via $R_k$.
-          If any succeeded, then the smallest resulting value is chosen.
-          $R_k$ is updated in \texttt{fixate}, using the \texttt{skip\_invalid}
-          results from before.
-          The \texttt{begin}, \texttt{fixate} and \texttt{resume} member
-          calls are also passed on to underlying objects
-          that are enabled in $R_k$.
-    \end{itemize}
+\subsubsection{Data Structures for Constraint Classes}
+
+    \paragraph*{Element-of constraint problems} require the structures $R_k$.
+    This can be implemented with a tree, built around a sorted array of pairs,
+    as shown in the first line of the top section of \Cref{partimplementations}.
+    Each subtree in the array corresponds to a potential $R_{k+1}$.
+    The {\tt BacktrackingPart} instances for this constraint keep indices
+    (line~25) into
+    the array (line~3), which {\tt begin} initialises (line~18).
+    Each time {\tt skip\_invalid} is called, the index is incremented until
+    it either points to an entry $\geq$ the lower bound {\tt c} or hits the
+    end of the array (lines 9--10).
+    Finally, {\tt resume} does nothing (line 22), and {\tt fixate} simply
+    accesses the array at the current index for the subtree $R_{k+1}$
+    (lines 20--21).
+
+    \paragraph*{Conjunction constraint problems} are simpler to implement, as
+    shown in the lower section of \Cref{partimplementations}.
+    The methods {\tt begin}, {\tt fixate}, and {\tt resume} call the
+    corresponding member functions of the underlying {\tt BacktrackingPart}
+    objects (line 22), and \texttt{skip\_invalid} cycles through them
+    (lines 4--13) them until a fixpoint is reached (lines 9--10) or
+    either of them fail (lines 7--8).
+
+    \paragraph*{Disjunction constraints} again require the structures $R_k$,
+    consisting of an array of booleans, with each element corresponding to one
+    underlying constraint option.
+    Calls to \texttt{skip\_invalid} are passed on to those underlying
+    \texttt{BacktrackingPart} objects that are not disabled via $R_k$.
+    If any succeeded, then the smallest resulting value is chosen.
+    The {\tt fixate} function determines $R_{k+1}$ with \texttt{skip\_invalid},
+    disabling all of the underlying constraint options that do not return
+    {\tt SkipResult::PASS}.
+    The \texttt{begin}, \texttt{fixate} and \texttt{resume} member calls are
+    also passed on to {\tt BacktrackingPart} instances that are enabled in
+    $R_k$ for appropriate bookkeping.
 
 \begin{figure}[p]
 \begin{lstlisting}[language=MyCpp,basicstyle=\linespread{0.90}\ttfamily]
@@ -1187,15 +1194,21 @@ private:
 \end{lstlisting}
 \end{figure}
 
-    While the chosen data structures allow for very efficient implementations
-    of the individual functions that are used to search for solutions, no
-    meaningful limits can be put on computational complexity in general.
-    This is due to the following observation:
-    SSA constraint problems are a generalisation of the subgraph isomorphism
-    problem, which is known to be NP-hard.
+\subsubsection{Computational Complexity}
 
-    However, this is not an impediment due to the nature of the use case.
-    In practice, the nature of SSA constraint problems mean that a solver is
+    The chosen data structures allow for very efficient implementations
+    of the individual functions that are used to search for solutions.
+    However, SSA constraint problems are a generalisation of the subgraph
+    isomorphism problem.
+    Any subgraph can be specified using conjunctions of element-of constraints,
+    and the solver will search for these within any provided SSA model.
+    \citet{Cook:1971:CTP:800157.805047} showed that this problem is NP-hard.
+    Therefore, the computational complexity has an exponential worst case when
+    evaluated in general.
+
+    However, this is no impediment due to the particular use case of
+    SSA constraint problems.
+    In practice, the nature of SSA constraint problems means that a solver is
     going to solve the same limited set formulas repeatedly -- only in the
     context of different SSA models.
     This means that is it viable to craft the formulas in such a way to be
