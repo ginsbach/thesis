@@ -1206,17 +1206,17 @@ End
 \end{lstlisting}
 \end{figure}
 
-    Graphics computations often involve arithmetic on vectors of single
-    precision floating point values, which can represent vertex positions
+    Graphics computations often involve arithmetic on vectors of
+    single-precision floating-point values, which can represent vertex positions
     in space or colour values.
     Established graphics shader compilers utilise the LLVM intermediate
     representation internally \citep{cudacompiler}.
 
-    In real shader code, there are often element wise products of multiple
-    floating point vectors, where several of the factors are actually scalars
+    In real shader code, there are often element-wise products of several
+    floating-point vectors, where some of the factors are actually scalars
     that were hoisted to vectors.
     By reordering the factors and delaying the hoisting to vectors, some of the
-    element wise vector products can be simplified to products on scalars, as
+    element-wise vector products can be simplified to products on scalars, as
     shown by example in the following equation.
     \begin{align*}
         \vec x={}&\vec a*_v\vec b*_v\text{vec3}(c)*_v\vec d*_v\text{vec3}(e)\\
