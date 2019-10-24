@@ -1207,11 +1207,10 @@ End
 \end{figure}
 
     Graphics computations often involve arithmetic on vectors of single
-    precision floating point values, which can represent either vertex positions
+    precision floating point values, which can represent vertex positions
     in space or colour values.
-    Common graphics shader compilers utilise the LLVM framework internally.
-    The LunarGLASS project \citep{lunarglass} was used in this work as an open
-    source implementation of LLVM for graphics shaders.
+    Established graphics shader compilers utilise the LLVM intermediate
+    representation internally \citep{cudacompiler}.
 
     In real shader code, there are often element wise products of multiple
     floating point vectors, where several of the factors are actually scalars
@@ -1225,9 +1224,9 @@ End
     \end{align*}
 
     For general purpose code, such reordering can be problematic.
-    This is due to computation artefacts in floating point arithmetic.
-    However, this is not a problem in the domain of graphics processing.
-    Instead, associative reordering can result in real performance improvements
+    This is due to computation artefacts in floating-point arithmetic.
+    However, this is generally no problem in the domain of graphics processing.
+    Instead, associative reordering can result in performance improvements
     when combined with lowering to scalar multiplications as discussed above.
 
     The required analysis functionality for this optimisation was implemented
@@ -1248,6 +1247,7 @@ End
     It guarantees chains of maximal length by checking that neither of the first
     two factors is a multiplication itself, and that the last factor is not used
     in any multiplication.
+
     \texttt{ScalarHoist} operates on the variables {\tt in} and {\tt out}, as
     well as some internals.
     It specifies that {\tt out} is a vector generated from {\tt in} by setting
@@ -1258,6 +1258,8 @@ End
 
 \subsubsection{Experimental Setup}
 
+    The LunarGLASS project \citep{lunarglass} was used in this work to
+    transform shaders into LLVM IR and back after optimisation.
     The CAnDL specification was applied to all fragment shaders in the
     GFXBench 4.0 suite from \citet{gfxbench}.
     A corresponding transformation pass was added to LLVM, which uses the
@@ -1272,17 +1274,18 @@ End
     The performance impact was evaluated on the Qualcomm Adreno 530 GPU.
     To measure the baseline of benchmark performance, all shaders were
     compiled with the default Qualcomm graphics stack.
-    They were then compiled with LunarGLASS, and the resulting LLVM IR was
-    optimised using CAnDL.
-    To evaluate the impact of this, the result was again passed through the
-    default graphics stack and the performance of the benchmarks measured.
+    They were then compiled with LunarGLASS into LLVM, CAnDL was applied, and
+    they were transformed back into GLSL code \citep{Rost:2009:OSL:1696393}.
+    To evaluate the impact, the result was again passed through the default
+    graphics stack and the performance of the shaders measured.
 
 \subsubsection{Results}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.66\linewidth]{figures/qualcomm_plot.pdf}
-\caption{Speedup on Qualcomm Adreno 530}
+\caption{Speedup on Qualcomm Adreno 530 (evaluated on HTC 10, running Android 7.0)
+         \leftskip=0pt\rightskip=0pt}
 \label{fig:qualcommspeedup}
 \end{figure}
 
