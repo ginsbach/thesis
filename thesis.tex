@@ -144,49 +144,49 @@ lower separated=false
 \author{Philip Ginsbach}
 
 \abstract{
-    The scaling limitations of homogeneous processing make it necessary for
-    many applications to utilise heterogeneous parallelism, including
-    graphics processors and increasingly also deep learning accelerators.
-    This is a challenge for existing compilers that only target 
-    homogeneous processors.
-    Because heterogeneous acceleration is often only accessible via libraries
-    and domain specific languages, expensive application rewrites become
-    necessary.
-
-    This thesis introduces a constraint programming methodology that is used to
-    define and then automatically detect algorithmic structure in compiler
-    intermediate representation.
-    This allows compilers to tackle the challenge of automatic heterogeneous
-    acceleration.
-
-    Libraries and domain specific languages are able to efficiently target
-    accelerators because they provide narrower interfaces.
-    The more restrictive semantics of domain specific languages give their
-    compilers more powerful models to analyse the program, making it possible to
-    apply domain specific optimisations and better match the target hardware.
-    The same is true for libraries, which can be thought of as particularly
-    restrictive domain specific languages.
-
-    Using constraint programming, compilers can recognise narrow interfaces
-    within programs that are written in general purpose programming languages,
-    such as C++.
-    This includes parts of the program that adhere to the polyhedral model,
-    implement linear algebra routines, or fall within a large  class of other
-    algorithmic structures.
-    Once a part of the program has been specialised, the general purpose
-    compiler can reformulate it in a more restrictive model and pass it on to
-    specialised tools for code generation.
-    This allows for the automatic heterogeneous acceleration of previously
-    sequential codes, without any need for manual source code changes.
-
-    Starting from an abstract model of static single assignment form compiler
-    representations, the constraint programming methodology is developed into a
-    novel constraint programming language that is eventually used to implement a
-    complete heterogeneous acceleration pipeline within LLVM.
-    Many additional applications of this language are explored.
-    This includes the parallelisation of histogram reductions that previously
-    escaped compiler analysis, a formulation of the polyhedral code model,
-    and the rapid prototyping of compiler optimisations.
+%    The scaling limitations of homogeneous processing make it necessary for
+%    many applications to utilise heterogeneous parallelism, including
+%    graphics processors and increasingly also deep learning accelerators.
+%    This is a challenge for existing compilers that only target 
+%    homogeneous processors.
+%    Because heterogeneous acceleration is often only accessible via libraries
+%    and domain specific languages, expensive application rewrites become
+%    necessary.
+%
+%    This thesis introduces a constraint programming methodology that is used to
+%    define and then automatically detect algorithmic structure in compiler
+%    intermediate representation.
+%    This allows compilers to tackle the challenge of automatic heterogeneous
+%    acceleration.
+%
+%    Libraries and domain specific languages are able to efficiently target
+%    accelerators because they provide narrower interfaces.
+%    The more restrictive semantics of domain specific languages give their
+%    compilers more powerful models to analyse the program, making it possible to
+%    apply domain specific optimisations and better match the target hardware.
+%    The same is true for libraries, which can be thought of as particularly
+%    restrictive domain specific languages.
+%
+%    Using constraint programming, compilers can recognise narrow interfaces
+%    within programs that are written in general purpose programming languages,
+%    such as C++.
+%    This includes parts of the program that adhere to the polyhedral model,
+%    implement linear algebra routines, or fall within a large  class of other
+%    algorithmic structures.
+%    Once a part of the program has been specialised, the general purpose
+%    compiler can reformulate it in a more restrictive model and pass it on to
+%    specialised tools for code generation.
+%    This allows for the automatic heterogeneous acceleration of previously
+%    sequential codes, without any need for manual source code changes.
+%
+%    Starting from an abstract model of static single assignment form compiler
+%    representations, the constraint programming methodology is developed into a
+%    novel constraint programming language that is eventually used to implement a
+%    complete heterogeneous acceleration pipeline within LLVM.
+%    Many additional applications of this language are explored.
+%    This includes the parallelisation of histogram reductions that previously
+%    escaped compiler analysis, a formulation of the polyhedral code model,
+%    and the rapid prototyping of compiler optimisations.
 }
 
 \begin{document}
@@ -258,7 +258,7 @@ lower separated=false
 
 \chapter{Related Work}
     \label{chapter:literature}
-    \input{latex/chapter3}
+%    \input{latex/chapter3}
 
 \chapter[The Compiler Analysis Description Language]
         {The Compiler Analysis Description Language
