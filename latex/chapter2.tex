@@ -443,7 +443,7 @@
     although they overlap significantly.
     This chapter aims to capture commonalities of SSA representations, the study
     of instruction sets and type systems is orthogonal to this.
-    Therefore, these structures  are modelled as opaque sets as in
+    Therefore, these structures are modelled as opaque sets as in
     \Cref{def:isatypes}.
 
 \begin{figure}[h]
@@ -477,7 +477,7 @@
     \Cref{def:ssamodel} shows this completed model.
     The data flow graph $DFG_\mathcal F$ and the control flow graph
     $CFG_\mathcal F$ were discussed in detail previously, but some
-    clarifications are required for the remaining structures.
+    clarifications are provided for the remaining five structures.
 
     The {\it instruction model}, {\it type model}, and {\it constant model}
     assign additional information from different domains to the used values in
@@ -504,8 +504,8 @@
 
 \subsection{Additional Notation}
 
-    The seven individual components of the SSA model are each expressed as a
-    set of tuples.
+    The seven basic components of the SSA model are each expressed as a set of
+    tuples.
     In order to conveniently manipulate these structures, 
     \Cref{def:convenience} introduces several functions and shorthand notation.
 
@@ -549,7 +549,7 @@
     The name of the project was originally an acronym for
     ``Low Level Virtual Machine'', as the intermediate representation was
     conceptualised as a typed assembly-style language for a virtual machine.
-    The instruction set is vaguely aligned to the semantics of C style
+    The instruction set is roughly aligned to the semantics of C style
     programming languages, but the project has matured beyond this background.
     It is now a widely influential framework, with compiler front ends existing
     for a diverse set of languages including C/C++, Haskell, Julia, Objective-C,
@@ -586,15 +586,14 @@
     10--11, which exists for normalisation purposes as the dedicated loop entry
     block.
 
-    Memory access in LLVM is strictly separated from index calculations.
+    Memory access in LLVM is expressed separately from index calculations.
     This is visible in lines 16--19.
     The {\tt getelementptr} instruction is used to calculate the memory
     addresses of the array elements {\tt a[i]} and {\tt b[i]}.
     The {\tt load} instruction then reads the memory at the calculated
     addresses.
     This scheme simplifies the effectful memory access instructions, pushing the
-    considerable complexity of index calculations into the {\tt getelementptr}
-    instruction.
+    complexity of index calculations into the {\tt getelementptr} instruction.
 
 \begin{figure}[p]
 \vspace{-0.09cm}
@@ -1129,7 +1128,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     {\tt SkipResult::PASS}.
     The \texttt{begin}, \texttt{fixate} and \texttt{resume} member calls are
     also passed on to {\tt BacktrackingPart} instances that are enabled in
-    $R_k$ for appropriate bookkeping.
+    $R_k$ for appropriate bookkeeping.
 
 \begin{figure}[p]
 \begin{lstlisting}[language=MyCpp,basicstyle=\linespread{0.90}\ttfamily]
@@ -1195,7 +1194,7 @@ private:
 
 \subsubsection{Computational Complexity}
 
-    The chosen data structures allow for very efficient implementations
+    The chosen data structures allow for efficient implementations
     of the individual functions that are used to search for solutions.
     However, SSA constraint problems are a generalisation of the subgraph
     isomorphism problem.
@@ -1214,7 +1213,7 @@ private:
     This means that is it viable to craft the formulas in such a way to be
     efficiently solvable, in particular by choosing a good order in which to
     iterate over the variables.
-    For specific SSA constraint problems, it can then be possible to give
+    For specific SSA constraint problems, it can then be possible to make
     complexity assumptions.
 
 \subsection{Additional SSA Constraint Problems}
@@ -1225,7 +1224,7 @@ private:
     but allow for powerful compiler analysis.
 
     Firstly, there are a number of very simple SSA constraint problems that
-    operate directly on the integer values, without interpreting them as indizes
+    operate directly on the integer values, without interpreting them as indices
     into the value list of the SSA model.
     These are listed in \Cref{def:auxconstr}.
     $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$ are defined in the
@@ -1251,7 +1250,7 @@ private:
     The checking of the condition in $P_n[D_G]$ is typically preformed in
     $O(|val|)$ time, therefore this is a computationally expensive constraint.
 
-    Finally, collect-all constraint problem are introduced in
+    Finally, collect-all constraint problems are introduced in
     \Cref{def:collectconstr}.
     Given a constraint problem $(V,C)$, the variables $V$ are divided into
     two subsets.
