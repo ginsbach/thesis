@@ -39,13 +39,13 @@
 
 \section{Introduction}
 
-    Compilers are complex pieces of software responsible for the generation of
+    Compilers are intricate pieces of software responsible for the generation of
     efficient code.
     They transform input source code through several compilation stages,
     resulting in a binary program.
-    In order to generate fast programs, modern compilers rely on a complex
-    middle end.
-    In this stage, user code is typically expressed in as SSA intermediate
+    In order to generate fast programs, state-of-the-art compilers rely on an
+    elaborate middle end.
+    At this stage, user code is typically expressed in as SSA intermediate
     representation, and it is improved by successively applying a wide range of
     optimisations.
 
@@ -67,13 +67,13 @@
     For example, simple peephole optimisations in the LLVM {\tt instcombine}
     pass contain approximately 30000 lines of complex C++ code, despite the
     transformations being simple.
-    Furthermore, this is an important source of bugs, and bugs in this stage of
-    the compiler are particularly pernicious.
+    \citet{Menendez:2017:ADP:3062341.3062372} showed that {\tt instcombine} is
+    an important source of bugs, and bugs the middle end of a compiler are
+    particularly pernicious \citep{Yang:2011:FUB:1993316.1993532}.
     They tamper with the user programs but can remain unnoticed and often only
     trigger in corner cases.
     Ideally, there would be a simpler way of implementing such analysis that
-    reduces boilerplate code and opens the way for new compiler optimisation
-    innovation.
+    reduces boilerplate code and opens the way for new compiler innovation.
 
     This chapter presents the Compiler Analysis Description Language (CAnDL), a
     domain-specific language for compiler analysis.
@@ -86,8 +86,8 @@
     with the Clang compiler binary and that implement LLVM analysis passes.
     The formulation of optimising transformations in CAnDL is faster, simpler
     and less error-prone than writing them in C++.
-    The language has a strong emphasis on modularity, which enables debugging
-    and the formulation of highly readable code.
+    The language has a strong emphasis on modularity, which facilitates
+    debugging and the formulation of highly readable code.
 
     CAnDL is based on the constraint programming methodology introduced in
     \Cref{chapter:theory}.
@@ -144,14 +144,13 @@ End
     even this simple pattern requires some care when implementing it manually in
     a sophisticated codebase such as LLVM.
 
-    The traditional approach in the Clang compiler is to implement it in the
-    \texttt{instcombine} pass, which applies a collection of such
-    peephole optimisations and already extends to $\sim30000$ lines of
-    C++ code.
-    This code makes heavy use of raw pointers and dynamic type casts and has
-    been identified as a frequent source of bugs, as documented by
-    \citet{Yang:2011:FUB:1993316.1993532} and
-    \citet{Menendez:2017:ADP:3062341.3062372}.
+    The traditional approach in the Clang compiler is to integrate such
+    optimisations into the previously mentioned \texttt{instcombine} pass, which
+    already applies an extensive collection of peephole optimisations.
+    However, this code makes heavy use of raw pointers and dynamic type casts,
+    spans $\sim30000$ lines, and has been identified as a frequent source of
+    bugs in
+    \citet{Menendez:2017:ADP:3062341.3062372,Yang:2011:FUB:1993316.1993532}.
     This is impractical and an impediment to compiler development.
 
     Instead, CAnDL allows a declarative description of the analysis problem.
@@ -220,11 +219,11 @@ End
     After post processing with standard dead code elimination, this results in
     the optimised code shown at the bottom of the figure ({\bf h}).
 
-    Although this is only a small example, it illustrates the main steps of the
+    Although this is just a small example, it illustrates the main steps of the
     CAnDL scheme.
     In practice, the strength of the system is its ability to scale to very
     complex specifications, as demonstrated towards the end of the chapter.
-    The next sections give a specification of the CAnDL language, and outline
+    The next sections give a specification of the CAnDL language and outline
     how it is implemented on top of the constraint programming methodology
     devised in \Cref{chapter:theory}.
 
@@ -260,9 +259,9 @@ End
     features, such as range expressions, with finally a system of modularity and
     extensibility on top.
     This section introduces the language features, starting from the overall
-    program structure.
-    \footnote{The complete grammar file that is used to generate the parser of
-              the CAnDL compiler is in Appendix \ref{appendix:CAnDLgrammar}.}
+    program structure.\footnote{The complete grammar file that is used to
+    generate the parser of the CAnDL compiler is in Appendix
+    \ref{appendix:CAnDLgrammar}.}
 
 \subsection{High-Level Structure of CAnDL Programs}
 
@@ -554,7 +553,7 @@ End
 
     The syntactic structure of variable identifiers carries no semantic
     information for atomic constraints.
-    This is clearly not true for range expressions, which rely on index
+    Clearly, this is not true for range expressions, which rely on index
     calculations in order to evaluate the underlying variables.
     Therefore, it is important to now introduce the precise syntax for variable
     names, which are constructed as follows:
@@ -665,8 +664,8 @@ End
 
     This example is now extended to show how {\it collect} can be used to
     implement quantifiers.
-    Consider that the aim is to detect instructions with only floating point
-    direct data dependences.
+    Consider the task of detecting instructions with only floating-point
+    arguments.
     This involves the $\forall$ quantifier, as it is equivalent to
     the following equation:
     \begin{align}
@@ -931,7 +930,7 @@ Constraint LoopWithOnlyArrayAccesses
     possible.
     Furthermore, if shallow equivalence of two variables is enforced in a
     conjunction, one of the two variables is chosen as having higher priority.
-    all occurrences of the other variable are then replaced with that one.
+    All occurrences of the other variable are then replaced with that one.
 
     Finally, the compiler generates C++.
     This essentially means generating a function which at runtime constructs
@@ -1007,16 +1006,16 @@ result[2] = make_pair("right",    select<1>(constr2));
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.98\textwidth]{figures/visual_gui2.png}
-\caption{Interactive CAnDL test tool: The left hand panel shows a static control
-        part (SCoP) in Polybench jacobi-2d, the right hand panel shows the
+\caption{Interactive CAnDL test tool: The left hand panel shows a Static Control
+        Part (SCoP) in Polybench jacobi-2d, the right hand panel shows the
         constraint solutions found by the solver.
         \parfillskip=0pt}
 \label{fig:gui}
 \end{figure*}
 
-    CAnDL simplifies the construction of compiler analysis functionality
-    drastically, but reasoning about the semantics of compiler intermediate
-    representation still remains difficult.
+    CAnDL simplifies the construction of compiler analysis functionality, but
+    reasoning about the semantics of compiler intermediate representation
+    remains difficult.
     The solver detects whatever the programmer specifies, without any additional
     effort, but it is difficult to ascertain that the CAnDL code actually
     specifies the structures that the programmer intended.
@@ -1034,7 +1033,7 @@ result[2] = make_pair("right",    select<1>(constr2));
 
     In the left half, part of a C program from the PolyBench benchmark suite
     is visible, which implements a two-dimensional Jacobi stencil.
-    The GUI was configured to look for static control regions (SCoPs), as
+    The GUI was configured to look for Static Control Parts (SCoPs), as
     described later.
     The user has clicked the ``analyze'' button, which triggered the analysis to
     run by invoking the modified Clang compiler.
@@ -1054,7 +1053,7 @@ result[2] = make_pair("right",    select<1>(constr2));
 \section{Case Studies}
 \label{sec:casestudies}
 
-    The usefulness of CAnDL was evaluated with three different use cases.
+    The effectiveness of CAnDL was evaluated with three different use cases.
     Firstly, it was used for detecting opportunities to apply a simple peephole
     optimisation.
     Secondly, CAnDL was applied to graphics shader code optimisation.
@@ -1177,7 +1176,7 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\
     opportunities that the \texttt{instcombine} pass identified.
     In addition, it detected an additional 7 cases across all programs.
     Only 12 lines of CAnDL code were able to capture more factorisation
-    opportunities than LLVM did using two hundred lines of code.
+    opportunities than 200 lines of C++ code in LLVM.
 
     Using CAnDL on large benchmark suites only increased total compilation time
     by \mbox{$\sim5\%$}.
@@ -1492,7 +1491,7 @@ End
 
 \pagebreak
 
-\section{Summary}
+\section{Conclusion}
 
     Optimising compilers require sophisticated program analysis in order to
     generate performant code.
