@@ -42,10 +42,10 @@
     In response to the now prevailing breakdown of both Dennard Scaling and
     Moore's Law, the hardware industry has turned toward architectural
     innovation \citep{7878935}.
-    In particular, there is a trend toward specialised processor cores with
-    that work in tandem as a heterogeneous system.
-    Specialised processor cores outperform general-purpose cores on specific
-    tasks.
+    In particular, there is a trend toward specialised processor cores that work
+    in tandem as a heterogeneous system.
+    Such dedicated processor cores outperform general-purpose cores on
+    specific tasks.
     Furthermore, as heat dissipation has become a major challenge,
     simultaneously powering all transistors is often unviable, meaning that
     different processor cores have to be masked out dynamically at runtime
@@ -59,12 +59,11 @@
 
     Heterogeneous computing can help overcome the scaling limitations of
     homogeneous, general-purpose processors.
-    However, it also poses an enormous challenge to the associated software
-    ecosystem, and it puts into question many of the achievements in portability
-    and longevity of programs that are taken for granted in modern computing
-    \citep{8719512}.
+    However, it also poses a challenge to the associated software ecosystem, and
+    it puts into question many of the achievements in portability and longevity
+    of programs that are taken for granted in modern computing \citep{8719512}.
     Existing software does not automatically benefit from entirely new
-    accelerator designs in the way that it profited from continuous
+    accelerator designs in the way that it profited from the continuous
     improvements of established architectures.
     Where previously, programs performed better on each succeeding hardware
     generation, with at most a recompilation required, new accelerators arrive
@@ -93,8 +92,8 @@
     platforms by focusing on a well-understood class of computations and by
     using a restrictive program representation.
     After tuning programs for particular platforms, it outperforms
-    hand-optimised code, demonstrating an immense potential for domain-specific
-    compiler optimisation under circumstances of constrained semantics.
+    hand-optimised code, demonstrating the advantage of domain-specific compiler
+    optimisation under circumstances of constrained semantics.
 
     Secondly, Basic Linear Algebra Subprograms (BLAS)
     \citep{2002:USB:567806.567807}, a standard for library function interfaces
@@ -329,7 +328,7 @@
     More generic again are programs that merely follow specific structural
     restrictions, such as code adhering to the polyhedral model.
     \Cref{chapter:candl,chapter:reductions,chapter:idioms} cover each of these
-    domains, culminating if a system for the automatic heterogeneous
+    domains, culminating in a system for the automatic heterogeneous
     acceleration of idiomatic code.
 
 \section{Summary}
@@ -349,8 +348,8 @@
     reformulate it in more restrictive program models.
     Previous work has established this on individual models, but this thesis
     develops a framework to formulate a wide range of restricted program models
-    using a systematic approach based on constraints.
-    To this purpose, a custom constraint programming language is introduced
+    using a systematic approach based on constraint solving.
+    To this purpose, a custom constraint programming language was developed
     and successively extended.
     Starting from a discussion of the underlying assumptions and features of
     Single Static Assignment code, the methodology is developed into a complete
@@ -367,10 +366,10 @@
     Eventually, the techniques are combined into a fully integrated, extensible
     compiler tool for efficiently mapping sequential programs onto heterogeneous
     systems.
-    This develops the thesis all the way from abstract discussions of
-    constraint programming approaches in compilers to the evaluation of real
-    performance improvements on established benchmark suites and scientific
-    applications.
+    This develops the thesis all the way from theoretical discussions of
+    constraint programming approaches in compilers to the experimental
+    evaluation of real performance improvements on established benchmark suites
+    and scientific applications.
     \vfill
 
 %    \subsection*{extra building blocks}

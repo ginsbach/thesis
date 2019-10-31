@@ -5,7 +5,7 @@
     This chapter derives and motivates the underlying methodology, which is
     then used as the basis for
     \Cref{chapter:candl,chapter:reductions,chapter:idioms}.
-    The constraint programming approach is derived in three steps.
+    The constraint programming approach is developed in three steps.
 
     First, an overview of program representations during different compilation
     stages is given, and the particular features of SSA representations are
@@ -210,7 +210,7 @@
     In a second step, the structured control flow of the program is replaced
     with goto statements that coordinate the control flow between basic blocks.
     This is shown at the bottom right {\bf(c)}.
-    While this does not ease the intuitive understanding of the program, it
+    Although this does not ease the intuitive understanding of the program, it
     unifies several distinct control flow structures provided in the source
     language into a single mechanism.
     This simplifies program analysis.
@@ -264,12 +264,12 @@
 
     This section develops a mathematical model for programs that are in
     SSA form.
-    The aim is not to introduce an operational semantics of such programs, or
-    more generally to derive a model for their execution.
-    Instead, the section focuses on precise notation to express the static
-    structure of existing SSA intermediate representations.
+    The focus is on precise notation to express the static structure of existing
+    SSA intermediate representations.
     The completed model will enable the generation of a program that is
     semantically equivalent to the one from which the model was extracted.
+    Note that this is not related to an operational semantics of such programs,
+    or more generally a method for analysing their execution.
     The remainder of this section adheres to the naming conventions in
     \Cref{def:ssa}.
 
@@ -312,7 +312,7 @@
     direct interaction between instructions becomes the natural model for data
     flow.
     Instruction arguments fall into four categories: function parameters,
-    other instructions, constants, and globals.
+    other instructions, globals, and constants.
     Branching instructions also take basic block labels as branch targets,
     but those are treated separately in the control flow graph that is
     introduced later.
@@ -435,15 +435,15 @@
     of the instructions in a loop that iteratively improves the result.
     The entire semantic information that is encoded in this SSA representation
     can be recovered from the structures at the bottom of the figure:
-    per-instruction opcode information, lists of the parameters, constants and
-    globals used, the data flow graph as in \Cref{def:dfg} and the control
+    per-instruction opcode information, lists of the parameters, globals, and
+    constants used, the data flow graph as in \Cref{def:dfg} and the control
     flow graph as in \Cref{def:cfg}.
 
     Instruction sets and type systems differ between SSA representations,
     although they overlap significantly.
     This chapter aims to capture commonalities of SSA representations, the study
     of instruction sets and type systems is orthogonal to this.
-    Therefore, these structures  are modelled as obaque sets as in
+    Therefore, these structures  are modelled as opaque sets as in
     \Cref{def:isatypes}.
 
 \begin{figure}[h]
