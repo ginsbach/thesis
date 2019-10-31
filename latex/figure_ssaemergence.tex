@@ -1,4 +1,6 @@
+\centering
 \begin{minipage}{0.48\textwidth}
+\centering
 \begin{lstlisting}[language=MyCpp,captionpos=t,title=
    {{\bf(a)} {} C source function:\leftskip=0pt}]
 double sqrt(double S) {
@@ -8,6 +10,7 @@ double sqrt(double S) {
   return x;
 }
 \end{lstlisting}
+\phantom{\Huge$\Uparrow$}
 \begin{lstlisting}[language=MyCpp,captionpos=t,title=
    {{\bf(d)} {} The SSA property is introduced:\leftskip=0pt}]
 double sqrt(double S) {
@@ -41,8 +44,17 @@ double sqrt(double S) {
 \end{minipage}
 \hfill
 \begin{minipage}{0.48\textwidth}
-\begin{lstlisting}[language=MyCpp,basicstyle=\linespread{1.06451612903}\ttfamily,
-                   captionpos=t,title=
+\centering
+\lstset{
+ basicstyle        = \linespread{1.06451612903}\ttfamily,
+ captionpos        = t,
+ numbers           = right,
+ xleftmargin       = 0.5em,
+ framexleftmargin  = 0.5em,
+ xrightmargin      = 1.5em,
+ framexrightmargin = 1.5em
+}
+\begin{lstlisting}[language=MyCpp,title=
    {{\bf(b)} {} Complex expressions are broken down:\leftskip=0pt}]
 double sqrt(double S) {
   double x = 1.0;
@@ -55,8 +67,8 @@ double sqrt(double S) {
   return x;
 }
 \end{lstlisting}
-\begin{lstlisting}[language=MyCpp,basicstyle=\linespread{1.06451612903}\ttfamily,
-                   captionpos=t,title=
+{\Huge$\Downarrow$}
+\begin{lstlisting}[language=MyCpp,title=
    {{\bf(c)} {} Structured control flow is expanded:\leftskip=0pt}]
 double sqrt(double S) {
 ([\bf\ttfamily entry]):
@@ -80,4 +92,18 @@ double sqrt(double S) {
     return x;
 }
 \end{lstlisting}
+\end{minipage}
+\hspace{-\textwidth}
+\begin{minipage}{\textwidth}
+\centering
+\Huge
+\hfuzz=5cm
+
+$\Rightarrow$
+
+\vspace{9.5cm}
+
+$\Leftarrow$\hspace{0.5cm}
+
+\vspace{3.5cm}
 \end{minipage}

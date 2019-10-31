@@ -37,47 +37,51 @@
 \Crefname{lstlisting}{Listing}{Listings}
 
 \newtcbtheorem[auto counter,number within=chapter]{theorem}{Theorem}{
-label type=theorem,
-colback=white,
-colframe=black,
-fonttitle=\bfseries,
-title={Theorem \thetcbcounter}}{theo}
+ label type=theorem,
+ colback=white,
+ colframe=black,
+ fonttitle=\bfseries,
+ title={Theorem \thetcbcounter}
+}{theo}
 
 \newtcbtheorem[auto counter,number within=chapter]{definition}{Definition}{
-label type=definition,
-colback=white,
-colframe=black,
-fonttitle=\bfseries,
-title={Definition \thetcbcounter}}{def}
+ label type=definition,
+ colback=white,
+ colframe=black,
+ fonttitle=\bfseries,
+ title={Definition \thetcbcounter}
+}{def}
 
 \newtcolorbox{blackbox}[1]{
-top=0mm,
-bottom=0mm,
-left=0mm,
-right=0mm,
-boxsep=0mm,
-toptitle=1mm,
-bottomtitle=1mm,
-colback=black,
-colframe=black,
-fonttitle=\centering\bfseries,
-title=#1}
+ top=0mm,
+ bottom=0mm,
+ left=0mm,
+ right=0mm,
+ boxsep=0mm,
+ toptitle=1mm,
+ bottomtitle=1mm,
+ colback=black,
+ colframe=black,
+ fonttitle=\centering\bfseries,
+ title=#1
+}
 
 \newtcolorbox{blackwhitebox}[1]{
-colback=white,
-colframe=black,
-fonttitle=\centering\bfseries,
-title=#1}
+ colback=white,
+ colframe=black,
+ fonttitle=\centering\bfseries,
+ title=#1
+}
 
 \newtcolorbox{graybox}[0]{
-top=0mm,
-bottom=0mm,
-left=0mm,
-right=0mm,
-colback=white!90!black,
-colbacktitle=white!90!black,
-colframe=white!50!black,
-lower separated=false
+ top=0mm,
+ bottom=0mm,
+ left=0mm,
+ right=0mm,
+ colback=white!90!black,
+ colbacktitle=white!90!black,
+ colframe=white!50!black,
+ lower separated=false
 }
 
 \definecolor{color_strings}{HTML}{0F4D0F}
@@ -86,58 +90,56 @@ lower separated=false
 \definecolor{color_comment}{HTML}{FF0000}
 
 \lstset{
-    basicstyle         = \linespread{1}\ttfamily,
-    stringstyle        = \color{color_strings}\bfseries,
-    keywordstyle       = \color{color_keywords}\bfseries,
-    keywordstyle       = [2]\color{color_types}\bfseries,
-    keywordstyle       = [3]\bfseries,
-    commentstyle       = \color{color_comment}\itshape,
-    numbers            = left,
-    numberstyle        = \scriptsize,
-    numbersep          = 10pt,
-    xleftmargin        = 1.5em,
-    frame              = lines,
-    framexleftmargin   = 1.5em,
-    framexbottommargin = 0em,
-    captionpos         = b,
-    escapeinside       = {([}{])},
-    literate           = {∧}{$\land$}1{∨}{$\lor$}1{∈}{$\in$}1{≠}{$\neq$}1
-                         {Φ}{$\Phi$}1
+ basicstyle       = \linespread{1}\ttfamily,
+ stringstyle      = \color{color_strings}\bfseries,
+ keywordstyle     = \color{color_keywords}\bfseries,
+ keywordstyle     = [2]\color{color_types}\bfseries,
+ keywordstyle     = [3]\bfseries,
+ commentstyle     = \color{color_comment}\itshape,
+ numberstyle      = \scriptsize,
+ numbersep        = 10pt,
+ frame            = lines,
+ numbers          = left,
+ xleftmargin      = 1.5em,
+ framexleftmargin = 1.5em,
+ captionpos       = b,
+ escapeinside     = {([}{])},
+ literate         = {∧}{$\land$}1{∨}{$\lor$}1{∈}{$\in$}1{≠}{$\neq$}1{Φ}{$\Phi$}1
 }
 
 \lstdefinelanguage{MyCpp}{
-    morekeywords = {return, class, struct, public, private, goto, for, if, else,
-                    virtual, override, while, template, auto, using, namespace},
-    morekeywords = [2]{const, int, double, float, bool, size\_t, unsigned, void,
-                       vector, array, shared\_ptr, pair, map, string, dyn\_cast,
-                       Instruction, CallInst, Value, Function,
-                       SkipResult, BacktrackingPart, Tree, ElementOfShared,
-                       ElementOfPart, ConjunctionPart, AddInstruction,
-                       FirstArgument, SecondArgument, Conjunction},
-    morekeywords = [3]{true, false, FAIL, PASS, SUCCESS},
-    morecomment  = [l]{//},
-    morecomment  = [s]{/*}{*/},
-    morestring   = [b]{"}
+ morekeywords = {return, class, struct, public, private, goto, for, if, else,
+                 virtual, override, while, template, auto, using, namespace},
+ morekeywords = [2]{const, int, double, float, bool, size\_t, unsigned, void,
+                    vector, array, shared\_ptr, pair, map, string, dyn\_cast,
+                    Instruction, CallInst, Value, Function,
+                    SkipResult, BacktrackingPart, Tree, ElementOfShared,
+                    ElementOfPart, ConjunctionPart, AddInstruction,
+                    FirstArgument, SecondArgument, Conjunction},
+ morekeywords = [3]{true, false, FAIL, PASS, SUCCESS},
+ morecomment  = [l]{//},
+ morecomment  = [s]{/*}{*/},
+ morestring   = [b]{"}
 }
 
 \lstdefinelanguage{BNF}{
-    morecomment  = [s][\color{color_strings}\bfseries]{<}{>}
+ morecomment  = [s][\color{color_strings}\bfseries]{<}{>}
 }
 
 \lstdefinelanguage{CAnDL}{
-    morekeywords = { Constraint, End, include, with, collect, foreach, forany,
-                     for, unused, is, if, not, otherwise, specified},
-    morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
+ morekeywords = { Constraint, End, include, with, collect, for, foreach,
+                  forany, unused, is, if, not, otherwise, specified},
+ morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
 }
 
 \lstdefinelanguage{IDL}{
-    morekeywords = { Constraint, End, inherits, with, and, or, at, as },
-    morecomment  = [s]{\{}{\}}
+ morekeywords = { Constraint, End, inherits, with, and, or, at, as },
+ morecomment  = [s]{\{}{\}}
 }
 
 \lstdefinelanguage{LIFT}{
-    morekeywords = {return, gemm\_in\_lift, map, fun, reduce, zip, transpose},
-    morekeywords = [2]{float}
+ morekeywords = {return, gemm\_in\_lift, map, fun, reduce, zip, transpose},
+ morekeywords = [2]{float}
 }
 
 \title{From Constraint Programming\\to Heterogeneous Parallelism}
