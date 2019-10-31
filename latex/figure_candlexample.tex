@@ -74,7 +74,7 @@ sqrt_fn = @sqrt
 \begin{lstlisting}[language=CAnDL,
                    numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
                    captionpos=t,title=
-   {{\bf(e)} {} Verification of first solution:}]
+   {{\bf(e)} {} Validating the first solution:}]
 ( opcode{%4} = call
 ∧ {@sqrt} = {%4}.args[0]
 ∧ function_name{@sqrt} = sqrt
@@ -91,7 +91,7 @@ sqrt_fn = @sqrt
 \begin{lstlisting}[language=CAnDL,
                    numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
                    captionpos=t,title=
-   {{\bf(f)} {} Verification of second solution:}]
+   {{\bf(f)} {} Validating the second solution:}]
 ( opcode{%6} = call
 ∧ {@sqrt} = {%6}.args[0]
 ∧ function_name{@sqrt} = sqrt
@@ -107,7 +107,7 @@ sqrt_fn = @sqrt
 \centering
 \vspace{-0.19cm}
 \begin{lstlisting}[language=MyCpp,captionpos=t,title=
-   {{\bf(g)} {} C++ transformation code:}]
+   {{\bf(g)} {} Complementing C++ transformation code:}]
 using namespace std;
 using namespace llvm;
 void transform(map<string,Value*> solution, Function* abs) {
