@@ -5,36 +5,36 @@
     language based on that methodology and presents an implementation within the
     production quality LLVM compiler infrastructure.
 
-    The Compiler Analysis Description Language (CAnDL) automatically generates
-    compiler analysis functionality that would otherwise have to be implemented
-    manually.
-    This fills an important niche in compiler development:
-    Optimising compilers have to use elaborate program transformations to exploit
-    increasingly complex hardware.
+    In the first section, the implementation of the Compiler Analysis
+    Description Language (CAnDL) is motivated as an approach for reducing the
+    complexity of LLVM optimisations.
+    Optimising compilers have to use elaborate program transformations to
+    exploit increasingly complex hardware.
     Implementing the required analysis functionality for such optimisations to
-    be safely applied is a time consuming and error prone activity.
-    For example, tens of thousands of lines of code are required in the LLVM
-    codebase to detect the appropriate places for applying peephole
-    optimisations, and bugs in this functionality can result in corrupted user
-    programs.
-    These conditions are a barrier to the rapid prototyping and evaluation of
-    innovative new compiler optimisations.
+    be safely applied is a time consuming and error-prone activity.
+    This is a barrier to the rapid prototyping and evaluation of innovative new
+    compiler optimisations.
+    CAnDL automatically generates such compiler analysis functionality from
+    constraint specifications.
 
-    CAnDL enables a workflow that is much more amenable to efficient compiler
-    development.
-    The compiler implementer only has to write CAnDL programs, which the CAnDL
-    compiler then fully automatically transforms into LLVM analysis passes in
-    C++.
-    These generated passes automatically detect all sections in user code that
-    adhere to the specified structure.
-    This approach provides a uniform manner in which to describe compiler
-    analysis, significantly reducing code length and complexity.
+    The individual language constructs are introduced with their syntax and
+    functionality in the middle part of the chapter.
+    The first introduced language features directly expose parts of the
+    underlying methodology from \Cref{chapter:theory}.
+    On top of that, CAnDL provides higher-level constructs that allow for
+    program modularity and the reduction of repetitive code structures.
+    With these higher-level constructs, a collection of CAnDL specifications
+    for standard compiler concepts is introduced as the CAnDL standard library.
+    This collection of common building blocks includes Single Entry Single Exit
+    (SESE) regions and loops.
 
-    CAnDL scales to a wide range of compiler analysis tasks.
-    Several case studies are presented that range from the detection of
-    peephole optimisation opportunities, over graphics shader optimisations,
-    to fully capturing static control flow regions for polyhedral code analysis.
-    These tasks can all be expressed more briefly in CAnDL than with existing
+    Finally, several case studies are presented for the experimental evaluation
+    of CAnDL.
+    They show that CAnDL scales to a wide range of compiler analysis tasks.
+    These tasks range from the detection of peephole optimisation opportunities,
+    over graphics shader optimisations, to fully capturing Static Control Parts
+    (SCoPs) for polyhedral code analysis.
+    All of them can be expressed more briefly in CAnDL than with previous
     approaches.
 
 \section{Introduction}
