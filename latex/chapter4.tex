@@ -361,23 +361,22 @@ End
   \label{twovaratomics}
 \end{table}
 
-    Based on the SSA model from \Cref{chapter:theory}, CAnDL provides a wide
-    range of atomic constraints.
+    Based on the SSA model from \Cref{def:ssamodel} in \Cref{chapter:theory},
+    CAnDL provides a wide range of atomic constraints.
     The simplest group are those that operate on only a single variable,
     listed in \Cref{onevaratomics}.
-    They operate immediately on the underlying mathematical structures, testing
-    element-of properties of the sets in order to constrain data types,
-    instruction opcodes etc.
-    At the bottom of the list is the {\bf function\_name} constraint,
-    which is particular.
+    These operate immediately on the underlying mathematical structures, testing
+    element-of properties in the sets in order to constrain data types
+    ($T_\mathcal{F}$), instruction opcodes ($I_\mathcal{F}$), etc.
+    At the bottom of the list is the {\bf function\_name} constraint.
     Function names can only be statically determined for direct function calls.
     In that case, the called object is necessarily a global value, and the
     function name can be identified in the global model $G_\mathcal F$.
 
     There are additional atomic constraint that operate on pairs of variables.
     These are listed in \Cref{twovaratomics}.
-    These most importantly check for specific edges in the control flow and data
-    flow graphs.
+    These most importantly check for specific edges in the control flow
+    ($CFG_\mathcal F$) and data flow graphs ($DFG_\mathcal F$).
     CAnDL also provides weaker versions that do not enforce specific edge
     labels.
     Furthermore, two constraints are available for shallow comparisons of
@@ -683,7 +682,6 @@ End
     \begin{align*}
         S_1= select(ins,rev(DFG_\mathcal F^*))\subset select(float,T_\mathcal F)= S_2.
     \end{align*}
-
     
     Elementary set theory gives  $S_1\subset S_2\iff S_1 = S_1\cap S_2$.
     Therefore, if a set $S$ is constrained to be equal to both $S_1$ and
