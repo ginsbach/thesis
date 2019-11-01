@@ -818,16 +818,16 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \begin{figure}[h]
     \begin{definition}{Backtracking Solution of Constraint Problems}{backtracking}
-        For a constraint problem $(V,C)$, an enumeration of
-        $V=\{v_1,\dots,v_n\}$ with corresponding projections
+        For a constraint problem $(V,C)$, an enumeration
+        $V=\{v_1,\dots,v_{|V|}\}$ with corresponding projections
         $p_k\colon\mathbb N^V\rightarrow\mathbb N^k$,
         $x\mapsto(x_{v_1},\dots x_{v_k})$ is chosen.
-        Then a collection $(B_k)_{k=1\dots n}$ of functions
+        Then a collection $(B_k)_{k=1\dots |V|}$ of functions
         $B_k:\mathcal M\times \mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
         is a {\em backtracking solution} of $(V,C)$ if and only if for all
         $x\in\mathbb N^V$ the following is satisfied:
         \begin{align}
-            C(M,x)=1\iff\left[x_{v_k}\in B_k(M,p_{k-1}(x))=1\text{ for all }1\leq k\leq n\right].
+            C(M,x)=1\iff\left[x_{v_k}\in B_k(M,p_{k-1}(x))=1\text{ for all }1\leq k\leq |V|\right].
         \end{align}
     \end{definition}
 \end{figure}
@@ -836,10 +836,11 @@ define double @dot(double* %0, double* %1, i64 %2) {
     it does not show how such a backtracking solution could be constructed.
     That is explained in the next section.
     The concept is introduced in order to allow the definition of the
-    backtracking search \Cref{backtrackalg}, which operates as follows:
+    backtracking search \Cref{backtrackalg}, which works as follows:
     The variable $x$ iterates over $\mathbb N^n$
-    (identified with $\mathbb N^V$ in line 7), while the variable $k$ tracks the
-    number of currently considered dimensions of this partial solution.
+    ($n=|V|$, identified with $\mathbb N^V$ in line~7), the variable $k$
+    tracks the number of currently considered dimensions of this partial
+    solution.
     After the initialisation assignments in line 2, a single loop spans the
     remainder of the algorithm.
     In each iteration, the algorithm tries to assign a valid value to the latest
@@ -855,7 +856,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \begin{algorithm}[p]
     \caption{Basic backtracking algorithm}
     \begin{algorithmic}[1]
-        \Procedure{Detect}{$M,(B_k)_{k=1\dots n}$}\vspace{-0.45em}
+        \Procedure{Detect}{$M,(B_k)_{k=1\dots n},(v_k)_{k=1\dots n}$}\vspace{-0.45em}
             \State $k\gets1$,\quad$x\gets(1,\dots,1)\in\mathbb N^n$\vspace{-0.45em}
             \While{$true$}\vspace{-0.45em}
                 \State $x_k\gets min\{y\in B_k(M,p_{k-1}(x))\mid y\geq x_k\}$\vspace{-0.45em}
