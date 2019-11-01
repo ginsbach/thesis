@@ -411,8 +411,8 @@
         \item $\{(n,a,b)\in DFG_\mathcal F^*\mid a=A\}=\{(1,A,B)\}$
         \item $\{(n,a,b)\in DFG_\mathcal F^*\mid b=B\}=\{(1,A,B)\}$.
     \end{itemize}
-    \item Basic block labels and register names carry no meaning and can be
-          chosen arbitrarily.
+    \item Basic block labels and register names can be chosen freely
+          without changing semantics.
     \item The arguments of all instructions can be immediately filled in from 
           $DFG_\mathcal F$.
           Similarly, $CFG_\mathcal F$ directly provides the target instructions
@@ -421,7 +421,7 @@
           are attached as incoming values to the incoming basic blocks
           after ordering those according to the order on $ins$.
           The original positional order of the incoming pairs is
-          not recovered, but it carries no meaning.
+          not recovered, but it is semantically equivalent.
 \end{enumerate}
 
     The only part of the SSA representation that still needs modelling is
