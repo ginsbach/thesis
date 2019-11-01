@@ -1501,22 +1501,29 @@ End
 
     Optimising compilers require sophisticated program analysis in order to
     generate performant code.
-    The current way of implementing this functionality manually in programming
-    languages such as C++ is not satisfactory, as exemplified by the overly
-    complicated {\tt instcombine} pass in the LLVM compiler infrastructure.
+    The current state-of-the-art for implementing this functionality manually in
+    programming languages such as C++ is not satisfactory, as exemplified by the
+    complicated and error-prone {\tt instcombine} pass in the LLVM compiler
+    infrastructure.
 
     The domain-specific Compiler Analysis Description Language (CAnDL) provides
     a more efficient approach.
-    CAnDL specifications can be used to generate compiler analysis passes
-    automatically from a declarative description using the CAnDL compiler.
-    They are easier to write and significantly reduce the code size and
+    CAnDL specifications are used to automatically generate compiler analysis
+    passes from a declarative description using the CAnDL compiler.
+    They are easier to program and significantly reduce the code size and
     complexity when comparing against manual C++ implementations.
-
     Although CAnDL is based on a constraint programming paradigm and uses a
     backtracking solver to analyse LLVM IR code, the use of it results in
     only moderate compile time increases.
-    Many compiler analysis tasks are suitable for implementation with CAnDL,
-    from detecting peephole optimisation opportunities to recognising large
-    code regions can be analysed with the polyhedral model.
+
+    Many compiler analysis tasks are suitable for implementation with CAnDL.
+    It can be used for the detection of standard peephole optimisation
+    opportunities and for the rapid prototyping of graphics shader
+    optimisations.
+    Despite its general approach, CAnDL scales to complex domain-specific code
+    structures and can efficiently recognise large code regions suitable for
+    polyhedral transformations.
 
 \section{Summary}
+
+    
