@@ -846,12 +846,12 @@ Constraint LoopWithOnlyArrayAccesses
     The Clang compiler, which is built on LLVM, then automatically invokes this
     solver during the compilation of user programs, after the optimisation
     passes.
-    The evaluation at the end of the chapter will show that this solver adds
-    little compile-time overhead in practice.
+    The evaluation shows that this solver adds little compile-time overhead in
+    practice.
 
-    The resulting modified version of the Clang compiler uses the solver to
-    search for the specified computational structures and outputs the found
-    instances into report files.
+    The resulting Clang binary, built on the modified version LLVM, uses the
+    solver to search for the specified computational structures and outputs the
+    found instances into report files.
     It also makes the results available to ensuing transformation passes in the
     form of C++ structures.
 
@@ -873,27 +873,27 @@ Constraint LoopWithOnlyArrayAccesses
     \begin{itemize}
         \item Two strength reduction optimisations are reversed:
               {\tt add}$\mapsto${\tt or} and {\tt mul}$\mapsto${\tt shift}.
-        \item Some interactions between {\tt hoist} and {\tt getelementptr}
+              Such instruction specialisations run counter to the goal of
+              normalising the IR.
+        \item Some interactions between {\tt select} and {\tt getelementptr}
               instructions are transformed as
-              {\tt (c?a[i]:a[j])}$\mapsto${\tt a[c?i:j]}.
-              The analysis for this is itself implemented in CAnDL.
-        \item Most importantly, all complex {\tt getelementptr} instructions are 
-              simplified to adding an offset to a raw pointer.
+              {\tt (c?a[i]:a[j])}$\mapsto${\tt a[c?i:j]} to minimise the number
+              of {\tt getelementptr} instructions.
+        \item Complex {\tt getelementptr} instructions are simplified to adding
+              an offset to a raw pointer.
               The index calculations are then performed entirely as integer
               arithmetic on the indices.
-              This also applied to multi-dimensional array access, which is
-              effectively flattened.
-              Furthermore, chains of {\tt getelementptr} instructions are merged
-              into one, again resulting in additional integer arithmetic
-              instead.
+              This also applied to multi-dimensional array accesses, effectively
+              flattening them.
+              Chains of {\tt getelementptr} instructions are merged, again
+              resulting in integer arithmetic instead.
     \end{itemize}
     Finally, some structures in the LLVM IR are not modified by normalising
-    transformations but are omitted in the SSA model that underpins the
+    transformations, but they are omitted in the SSA model that underpins the
     CAnDL specifications.
-    This is true for all {\tt zext}, {\tt sext}, {\tt trunc} instructions and
-    for all pointer conversions.
-    Without these omissions, the pervasive use of 32-bit integers on 64-bit
-    machines would make programming CAnDL inconvenient in practice.
+    This applies to all integer extension instructions and pointer conversions.
+    The conventional use of 32-bit integers on 64-bit systems obfuscates the
+    SSA model without these omissions.
 
 \pagebreak
 \subsection{The CAnDL Compiler}
@@ -1020,7 +1020,7 @@ result[2] = make_pair("right",    select<1>(constr2));
     The solver detects whatever the programmer specifies, without any additional
     effort, but it is difficult to ascertain that the CAnDL code actually
     specifies the structures that the programmer intended.
-    Generally, the correctness of CAnDL programs can only be guaranteed with
+    Generally, the accuracy of CAnDL programs can only be ensured with
     thorough testing, and it is important to keep in mind that CAnDL is targeted
     at expert compiler developers.
 
@@ -1513,3 +1513,5 @@ End
     Many compiler analysis tasks are suitable for implementation with CAnDL,
     from detecting peephole optimisation opportunities to recognising large
     code regions can be analysed with the polyhedral model.
+
+\section{Summary}
