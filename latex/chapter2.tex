@@ -262,25 +262,14 @@
 \section{Deriving an SSA Model}
 \label{sec:derivingamodel}
 
-    This section develops a mathematical model for programs that are in
-    SSA form.
-    The focus is on precise notation to express the static structure of existing
-    SSA intermediate representations.
-    The completed model will enable the generation of a program that is
-    semantically equivalent to the one from which the model was extracted.
-    Note that this is not related to an operational semantics of such programs,
-    or more generally a method for analysing their execution.
-    The remainder of this section adheres to the naming conventions in
-    \Cref{def:ssa}.
-
-\begin{figure}[h]
+\begin{figure}[p]
 \begin{definition}{Features of Static Single Assignment Functions}{ssa}
     For the remainder of this section, some function $\mathcal F$ in SSA form is
     assumed fixed. 
     The following identifiers are then used to describe the features of this
-    function.
+    function:
 
-    \begin{itemize}
+    \begin{itemize}[topsep=0pt,itemsep=0pt,partopsep=0pt,parsep=0pt]
     \item $|par|$ is the number of function parameters
           $par_1,\dots par_{|par|}$.
     \item $|ins|$ is the number of instructions $ins_1,\dots ins_{|ins|}$ that
@@ -292,7 +281,61 @@
           that are used as an operand of any of the instructions.
     \end{itemize}
 \end{definition}
+\begin{definition}{Set of Used Values}{usedvalues}
+    The {\em set of used values} of the SSA function $\mathcal F$ is the tuple
+    \begin{align*}
+       val = (par_1,\dots,par_{|par|},
+              ins_1,\dots,ins_{|ins|},
+              glb_1,\dots,glb_{|glb|},
+              cst_1,\dots,cst_{|cst|}).
+    \end{align*}
+    In addition, the following values are used to identify specific ranges in
+    $val$:
+    \begin{align*}
+        L_{par}={}&1         & R_{par}={}&|par| &
+        L_{ins}={}&R_{par}+1 & R_{ins}={}&R_{par}+|ins|\\[-1.5mm]
+        L_{gbl}={}&R_{ins}+1 & R_{gbl}={}&R_{ins}+|glb| &
+        L_{cst}={}&R_{gbl}+1 & R_{cst}={}&R_{gbl}+|cst|\\[-1.5mm]
+        L_{val}={}&L_{par}   & R_{val}={}&R_{cst} &&&&
+    \end{align*}
+\end{definition}
+\begin{definition}{Data Flow Graph}{dfg}
+    The {\em data flow graph} of the SSA function $\mathcal F$ is the set
+    $DFG_{\mathcal F}\subset \mathbb N^3$ such that
+    \begin{align*}
+        (n,a,b)\in DFG_{\mathcal F}\iff{}&L_{val}\leq a\leq R_{val}
+            \mathrel{\land}L_{ins}\leq b\leq R_{ins}\\
+            \mathrel{\land}{}&(val_a\text{ is the $n$th argument of }ins_{b-L_{ins}+1}).
+    \end{align*}
+    For $\Phi$-instructions, the incoming basic blocks are ordered according to
+    the order on $ins$.
+    The $n$th argument is the incoming value attached to the $n$th incoming
+    basic blocks.
+\end{definition}
+\begin{definition}{Control Flow Graph}{cfg}
+    The {\em control flow graph} of the SSA function $\mathcal F$ is the set
+    $CFG_{\mathcal F}\subset \mathbb N^3$ such that
+    \begin{align*}
+        (n,a,&{}b)\in CFG_{\mathcal F}\iff L_{ins}\leq a\leq R_{ins}\mathrel{\land}L_{ins}\leq b\leq R_{ins}\\
+               \mathrel{\land}&\left(\begin{aligned}[c]
+                                    (\neg (ins_{a-L_{ins}+1}\text{ terminates basic block})\mathrel{\land}{}&b=a+1\mathrel{\land}n=1)\\
+                      \mathrel{\lor}(\phantom{\neg}(ins_{a-L_{ins}+1}\text{ terminates basic block})\mathrel{\land}{}&ins_{b-L_{ins}+1}\text{ first instruction in}\text{ $n$th}\\[-0.5em]
+                                                   &\text{target basic block of }ins_{a-L_{ins}+1})
+        \end{aligned}\right).
+    \end{align*}
+\end{definition}
 \end{figure}
+
+    This section develops a mathematical model for programs that are in
+    SSA form.
+    The focus is on precise notation to express the static structure of existing
+    SSA intermediate representations.
+    The completed model will enable the generation of a program that is
+    semantically equivalent to the one from which the model was extracted.
+    Note that this is not related to an operational semantics of such programs,
+    or more generally a method for analysing their execution.
+    The remainder of this section adheres to the naming conventions in
+    \Cref{def:ssa}.
 
     This notation already implies several decisions about the SSA model that is
     derived in this section.
@@ -322,40 +365,12 @@
     For each function, the sequences $par$, $ins$, $gbl$, $cst$ can be
     statically determined.
     Therefore, individual instruction arguments can be encoded by one integer
-    each, indexing into the union of those four sequences.
-%    Therefore, a single integer is enough to encode each instruction argument as
-%    an index into the union of those four sequences.
-    This allows for the entire argument structure of the instructions in an SSA
-    function to be turned into a labelled multigraph, with edge labels
+    each, indexing into the union of those four sequences as in
+    \Cref{def:usedvalues}.
+    The entire argument structure of the instructions in an SSA
+    function can then be turned into a labelled multigraph, with edge labels
     accounting for the positional order of the arguments.
-    These observations lead to the definition of the {\it set of used values} in
-    \Cref{def:usedvalues} and the {\it data flow graph} in \Cref{def:dfg}.
-
-\begin{figure}[h]
-\begin{definition}{Set of Used Values}{usedvalues}
-    The {\em set of used values} of the SSA function $\mathcal F$ is the tuple
-    \begin{align*}
-       val_1,\dots,val_{|val|} = par_1,\dots,par_{|par|},
-                                 ins_1,\dots,ins_{|ins|},
-                                 glb_1,\dots,glb_{|glb|},
-                                 cst_1,\dots,cst_{|cst|}.
-    \end{align*}
-\end{definition}
-
-\begin{definition}{Data Flow Graph}{dfg}
-    The {\em data flow graph} of the SSA function $\mathcal F$ is the set
-    $DFG_{\mathcal F}\subset \mathbb N^3$ such that
-    \begin{align*}
-        (n,a,b)\in DFG_{\mathcal F}\iff{}&1\leq a\leq |val|
-            \mathrel{\land}1\leq b-|par|\leq |ins|\\
-            \mathrel{\land}{}&(val_a\text{ is the $n$th argument of }ins_{b-|par|}).
-    \end{align*}
-    For $\Phi$-instructions, the incoming basic blocks are ordered according to
-    the order on $ins$.
-    The $n$th argument is the incoming value attached to the $n$th incoming
-    basic blocks.
-\end{definition}
-\end{figure}
+    This is the {\it data flow graph} in \Cref{def:dfg}.
 
     Complementing the data flow graph is the control flow graph of the function,
     as introduced in \Cref{def:cfg}.
@@ -373,21 +388,6 @@
     Firstly, there are the trivial edges within a basic block.
     Secondly, there are edges between basic blocks.
 
-
-\begin{figure}[h]
-\begin{definition}{Control Flow Graph}{cfg}
-    The {\em control flow graph} of the SSA function $\mathcal F$ is the set
-    $CFG_{\mathcal F}\subset \mathbb N^3$ such that
-    \begin{align*}
-        (n,a,b)&{}\in CFG_{\mathcal F}\iff 1<a-|par|\leq|ins|\mathrel{\land}1<b-|par|\leq|ins|\mathrel{\land}\\
-               &\left(\begin{aligned}[c]
-                                    (\neg (ins_{a-|par|}\text{ terminates basic block})\mathrel{\land}{}&b=a+1\mathrel{\land}n=1)\\
-                      \mathrel{\lor}(\phantom{\neg}(ins_{a-|par|}\text{ terminates basic block})\mathrel{\land}{}&ins_{b-|par|}\text{ first instruction in}\text{ $n$th}\\[-0.5em]
-                                                   &\text{target basic block of }ins_{a-|par|})
-        \end{aligned}\right).
-    \end{align*}
-\end{definition}
-\end{figure}
 
 \subsection{Identifying Remaining Structure}
 \label{sec:remainingstructure}
@@ -509,11 +509,11 @@
     In order to conveniently manipulate these structures, 
     \Cref{def:convenience} introduces several functions and shorthand notation.
 
-    For a set of tuples, the function $head$ returns the set of all the first
+    For a set of tuples, the function $heads$ returns the set of all the first
     elements of the tuples.
-    For example, $head(I_\mathcal F)$ yields all the opcodes that are used in
+    For example, $heads(I_\mathcal F)$ yields all the opcodes that are used in
     the function $\mathcal F$.
-    Correspondingly, the function $tails$ removes the first element of all
+    Likewise, the function $tails$ removes the first element of all
     tuples within a set.
     For example, $tails(I_\mathcal F)$ identifies the indices of all the
     instructions within the set of used values of $\mathcal F$, but removes the
@@ -1010,7 +1010,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     Therefore, the backtracking solution is given by
     \begin{align*}
         B_1[E_S](M)={}&heads(rev(DFG_\mathcal F^*))\\
-        B_2[E_S](M,x_1)={}&heads(select(x_1,head(rev(DFG_\mathcal F^*))))
+        B_2[E_S](M,x_1)={}&heads(select(x_1,heads(rev(DFG_\mathcal F^*))))
     \end{align*}
     This backtracking solution for $E_S$ is extended to the entire set $V$ using
     \Cref{theo:theo4}, yielding the additional function
