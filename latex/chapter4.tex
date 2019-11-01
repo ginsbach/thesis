@@ -632,9 +632,7 @@ End
 \subsubsection{Collect}
 
     The \text{\it collect} construct captures all possible solutions of a given
-    formula.
-    It is used to implement constraints that require logical quantifiers
-    $\forall$ (``for all'') and $\exists$ (``there exists some'').
+    formula, as in \Cref{def:collectconstr}.
 %    For example, it can guarantee that all memory accesses in a loop use affine
 %    index computations.
 %    The grammar is simple but the semantics require some elaboration.
@@ -677,19 +675,20 @@ End
     This involves the $\forall$ quantifier, as it is equivalent to
     the following equation:
     \begin{align}
-        \forall x\colon\ (x,ins)\in DFG_\mathcal F^*\implies(float,x)\in I_\mathcal F
+        ins\text{ has only }float\text{ arguments}\iff
+        \left[\forall x\colon\ (x,ins)\in DFG_\mathcal F^*\implies(float,x)\in I_\mathcal F\right]
         \label{fig:implication}
     \end{align}
     This can be rewritten to an equivalent formulation on sets:
     \begin{align*}
-        S_1:= select(ins,rev(DFG_\mathcal F^*))\subset S_2:=select(float,I_\mathcal F).
+        S_1= select(ins,rev(DFG_\mathcal F^*))\subset select(float,T_\mathcal F)= S_2.
     \end{align*}
 
-    Using the equivalence
-    $S_1\subset S_2\iff S_1 = S_1\cap S_2$, this means that
-    if a set $S$ is constrained to be equal to both $S_1$ and $S_1\cap S_2$,
-    these constraints are satisfiable if and only if the implication in
-    \Cref{fig:implication} holds.
+    
+    Elementary set theory gives  $S_1\subset S_2\iff S_1 = S_1\cap S_2$.
+    Therefore, if a set $S$ is constrained to be equal to both $S_1$ and
+    $S_1\cap S_2$, then \Cref{fig:implication} gives that this is satisfiable if
+    and only if $ins$ has only $float$ arguments.
     This condition can be expressed in CAnDL, as is shown in
     \Cref{fig:collectexample}.
     With the first {\it collect} statement in line 3, the set \texttt{arg} is
