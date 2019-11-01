@@ -782,8 +782,7 @@ placeholder
 \paragraph*{Polly-Reduction}
 
     \citet{Doerfert2015Polly} developed a compiler analysis and transformation
-    within Polly that detects reductions in static control flow parts of
-    programs.
+    within Polly that detects reductions in Static Control Parts of programs.
     This is implemented in Polly, an LLVM based polyhedral compiler.
     The polyhedral model is extremely powerful when applicable and as Polly is
     also LLVM based, this allows for a comparison against another approach that
@@ -1332,8 +1331,8 @@ limitations of the polyhedral model.  Instead it was mostly the result
 of not statically known iteration spaces and the use of flat array
 structures. 
 \Cref{npb_scops,parboil_scops,rodinia_scops}
-show the number of static control-flow
-regions SCoPs that baseline Polly finds. As the reduction pass of
+show the number of static control
+parts (SCoPs) that baseline Polly finds. As the reduction pass of
 Polly requires SCoPS these provide a natural upper bound on the
 number of restrictions.  On 23 of the 40 benchmarks, Polly found no
 SCoPs at all.  This corresponded to $40\%$ of NPB, $63.6\%$ of the
