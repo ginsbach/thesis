@@ -27,16 +27,16 @@
             V={}&\{\text{phi}, \text{update}, \text{step}\}\\
             C(M,x)={}&    ((1,x_\text{step})
                             \in C_\mathcal{F}\mathrel\land
-                           (x_\text{phi},x_\text{update})
+                           (add,x_\text{update})
+                            \in I_\mathcal{F}\mathrel\land\\
+               &\phantom{(}(x_\text{phi},x_\text{update})
+                            \in DFG_\mathcal{F}^*\mathrel\land
+                           (x_\text{step},x_\text{update})
                             \in DFG_\mathcal{F}^*\mathrel\land\\
-               &\phantom{(}(x_\text{step},x_\text{update})
+               &\phantom{(}(x_\text{update},x_\text{phi})
                             \in DFG_\mathcal{F}^*\mathrel\land
                            (phi,x_\text{phi})
-                            \in I_\mathcal{F}\mathrel\land\\
-               &\phantom{(}(add,x_\text{update})
-                            \in I_\mathcal{F}\mathrel\land
-                           (x_\text{update},x_\text{phi})
-                            \in DFG_\mathcal{F}^*)
+                            \in I_\mathcal{F})
         \end{align*}
     \end{blackwhitebox}
     \begin{blackwhitebox}{\Large SSA model}
@@ -46,7 +46,7 @@
         \begin{align*}
             DF&G_\mathcal F=\{(1,1,11),(1,2,13),(1,3,4),(2,3,18),(1,4,5),(1,6,7),\\[-0.5em]
               &(2,9,11),(2,9,13),\underline{(1,9,17)},(1,10,16),(1,11,12),(1,12,15),\\[-0.5em]
-              &(1,13,14),(2,14,15),(2,15,16),(1,16,6),(1,16,10),\underline{(2,17,9)},\\[-0.5em]
+              &(1,13,14),(2,14,15),(2,15,16),(2,16,6),(1,16,10),\underline{(2,17,9)},\\[-0.5em]
               &(1,17,18),(1,18,19),(2,20,4),(1,20,9),(1,21,6),(2,21,10),\\[-0.5em]
               &\underline{(2,22,17)}\}\\[-0.25em]
             CF&G_\mathcal F=\{(1,4,5),(1,5,6),(2,5,8),(1,6,7),(1,8,9),(1,9,10),\\[-0.5em]

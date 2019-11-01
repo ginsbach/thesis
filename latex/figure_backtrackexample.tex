@@ -3,20 +3,20 @@
     \setlength{\abovedisplayskip}{0pt}
     \setlength{\belowdisplayskip}{0pt}
     \vspace{-0.5em}
-    \begin{align*}
+\begin{align*}
         V={}&\{\text{phi}, \text{update}, \text{step}\}\\
         C(M,x)={}&    ((1,x_\text{step})
                         \in C_\mathcal{F}\mathrel\land
-                       (x_\text{phi},x_\text{update})
-                        \in DFG_\mathcal{F}^*\mathrel\land\\
-           &\phantom{(}(x_\text{step},x_\text{update})
-                        \in DFG_\mathcal{F}^* \mathrel\land
-                       (phi,x_\text{phi})
+                       (add,x_\text{update})
                         \in I_\mathcal{F}\mathrel\land\\
-           &\phantom{(}(add,x_\text{update})
-                        \in I_\mathcal{F}\mathrel\land
-                       (x_\text{update},x_\text{phi})
-                        \in DFG_\mathcal{F}^*)
+           &\phantom{(}(x_\text{phi},x_\text{update})
+                        \in DFG_\mathcal{F}^*\mathrel\land
+                       (x_\text{step},x_\text{update})
+                        \in DFG_\mathcal{F}^*\mathrel\land\\
+           &\phantom{(}(x_\text{update},x_\text{phi})
+                        \in DFG_\mathcal{F}^*\mathrel\land
+                       (phi,x_\text{phi})
+                        \in I_\mathcal{F}
     \end{align*}
 \end{blackwhitebox}
 
@@ -32,8 +32,8 @@
         \vspace{-0.5em}
         \begin{align*}
             B_1[C](M)={}&heads(DFG_\mathcal{F}^*)\\
-                \mathrel\cap{}&heads(select(phi,I_\mathcal{F}))\\
-                \mathrel\cap{}&heads(rev(DFG_\mathcal{F}^*))
+                \mathrel\cap{}&heads(rev(DFG_\mathcal{F}^*\\
+                \mathrel\cap{}&heads(select(phi,I_\mathcal{F}))
         \end{align*}
     \end{graybox}
     \vspace{-0.75em}
@@ -50,9 +50,9 @@
         \vspace{-0.5em}
         \begin{align*}
             B_2[C]&(M,x)=\\
-                            {}&heads(select(x_1,DFG_\mathcal{F}^*))\\
+                            {}&heads(select(add,I_\mathcal{F}))\\
+                \mathrel\cap{}&heads(select(x_1,DFG_\mathcal{F}^*))\\
                 \mathrel\cap{}&heads(rev(DFG_\mathcal{F}^*))\\
-                \mathrel\cap{}&heads(select(add,I_\mathcal{F}))\\
                 \mathrel\cap{}&heads(select(x_1,rev(DFG_\mathcal{F}^*)))
         \end{align*}
     \end{graybox}
