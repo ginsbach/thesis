@@ -416,8 +416,8 @@ End
 
 \subsubsection{Phi Nodes}
 
-    The following syntax is used to express the condition that a value has to
-    reach a $\Phi$-instruction via a specific jump instruction:
+    CAnDL provides the following syntax for expressing data flow involving
+    $\Phi$-instructions:
 \begin{figure}[h]
     \centering
     \begin{tabular}{|c|}
@@ -428,9 +428,12 @@ End
 \end{figure}
 
     \noindent
-    More precisely, the expression $\{A\}\text{\bf ->}\{B\}\Phi\{C\}$ means that
-    the value of $C$ is $A$ if $B$ was the last branch taken before $C$ was
-    reached.
+    The expression $\{A\}\text{\bf ->}\{B\}\Phi\{C\}$ means that
+    $C$ takes the value of $A$ when reached from $B$.
+    The underlying condition on the SSA model is more difficult to express than
+    for the previous atomic constraints.
+    Specifically, ``reached from $B$'' means that $B$ was the last branch
+    taken before arriving at $C$.
     Using the SSA model, this is equivalent to the following:
     \begin{align*}
         (C,phi)\in I_\mathcal F\mathrel\land{}&(B,h(C))\in CFG_\mathcal F^*\mathrel\land(A,C,n)\in DFG_\mathcal F,\\
@@ -438,7 +441,7 @@ End
             \text{and }n:={}&\{b\leq B\mid (b,h(C))\in CFG_\mathcal F^*\}.
     \end{align*}
     Firstly, $C$ is a $\Phi$-instruction.
-    Secondly, $B$ has a control flow edge to the basic block containing $C$.
+    Secondly, $B$ has control flow to the basic block that contains $C$.
     The first instruction of this basic block is identified as $h(C)$, to
     account for the possibility of more than one $\Phi$-instruction in the
     basic block.
@@ -447,8 +450,8 @@ End
 
 \subsubsection{Graph Domination}
 
-    In order to express domination in the control flow graph, the following
-    syntax is used:
+    In order to express domination in the control flow graph
+    \citep{Cytron:1989:AGD:73141.74823}, the following syntax is used:
 \begin{figure}[h]
     \centering
     \begin{tabular}{|c|}
@@ -466,10 +469,9 @@ End
     dominator of $B$, i.e.\ any path through the control flow graph from the
     entry node to $B$ must go through $A$.
     Strict domination additionally requires that $A$ and $B$ are distinct.
-
-    Completing the domination constraints, there are corresponding
-    post-dominator versions {\bf post\_domination} and
-    {\bf strict\_post\_domination}, as well as the following generalisation:
+    Complementing these constructs, there are post-dominator versions
+    {\bf post\_domination} and {\bf strict\_post\_domination}, as well as a
+    generalisation:
 \begin{figure}[h]
     \centering
     \begin{tabular}{|c|}
@@ -482,7 +484,8 @@ End
     \noindent
     This constraint is similar to a standard control flow domination, but
     instead of taking paths from the control flow origin, a third variable is
-    used for parametrisation. 
+    used for parametrisation, as required for \Cref{CAnDLSESE}.
+    
 %    \begin{align*}
 %        \text{\bf calculated\_from(}\text{\it varlist}\text{\bf,}\text{\it varlist}\text{\bf,}\text{\it variable}\text{\bf)}
 %    \end{align*}
@@ -601,10 +604,14 @@ End
     the current specification.
     If ``$[\text{\bf @}\ \text{\it variable}]$'' is specified, then all the
     variable names of the inserted constraint formula are prefixed with the
-    given variable name, separated with a dot.
-    The other optional syntax is used to rename individual variables in
-    the included formula.
-    If both optional constructs are used together, then the prefix is only
+    given variable name, separated by a dot.
+    This encapsulates the inserted formula and prevents unwanted
+    interactions with surrounding constraints.
+    The other optional syntax is used to rename variables in the included
+    formula.
+    In contrast to the prefix syntax, this increases the interaction with
+    surrounding constraints by injecting other variables.
+    Accordingly, if both optional constructs are used, the prefix is only
     applied to variables that are not renamed.
 
     \Cref{fig:inheritsandrenameandrebase} illustrates this with two
