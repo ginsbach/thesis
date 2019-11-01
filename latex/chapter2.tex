@@ -406,10 +406,10 @@
 \begin{enumerate}
     \item The basic block boundaries are reconstructed by identifying all
           consecutive instructions $A$, $B$ where at least one of the
-    conditions hold:
+          conditions is violated:
     \begin{itemize}
-        \item $A$ does not have exactly one outgoing edge to $B$ or
-        \item $B$ does not have exactly one incoming edge from $A$.
+        \item $\{(n,a,b)\in DFG_\mathcal F^*\mid a=A\}=\{(1,A,B)\}$
+        \item $\{(n,a,b)\in DFG_\mathcal F^*\mid b=B\}=\{(1,A,B)\}$.
     \end{itemize}
     \item Basic block labels and register names carry no meaning and can be
           chosen arbitrarily.
@@ -821,12 +821,11 @@ define double @dot(double* %0, double* %1, i64 %2) {
         For a constraint problem $(V,C)$, an enumeration of
         $V=\{v_1,\dots,v_n\}$ with corresponding projections
         $p_k\colon\mathbb N^V\rightarrow\mathbb N^k$,
-        $x\mapsto(x_{v_1},\dots x_{v_k})$ can be chosen.
+        $x\mapsto(x_{v_1},\dots x_{v_k})$ is chosen.
         Then a collection $(B_k)_{k=1\dots n}$ of functions
-        $B_k:\mathcal M\times \mathbb N^{k-1}\times\rightarrow\mathcal P(\mathbb N)$,
-        where $\mathcal P(\mathbb N)$ is the set of all subsets of $\mathbb N$,
+        $B_k:\mathcal M\times \mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
         is a {\em backtracking solution} of $(V,C)$ if and only if for all
-        $x\in\mathbb N^V$ the following is satisfied
+        $x\in\mathbb N^V$ the following is satisfied:
         \begin{align}
             C(M,x)=1\iff\left[x_{v_k}\in B_k(M,p_{k-1}(x))=1\text{ for all }1\leq k\leq n\right].
         \end{align}
