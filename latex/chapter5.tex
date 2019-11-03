@@ -624,7 +624,7 @@ for(i = 0; i < n; i++) {
     The CAnDL programming language from \Cref{chapter:candl} is taken as the
     basis for this formulation.
     However, additional language constructs are required in order to capture
-    the kernel computations that are part of generalised reduction and histogram
+    the kernel computations that are part of complex reduction and histogram
     computations.
 
     This extensions of CAnDL leads to the definition of the
@@ -636,10 +636,94 @@ for(i = 0; i < n; i++) {
     characters.
     \Cref{CanDLtoIDL} shows syntax differences.
 
-\subsection{Kernel Functions}
-    
-    To enable the capture of higher order functions such as stencils or
-    reduction operations, we need to handle arbitrary kernel functions.
+\subsection{Kernel Functions in IDL}
+
+    Complex reduction and histogram computations can be expressed as a
+    higher-order function.
+    This means that the computational idiom is not just parameterised with
+    numerical values, such as array dimensions, but contains kernel functions
+    as parameters.
+    To enable the capture of higher-order functions in IDL, additional
+    constraint building blocks are required that go beyond what CAnDL
+    provided.
+
+\begin{figure*}[p]
+\centering
+\begin{tabular}{|c|rl|l|}
+\hline
+\multicolumn{1}{|c}{\bf Block} &  \multicolumn{2}{|c|}{\bf Operation} & \multicolumn{1}{c|}{\bf Dependences} \\
+\hline
+\hline
+\multirow{1}{*}{\bf loop}
+  & {\bf 1:} & \textcolor{gray}{$\text{goto }loop$}&\\
+\hline
+\multirow{12}{*}{\bf loop}
+  & {\bf  2:} & \textcolor{gray}{$i\leftarrow \Phi(entry:0,\ loop:i')$}&\textcolor{gray}{control({\bf 1, 28}), data({\bf 26})}\\[-2.2mm]
+  & {\bf  3:} & \textcolor{red}{$sx\leftarrow \Phi(entry:0.0,\ loop:sx'')$}&\textcolor{red}{\bf control({\bf 1, 28}), data({\bf 24})}\\[-2.2mm]
+  & {\bf  4:} & \textcolor{gray}{$sy\leftarrow \Phi(entry:0.0,\ loop:sy'')$}&\textcolor{gray}{control({\bf 1, 28}), data({\bf 25})}\\[-2.2mm]
+  & {\bf  5:} & \textcolor{gray}{$t_1\leftarrow 2\cdot i$}&\textcolor{gray}{control({\bf 1, 28}), data({\bf 2})}\\[-2.2mm]
+  & {\bf  6:} & \textcolor{red}{$t_2\leftarrow\textbf{load }x[t_1]$}&\textcolor{red}{\bf source of data flow}\\[-2.2mm]
+  & {\bf  7:} & $t_3\leftarrow 2.0\cdot t_2-1.0$&{\bf control({\bf 1, 28}), data({\bf 6})}\\[-2.2mm]
+  & {\bf  8:} & \textcolor{gray}{$t_4\leftarrow 2\cdot i+1$}&\textcolor{gray}{control({\bf 1, 28}), data({\bf 2})}\\[-2.2mm]
+  & {\bf  9:} & \textcolor{red}{$t_5\leftarrow\textbf{load }x[t_4]$}&\textcolor{red}{\bf source of data flow}\\[-2.2mm]
+  & {\bf 10:} & $t_6\leftarrow 2.0\cdot t_5-1.0$&{\bf control({\bf 1, 28}), data({\bf 9})}\\[-2.2mm]
+  & {\bf 11:} & $t_7\leftarrow t_3\cdot t_3+t_6\cdot t_6$&{\bf control({\bf 1, 28}), data({\bf 7, 10})}\\[-2.2mm]
+  & {\bf 12:} & $t_8\leftarrow t_7\leq1.0$&{\bf control({\bf 1, 28}), data({\bf 11})}\\[-2.2mm]
+  & {\bf 13:} & $\text{if }t_8\text{ goto }ifblock\text{ else }uncond$&{\bf control({\bf 1, 28}), data({\bf 12})}\\
+\hline
+\multirow{10}{*}{\bf ifblock}
+ & {\bf 14:} & $t_9\leftarrow sqrt(-2.0\cdot log(t_7) / t_7)$&{\bf control({\bf 13}), data({\bf 11})}\\[-2.2mm]
+ & {\bf 15:} & $t_{10}\leftarrow t_3*t_9$&{\bf control({\bf 13}), data({\bf 7, 14})}\\[-2.2mm]
+ & {\bf 16:} & \textcolor{gray}{$t_{11}\leftarrow t_6\cdot t_9$}&\textcolor{gray}{control({\bf 13}), data({\bf 10, 14})}\\[-2.2mm]
+ & {\bf 17:} & \textcolor{gray}{$l\leftarrow MAX(fabs(t_{10}), fabs(t_{11}))$}&\textcolor{gray}{control({\bf 13}), data({\bf 15, 16})}\\[-2.2mm]
+ & {\bf 18:} & \textcolor{gray}{$t_{12}\leftarrow\textbf{load }q[l]$}&\textcolor{gray}{source of data flow}\\[-2.2mm]
+ & {\bf 19:} & \textcolor{gray}{$t_{13}\leftarrow t_{12}+1$}&\textcolor{gray}{control({\bf 13}), data({\bf 18})}\\[-2.2mm]
+ & {\bf 20:} & \textcolor{gray}{$\textbf{store }q[l]\leftarrow t_{13}$}&\textcolor{gray}{control({\bf 13}), data({\bf 19})}\\[-2.2mm]
+ & {\bf 21:} & $sx'\leftarrow sx+t_{10}$&{\bf control({\bf 13}), data({\bf 3, 15})}\\[-2.2mm]
+ & {\bf 22:} & \textcolor{gray}{$sy'\leftarrow sy+t_{11}$}&\textcolor{gray}{control({\bf 13}), data({\bf 4, 16})}\\[-2.2mm]
+ & {\bf 23:} & $\text{goto }uncond$&{\bf control({\bf 13})}\\
+\hline
+\multirow{5}{*}{\bf uncond}
+ & {\bf 24:} & \textcolor{blue}{$sx''\leftarrow\Phi(loop:sx,\ ifblock:sx')$}&\textcolor{blue}{\bf control({\bf 13, 23}), data({\bf 3, 21})}\\[-2.2mm]
+ & {\bf 25:} & \textcolor{gray}{$sy''\leftarrow\Phi(loop:sy,\ ifblock:sy')$}&\textcolor{gray}{control({\bf 13, 23}), data({\bf 4, 22})}\\[-2.2mm]
+ & {\bf 26:} & \textcolor{gray}{$i'\leftarrow i+1$}&\textcolor{gray}{control({\bf 13, 23}), data({\bf 2})}\\[-2.2mm]
+ & {\bf 27:} & \textcolor{gray}{$t_{14}\leftarrow i' < NK$}&\textcolor{gray}{control({\bf 13, 23}), data({\bf 26})}\\[-2.2mm]
+ & {\bf 28:} & \textcolor{gray}{$\text{if }t_{14}\text{ goto }loop\text{ else }exit$}&\textcolor{gray}{control({\bf 13, 23}), data({\bf 27})}\\
+\hline
+{\bf exit}&&\dots&\\
+\hline
+\end{tabular}
+
+\begin{tabular}{|cl|}
+\multicolumn{2}{c}{{\bf function} kernel($sx, t_2, t_5$)}\\
+\hline
+\multirow{5}{*}{\bf entry} & $t_3 \leftarrow 2.0\cdot t_2-1.0$\\[-2.2mm]
+                           & $t_6 \leftarrow 2.0\cdot t_5-1.0$\\[-2.2mm]
+                           & $t_7 \leftarrow t_3\cdot t_3+t_6\cdot t_6$\\[-2.2mm]
+                           & $t_8 \leftarrow t_7\leq 1.0$\\[-2.2mm]
+                           & $\text{if }t_8\text{ goto }ifblock\text{ else }uncond$\\
+\hline
+\multirow{4}{*}{\bf ifblock} & $t_9\leftarrow sqrt(-2.0\cdot log(t_7) / t_7)$\\[-2.2mm]
+                             & $t_{10}\leftarrow t_3\cdot t_9$\\[-2.2mm]
+                             & $sx'\leftarrow sx+t_{10}$\\[-2.2mm]
+                             & $\text{goto }uncond$\\
+\hline
+\multirow{2}{*}{\bf uncond} & $sx''\leftarrow\Phi(loop:sx,\ ifblock:sx')$\\[-2.2mm]
+                            & $\text{return }sx''$\\
+\hline
+\end{tabular}
+\caption{A kernel function is identified within the SSA pseudocode at the top
+    (cf.\ \Cref{complex-reduction-figure}):
+    The value of $sx''$ is calculated in the SESE region spanning lines 4--35
+    as a pure function of only \mbox{$sx$, $t_2$, and $t_5$}.
+    This is determined by starting from $sx''$ (\textcolor{blue}{blue}) and
+    following the dependences on the right, checking that all paths end in the
+    predetermined function arguments \mbox{$sx$, $t_1$ and $t_5$
+    (\textcolor{red}{red})}.
+    The kernel function can then be extracted and valid SSA
+    reconstructed, as shown at the bottom.}
+\end{figure*}
+
     Kernel functions are sections of code that are side-effect free and
     can be separated out. Identifying side-effect free code is useful in
     many types of compiler optimisation.  It can be expressed in CAnDL, as
