@@ -552,6 +552,7 @@ for(i = 0; i < n; i++) {
     histogram kernel.
 
 \begin{figure}[t]
+\lstset{basicstyle=\linespread{0.91}\ttfamily}
 \begin{lstlisting}[language=MyCpp]
 for(i = 0; i < n; i++)
     hist[getchar()] += 1;
@@ -579,90 +580,64 @@ for(i = 0; i < n; i++) {
 \end{lstlisting}
 \end{figure}
 
-\begin{figure}[p]
-{\small
-A for loop is a tuple
-\begin{align*}
-(&\text{\tt entry, exit, loop begin, loop jump, test,}\\
- &\text{\tt loop body, backedge, iterator, next iter,}\\
- &\text{\tt iter begin, iter step, iter end})\\
- &\in\text{\tt LLVM::Value}^{12}
-\end{align*}
-such that the following holds:
-\begin{align*}
-&\texttt{entry}\xrightarrow[cfg]{sese}\texttt{exit}\mathrel{\land}\\
-&\texttt{entry}=\texttt{branch}(\texttt{loop begin})\mathrel{\land}\\
-&\texttt{loop jump}=\texttt{branch}(\texttt{test}, \texttt{loop body}, \texttt{exit})\mathrel{\land}\\
-&\texttt{loop body}\xrightarrow[cfg]{sese}\texttt{backedge}\mathrel{\land}\\
-&\texttt{backedge}=\texttt{branch}(\texttt{loop begin})\mathrel{\land}\\
-&\texttt{loop jump}\xrightarrow[cfg]{dominate}\texttt{exit}\mathrel{\land}\\
-&\texttt{test}=\texttt{int comparison}(\texttt{iterator},\texttt{iter end})\mathrel{\land}\\
-&(\texttt{iter end}\in\texttt{constant}\mathrel{\lor}\\
-&\texttt{iter end}\xrightarrow[cfg]{dominate}\texttt{entry})\mathrel{\land}\\
-&\texttt{iterator}=\Phi(\texttt{next iterator},\texttt{iter begin})\mathrel{\land}\\
-&(\texttt{iter begin}\in\texttt{constant}\mathrel{\lor}\\
-&\texttt{iter begin}\xrightarrow[cfg]{dominate}\texttt{entry}))\mathrel{\land}\\
-&\texttt{next iter}=\texttt{add}(\texttt{iterator},\texttt{iter step})\mathrel{\land}\\
-&(\texttt{iter step}\in\texttt{constant}\mathrel{\lor}\\
-&\texttt{iter step}\xrightarrow[cfg]{dominate}\texttt{entry}).
-\end{align*}}
-\caption{Constraint Formulation of For Loops}
-\label{for-loop-constraints}
-\end{figure}
+\section{The Idiom Description Language}
 
-%% The detection of loops in LLVM IR is of course a solved problem and LLVM has compiler passes for this purpose built in.
-%% Therefore it might seem pointless to explicitely state these properties again in this context.
-%% The algorithm that we will introduce is however much more flexible and can detect any computational idiom that can be formulated in this specification language.
+\begin{table}[b]
+    \lstset{keepspaces}
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        CAnDL & IDL\\
+        \hline
+        \hline
+        {\lstinline[language=CAnDL]!∧!}, {\lstinline[language=CAnDL]!∨!} &
+        {\lstinline[language=IDL]!and!}, {\lstinline[language=IDL]!or!} \\
+        \hline
+        {\lstinline[language=CAnDL]!include Spec({A}->{B}!}, &
+        {\lstinline[language=IDL]!inherits Spec with {A} as {B}!}\\[-1mm]
+        {\phantom{\lstinline[language=CAnDL]!include Spec(!}\lstinline[language=CAnDL]!{C}->{D})@{E}!} &
+        {\phantom{\lstinline[language=IDL]!inherits Spec w!}\lstinline[language=IDL]!and {C} as {D} at {E}!}\\
+        \hline
+        {\lstinline[language=CAnDL]!{A}={B}!},
+        {\lstinline[language=CAnDL]!{A}≠{B}!} &
+        {\lstinline[language=IDL]!{A} is [not] equal to {B}!} \\
+        \hline
+        {\lstinline[language=CAnDL]!domination({A},{B})!} &
+        {\lstinline[language=IDL]!{A} control flow dominates {B}!} \\
+        \hline
+        {\lstinline[language=CAnDL]!opcode{A} = store!} &
+        {\lstinline[language=IDL]!{A} is store instruction!} \\
+        \hline 
+        {\lstinline[language=CAnDL]!{A} ∈ {B}.args!} &
+        {\lstinline[language=IDL]!{A} has data flow to {B}!} \\
+        \hline
+    \end{tabular}
+    \caption{The Idiom Description Language (IDL) is derived from CAnDL.
+             However, it uses a more descriptive syntax, without uncommon
+             unicode characters such as ``$\land$'', ``$\lor$'', ``$\in$'',
+             and ``$\neq$''.\parfillskip=0pt}
+    \label{CanDLtoIDL}
+\end{table}
 
+    For automatic detection during compilation, these conditions need to be
+    specified formally in a constraint language.
+    The CAnDL programming language from \Cref{chapter:candl} is taken as the
+    basis for this formulation.
+    However, additional language constructs are required in order to capture
+    the kernel computations that are part of generalised reduction and histogram
+    computations.
 
-\begin{figure}[ht]
-\begin{align*}
-&\texttt{loop jump},x,a_1,\dots,a_n,c_1,\dots,c_n\xrightarrow[pdg]{1+dominate}x'\mathrel{\land}\\
-&(c_1\in\texttt{constant}\mathrel{\lor}\\
-&c_1\xrightarrow[cfg]{dominate}\texttt{entry})\mathrel{\land}\\
-&\dots\\
-&(c_m\in\texttt{constant}\mathrel{\lor}\\
-&c_m\xrightarrow[cfg]{dominate}\texttt{entry})\mathrel{\land}
-\end{align*}
-\caption{Constraint Formulation of Condition 4}
-\label{dom-expr-constraints}
-\end{figure}
+    This extensions of CAnDL leads to the definition of the
+    Idiom Description Language (IDL).
+    IDL uses the solver infrastructure of CAnDL and retains the same high-level
+    program structure.
+    However, it extends the language and modifies the syntax to be more
+    convenient for large-scale specifications by replacing uncommon Unicode
+    characters.
+    \Cref{CanDLtoIDL} shows syntax differences.
 
-\section{Formulation in CAnDL}
-
-These definitions need be formulated precisely in a constraint language in a form that can 
-automatically verified by a constraint solver.
-So we  developed a
-formal language  to achieve this.
-%% for this purpose that can also be used 
-%% to specify computational idioms such
-%%as scalar and histogram reductions. %%  Computational idioms are defined
-%% as a combination of constraints on LLVM IR values and the underlying
-%% data and control flow graphs.
-%The separation of the detection algorithm and the specification of the idiom 
-% allows for a very modular and extensible system.
-
-\Cref{for-loop-constraints} shows
-the formulation of the first condition regarding the type of loop structure allowed in this language.  
-\Cref{dom-expr-constraints} specifies the fourth condition.
-The first item in \Cref{dom-expr-constraints}  requires some clarifications.
-When we say that a node $a$ is {\tt 1+dominat}ed by nodes $b_1,\dots,b_n$, we do not mean that each individual node $b_k$ dominates $a$.
-Instead we mean that each path from a source (non pure function call, load instruction) to $a$ has to pass through {\em at least one} of the nodes $b_1,\dots,b_n$.
-This ensures that no other inputs influence the value of $x'$.
-We use the program dependence graph instead of the data flow graph to also allow well behaved control flow.
-It is obtained as the union of data flow and control dependence graph.
-This is the reason that we have to include \texttt{loop jump}, which reaches $x'$ in the program dependence graph.
-Including it takes care of the control flow outside of the loop body.
-
-The other conditions, and therefore the whole reduction idiom, can be specified using the same basic constraints as well.
-Due to space we omit further details.
-
-%% We now have a well defined specification of reductions.
-%% In the next section we will derive an algorithm that automatically finds parts of LLVM IR code in a given function that correspond to these specifications.
-
-
-\newpage
-
+\subsection{Kernel Functions}
+    
     To enable the capture of higher order functions such as stencils or
     reduction operations, we need to handle arbitrary kernel functions.
     Kernel functions are sections of code that are side-effect free and
@@ -716,11 +691,79 @@ End
     variabls from outer loops).
 
 
-\newpage
+\subsection{Complex Reductions and Histograms in IDL}
 
+    These definitions need be formulated precisely in a constraint language in a
+    form that can automatically verified by a constraint solver.
+    So we  developed a formal language  to achieve this.
+
+\begin{figure*}[p]
+\begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
+   {Complex reductions and histograms as an IDL specification}]
+Constraint ComplexReduction
+( inherits For and
+  collect k 32
+  ( inherits VectorRead
+        with {iterator} as {idx}
+         and {read_value[k]} as {value}
+         and {loop.begin} as {begin}
+                          at {read[k]}) and
+  collect k 2
+  ( inherits HistoPart
+        with {begin} as {begin}
+         and {read}  as {read}
+         and {loop}  as {loop}
+         and {read_value} as {read_value}
+                          at {histo[k]}) and
+  collect k 2
+  ( inherits ScalarPart
+        with {begin}      as {begin}
+         and {iterator}   as {iterator}
+         and {loop}       as {loop}
+         and {read_value} as {read_value}
+          at {scalar[k]}) and
+  {scalar[0].kernel.output} is not the same ([as])
+      {histo[0].update.store_instr} and
+  collect i 2
+  ( {histo[i].update.store_instr} is store instruction and
+    {loop.begin} control flow dominates
+        {histo[i].update.store_instr} and
+    {loop.end} control flow post dominates
+        {histo[i].update.store_instr}) and
+  collect i 32
+  ( inherits LocalFunctionCall
+        with {begin} as {begin}
+         and {loop.end} as {end} at {call[i]}) and
+  collect i 32
+  ( inherits LocalFunctionCall
+        with {begin} as {begin}
+         and {loop.end} as {end} at {call[i]} and
+    {call[i].function} has attribute pure))
+End
+\end{lstlisting}
+\end{figure*}
+
+\Cref{for-loop-constraints} shows
+the formulation of the first condition regarding the type of loop structure allowed in this language.  
+\Cref{dom-expr-constraints} specifies the fourth condition.
+The first item in \Cref{dom-expr-constraints}  requires some clarifications.
+When we say that a node $a$ is {\tt 1+dominat}ed by nodes $b_1,\dots,b_n$, we do not mean that each individual node $b_k$ dominates $a$.
+Instead we mean that each path from a source (non pure function call, load instruction) to $a$ has to pass through {\em at least one} of the nodes $b_1,\dots,b_n$.
+This ensures that no other inputs influence the value of $x'$.
+We use the program dependence graph instead of the data flow graph to also allow well behaved control flow.
+It is obtained as the union of data flow and control dependence graph.
+This is the reason that we have to include \texttt{loop jump}, which reaches $x'$ in the program dependence graph.
+Including it takes care of the control flow outside of the loop body.
+
+The other conditions, and therefore the whole reduction idiom, can be specified using the same basic constraints as well.
+Due to space we omit further details.
+
+%% We now have a well defined specification of reductions.
+%% In the next section we will derive an algorithm that automatically finds parts of LLVM IR code in a given function that correspond to these specifications.
+\newpage
 placeholder
-
 \newpage
+
 \section{Code Generation}
 %% To give speedup results in the evaluation section we implemented some functionality to use our detection functionality.
 %% More precisely we implemented a code transformation pass that automatically parallelizes histogram reductions.
