@@ -767,7 +767,7 @@ all flow from {loop_carried[1..3]} ([or]) any origin to any of
                              & $sx'\leftarrow sx+t_{10}$\\[-2mm]
                              & $\text{goto }uncond$\\
 \hline
-\multirow{2}{*}{\bf uncond} & $sx''\leftarrow\Phi(loop:sx,\ ifblock:sx')$\\[-2mm]
+\multirow{2}{*}{\bf uncond} & $sx''\leftarrow\Phi(entry:sx,\ ifblock:sx')$\\[-2mm]
                             & $\text{return }sx''$\\
 \hline
 \end{tabular}
@@ -845,7 +845,7 @@ all flow from {loop_carried[1..3]} ([or]) any origin to any of
 \begin{figure*}[p]
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
    {Complex reductions and histograms as an IDL specification}]
-Constraint ComplexReduction
+Constraint ComplexReductionsAndHistograms
 ( inherits For and
   collect k 32
   ( inherits VectorRead
