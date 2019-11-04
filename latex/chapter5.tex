@@ -694,10 +694,10 @@ all flow from {loop_carried[1..3]} ([or]) any origin to any of
     \noindent
     This assumes that other constraints make sure that
     the ``\texttt{precursor}'' and ``\texttt{backedge}'' are determined and
-    \texttt{outside[0..N]} contains
+    ``\texttt{outside[0..N]}'' contains
     all origins that lie outside the SESE region within which the kernel
     functions is considered.
-    Furthermore, the array \texttt{loop\_carried} needs to be constrained to
+    Furthermore, the array ``\texttt{loop\_carried}'' needs to be constrained to
     contain all loop-carried $\Phi$-instructions.
 
     Then it is easy to check that this constraint is satisfied:
@@ -785,107 +785,56 @@ all flow from {loop_carried[1..3]} ([or]) any origin to any of
 \label{kernelexample}
 \end{figure*}
 
-%    Kernel functions are sections of code that are side-effect free and
-%    can be separated out. Identifying side-effect free code is useful in
-%    many types of compiler optimisation.  It can be expressed in CAnDL, as
-%    shown in \Cref{fig:kernel}.
-%
-%\begin{figure}[ht]
-%\begin{lstlisting}[language=CAnDL,label={fig:kernel},caption=
-%   {CAnDL Formulation of Kernel Functions}]
-%Constraint KernelFunction
-%( collect i N
-%∧ ( include LocalConst({outer}->{begin}*@*{closure[i]}
-%  ∧ ir_type{closure[i].value} != literal
-%  ∧ {closure[i].use} ([$\tt \in$]) {closure[i].value}.args
-%  ∧ domination({inner}, {closure[i].use}))
-%∧ collect i N data_origin{tainted1[i]}
-%∧ collect i N
-%∧ ( domination({outer}, {tainted2[i]})
-%  ∧ strict_domination({tainted2[i]}, {inner}))
-%∧ calculated_from(
-%   {tainted1[0..N],tainted2[0..N]},
-%   {origin[0..N],closure[0..N].value,input[0..N]},
-%   {output}))
-%End
-%\end{lstlisting}
-%\end{figure}
-%
-%    Essentially, this set of contraints captures the computation of a
-%    single \texttt{output} value from a set of specified \texttt{input}
-%    values as well as a set of automatically captured \texttt{closure}
-%    variables.  The computation for \texttt{output} should be such that it
-%    can be replaced with a function call that is free of side effects and
-%    takes only the \texttt{input} and \texttt{closure} variables as
-%    arguments.
-%
-%    In addition to these variables, there are two non-obvious additional
-%    variables involved: \texttt{outer} and \texttt{inner}.
-%    These set boundaries in the control flow as follows: Closure values have to
-%    be computed before \texttt{outer} and the computation that results in outer
-%    is performed after \texttt{inner}.
-%    Usually these will be derived from loops nests, where \texttt{outer} is the
-%    entry to the outermost loop and \texttt{inner} is the entry to the innermost
-%    loop.
-%    The actual core constraint is then a generalized dominance relationship in
-%    the program dependence graph.
-%
-%    The use of the sets \texttt{tainted1} and \texttt{tainted2} makes sure that
-%    no impure functions are used in computing \texttt{output} and the entire
-%    computation is performed after \texttt{inner} (ruling out e.g.\ loop carried
-%    variabls from outer loops).
+    Kernel functions can be encapsulated as shown in the top half of
+    \Cref{IDLscalarPart} in IDL.
+    The specification is built around the previously introduced generalised
+    graph dominance constraint, which is in lines 18--22.
+    The relevant arrays which are passed to this final constraint are filled
+    using several collect-all constraints in lines 2--17.
+    Lines 2--3 collect all the entry points of control flow.
+    In the previous example, these were ``{\tt precursor}'' and
+    ``{\tt backedge}''.
+    Lines 4--12 collect all values from outside the scope that are used inside
+    the scope.
+    These values can be considered the closure of the kernel function.
+    Finally, lines 13--17 collect all the loop-carried $\Phi$-instructions,
+    which only exist in case the scope is a loop.
 
-    This can be encapsulated as shown at the top of \Cref{IDLscalarPart} in the
-    \texttt{KernelFunction} IDL specification.
-    The variables \texttt{inner} and \texttt{outer} define the scope of the
-    kernel function.
-    More specifically, all sources of data outside \texttt{outer} are masked out
-    and \texttt{inner} is considered as the control origin.
-    Typically, these variables are either identical, or \texttt{outer} captures
-    the outermost loop of a loop nest, while \texttt{inner} caputers the
-    innermost.
-
-    In line 2, all incoming control flow to \texttt{inner} is identified, which
-    is then used in the pivotal generalised dominance constraint in line 23.
-    The previous example had the variables {\tt precursor} and {\tt backedge}
-    fill this role.
-    Lines 3--11 collect all the sources of data from outside the scope of the
-    kernel function that are used within it.
-    This corresponds to the array \texttt{outside} in the previous example and
-    is also used in line 23.
-    Finally, lines 12--19
+    At the bottom of \Cref{IDLscalarPart} is the specification in IDL of a
+    scalar reduction within a complex reduction and histogram computation.
+    This IDL specification is built around a kernel function, incorporating the
+    specification in lines 13--14.
 
 \begin{figure*}[p]
 \begin{lstlisting}[language=IDL]
 Constraint KernelFunction
-( collect i  4 ( {origins[i]} has control
+( collect i  4 ( {entries[i]} has control
                      flow to {scope.begin}) and
   collect i 24 ( inherits LocalConst
                      with {scope} as {scope}
-                                  at {constants[i]} and
-                 {constants[i].value}
+                                  at {outside[i]} and
+                 {outside[i].value}
                      is not a numeric constant and
-                 {constants[i].value} has data
-                     flow to {constants[i].use} and
+                 {outside[i].value} has data
+                     flow to {outside[i].use} and
                  {scope.begin} control flow
-                     dominates {constants[i].use}) and
+                     dominates {outside[i].use}) and
   collect i  8 ( {loop_carried[i].update} reaches
                      phi node {loop_carried[i].value}
                      from {scope.end} and
                  {scope.begin} control flow
                      dominates {loop_carried[i].value}) and
-
   all flow from {loop_carried[0..8].value} ([or]) any origin
-      to any of {output} passes through ([at]) least one of
-      {origins[0..4],constants[0..24].value,input[0..32]})
+      to any of {result} passes through ([at]) least one of
+      {inputs[0..32],entries[0..4],outside[0..24].value})
 End
 \end{lstlisting}
 \begin{lstlisting}[language=IDL,label={IDLscalarPart},caption=
    {IDL specification of a scalar reduction within a complex reduction and
     histogram computation:
     The kernel function operates within a loop.
-    Its input \texttt{kernel.input} is composed of \texttt{read\_value} and the
-    reduction value of the previous iteration, concatednated with
+    Its input \texttt{kernel.inputs} is composed of \texttt{read\_values} and
+    the reduction value of the previous iteration, concatednated with
     \texttt{Concat}.
     \parfillskip=0pt}]
 Constraint ScalarPart
@@ -903,9 +852,9 @@ Constraint ScalarPart
   inherits KernelFunction
       with {loop} as {scope} at {kernel} and
   inherits Concat(N1=31,N2=1)
-      with {read_value}   as {in1}
-       and {old_value}    as {in2}
-       and {kernel.input} as {out})
+      with {read_values}   as {in1}
+       and {old_value}     as {in2}
+       and {kernel.inputs} as {out})
 End
 \end{lstlisting}
 \end{figure*}
@@ -924,24 +873,24 @@ Constraint ComplexReductionsAndHistograms
 ( inherits For at {loop} and
   collect k 32
   ( inherits VectorRead
-        with {loop.iterator} as {input_index}
-         and {read_value[k]} as {value}
-         and {loop}          as {scope}
-                             at {read[k]}) and
+        with {loop.iterator}  as {input_index}
+         and {read_values[k]} as {value}
+         and {loop}           as {scope}
+                              at {read[k]}) and
   collect k 2
   ( inherits HistoPart
-        with {loop.begin} as {begin}
-         and {read}       as {read}
-         and {loop}       as {loop}
-         and {read_value} as {read_value}
-                          at {histo[k]}) and
+        with {loop.begin}  as {begin}
+         and {read}        as {read}
+         and {loop}        as {loop}
+         and {read_values} as {read_values}
+                           at {histo[k]}) and
   collect k 2
   ( inherits ScalarPart
-        with {loop.begin}    as {begin}
-         and {loop}          as {loop}
-         and {read_value}    as {read_value}
-                             at {scalar[k]}) and
-  {scalar[0].kernel.output} is not the
+        with {loop.begin}  as {begin}
+         and {loop}        as {loop}
+         and {read_values} as {read_values}
+                           at {scalar[k]}) and
+  {scalar[0].kernel.result} is not the
       same ([as]) {histo[0].update.store_instr} and
   collect i 2
   ( {histo[i].update.store_instr}
