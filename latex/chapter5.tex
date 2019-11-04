@@ -875,8 +875,8 @@ Constraint KernelFunction
                  {scope.begin} control flow
                      dominates {loop_carried[i].value}) and
 
-  all flow from {loop_carried[0..8].value} or any origin
-      to any of {output} passes through at least one of
+  all flow from {loop_carried[0..8].value} ([or]) any origin
+      to any of {output} passes through ([at]) least one of
       {origins[0..4],constants[0..24].value,input[0..32]})
 End
 \end{lstlisting}
@@ -895,7 +895,7 @@ Constraint ScalarPart
       dominates {old_value} and
   {loop.end} strictly control flow
       post dominates {old_value} and
-  {old_value} is not the same as {loop.iterator} and
+  {old_value} is not the same ([as]) {loop.iterator} and
   {kernel.output} reaches phi node
       {final_value} from {loop.end} and
   {final_value} strictly control flow
@@ -921,43 +921,43 @@ End
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
    {Complex reductions and histograms as an IDL specification}]
 Constraint ComplexReductionsAndHistograms
-( inherits For and
+( inherits For at {loop} and
   collect k 32
   ( inherits VectorRead
-        with {iterator} as {idx}
+        with {loop.iterator} as {input_index}
          and {read_value[k]} as {value}
-         and {loop.begin} as {begin}
-                          at {read[k]}) and
+         and {loop}          as {scope}
+                             at {read[k]}) and
   collect k 2
   ( inherits HistoPart
-        with {begin} as {begin}
-         and {read}  as {read}
-         and {loop}  as {loop}
+        with {loop.begin} as {begin}
+         and {read}       as {read}
+         and {loop}       as {loop}
          and {read_value} as {read_value}
                           at {histo[k]}) and
   collect k 2
   ( inherits ScalarPart
-        with {begin}      as {begin}
-         and {iterator}   as {iterator}
-         and {loop}       as {loop}
-         and {read_value} as {read_value}
-          at {scalar[k]}) and
-  {scalar[0].kernel.output} is not the same ([as])
-      {histo[0].update.store_instr} and
+        with {loop.begin}    as {begin}
+         and {loop}          as {loop}
+         and {read_value}    as {read_value}
+                             at {scalar[k]}) and
+  {scalar[0].kernel.output} is not the
+      same ([as]) {histo[0].update.store_instr} and
   collect i 2
-  ( {histo[i].update.store_instr} is store instruction and
-    {loop.begin} control flow dominates
-        {histo[i].update.store_instr} and
-    {loop.end} control flow post dominates
-        {histo[i].update.store_instr}) and
+  ( {histo[i].update.store_instr}
+        is store instruction and
+    {loop.begin} control flow
+        dominates {histo[i].update.store_instr} and
+    {loop.end} control flow post
+        dominates {histo[i].update.store_instr}) and
   collect i 32
   ( inherits LocalFunctionCall
-        with {begin} as {begin}
-         and {loop.end} as {end} at {call[i]}) and
+        with {loop.begin} as {begin}
+         and {loop.end}   as {end} at {call[i]}) and
   collect i 32
   ( inherits LocalFunctionCall
-        with {begin} as {begin}
-         and {loop.end} as {end} at {call[i]} and
+        with {loop.begin} as {begin}
+         and {loop.end}   as {end} at {call[i]} and
     {call[i].function} has attribute pure))
 End
 \end{lstlisting}
