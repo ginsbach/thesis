@@ -468,7 +468,7 @@ for(i = 0; i < n; i++)
     parallelised as scalar reductions.
     The first and last example implement the same program.\parfillskip=0pt}]
 sum = 0;
-active = false;
+active = true;
 for(i = 0; i < n; i++) {
     sum += active?a[i]:0;
     active = active && (sum < 10);
@@ -571,7 +571,7 @@ for(i = 0; i < n; i++) {
     None of these computations can be parallelised as histograms.
     The final two example loops implement the same functionality.
     \parfillskip=0pt}]
-active = 0;
+active = true;
 for(i = 0; i < n; i++) {
     if(a[i] > 9)
         active = false;
@@ -858,28 +858,26 @@ all flow from {loop_carried[1..3]} ([or]) any origin to any of
 \begin{figure*}[p]
 \begin{lstlisting}[language=IDL]
 Constraint KernelFunction
-( collect i 4 {origin[i]} has control flow to {inner} and
+( collect i  4 ( {origins[i]} has control
+                     flow to {scope.begin}) and
   collect i 24 ( inherits LocalConst
-                     with {outer} as {begin}
+                     with {scope} as {scope}
                                   at {constants[i]} and
                  {constants[i].value}
                      is not a numeric constant and
-                 {constants[i].value} has
-                     data flow to {constants[i].use} and
-                 {inner} control flow
+                 {constants[i].value} has data
+                     flow to {constants[i].use} and
+                 {scope.begin} control flow
                      dominates {constants[i].use}) and
-  collect i 8 ( {outer} control flow
-                    dominates {restrictions[i].value} and
-                {restrictions[i].value} strictly
-                    control flow dominates {inner} and
-                {restrictions[i].value} has data flow to
-                    {restrictions[i].use} and
-                {inner} control flow
-                    dominates {restrictions[i].use}) and
+  collect i  8 ( {loop_carried[i].update} reaches
+                     phi node {loop_carried[i].value}
+                     from {scope.end} and
+                 {scope.begin} control flow
+                     dominates {loop_carried[i].value}) and
 
-  all flow from {restrictions[0..8].value} ([or]) any origin
-      to any of {output} passes through ([at]) least one of
-      {origin[0..4],constants[0..24].value,input[0..32]})
+  all flow from {loop_carried[0..8].value} or any origin
+      to any of {output} passes through at least one of
+      {origins[0..4],constants[0..24].value,input[0..32]})
 End
 \end{lstlisting}
 \begin{lstlisting}[language=IDL,label={IDLscalarPart},caption=
@@ -893,16 +891,17 @@ End
 Constraint ScalarPart
 ( {kernel.output} reaches phi node
       {old_value} from {loop.end} and
-  {old_value} strictly control flow
-      dominates {loop.end} and
-  {old_value} is not the same ([as]) {iterator} and
+  {loop.begin} control flow
+      dominates {old_value} and
+  {loop.end} strictly control flow
+      post dominates {old_value} and
+  {old_value} is not the same as {loop.iterator} and
   {kernel.output} reaches phi node
       {final_value} from {loop.end} and
   {final_value} strictly control flow
       post dominates {loop.end} and
   inherits KernelFunction
-      with {begin}      as {outer}
-       and {loop.begin} as {inner} at {kernel} and
+      with {loop} as {scope} at {kernel} and
   inherits Concat(N1=31,N2=1)
       with {read_value}   as {in1}
        and {old_value}    as {in2}
@@ -966,9 +965,6 @@ End
 
 \newpage
 \section{Code Generation}
-%% To give speedup results in the evaluation section we implemented some functionality to use our detection functionality.
-%% More precisely we implemented a code transformation pass that automatically parallelizes histogram reductions.
-%% We did not implement equivalent functionality for scalar reductions as preliminary runtime coverage results showed them to be almost irrelevant for the performance of many benchmark programs.
 
     The code generation pass immediately follows the CAnDL-generated detection
     pass.
