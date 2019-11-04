@@ -834,8 +834,84 @@ all flow from {loop_carried[1..3]} ([or]) any origin to any of
 %    no impure functions are used in computing \texttt{output} and the entire
 %    computation is performed after \texttt{inner} (ruling out e.g.\ loop carried
 %    variabls from outer loops).
-%
 
+    This can be encapsulated as shown at the top of \Cref{IDLscalarPart} in the
+    \texttt{KernelFunction} IDL specification.
+    The variables \texttt{inner} and \texttt{outer} define the scope of the
+    kernel function.
+    More specifically, all sources of data outside \texttt{outer} are masked out
+    and \texttt{inner} is considered as the control origin.
+    Typically, these variables are either identical, or \texttt{outer} captures
+    the outermost loop of a loop nest, while \texttt{inner} caputers the
+    innermost.
+
+    In line 2, all incoming control flow to \texttt{inner} is identified, which
+    is then used in the pivotal generalised dominance constraint in line 23.
+    The previous example had the variables {\tt precursor} and {\tt backedge}
+    fill this role.
+    Lines 3--11 collect all the sources of data from outside the scope of the
+    kernel function that are used within it.
+    This corresponds to the array \texttt{outside} in the previous example and
+    is also used in line 23.
+    Finally, lines 12--19
+
+\begin{figure*}[p]
+\begin{lstlisting}[language=IDL]
+Constraint KernelFunction
+( collect i 4 {origin[i]} has control flow to {inner} and
+  collect i 24 ( inherits LocalConst
+                     with {outer} as {begin}
+                                  at {constants[i]} and
+                 {constants[i].value}
+                     is not a numeric constant and
+                 {constants[i].value} has
+                     data flow to {constants[i].use} and
+                 {inner} control flow
+                     dominates {constants[i].use}) and
+  collect i 8 ( {outer} control flow
+                    dominates {restrictions[i].value} and
+                {restrictions[i].value} strictly
+                    control flow dominates {inner} and
+                {restrictions[i].value} has data flow to
+                    {restrictions[i].use} and
+                {inner} control flow
+                    dominates {restrictions[i].use}) and
+
+  all flow from {restrictions[0..8].value} ([or]) any origin
+      to any of {output} passes through ([at]) least one of
+      {origin[0..4],constants[0..24].value,input[0..32]})
+End
+\end{lstlisting}
+\begin{lstlisting}[language=IDL,label={IDLscalarPart},caption=
+   {IDL specification of a scalar reduction within a complex reduction and
+    histogram computation:
+    The kernel function operates within a loop.
+    Its input \texttt{kernel.input} is composed of \texttt{read\_value} and the
+    reduction value of the previous iteration, concatednated with
+    \texttt{Concat}.
+    \parfillskip=0pt}]
+Constraint ScalarPart
+( {kernel.output} reaches phi node
+      {old_value} from {loop.end} and
+  {old_value} strictly control flow
+      dominates {loop.end} and
+  {old_value} is not the same ([as]) {iterator} and
+  {kernel.output} reaches phi node
+      {final_value} from {loop.end} and
+  {final_value} strictly control flow
+      post dominates {loop.end} and
+  inherits KernelFunction
+      with {begin}      as {outer}
+       and {loop.begin} as {inner} at {kernel} and
+  inherits Concat(N1=31,N2=1)
+      with {read_value}   as {in1}
+       and {old_value}    as {in2}
+       and {kernel.input} as {out})
+End
+\end{lstlisting}
+\end{figure*}
+
+\newpage
 \subsection{Complex Reductions and Histograms in IDL}
 
     These definitions need be formulated precisely in a constraint language in a
@@ -888,23 +964,7 @@ End
 \end{lstlisting}
 \end{figure*}
 
-\Cref{for-loop-constraints} shows
-the formulation of the first condition regarding the type of loop structure allowed in this language.  
-\Cref{dom-expr-constraints} specifies the fourth condition.
-The first item in \Cref{dom-expr-constraints}  requires some clarifications.
-When we say that a node $a$ is {\tt 1+dominat}ed by nodes $b_1,\dots,b_n$, we do not mean that each individual node $b_k$ dominates $a$.
-Instead we mean that each path from a source (non pure function call, load instruction) to $a$ has to pass through {\em at least one} of the nodes $b_1,\dots,b_n$.
-This ensures that no other inputs influence the value of $x'$.
-We use the program dependence graph instead of the data flow graph to also allow well behaved control flow.
-It is obtained as the union of data flow and control dependence graph.
-This is the reason that we have to include \texttt{loop jump}, which reaches $x'$ in the program dependence graph.
-Including it takes care of the control flow outside of the loop body.
-
-The other conditions, and therefore the whole reduction idiom, can be specified using the same basic constraints as well.
-Due to space we omit further details.
-
 \newpage
-
 \section{Code Generation}
 %% To give speedup results in the evaluation section we implemented some functionality to use our detection functionality.
 %% More precisely we implemented a code transformation pass that automatically parallelizes histogram reductions.
