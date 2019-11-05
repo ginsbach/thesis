@@ -586,7 +586,26 @@ for(i = 0; i < n; i++) {
 
 \section{The Idiom Description Language}
 
-\begin{table}[b]
+    For automatic detection during compilation, these conditions need to be
+    specified formally in a constraint language.
+    The CAnDL programming language from \Cref{chapter:candl} is taken as the
+    basis for this formulation.
+    However, additional language constructs are required in order to capture
+    the kernel computations that are part of complex reduction and histogram
+    computations.
+
+    This extensions of CAnDL leads to the definition of the
+    Idiom Description Language (IDL).
+    IDL uses the solver infrastructure of CAnDL and retains the same high-level
+    program structure.
+    However, it extends the language and modifies the syntax to be more
+    convenient for large-scale specifications, replacing uncommon Unicode
+    characters.
+    \Cref{CanDLtoIDL} shows syntax differences.\footnote{The complete grammar
+    file that is used to generate the parser of the IDL compiler is in
+    Appendix~\ref{appendix:IDLgrammar}.}
+
+\begin{table}[H]
     \lstset{keepspaces}
     \centering
     \begin{tabular}{|l|l|}
@@ -622,25 +641,6 @@ for(i = 0; i < n; i++) {
              and ``$\neq$''.\parfillskip=0pt}
     \label{CanDLtoIDL}
 \end{table}
-
-    For automatic detection during compilation, these conditions need to be
-    specified formally in a constraint language.
-    The CAnDL programming language from \Cref{chapter:candl} is taken as the
-    basis for this formulation.
-    However, additional language constructs are required in order to capture
-    the kernel computations that are part of complex reduction and histogram
-    computations.
-
-    This extensions of CAnDL leads to the definition of the
-    Idiom Description Language (IDL).
-    IDL uses the solver infrastructure of CAnDL and retains the same high-level
-    program structure.
-    However, it extends the language and modifies the syntax to be more
-    convenient for large-scale specifications, replacing uncommon Unicode
-    characters.
-    \Cref{CanDLtoIDL} shows syntax differences.\footnote{The complete grammar
-    file that is used to generate the parser of the IDL compiler is in
-    Appendix~\Cref{appendix:IDLgrammar}.}
 
 \subsection{Kernel Functions in IDL}
 
