@@ -991,20 +991,25 @@ End
 
 \section{Code Generation}
 
-    The code generation pass immediately follows the CAnDL-generated detection
+    Parallel code generation immediately follows the CAnDL-generated detection
     pass.
-    It uses the detected constraint solution and parallelises the corresponding
-    loops.
-    For each reduction that is found, all the relevant input arrays and scope
-    variables are taken from the solution and packed into a structure together
-    with potential histogram arrays and some additional parameters.
-    A function is generated that takes this structure as its only parameter.
+    It uses the detected constraint solutions to reimplement the corresponding
+    loops using divide-and-conquer parallelism.
+
+    For each complex reduction and histogram loop that is found, the relevant
+    input arrays and closure variables are taken from the solution and packed
+    into a structure, together with any histogram arrays and the iteration
+    space boundaries.
+
+    A new function is generated that takes this structure as its only parameter.
     Depending on the amount of processors in the system and the recursion
-    depth, the function decides whether to bisect its workload recursively.
-    If not, it simply executes the histogram functionality.
-    Otherwise it uses \texttt{pthread\_create} to offload half of its
+    depth, the function makes a decision whether to bisect its workload
+    recursively.
+    If not, the loop is executed as before, using the arguments in the
+    structure.
+    Otherwise the function uses \texttt{pthread\_create} to offload half of its
     workload into another thread.
-    For this, it copies its parameter array but replaces the histogram array
+    For this, it copies its parameter array but replaces the histogram arrays
     with a newly allocated copy.
     After both threads finished their work, the copy is merged with the original
     histogram element wise and the copy is deallocated.
@@ -1019,40 +1024,43 @@ End
     Optimal code generation was not the main focus of this research and more
     sophisticated methods for the parallelization of reductions could be added.
 
-\pagebreak
 \section{Experimental Setup}
 
 \subsection{Benchmarks}
 
-    The prototype idiom detection pass pass applied to C versions of the
-    NAS Parallel Benchmarks.
-    Specifically, the SNU NPB implementation by the Seoul National University
-    was used, which contains the original 8 NAS benchmarks plus two of the newer
-    unstructured components UA and DC.
+    The prototype idiom detection pass was applied to C versions of the
+    NAS Parallel Benchmarks (NPB) \citep{Bailey1991NPB}, which were developed
+    by the NASA Advanced Supercomputing (NAS) Division.
+    Specifically, the Seoul National University (SNU) NPB implementation from
+    \citet{seo2011performance} was used, containing the original 8 NAS
+    benchmarks plus two of the more recent unstructured components UA and DC.
 
-    The approach was also evaluated on all Parboil and Rodinia benchmark
-    programs.
-    This constitutes 40 programs in total of varying length.
-    EP in NPB for instance is a single file of 324 lines in length.
-    Leukocyte in Rodinia by contrast contains over 50 files.
-    For each of the individual benchmark programs, the number of distinct scalar
+    The approach was also evaluated on all of the Parboil \citep{Stratton2018}
+    and Rodinia \citep{Che2009Rodinia} benchmark programs.
+    In total, this constitutes 40 programs of varying complexity.
+    The Embarrassingly Parallel (EP) program in NPB, for instance, is a single
+    file of 324 lines in length.
+    By contrast, Leukocyte in Rodinia contains over 50 source code files.
+    For each of the individual benchmark programs, the total number of scalar
     and histogram reductions found was collected.
 
 \subsection{Alternative approaches}
 
-    To provide a useful comparison we evaluated against two competitive
-    existing approaches. The first is a  recently published approach that
-    detects reductions within the polyhedral framework, the second is a mature
-    state-of-the-art industrial compiler.
+    To provide a useful comparison, the IDL approach was evaluated against two
+    state-of-the-art competitors.
+    The first is a recently published approach that transforms reductions within
+    the polyhedral framework; the second is a mature industrial compiler.
 
 \paragraph*{Polly-Reduction}
 
     \citet{Doerfert2015Polly} developed a compiler analysis and transformation
-    within Polly that detects reductions in Static Control Parts of programs.
-    This is implemented in Polly, an LLVM based polyhedral compiler.
-    The polyhedral model is extremely powerful when applicable and as Polly is
-    also LLVM based, this allows for a comparison against another approach that
-    uses the same IR and compiler infrastructure.
+    within that detects reductions in code that is captured by the
+    polyhedral model.
+    This is implemented in Polly, an LLVM-based polyhedral compiler
+    \citep{Lengauer2012Polly}.
+    The polyhedral model is extremely powerful when applicable, and as Polly is
+    also LLVM based, this allows for comparison against another approach that
+    uses the same compiler infrastructure.
 
     The sequential versions of the benchmark programs were compiled using
     version 3.9 of the Clang compiler with Polly built in.
@@ -1060,20 +1068,19 @@ End
     -mllvm -polly -mllvm -polly-export} were gathered during compilation.
     As any Polly based approach only works within these SCoPs, this gives an
     upper bound for the Polly-Reduction method.
-    Reductions within the SCoPS were then manually identified, and any reduction
-    within a SCoP was counted as a hit for Polly-Reduction.
+    Reductions within the SCoPS were then manually identified.
+    Any reduction within a SCoP was counted as a hit for Polly-Reduction.
     This gives an optimistic estimate as to what coverage a polyhedral based
     approach to reduction operations, such as the one presented in
     \citet{Doerfert2015Polly}, can achieve.
 
 \paragraph*{Intel icc}
 
-    The Intel icc compiler is a mature compiler incorporating
-    auto-parallelization and vectorization.
+    The Intel icc compiler is a mature compiler that incorporates
+    auto-parallelisation and vectorisation.
     It uses simpler data dependence analysis rather than the polyhedral model as
     its fundamental analysis tool.
-    It is therefore less powerful than polyhedral approaches, but sometimes more
-    robust in practice.
+    However, it is a very mature product and sometimes more robust in practice.
 
     For this evaluation, the benchmarks were compiled with the
     \texttt{-parallel -qopt-report} options.
@@ -1083,30 +1090,19 @@ End
     This also included in the detection results all those loops that icc
     considered possible but inefficient.
 
-
 \subsection{Platform}
 
     To determine runtime coverage and performance, the benchmarks were evaluated
     on a 64 core machine with four AMD Opteron(tm) 6376 processors and one
     terrabyte of RAM.
 
-%{\em MOB put in more details on platform}
-
-
-%% To measure the runtime coverage of the detected reductions we then used standard profiling techniques to weed out
-%% reductions located in functions that are irrelevant to the runtime.
-%% For the remaining reduction we annotated the source code with timing routines to investigate individual runtime
-%% impact.
-%% This of course modified the original program but the results were quite clear-cut and so we did not worry about this.
-
-%% For comparison we also evaluated the NAS Parallel Benchmarks using Polly and the Intel icc compiler.
-
 \section{Results}
 
-This section first presents the number of reduction found by the
-various schemes. This is followed an analysis of how significant each
-reduction is. Finally we show the performance impact of our scheme.
-   
+    This section first presents the number of reductions found by the various
+    different schemes.
+    This is followed by an analysis of how significant each reduction is.
+    Finally, the performance impact of the IDL-based approach is presented.
+       
 \subsection{Discovery}
 We applied our approach to the three benchmark suites  and the results are shown in \Cref{npb_spotted,parboil_spotted,rodinia_spotted}. 
 Across the suites, our detection algorithms
