@@ -9,6 +9,7 @@
 \usepackage{cleveref}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{caption}
 \usepackage{xcolor}
 \usepackage{calligra}
 \usepackage[T1]{fontenc}
@@ -25,6 +26,11 @@
 \usepackage{rotating}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
+
+\DeclareCaptionFormat{listing}{\linespread{1}\selectfont{}\parfillskip=0pt{#1#2#3}}
+\captionsetup[lstlisting]{format=listing,labelfont=bf}
+\captionsetup[figure]{format=listing,labelfont=bf}
+\captionsetup[table]{format=listing,labelfont=bf}
 
 \usetikzlibrary{patterns}
 \pgfplotsset{compat=1.13}

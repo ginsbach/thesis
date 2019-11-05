@@ -191,7 +191,7 @@ for(i = 0; i < n; i++)
 \begin{figure}[h]
 \begin{lstlisting}[language=MyCpp,label={complex-reduction-figure},caption=
    {Example of ``complex reductions and histograms'' computation:
-    This bottleneck from NAS Parallel Benchmarks can be parallelised as
+    The bottleneck from NAS Parallel Benchmarks can be parallelised as
     reductions by privatising variables \texttt{sx}, \texttt{sy}, \texttt{q[]}.
     \parfillskip=0pt}]
 for(i = 0; i < NK; i++) {
@@ -245,7 +245,7 @@ for(i = 0; i < NK; i++) {
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.99\textwidth]{figures/parallelisereduction.pdf}
+\includegraphics[width=\textwidth]{figures/parallelisereduction.pdf}
 \caption{Parallelisation of \Cref{complex-reduction-figure}:
          The input array \texttt{x} is split over two threads (red/blue)
          that operate on private copies of \texttt{sx}, \texttt{sy}, \texttt{q[]}.

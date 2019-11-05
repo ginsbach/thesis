@@ -104,9 +104,9 @@
 
 \begin{figure}[b]
 \centering
-\begin{minipage}[t]{0.67\textwidth}
+\begin{minipage}[t]{0.68\textwidth}
 \begin{lstlisting}[language=CAnDL,label={fig:candlspec},caption=
-   {The left side of \Cref{fig:root} as specified in CAnDL\parfillskip=0pt}]
+   {The left side of \Cref{fig:root} as specified in CAnDL}]
 Constraint SqrtOfSquare
 ( opcode{sqrt_call} = call
 ∧ {sqrt_fn} = {sqrt_call}.args[0]
@@ -323,18 +323,18 @@ End
     \hline
     $\text{\bf data\_type}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ &  $(s,x)\in T_\mathcal F$\\
     \hline
+    $\text{\bf opcode}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(s,x)\in I_\mathcal F$\\
+    \hline
     $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf literal}$ &  $x\in C_\mathcal F^*$\\
     $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf argument}$ & $x\in P_\mathcal F^*$\\
     $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf instruction}$ & $x\in I_\mathcal F^*$\\
-    \hline
-    $\text{\bf opcode}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(s,x)\in I_\mathcal F$\\
     \hline
     $\text{\bf function\_name}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(s,x)\in G_\mathcal F$\\
     \hline
   \end{tabular}
   \caption{The simplest atomic constraints operate on a single variable and
            check element-of properties for the different sets in the SSA model.
-           Function names are from the global model.\parfillskip=0pt}
+           Function names are from the global model.}
   \label{onevaratomics}
 \end{table}
 
@@ -357,8 +357,7 @@ End
   \end{tabular}
   \caption{The second class of atomic constraints operate on pairs of variables.
            The constraints check for graph edges in the
-           data flow and control low graphs, or simply for shallow equivalence.
-           \parfillskip=0pt}
+           data flow and control low graphs, or simply for shallow equivalence.}
   \label{twovaratomics}
 \end{table}
 
@@ -367,8 +366,11 @@ End
     The simplest group are those that operate on only a single variable,
     listed in \Cref{onevaratomics}.
     These operate immediately on the underlying mathematical structures, testing
-    element-of properties in the sets in order to constrain data types
-    ($T_\mathcal{F}$), instruction opcodes ($I_\mathcal{F}$), etc.
+    element-of properties between variables and the sets.
+    This can constrain data types ($T_\mathcal{F}$) and 
+    instruction opcodes ($I_\mathcal{F}$), or 
+    restrict variables to constant literals ($C_\mathcal{F}^*$), function
+    parameters ($P_\mathcal{F}^*$), and instructions ($I_\mathcal{F}^*$).
     At the bottom of the list is the {\bf function\_name} constraint.
     Function names can only be statically determined for direct function calls.
     In that case, the called object is necessarily a global value, and the
@@ -518,7 +520,7 @@ End
 \begin{lstlisting}[language=CAnDL,label={fig:forall},caption=
    {Example for the expansion of range constraints in CAnDL:
     The specification at the top can be ``unrolled'' manually, resulting in the
-    equivalent, but more verbose, specification below.\parfillskip=0pt}]
+    equivalent, but more verbose, specification below.}]
 Constraint ValueChain
 ( {element[0]} ([$\tt \in$]) {element[1]}.args
 ∧ {element[1]} ([$\tt \in$]) {element[2]}.args
@@ -1011,7 +1013,7 @@ result[2] = make_pair("right",    select<1>(constr2));
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.98\textwidth]{figures/visual_gui2.png}
+\includegraphics[width=\textwidth]{figures/visual_gui2.png}
 \caption{Interactive CAnDL test tool: The left hand panel shows a Static Control
         Part (SCoP) in Polybench jacobi-2d, the right hand panel shows the
         constraint solutions found by the solver.
@@ -1194,7 +1196,7 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\
 
 \begin{figure}[t]
 \begin{lstlisting}[language=CAnDL,label={fig:Lewis},caption=
-   {CAnDL defines multiplication chains involving genuine vectors and hoisted
+   {CAnDL defines multiplication chains with genuine vectors and hoisted
     scalars:
     After separating the two cases, some of the multiplications can be performed
     on scalars instead.\parfillskip=0pt}]

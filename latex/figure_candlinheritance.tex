@@ -1,5 +1,5 @@
 \lstset{
- basicstyle = \linespread{0.89}\ttfamily
+ basicstyle = \linespread{0.88}\ttfamily
 }
 \begin{lstlisting}[language=CAnDL]
 Constraint Sum
@@ -15,8 +15,9 @@ End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL,
                    label={fig:inheritsandrenameandrebase},caption=
-   {Example for the expansion of {\it include} constraints:
-    Both specifications are equivalent.\parfillskip=0pt}]
+   {Example for the expansion of {\it include} structure:
+    Both specifications are equivalent.
+    \leftskip=0pt\rightskip=0pt}]
 Constraint SumOfSums
 ( opcode{sum1.out} = add
 ∧ {sum1.in1} = {sum1.out}.args[0]
