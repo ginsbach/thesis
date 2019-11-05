@@ -912,11 +912,8 @@ End
 \end{lstlisting}
 \end{figure}
 
-\newpage
-
-    These definitions need be formulated precisely in a constraint language in a
-    form that can automatically verified by a constraint solver.
-    So we  developed a formal language  to achieve this.
+    \Cref{IDLcomplexred} shows how the previously shown IDL specifications can
+    be assembled to define  complex reduction and histogram computations.
 
 \begin{figure*}[p]
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
@@ -964,7 +961,6 @@ End
 \end{lstlisting}
 \end{figure*}
 
-\newpage
 \section{Code Generation}
 
     The code generation pass immediately follows the CAnDL-generated detection
@@ -995,6 +991,7 @@ End
     Optimal code generation was not the main focus of this research and more
     sophisticated methods for the parallelization of reductions could be added.
 
+\pagebreak
 \section{Experimental Setup}
 
 \subsection{Benchmarks}
