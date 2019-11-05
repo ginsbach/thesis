@@ -1,39 +1,49 @@
+\lstset {
+ captionpos = t
+}
 \centering
 \begin{minipage}[t]{\textwidth}
 \centering
 \begin{minipage}[t]{\textwidth}
+\lstset{
+ basicstyle       = \small\ttfamily,
+ numbers          = none,
+ framexleftmargin = 0pt,
+ xleftmargin      = 0pt,
+}
 \centering
-\vspace{-1em}
-\begin{lstlisting}[language=MyCpp,basicstyle=\small\ttfamily,
-                   numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
-                   captionpos=t,title={{\bf(a)} {} C program code:}]
+\vspace{-0.08cm}
+\begin{lstlisting}[language=MyCpp, title={{\bf(a)} {} C program code:}]
  double example(double a, double b) {return sqrt(a*a) + sqrt(b*b); }
 \end{lstlisting}
 \end{minipage}
+
 \begin{minipage}[t]{7.1cm}
 \centering
-\vspace{-0.19cm}
-\begin{lstlisting}[language={LLVM},
-                   captionpos=t,title={{\bf(b)} {} Resulting LLVM IR:}]
-define double @example(    
- double %0,                
- double %1) {              
- %3 = fmul double %0, %0   
+\vspace{-0.08cm}
+\begin{lstlisting}[language={LLVM}, title={{\bf(b)} {} Resulting LLVM IR:}]
+define double @example(
+ double %0,
+ double %1) {
+ %3 = fmul double %0, %0
  %4 = call double @sqrt(%3)
- %5 = fmul double %1, %1   
+ %5 = fmul double %1, %1
  %6 = call double @sqrt(%5)
- %7 = fadd double %4, %6   
+ %7 = fadd double %4, %6
  ret double %7 }
-declare double @sqrt(double)      
+declare double @sqrt(double)
 \end{lstlisting}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{3.5cm}
+\lstset{
+ numbers          = none,
+ framexleftmargin = 0pt,
+ xleftmargin      = 0pt
+}
 \centering
-\vspace{-0.19cm}
-\begin{lstlisting}[language=LLVM,
-                   numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
-                   captionpos=t,title={{\bf(c)} {} First solution:}]
+\vspace{-0.08cm}
+\begin{lstlisting}[language=LLVM, title={{\bf(c)} {} First solution:}]
 
 a = %0
 
@@ -48,11 +58,14 @@ sqrt_fn = @sqrt
 \end{minipage}
 \hfill
 \begin{minipage}[t]{3.5cm}
+\lstset{
+ numbers          = none,
+ framexleftmargin = 0pt,
+ xleftmargin      = 0pt
+}
 \centering
-\vspace{-0.19cm}
-\begin{lstlisting}[language=LLVM,
-                   numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
-                   captionpos=t,title={{\bf(d)} {} Second solution:}]
+\vspace{-0.08cm}
+\begin{lstlisting}[language=LLVM, title={{\bf(d)} {} Second solution:}]
 
 
 a = %1
@@ -69,12 +82,15 @@ sqrt_fn = @sqrt
 
 \begin{minipage}[t]{\textwidth}
 \begin{minipage}[t]{0.493\textwidth}
+\lstset{
+ numbers          = none,
+ framexleftmargin = 0pt,
+ xleftmargin      = 0pt
+}
 \centering
-\vspace{-0.19cm}
+\vspace{-0.08cm}
 \begin{lstlisting}[language=CAnDL,
-                   numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
-                   captionpos=t,title=
-   {{\bf(e)} {} Validating the first solution:}]
+                   title={{\bf(e)} {} Validating the first solution:}]
 ( opcode{%4} = call
 ∧ {@sqrt} = {%4}.args[0]
 ∧ function_name{@sqrt} = sqrt
@@ -86,12 +102,15 @@ sqrt_fn = @sqrt
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.493\textwidth}
+\lstset{
+ numbers          = none,
+ framexleftmargin = 0pt,
+ xleftmargin      = 0pt
+}
 \centering
-\vspace{-0.19cm}
+\vspace{-0.08cm}
 \begin{lstlisting}[language=CAnDL,
-                   numbers=none,framexleftmargin=0pt,xleftmargin=0pt,
-                   captionpos=t,title=
-   {{\bf(f)} {} Validating the second solution:}]
+                   title={{\bf(f)} {} Validating the second solution:}]
 ( opcode{%6} = call
 ∧ {@sqrt} = {%6}.args[0]
 ∧ function_name{@sqrt} = sqrt
@@ -105,9 +124,9 @@ sqrt_fn = @sqrt
 
 \begin{minipage}[t]{\textwidth}
 \centering
-\vspace{-0.19cm}
-\begin{lstlisting}[language=MyCpp,captionpos=t,title=
-   {{\bf(g)} {} Complementing C++ transformation code:}]
+\vspace{-0.08cm}
+\begin{lstlisting}[language=MyCpp,
+                   title={{\bf(g)} {} Complementing C++ transformation code:}]
 using namespace std;
 using namespace llvm;
 void transform(map<string,Value*> solution, Function* abs) {
@@ -120,8 +139,8 @@ void transform(map<string,Value*> solution, Function* abs) {
 
 \begin{minipage}[t]{\textwidth}
 \centering
-\vspace{-0.19cm}
-\begin{lstlisting}[language=LLVM,captionpos=t,title=
+\vspace{-0.08cm}
+\begin{lstlisting}[language=LLVM, title=
    {{\bf(h)} {} Transformed LLVM IR after dead code elimination:}]
 define double @example(double %0, double %1) {              
  %3 = call double @abs(double %0) 

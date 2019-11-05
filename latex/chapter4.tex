@@ -721,8 +721,10 @@ End
 \subsection{Expressing Larger Structures}
 
 \begin{figure}[p]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
-                   label={CAnDLSESE},caption=
+\lstset {
+ basicstyle=\linespread{0.962}\ttfamily
+}
+\begin{lstlisting}[language=CAnDL, label=CAnDLSESE, caption=
    {Single entry single exit region in CAnDL:
     The region spans from {\tt begin} to {\tt end}, with the entry as control
     flow {\tt precursor} to {\tt begin}, and the exit as control flow {\tt end}
@@ -741,8 +743,7 @@ Constraint SESE
 ∧ all control flow from {successor} to {end}
          passes through {begin}) End
 \end{lstlisting}
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
-                   label={CAnDLLoop},caption=
+\begin{lstlisting}[language=CAnDL, label=CAnDLLoop, caption=
    {Loops are defined in CAnDL as single entry single exit regions with a back
     edge.
     The back edge does not break the ``single exit'' condition, because it does
@@ -751,8 +752,7 @@ Constraint Loop
 ( include SESE
 ∧  {begin} ([$\tt\in$]) {end}.successors) End
 \end{lstlisting}
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
-                   label={localconstant},caption=
+\begin{lstlisting}[language=CAnDL, label=localconstant, caption=
    {This specification restricts {\tt value} to remain constant during the
     execution of a loop.
     It is underspecified on its own, and should be included in larger CAnDL
@@ -763,8 +763,7 @@ Constraint LocalConst
 ∨ ir_type{value} = argument
 ∨ strict_domination({value}, {loop.begin})) End
 \end{lstlisting}
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.96}\ttfamily,
-                   label={fig:arrayloop},caption=
+\begin{lstlisting}[language=CAnDL, label={fig:arrayloop}, caption=
    {Building blocks are combined to restrict the permitted memory access within
     a loop. \leftskip=0pt\rightskip=0pt}]
 Constraint PointerAccess
@@ -1386,15 +1385,17 @@ End
     instructions, and it is verified that both collections are identical.
 
 \begin{figure}[p]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{1}\small\ttfamily,
-                   label=polyhedralCAnDL, caption=
+\lstset {
+ basicstyle=\linespread{1.029}\small\ttfamily
+}
+\begin{lstlisting}[language=CAnDL, label=polyhedralCAnDL, caption=
    {Fragments from the specification of Scalar Control Parts (SCoPs) in CAnDL:
     In lines 1--18, SCoPs are defined by combining multiple restrictions on
     loop nests.
     These restrictions are then individually implemented in CAnDL, including the
     {\tt SideEffectFreePart} and {\tt AffineMemoryAccessPart}
     conditions that are shown.
-    The entire listing is in Appendix \ref{appendix:CAnDLpoly}.\parfillskip=0pt}]
+    The entire listing is in Appendix \ref{appendix:CAnDLpoly}.}]
 Constraint SCoP
 ( include For
 ∧ include StructuredControlFlowPart({body.begin}->{begin},
