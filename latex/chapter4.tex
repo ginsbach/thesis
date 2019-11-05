@@ -514,7 +514,7 @@ End
 \begin{figure}[t]
 \begin{lstlisting}[language=CAnDL]
 Constraint ValueChain
- {element[i] ([$\tt \in$]) {element[i+1]}.args foreach i=0..4
+ {element[i] ∈ {element[i+1]}.args foreach i=0..4
 End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL,label={fig:forall},caption=
@@ -522,10 +522,10 @@ End
     The specification at the top can be ``unrolled'' manually, resulting in the
     equivalent, but more verbose, specification below.}]
 Constraint ValueChain
-( {element[0]} ([$\tt \in$]) {element[1]}.args
-∧ {element[1]} ([$\tt \in$]) {element[2]}.args
-∧ {element[2]} ([$\tt \in$]) {element[3]}.args
-∧ {element[3]} ([$\tt \in$]) {element[4]}.args)
+( {element[0]} ∈ {element[1]}.args
+∧ {element[1]} ∈ {element[2]}.args
+∧ {element[2]} ∈ {element[3]}.args
+∧ {element[3]} ∈ {element[4]}.args)
 End
 \end{lstlisting}
 \end{figure}
@@ -665,7 +665,7 @@ End
     {\tt ins} are collected.\leftskip=0pt\rightskip=0pt}]
 Constraint CollectArguments
 ( ir_type{ins} = instruction
-∧ collect i N ({arg[i]} ([$\tt \in$]) {ins}.args))
+∧ collect i N ({arg[i]} ∈ {ins}.args))
 End
 \end{lstlisting}
 \end{figure}
@@ -702,8 +702,8 @@ End
     from floating point values.\leftskip=0pt\rightskip=0pt}]
 Constraint FloatingPointInstruction
 ( ir_type{ins} = instruction
-∧ collect i N ( {ins} ([$\tt \in$]) {arg[i]}.args)
-∧ collect i N ( {ins} ([$\tt \in$]) {arg[i]}.args
+∧ collect i N ( {ins} ∈ {arg[i]}.args)
+∧ collect i N ( {ins} ∈ {arg[i]}.args
               ∧ data_type{arg[i]} = float))
 End
 \end{lstlisting}
@@ -728,12 +728,12 @@ End
    {Single entry single exit region in CAnDL:
     The region spans from {\tt begin} to {\tt end}, with the entry as control
     flow {\tt precursor} to {\tt begin}, and the exit as control flow {\tt end}
-    to {\tt successor}.\parfillskip=0pt}]
+    to {\tt successor}.}]
 Constraint SESE
 ( opcode{precursor} = branch
-∧ {begin} ([$\tt\in$]) {precursor}.successors
+∧ {begin} ∈ {precursor}.successors
 ∧ opcode{end} = branch
-∧ {successor} ([$\tt\in$]) {end}.successors
+∧ {successor} ∈ {end}.successors
 ∧ domination({begin}, {end})
 ∧ post_domination({end}, {begin})
 ∧ strict_domination({precursor}, {begin})
@@ -747,10 +747,10 @@ Constraint SESE
    {Loops are defined in CAnDL as single entry single exit regions with a back
     edge.
     The back edge does not break the ``single exit'' condition, because it does
-    not exit the region.\parfillskip=0pt}]
+    not exit the region.}]
 Constraint Loop
 ( include SESE
-∧  {begin} ([$\tt\in$]) {end}.successors) End
+∧  {begin} ∈ {end}.successors) End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL, label=localconstant, caption=
    {This specification restricts {\tt value} to remain constant during the
