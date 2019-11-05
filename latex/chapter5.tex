@@ -1317,17 +1317,15 @@ Unfortunately, these were all scalar reductions; no histograms were detected.
 %%   \caption{Spotted Reductions in the Individual Benchmark Collections}
 %% \end{figure*}
 
-\begin{figure}[ht]
+\begin{figure}[p]
   \centering
-%  \begin{subfigure}[b]{0.49\textwidth}
-%    \centering
     \begin{tikzpicture}
       \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
                    xticklabel pos=upper, bar width=.3cm,
                    ymin=0, ymax=20, ytick={0,2,4,6,8,10,12,14,16,18,20},
                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
                    xticklabel style={rotate=0},
-                   width=9cm, height=5.56230589875cm, legend pos=north west]
+                   width=\textwidth, height=5.5cm, legend pos=north west]
         \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\NASPollyData};
         \legend{reduction SCoPs, other SCoPs}
@@ -1336,8 +1334,7 @@ Unfortunately, these were all scalar reductions; no histograms were detected.
     \caption{SCoPs in NAS}
     \label{npb_scops}
 \end{figure}
-
-\begin{figure}[ht]
+\begin{figure}[p]
     \centering
     \begin{tikzpicture}
       \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
@@ -1345,7 +1342,7 @@ Unfortunately, these were all scalar reductions; no histograms were detected.
                    ymin=0, ymax=3, ytick={0,1,2},
                    symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
                    xticklabel style={rotate=90},
-                   width=9cm, height=5.56230589875cm, legend pos=north east]
+                   width=\textwidth, height=5.5cm, legend pos=north east]
         \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\ParboilPollyData};
         \legend{reduction SCoPs, other SCoPs}
@@ -1354,8 +1351,7 @@ Unfortunately, these were all scalar reductions; no histograms were detected.
     \caption{SCoPS in Parboil}
     \label{parboil_scops}
 \end{figure}
-
-\begin{figure}[ht]
+\begin{figure}[p]
     \centering
     \begin{tikzpicture}
       \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
@@ -1363,7 +1359,7 @@ Unfortunately, these were all scalar reductions; no histograms were detected.
                    ymin=0, ymax=6, ytick={0,1,2,3,4,5},
                    symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
                    xticklabel style={rotate=90},
-                   width=9.5623058988cm, height=5.56230589875cm, legend pos=north east]
+                   width=\textwidth, height=5.5cm, legend pos=north east]
         \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\RodiniaPollyData};
         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\RodiniaPollyData};
         \legend{reduction SCoPs, other SCoPs}
