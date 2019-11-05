@@ -721,10 +721,10 @@ all flow from {loop_carried[1..3]} ([or]) any origin
 \multicolumn{1}{|c}{\bf Block} &  \multicolumn{2}{|c|}{\bf Operation} & \multicolumn{1}{c|}{\bf Dependences} \\
 \hline
 \hline
-\multirow{1}{*}{\bf loop}
+\multirow{1}{*}{\bf entry}
   & {\bf 1:} & \textcolor{color_strings}{$\text{goto }loop$}&\textcolor{color_strings}{\bf outside the considered region}\\
 \hline
-\multirow{12}{*}{\bf loop}
+\multirow{9}{*}{\bf loop\vspace{4.5mm}}
   & {\bf  2:} & \textcolor{gray}{$i\leftarrow \Phi(entry:0,\ loop:i')$}&\textcolor{gray}{loop carried data flow}\\[-1.7mm]
   & {\bf  3:} & \textcolor{color_types}{$sx\leftarrow \Phi(entry:0.0,\ loop:sx'')$}&\textcolor{color_types}{\bf loop carried data flow}\\[-1.7mm]
   & {\bf  4:} & \textcolor{gray}{$sy\leftarrow \Phi(entry:0.0,\ loop:sy'')$}&\textcolor{gray}{loop carried data flow}\\[-1.7mm]
@@ -738,7 +738,7 @@ all flow from {loop_carried[1..3]} ([or]) any origin
   & {\bf 12:} & $t_8\leftarrow t_7\leq1.0$&{\bf control({\bf 1, 28}), data({\bf 11})}\\[-1.7mm]
   & {\bf 13:} & $\text{if }t_8\text{ goto }ifblock\text{ else }uncond$&{\bf control({\bf 1, 28}), data({\bf 12})}\\
 \hline
-\multirow{10}{*}{\bf ifblock}
+\multirow{8}{*}{\bf ifblock\vspace{3mm}}
  & {\bf 14:} & $t_9\leftarrow sqrt(-2.0\cdot log(t_7) / t_7)$&{\bf control({\bf 13}), data({\bf 11})}\\[-1.7mm]
  & {\bf 15:} & $t_{10}\leftarrow t_3*t_9$&{\bf control({\bf 13}), data({\bf 7, 14})}\\[-1.7mm]
  & {\bf 16:} & \textcolor{gray}{$t_{11}\leftarrow t_6\cdot t_9$}&\textcolor{gray}{control({\bf 13}), data({\bf 10, 14})}\\[-1.7mm]
@@ -750,7 +750,7 @@ all flow from {loop_carried[1..3]} ([or]) any origin
  & {\bf 22:} & \textcolor{gray}{$sy'\leftarrow sy+t_{11}$}&\textcolor{gray}{control({\bf 13}), data({\bf 4, 16})}\\[-1.7mm]
  & {\bf 23:} & $\text{goto }uncond$&{\bf control({\bf 13})}\\
 \hline
-\multirow{5}{*}{\bf uncond}
+\multirow{4}{*}{\bf uncond\vspace{0.5mm}}
  & {\bf 24:} & \textcolor{color_keywords}{$sx''\leftarrow\Phi(loop:sx,\ ifblock:sx')$}&\textcolor{color_keywords}{\bf control({\bf 13, 23}), data({\bf 3, 21})}\\[-1.7mm]
  & {\bf 25:} & \textcolor{gray}{$sy''\leftarrow\Phi(loop:sy,\ ifblock:sy')$}&\textcolor{gray}{control({\bf 13, 23}), data({\bf 4, 22})}\\[-1.7mm]
  & {\bf 26:} & \textcolor{gray}{$i'\leftarrow i+1$}&\textcolor{gray}{control({\bf 13, 23}), data({\bf 2})}\\[-1.7mm]
@@ -762,19 +762,22 @@ all flow from {loop_carried[1..3]} ([or]) any origin
 \begin{tabular}{|cl|}
 \multicolumn{2}{c}{{\bf function} kernel($sx, t_2, t_5$)}\\
 \hline
-\multirow{5}{*}{\bf entry} & $t_3 \leftarrow 2.0\cdot t_2-1.0$\\[-1.7mm]
-                           & $t_6 \leftarrow 2.0\cdot t_5-1.0$\\[-1.7mm]
-                           & $t_7 \leftarrow t_3\cdot t_3+t_6\cdot t_6$\\[-1.7mm]
-                           & $t_8 \leftarrow t_7\leq 1.0$\\[-1.7mm]
-                           & $\text{if }t_8\text{ goto }ifblock\text{ else }uncond$\\
+\multirow{4}{*}{\bf entry\vspace{0.5mm}}
+ & $t_3 \leftarrow 2.0\cdot t_2-1.0$\\[-1.7mm]
+ & $t_6 \leftarrow 2.0\cdot t_5-1.0$\\[-1.7mm]
+ & $t_7 \leftarrow t_3\cdot t_3+t_6\cdot t_6$\\[-1.7mm]
+ & $t_8 \leftarrow t_7\leq 1.0$\\[-1.7mm]
+ & $\text{if }t_8\text{ goto }ifblock\text{ else }uncond$\\
 \hline
-\multirow{4}{*}{\bf ifblock} & $t_9\leftarrow sqrt(-2.0\cdot log(t_7) / t_7)$\\[-1.7mm]
-                             & $t_{10}\leftarrow t_3\cdot t_9$\\[-1.7mm]
-                             & $sx'\leftarrow sx+t_{10}$\\[-1.7mm]
-                             & $\text{goto }uncond$\\
+\multirow{4}{*}{\bf ifblock\vspace{4mm}}
+ & $t_9\leftarrow sqrt(-2.0\cdot log(t_7) / t_7)$\\[-1.7mm]
+ & $t_{10}\leftarrow t_3\cdot t_9$\\[-1.7mm]
+ & $sx'\leftarrow sx+t_{10}$\\[-1.7mm]
+ & $\text{goto }uncond$\\
 \hline
-\multirow{2}{*}{\bf uncond} & $sx''\leftarrow\Phi(entry:sx,\ ifblock:sx')$\\[-1.7mm]
-                            & $\text{return }sx''$\\
+\multirow{2}{*}{\bf uncond\vspace{2mm}}
+ & $sx''\leftarrow\Phi(entry:sx,\ ifblock:sx')$\\[-1.7mm]
+ & $\text{return }sx''$\\
 \hline
 \end{tabular}
 \caption{A kernel function is identified within the SSA pseudocode at the top
