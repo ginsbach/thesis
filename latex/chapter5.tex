@@ -555,7 +555,7 @@ for(i = 0; i < n; i++) {
 
 \begin{figure}[t]
 \lstset{
- basicstyle = \linespread{0.853}\ttfamily
+ basicstyle = \linespread{0.883}\ttfamily
 }
 \begin{lstlisting}[language=MyCpp]
 for(i = 0; i < n; i++)
@@ -605,7 +605,7 @@ for(i = 0; i < n; i++) {
     file that is used to generate the parser of the IDL compiler is in
     Appendix~\ref{appendix:IDLgrammar}.}
 
-\begin{table}[H]
+\begin{table}[h]
     \lstset{keepspaces}
     \centering
     \begin{tabular}{|l|l|}
@@ -791,21 +791,6 @@ all flow from {loop_carried[1..3]} ([or]) any origin to any of
 \label{kernelexample}
 \end{figure*}
 
-    Kernel functions can be encapsulated as shown in the top half of
-    \Cref{IDLscalarPart} in IDL.
-    The specification is built around the previously introduced generalised
-    graph dominance constraint, which is in lines 18--22.
-    The relevant arrays which are passed to this final constraint are filled
-    using several collect-all constraints in lines 2--17.
-    Lines 2--3 collect all the entry points of control flow.
-    In the previous example, these were ``{\tt precursor}'' and
-    ``{\tt backedge}''.
-    Lines 4--12 collect all values from outside the scope that are used inside
-    the scope.
-    These values can be considered the closure of the kernel function.
-    Finally, lines 13--17 collect all the loop-carried $\Phi$-instructions,
-    which only exist in case the scope is a loop.
-
 \begin{figure*}[p]
 \lstset{
  basicstyle = \linespread{1.112}\ttfamily
@@ -862,7 +847,22 @@ End
 \end{lstlisting}
 \end{figure*}
 
-\subsection{Complex Reductions and Histograms in IDL}
+\subsection{Encapsulating Kernel Functions in IDL}
+
+    Kernel functions can be encapsulated as shown in the top half of
+    \Cref{IDLscalarPart} in IDL.
+    The specification is built around the previously introduced generalised
+    graph dominance constraint, which is in lines 18--22.
+    The relevant arrays which are passed to this final constraint are filled
+    using several collect-all constraints in lines 2--17.
+    Lines 2--3 collect all the entry points of control flow.
+    In the previous example, these were ``{\tt precursor}'' and
+    ``{\tt backedge}''.
+    Lines 4--12 collect all values from outside the scope that are used inside
+    the scope.
+    These values can be considered the closure of the kernel function.
+    Finally, lines 13--17 collect all the loop-carried $\Phi$-instructions,
+    which only exist in case the scope is a loop.
 
     At the bottom of \Cref{IDLscalarPart} is the IDL specification of a
     scalar reduction within a complex reduction and histogram computation.
@@ -876,7 +876,7 @@ End
     ``{\tt final\_value}'' that captures the reduction result after the loop
     execution finished.
 
-    \autoref{IDLhistoPart} shows how histogram reductions can be specified
+    \autoref{IDLhistoPart} shows how histogram reductions are specified
     similarly.
     Two kernel functions are used to calculate the index of the bin in
     the histogram (lines 7--9) and the updated value of its contents
@@ -886,9 +886,10 @@ End
     Crucially, the kernel functions use the scope of the loop and already
     restrict the this conditional to only depend on the allowed values.
 
+
 \begin{figure}[H]
 \lstset{
- basicstyle = \linespread{0.991}\ttfamily
+ basicstyle = \linespread{1.062}\ttfamily
 }
 \begin{lstlisting}[language=IDL,label={IDLhistoPart},caption=
    {IDL specification of a histogram reduction within a complex reduction and
@@ -916,10 +917,31 @@ End
 \end{lstlisting}
 \end{figure}
 
-    \Cref{IDLcomplexred} shows how the previously shown IDL specifications can
-    be assembled to define  complex reduction and histogram
+\subsection{Complex Reductions and Histograms in IDL}
+
+    \Cref{IDLcomplexred} shows how the previously described IDL specifications
+    can be assembled to define the class of complex reduction and histogram
     computations.\footnote{The complete IDL code for this section is in
     Appendix~\ref{appendix:IDLreductions}.}
+
+    Such computations are always encapsulated by a single for loop, as
+    stipulated in line 2.
+    Lines 3--8 specify that input values are read from one or several input
+    arrays, according to the specification ``{\tt VectorRead}''.
+    The values are redirected to the ``{\tt read\_value}'' array, which is
+    passed in lines 14,20 to the individual ``{\tt HistoPart}'' and
+    ``{\tt ScalarPart}'' invocations.
+
+    Lines 22--23 implement a trick: The two compared variables can only be the
+    same, if they are both {\tt unused}.
+    Therefore, these lines simply enforce that the loop has to contain at least
+    one reduction or histogram computation.
+
+    Lines 24--30 make sure that there are no array writes aside from the
+    histogram updates.
+    Furthermore, lines 31--39 eliminate the possibility of effectful function
+    calls within the loop.
+    Together, these constraints rule out unwanted side effects of the loop.
 
 \begin{figure*}[p]
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
