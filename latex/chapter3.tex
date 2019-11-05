@@ -465,15 +465,15 @@
     (\cite{Verdoolaege:2013:PPC:2400682.2400713}) to generate CUDA and OpenCL
     code for multiple compute platforms.
 
-    There has also been recent work extending on \cite{rauchwerger1999lrpd}
+    There has also been recent work extending on \citet{rauchwerger1999lrpd}
     with more aggressive speculation and dynamic analysis
-    \cite{aguilar2015unified} to exploit reduction parallelism.
-    The authors of \cite{Han2010Speculative} present an approach for the
+    \citep{aguilar2015unified} to exploit reduction parallelism.
+    \citet{Han2010Speculative} present an approach for the
     parallelization of a wide class of scalar reductions.
     They start from the observation that many reductions in real benchmark
     programs are not detected by current static analysis approaches.
-    They propose a hardware assisted speculative parallelization approach for
-    likely runtime reductions, which they call `partial reduction variables'.
+    They propose a hardware assisted speculative parallelisation approach for
+    likely runtime reductions, denoted `partial reduction variables'.
     Candidates for speculative parallelization are determined by searching for
     update-chains in the data flow graph.
     The approach is evaluated on some of the SPEC2000 benchmarks using a
