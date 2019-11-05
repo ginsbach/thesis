@@ -1026,7 +1026,7 @@ End
 
 \section{Experimental Setup}
 
-\subsection{Benchmarks}
+\subsection{Benchmarks and Platform}
 
     The prototype idiom detection pass was applied to C versions of the
     NAS Parallel Benchmarks (NPB) \citep{Bailey1991NPB}, which were developed
@@ -1037,14 +1037,21 @@ End
 
     The approach was also evaluated on all of the Parboil \citep{Stratton2018}
     and Rodinia \citep{Che2009Rodinia} benchmark programs.
-    In total, this constitutes 40 programs of varying complexity.
+    In total, this constitutes 40 programs of varying complexity, shown in
+    \Cref{allbenchmarklist}.
     The Embarrassingly Parallel (EP) program in NPB, for instance, is a single
     file of 324 lines in length.
-    By contrast, Leukocyte in Rodinia contains over 50 source code files.
+    By contrast, the source code of Leukocyte in Rodinia is distributed over
+    more than 50 files.
     For each of the individual benchmark programs, the total number of scalar
     and histogram reductions found was collected.
 
-\subsection{Alternative approaches}
+    To determine runtime coverage and performance, all of the benchmarks were
+    evaluated on the same platform.
+    This was a 64 core machine with four AMD Opteron(tm) 6376 processors and
+    one terrabyte of RAM.
+
+\subsection{Competing Approaches}
 
     To provide a useful comparison, the IDL approach was evaluated against two
     state-of-the-art competitors.
@@ -1074,6 +1081,62 @@ End
     approach to reduction operations, such as the one presented in
     \citet{Doerfert2015Polly}, can achieve.
 
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\multirow{7}{*}{\bf NPB}
+ & BT\\[-2.4mm]
+ & CG & Conjugate Gradient\\[-2.4mm]
+ & DC\\[-2.4mm]
+ & EP\\[-2.4mm]
+ & FT\\[-2.4mm]
+ & IS\\[-2.4mm]
+ & LU\\[-2.4mm]
+ & MG\\[-2.4mm]
+ & SP\\[-2.4mm]
+ & UA\\
+\hline
+\multirow{7}{*}{\bf Parboil}
+ & bfs\\[-2.4mm]
+ & cutcp\\[-2.4mm]
+ & histo\\[-2.4mm]
+ & lbm\\[-2.4mm]
+ & mri-gridding\\[-2.4mm]
+ & mri-q\\[-2.4mm]
+ & sad\\[-2.4mm]
+ & sgemm\\[-2.4mm]
+ & spmv\\[-2.4mm]
+ & stencil\\[-2.4mm]
+ & tpacf\\
+\hline
+\multirow{12}{*}{\bf Rodinia}
+ & backprop\\[-2.4mm]
+ & bfs\\[-2.4mm]
+ & b+tree\\[-2.4mm]
+ & cfd\\[-2.4mm]
+ & heartwall\\[-2.4mm]
+ & hotspot\\[-2.4mm]
+ & hotspot3D\\[-2.4mm]
+ & kmeans\\[-2.4mm]
+ & lavaMD\\[-2.4mm]
+ & leukocyte\\[-2.4mm]
+ & lud\\[-2.4mm]
+ & mummergpu\\[-2.4mm]
+ & myocyte\\[-2.4mm]
+ & nn\\[-2.4mm]
+ & nw\\[-2.4mm]
+ & particlefilter\\[-2.4mm]
+ & pathfinder\\[-2.4mm]
+ & srad\\[-2.4mm]
+ & streamcluster\\
+\hline
+\end{tabular}
+\caption{Overview of the 40 individual benchmark programs, grouped into three
+         suites.}
+\label{allbenchmarklist}
+\end{table}
+
 \paragraph*{Intel icc}
 
     The Intel icc compiler is a mature compiler that incorporates
@@ -1090,13 +1153,6 @@ End
     This also included in the detection results all those loops that icc
     considered possible but inefficient.
 
-\subsection{Platform}
-
-    To determine runtime coverage and performance, the benchmarks were evaluated
-    on a 64 core machine with four AMD Opteron(tm) 6376 processors and one
-    terrabyte of RAM.
-
-\newpage
 \section{Results}
 \input{latex/data_reductions}
 
