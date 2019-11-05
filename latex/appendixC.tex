@@ -1,0 +1,182 @@
+\begin{figure}[h]
+\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.75}\small\ttfamily,
+                   captionpos=t,caption=
+   {Verbatim display of the grammar file that is used to generate the parser for
+    CAnDL.
+    The file is in a custom version of Backus–Naur form.
+    In the parse tree, all expressions that start with ``{@}'' are
+    automatically expanded.
+    The character ``\#'' marks the top-level language construct.
+    Any expression that does not ultimately become part of this construct
+    constitutes a syntax error.\parfillskip=0pt}]
+# ::= <specification>
+
+specification ::= Constraint <s> <@constraint> End
+
+@constraint ::= <@nested> | <conjunction> | <disjunction>
+              | <rename> | <if> | <default> | <collect> | <atom>
+              | <ConstraintOpcode> | <GeneralizedDominance>
+              | <GeneralizedSame>
+
+@nested ::= '(' <@constraint> ')'
+
+conjunction ::= '(' <@constraint> '∧' <@constraint>
+                                { '∧' <@constraint> } ')'
+
+disjunction ::= '(' <@constraint> '∨' <@constraint>
+                                { '∨' <@constraint> } ')'
+
+rename ::= ( <inheritance> | <forone> | <forall> | <forsome> )
+           [ '(' <@slot> '-' '>' <@slot>
+           { ',' <@slot> '-' '>' <@slot> } ')' ] [ '@' <@slot> ]
+
+inheritance ::= include <s> [ '[' <s> '=' <@calculation>
+                            { ',' <s> '=' <@calculation> } ']' ]
+
+forone ::= <@constraint> for <s> '=' <@calculation>
+
+forall ::= <@constraint> foreach <s> '=' <@calculation>
+                                    '..' <@calculation>
+
+forsome ::= <@constraint> forany <s> '=' <@calculation>
+                                    '..' <@calculation>
+
+if ::= if <@calculation> '=' <@calculation>
+     then <@constraint> else <@constraint> endif
+
+default ::= <@constraint> for <s> '=' <@calculation>
+            if not otherwise specified
+
+collect ::= collect <s> <n> <@constraint>
+\end{lstlisting}
+\end{figure}
+
+\begin{figure}[p]
+\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.85}\small\ttfamily,
+                   firstnumber=41]
+atom ::= <ConstraintIntegerType>   | <ConstraintFloatType>
+       | <ConstraintVectorType>    | <ConstraintPointerType>
+       | <ConstraintUnused>
+       | <ConstraintIntZero>       | <ConstraintFloatZero>
+       | <ConstraintConstant>      | <ConstraintPreexecution>
+       | <ConstraintArgument>      | <ConstraintInstruction>
+       | <ConstraintSame>          | <ConstraintDistinct>
+       | <ConstraintDFGEdge>       | <ConstraintCFGEdge>
+       | <ConstraintCDGEdge>       | <ConstraintPDGEdge>
+       | <ConstraintFirstOperand>  | <ConstraintSecondOperand>
+       | <ConstraintThirdOperand>  | <ConstraintFourthOperand>
+       | <ConstraintFirstSuccessor> | <ConstraintSecondSuccessor>
+       | <ConstraintThirdSuccessor> | <ConstraintFourthSuccessor>
+       | <ConstraintCFGDominate>   | <ConstraintCFGDominateStrict>
+       | <ConstraintCFGPostdom>    | <ConstraintCFGPostdomStrict>
+       | <ConstraintIncomingValue> | <ConstraintDFGBlocked>
+       | <ConstraintCFGBlocked>    | <ConstraintPDGBlocked>
+       | <ConstraintFunctionAttribute>
+
+ConstraintIntegerType ::= data_type <@slot> '=' integer
+ConstraintFloatType   ::= data_type <@slot> '=' float
+ConstraintVectorType  ::= data_type <@slot> '=' vector
+ConstraintPointerType ::= data_type <@slot> '=' pointer
+
+ConstraintUnused ::= <@slot> is unused
+ConstraintOpcode ::= opcode <@slot> = <s>
+
+ConstraintIntZero   ::= <@slot> is integer zero
+ConstraintFloatZero ::= <@slot> is floating point zero
+
+ConstraintConstant     ::= ir_type <@slot> '=' constant
+ConstraintPreexecution ::= ir_type <@slot> '=' preexecution
+ConstraintArgument     ::= ir_type <@slot> '=' argument
+ConstraintInstruction  ::= ir_type <@slot> '=' instruction
+
+ConstraintSame     ::= <@slot> '=' <@slot>
+ConstraintDistinct ::= <@slot> '≠' <@slot>
+
+ConstraintDFGEdge ::= <@slot> '∈' <@slot> '.' args
+ConstraintCFGEdge ::= <@slot> '∈' <@slot> '.' successors
+ConstraintCDGEdge ::= <@slot> has control dominance to <@slot>
+ConstraintPDGEdge ::= <@slot> has dependence edge to <@slot>
+
+ConstraintFirstOperand    ::= <@slot> '='
+                              <@slot> '.' args '[' 0 ']'
+ConstraintSecondOperand   ::= <@slot> '='
+                              <@slot> '.' args '[' 1 ']'
+ConstraintThirdOperand    ::= <@slot> '='
+                              <@slot> '.' args '[' 2 ']'
+ConstraintFourthOperand   ::= <@slot> '='
+                              <@slot> '.' args '[' 3 ']'
+ConstraintFirstSuccessor  ::= <@slot> '='
+                              <@slot> '.' successors '[' 0 ']'
+ConstraintSecondSuccessor ::= <@slot> '='
+                              <@slot> '.' successors '[' 1 ']'
+ConstraintThirdSuccessor  ::= <@slot> '='
+                              <@slot> '.' successors '[' 2 ']'
+ConstraintFourthSuccessor ::= <@slot> '='
+                              <@slot> '.' successors '[' 3 ']'
+\end{lstlisting}
+\end{figure}
+
+\begin{figure}[p]
+\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.85}\small\ttfamily,
+                   firstnumber=101]
+ConstraintCFGDominate       ::= domination            
+                                '(' <@slot> ',' <@slot> ')'
+ConstraintCFGPostdom        ::= post_domination
+                                '(' <@slot> ',' <@slot> ')'
+ConstraintCFGDominateStrict ::= strict_domination
+                                '(' <@slot> ',' <@slot> ')'
+ConstraintCFGPostdomStrict  ::= strict_post_domination
+                                '(' <@slot> ',' <@slot> ')'
+
+ConstraintIncomingValue ::= <@slot> '-' '>' <@slot> 'Φ' <@slot>
+
+ConstraintDFGBlocked ::= all data flow from <@slot> to <@slot>
+                                        passes through <@slot>
+
+ConstraintCFGBlocked ::= all control flow from <@slot> to <@slot>
+                                           passes through <@slot>
+
+ConstraintPDGBlocked ::= all flow from <@slot> to <@slot>
+                                   passes through <@slot>
+
+ConstraintFunctionAttribute ::= <@slot> has attribute pure
+
+GeneralizedSame  ::= <@slot> is the same set as <@slot>
+
+GeneralizedDominance ::= calculated_from '(' <@slot>
+                                         ',' <@slot>
+                                         ',' <@slot> ')'
+
+@slot ::= <slottuple> | '{' <@openslot> '}'
+
+slottuple ::= '{' <@openslot> ',' <@openslot>
+                            { ',' <@openslot> } '}'
+
+@openslot ::= <slotmember> | <slotindex> | <slotrange>
+            | <slottuple>  | <slotbase>
+
+slotmember ::= <@openslot> '.' <s>
+
+slotindex ::= <@openslot> '[' <@calculation> ']'
+
+slotrange ::= <@openslot> '[' <@calculation>
+                         '..' <@calculation> ']'
+
+slotbase ::= <s>
+
+@calculation ::= <addvar>   | <addconst> | <subvar>
+               | <subconst> | <basevar>  | <baseconst>
+
+addvar ::= <@calculation> '+' <s>
+
+addconst ::= <@calculation> '+' <n>
+
+subvar ::= <@calculation> '-' <s>
+
+subconst ::= <@calculation> '-' <n>
+
+basevar ::= <s>
+
+baseconst ::= <n>
+\end{lstlisting}
+\end{figure}
