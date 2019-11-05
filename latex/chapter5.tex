@@ -1111,38 +1111,48 @@ End
   \centering
     \begin{tikzpicture}
       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
-                   xticklabel pos=upper, bar width=.15cm,
+                   xticklabel pos=upper, bar width=.25cm,
                    ymin=0, ymax=13, ytick={0,2,4,6,8,10,12},
                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
                    xticklabel style={rotate=0},
-                   width=\textwidth, height=6cm, legend style={at={(0.5,0.98)},anchor=north}]
-        \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\NASDetectionData};
-        \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\NASDetectionData};
+                   width=\textwidth, height=5.5cm, legend style={at={(0.5,0.98)},anchor=north}]
+        \addplot [bar shift=-0.25cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\NASDetectionData};
+        \addplot [bar shift=-0.25cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\NASDetectionData};
         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\NASICCData};
-        \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
+        \addplot [bar shift=0.25cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
         \legend{histogram reductions, scalar reductions,icc reductions, Polly+reductions}
       \end{axis}
     \end{tikzpicture}
-    \caption{Reductions detected in NAS}
+    \caption{Reductions and histograms detected by the three competing
+             approaches in {\bf NPB}:
+             Most programs contain scalar reductions, which IDL detected
+             somewhat more reliably than ICC.
+             Only IDL detected histograms.
+             Most of the benchmarks were unsuitable for analysis with Polly.}
     \label{npb_spotted}
 \end{figure}
 \begin{figure}[p]
   \centering
     \begin{tikzpicture}
       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
-                   xticklabel pos=upper, bar width=.15cm,
+                   xticklabel pos=upper, bar width=.25cm,
                    ymin=0, ymax=9, ytick={0,2,4,6,8},
                    symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
                    xticklabel style={rotate=90},
-                   width=\textwidth, height=6cm, legend style={at={(0.98,0.98)},anchor=north east}]
-        \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\ParboilDetectionData};
-        \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\ParboilDetectionData};
+                   width=\textwidth, height=5.5cm, legend style={at={(0.98,0.98)},anchor=north east}]
+        \addplot [bar shift=-0.25cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\ParboilDetectionData};
+        \addplot [bar shift=-0.25cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\ParboilDetectionData};
         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\ParboilICCData};
-        \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
+        \addplot [bar shift=0.25cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
         \legend{histogram reductions, scalar reductions,icc reductions, Polly+reductions}
       \end{axis}
     \end{tikzpicture}
-    \caption{Reductions detected in Parboil}
+    \caption{Reductions and histograms detected by the 3 competing
+             approaches in {\bf Parboil}:
+             No reductions were detected by any scheme in half of the benchmark
+             components.
+             However, IDL identified histograms in ``histo'' and ``tpacf'', and
+             was never outperformed on scalar reductions.}
     \label{parboil_spotted}
 \end{figure}
 \begin{figure}[p]
@@ -1153,7 +1163,7 @@ End
                    ymin=0, ymax=11, ytick={0,2,4,6,8,10},
                    symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
                    xticklabel style={rotate=90},
-                   width=\textwidth, height=6cm, legend style={at={(0.02,0.98)},anchor=north west}]
+                   width=\textwidth, height=5.5cm, legend style={at={(0.02,0.98)},anchor=north west}]
         \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\RodiniaDetectionData};
         \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\RodiniaDetectionData};
         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\RodiniaICCData};
@@ -1161,7 +1171,10 @@ End
         \legend{histogram reductions, scalar reductions,icc reductions, Polly reductions}
       \end{axis}
     \end{tikzpicture}
-  \caption{Reductions detected in Rodinia}
+  \caption{Reductions and histograms detected by the 3 competing approaches
+           in {\bf Rodinia}:
+           Most programs contained scalar reductions.
+           IDL was matched by ICC on ``heartwall'' and ``srad''.}
     \label{rodinia_spotted}
 \end{figure}
 
