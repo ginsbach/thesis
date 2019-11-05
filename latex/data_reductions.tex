@@ -1,0 +1,210 @@
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & scalar reductions & histogram reductions & total reductions\\
+BT &  2 & 0 &  2 \\
+CG &  8 & 1 &  9\\
+DC &  6 & 0 &  6\\
+EP &  3 & 1 &  4\\
+FT &  0 & 0 &  0\\
+IS &  4 & 1 &  5\\
+LU &  0 & 0 &  0\\
+MG &  1 & 0 &  1\\
+SP &  2 & 0 &  2\\
+UA & 11 & 0 & 11\\
+}\NASDetectionData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & scalar reductions & histogram reductions & total reductions\\
+bfs          & 0 & 0 & 0\\
+cutcp        & 7 & 0 & 7\\
+histo        & 0 & 1 & 1\\
+lbm          & 0 & 0 & 0\\
+mri-gridding & 0 & 0 & 0\\
+mri-q        & 0 & 0 & 0\\
+sad          & 1 & 0 & 1\\
+sgemm        & 1 & 0 & 1\\
+spmv         & 0 & 0 & 0\\
+stencil      & 0 & 0 & 0\\
+tpacf        & 0 & 1 & 1\\
+}\ParboilDetectionData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & scalar reductions & histogram reductions & total reductions\\
+backprop       & 2 & 0 & 2\\
+bfs            & 0 & 0 & 0\\
+b+tree         & 2 & 0 & 2\\
+cfd            & 0 & 0 & 0\\
+heartwall      & 3 & 0 & 3\\
+hotspot        & 1 & 0 & 1\\
+hotspot3D      & 2 & 0 & 2\\
+kmeans         & 4 & 1 & 5\\
+lavaMD         & 1 & 0 & 1\\
+leukocyte      & 2 & 0 & 2\\
+lud            & 3 & 0 & 3\\
+mummergpu      & 1 & 0 & 1\\
+myocyte        & 2 & 0 & 2\\
+nn             & 1 & 0 & 1\\
+nw             & 0 & 0 & 0\\
+particlefilter & 9 & 0 & 9\\
+pathfinder     & 0 & 0 & 0\\
+srad           & 2 & 0 & 2\\
+streamcluster  & 3 & 0 & 3\\
+}\RodiniaDetectionData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & scalar reductions & histogram reductions\\
+BT & 0 & 0\\
+CG & 0.0150372131 & 0\\
+DC & 0 & 0\\
+EP & 0 & 0.46702\\
+FT & 0 & 0\\
+IS & 0 & 0.9837540635\\
+LU & 0 & 0\\
+MG & 0 & 0\\
+SP & 0 & 0\\
+UA & 0.0773052818 & 0\\
+}\NASCoverageData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & scalar reductions & histogram reductions\\
+bfs          & 0 & 0\\
+cutcp        & 0 & 0\\
+histo        & 0 & 0.9423193647\\
+lbm          & 0 & 0\\
+mri-gridding & 0 & 0\\
+mri-q        & 0 & 0\\
+sad          & 0 & 0\\
+sgemm        & 0.9780887552 & 0\\
+spmv         & 0 & 0\\
+stencil      & 0 & 0\\
+tpacf        & 0 & 0.999213841\\
+}\ParboilCoverageData
+
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & histogram reductions\\
+backprop       & 0\\
+bfs            & 0\\
+b+tree         & 0\\
+cfd            & 0\\
+heartwall      & 0\\
+hotspot        & 0\\
+hotspot3D      & 0\\
+kmeans         & 0.9998935921\\
+lavaMD         & 0\\
+leukocyte      & 0\\
+lud            & 0\\
+mummergpu      & 0\\
+myocyte        & 0\\
+nn             & 0\\
+nw             & 0\\
+particlefilter & 0\\
+pathfinder     & 0\\
+srad           & 0\\
+streamcluster  & 0\\
+}\RodiniaCoverageData
+
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & reduction SCoPs & other SCoPs\\
+BT &  1 & 8\\
+CG &  0 & 1\\
+DC &  0 & 0\\
+EP &  0 & 0\\
+FT &  0 & 1\\
+IS &  0 & 0\\
+LU &  0 & 5\\
+MG &  0 & 5\\
+SP &  1 & 17\\
+UA &  0 & 0\\
+    }\NASPollyData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & reduction SCoPs & other SCoPs\\
+bfs          & 0 & 0\\
+cutcp        & 0 & 0\\
+histo        & 0 & 0\\
+lbm          & 0 & 2\\
+mri-gridding & 0 & 0\\
+mri-q        & 0 & 0\\
+sad          & 0 & 1\\
+sgemm        & 1 & 0\\
+spmv         & 0 & 0\\
+stencil      & 0 & 1\\
+tpacf        & 0 & 0\\
+}\ParboilPollyData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & reduction SCoPs & other SCoPs & remainder SCoPs\\
+backprop       & 0 & 2 & 0 \\
+bfs            & 0 & 0 & 0 \\
+b+tree         & 0 & 0 & 0 \\
+cfd            & 0 & 5 & 0 \\
+heartwall      & 0 & 1 & 0 \\
+hotspot        & 0 & 0 & 0 \\
+hotspot3D      & 0 & 0 & 0 \\
+kmeans         & 0 & 2 & 0 \\
+lavaMD         & 0 & 0 & 0 \\
+leukocyte      & 0 & 2 & 0 \\
+lud            & 1 & 1 & 0 \\
+mummergpu      & 0 & 0 & 0 \\
+myocyte        & 0 & 1 & 0 \\
+nn             & 0 & 0 & 0 \\
+nw             & 0 & 0 & 0 \\
+particlefilter & 0 & 0 & 0 \\
+pathfinder     & 0 & 0 & 0 \\
+srad           & 0 & 0 & 0 \\
+streamcluster  & 0 & 0 & 0 \\
+}\RodiniaPollyData
+
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & detected by icc & not detected by icc\\
+BT &  2 & 0\\
+CG &  8 & 1\\
+DC &  3 & 3\\
+EP &  1 & 3\\
+FT &  0 & 0\\
+IS &  0 & 5\\
+LU &  0 & 0\\
+MG &  1 & 0\\
+SP &  0 & 0\\
+UA & 10 & 1\\
+}\NASICCData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & detected by icc & not detected by icc\\
+bfs          & 0 & 0\\
+cutcp        & 1 & 6\\
+histo        & 0 & 1\\
+lbm          & 0 & 0\\
+mri-gridding & 0 & 0\\
+mri-q        & 0 & 0\\
+sad          & 1 & 0\\
+sgemm        & 1 & 0\\
+spmv         & 0 & 0\\
+stencil      & 0 & 0\\
+tpacf        & 0 & 1\\
+}\ParboilICCData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & detected by icc & not detected by icc\\
+backprop       & 1 & 1\\
+bfs            & 0 & 0\\
+b+tree         & 0 & 2\\
+cfd            & 0 & 0\\
+heartwall      & 3 & 0\\
+hotspot        & 0 & 1\\
+hotspot3D      & 1 & 1\\
+kmeans         & 2 & 3\\
+lavaMD         & 0 & 1\\
+leukocyte      & 0 & 2\\
+lud            & 2 & 1\\
+mummergpu      & 0 & 1\\
+myocyte        & 2 & 0\\
+nn             & 0 & 1\\
+nw             & 0 & 0\\
+particlefilter & 8 & 1\\
+pathfinder     & 0 & 0\\
+srad           & 2 & 0\\
+streamcluster  & 2 & 1\\
+}\RodiniaICCData
