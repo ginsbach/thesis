@@ -5,15 +5,15 @@
 \hline
 {\bf entry} & $\text{goto } header$\\
 \hline
-\multirow{4}{*}{\bf header} & $i \leftarrow \Phi(entry:0,loop:i')$\\[-2pt]
-                            & $x \leftarrow \Phi(entry:1,loop:x')$\\[-2pt]
-                            & $c \leftarrow i<N$\\[-2pt]
+\multirow{4}{*}{\bf header} & $i \leftarrow \Phi(entry:0,loop:i')$\\
+                            & $x \leftarrow \Phi(entry:1,loop:x')$\\
+                            & $c \leftarrow i<N$\\
                             & $\text{if }c\text{ goto }loop\text{ else }exit$\\
 \hline
-\multirow{5}{*}{\bf loop} & $t_1\leftarrow S/x$\\[-2pt]
-                          & $t_2\leftarrow x+t_1$\\[-2pt]
-                          & $x'\leftarrow t_2/2$\\[-2pt]
-                          & $i'\leftarrow i+1$\\[-2pt]
+\multirow{5}{*}{\bf loop} & $t_1\leftarrow S/x$\\
+                          & $t_2\leftarrow x+t_1$\\
+                          & $x'\leftarrow t_2/2$\\
+                          & $i'\leftarrow i+1$\\
                           & $\text{goto }header$\\
 \hline
 {\bf exit} & $\text{return }x$\\
@@ -21,10 +21,10 @@
 \end{tabular}
 \end{minipage}
 
-\vspace{9.58919pt}
+\vspace{3.2mm}
 {\huge
 $\cong$}
-\vspace{9.58919pt}
+\vspace{3.2mm}
 
 $\left(
 \begin{minipage}{5.5cm}
