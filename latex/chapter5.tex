@@ -554,7 +554,9 @@ for(i = 0; i < n; i++) {
     histogram kernel.
 
 \begin{figure}[t]
-\lstset{basicstyle=\linespread{0.91}\ttfamily}
+\lstset{
+ basicstyle = \linespread{0.853}\ttfamily
+}
 \begin{lstlisting}[language=MyCpp]
 for(i = 0; i < n; i++)
     hist[getchar()] += 1;
@@ -634,9 +636,11 @@ for(i = 0; i < n; i++) {
     IDL uses the solver infrastructure of CAnDL and retains the same high-level
     program structure.
     However, it extends the language and modifies the syntax to be more
-    convenient for large-scale specifications by replacing uncommon Unicode
+    convenient for large-scale specifications, replacing uncommon Unicode
     characters.
-    \Cref{CanDLtoIDL} shows syntax differences.
+    \Cref{CanDLtoIDL} shows syntax differences.\footnote{The complete grammar
+    file that is used to generate the parser of the IDL compiler is in
+    Appendix~\Cref{appendix:IDLgrammar}.}
 
 \subsection{Kernel Functions in IDL}
 
@@ -913,7 +917,9 @@ End
 \end{figure}
 
     \Cref{IDLcomplexred} shows how the previously shown IDL specifications can
-    be assembled to define  complex reduction and histogram computations.
+    be assembled to define  complex reduction and histogram
+    computations.\footnote{The complete IDL code for this section is in
+    Appendix~\ref{appendix:IDLreductions}.}
 
 \begin{figure*}[p]
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
