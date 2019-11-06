@@ -1522,70 +1522,54 @@ for( i=0; i<NUM_KEYS; i++ )
 
 \subsection{Performance}
 
-The speedup that we were able to achieve by exploiting histograms is detailed in
-figure \ref{speedup-figure}.  We only evaluated this for benchmarks
-with significant runtime coverage of reductions.  The speedup that our
-parallelization pass can achieve is compared against the parallel
-benchmark versions that are shipped by the original implementors.  The
-baseline is the sequential version of the benchmark programs.
+    The speedup that was achieve by exploiting reduction parallelism on
+    histogram is detailed in figure \ref{speedup-figure}.
+    This was only evaluated for benchmarks with significant runtime coverage of
+    reductions.
+    The speedup from the IDL-based exploiting of reduction parallelism
+    are compared against the manually optimised parallel benchmark versions that
+    were shipped by the original implementors.
+    The baseline is the sequential version of the benchmark programs.
 
-%% \pgfplotstableread[row sep=\\,col sep=&]{
-%%     benchmark & parallel version & reduction parallelism \\
-%%     EP        &          32.7848 &                1.6207 \\
-%%     IS        &           6.3429 &                2.9211 \\
-%%     histo     &           1.0000 &                1.0000 \\
-%%     tpacf     &           1.0000 &               35.7074 \\
-%%     kmeans    &          21.3778 &               21.3778 \\
-%%     }\ParallelisationData
+    The IDL-based approach achieved $62\%$ speedup on ``EP'' over the whole
+    program.
+    This is limited by the run time coverage of the histogram loop.
+    Following Amdahl's Law
+    \citep{Amdahl:1967:VSP:1465482.1465560,Hill:2008:ALM:1449375.1449387},
+    parallelisation on 48 cores has a theoretical limit of
+    $1/((1-46\%)+46\%/48)-1=82\%$ speedup.
+    The manually implemented parallel version on the other hand uses coarser
+    parallelism and outperforms our reduction-based parallelisation.
 
-%% \begin{figure}[ht]
-%%   \centering
-%%   \begin{tikzpicture}
-%%     \begin{axis}[ybar, ymode=log, log ticks with fixed point, legend style={font=small},
-%%                  ymajorgrids, xtick style={transparent}, xtick=data,
-%%                  xticklabel pos=upper, bar width=.3cm,
-%%                  ymin=1, ymax=200, ytick={1,2,5,10,20,50,100,200},
-%%                  symbolic x coords={EP,IS,histo,kmeans,tpacf},
-%%                  ylabel={speedup vs sequential baseline},
-%%                  xticklabel style={rotate=0},
-%%                  width==8.09016994375cm, height=5cm, legend pos=north west]
-%%       \addplot [fill=lightgray!80!white] table[x=benchmark,y=parallel version]{\ParallelisationData};
-%%       \addplot [fill=black!80!white] table[x=benchmark,y=reduction parallelism]{\ParallelisationData};
-%%       \legend{original parallel version, reduction parallelism}
-%%     \end{axis}
-%%   \end{tikzpicture}
-%%   \caption{Speedup Potential in Reduction Operations}
-%%   \label{speedup-figure}
-%% \end{figure}
+    On the ``IS'' benchmark, the IDL-based parallelisation results in $2.9x$
+    speedup, compared to $6.3x$ speedup of the manual parallel version.
+    This discrepancy comes from the fact that the original version uses
+    knowledge about the distribution of the histogram keys that is not available
+    to IDL program.
+    As the keys are uniformly distributed, they can be efficiently sorted into
+    disjunct bins before executing the actual histogram.
+    This avoids the overhead of array privatisation.
+    A smarter code generation approach for IDL could narrow this gap.
 
+    The ``histo'' benchmark of Parboil uses an unusually large amount of bins
+    for the histogram.
+    The array privatisation prevents any parallel speedup in the program.
+    Interestingly, the parallel version that is provided by the implementers is
+    also inefficient and achieves no speedup against sequential on our system.
+    This suggests that there is no significant parallelisation potential
+    available in the program.
 
-In EP we achieve $62\%$ speedup over the whole program.
-On this benchmark program, our approach is limited by the coverage of the parallelized reduction operation.
-Linear speedup on the 48 cores of our computer would have resulted in $1/((1-0.46)+0.46/48)-1=82\%$ speedup.
-The original parallel version on the other hand uses coarser parallelism and outperforms our reduction based parallelization.
-
-On the IS benchmark, our automatic reduction based parallelization results in $2.9x$ speedup, compared to $6.3x$ speedup of the original parallel version.
-The discrepancy comes from the fact that the original version uses knowledge about the distribution of the histogram keys that is not available to our program.
-It can therefore sort the keys into disjunct bins before executing the actual histogram and thereby avoid array privatization.
-A smarter code generation approach could narrow this gap and we will explore this in future work.
-
-The histo benchmark of Parboil uses an excessively large amount of bins in the histogram.
-The array privatization prevents any parallel speedup in the program.
-The parallel version provided by the implementers also achieves no speedup against sequential on our system.
-
-%{\em MOB NO. Put in the reduction performance or remove}
-%{\em On the sgemm benchmark we achieve $104x$ speedup.
-%As the sgemm bottleneck is not a histogram computation, it is treated differently by our code transformation pass.
-%We use a extra code transformation pass that uses a formulation of matrix multiplication in our constraint language and replaces occurrences with calls to OpenBLAS.}
-
-On tpacf we achieve an almost linear speedup of $35.7074x$.
-%{\em MOB probably drop this text This result was achieved in a semi-manual fashion due to current limitations of our gode generator.
-%We did however follow the same approach mechanically.}
-The original version of this program is implemented poorly using a critical section, resulting in slowdown versus sequential execution on our highly parallel machine.% {\em MOB show the slowdown}.
+    On tpacf, the IDL-based reduction parallelism achieved an almost linear
+    speedup of $35.7x$.
+    The parallel version of this program is provided by the original
+    implementers to benchmark agains is implemented poorly using a critical
+    section.
+    This resulted in a slowdown compared to sequential execution on our highly
+    parallel machine.
 
 \section{Conclusion}
 
-This paper develops a new compiler based approach that
+This chapter developed a new compiler based approach that
 automatically detects a wide class of reductions. 
 %% Such reductions can
 %% contain general control-flow and non-linear access to arrays. 
@@ -1606,15 +1590,4 @@ reductions were shown to give significant performance improvement.
 Future work will extend the constraint formulation to consider other
 commonly occurring idioms and target domain specific languages. Once the number of idioms detected begins to grow, a smart profitability analysis will be needed and will also be the subject of future work.
 
-
-%% There are many scalar reduction that currently go undetected by established compiler approaches.
-%% The impact of these scalar reductions on the performance of real world software is mostly negligible.
-
-%% Histogram reductions have sofar not been extensively studied and none of the current approaches are able to deal with
-%% them.
-%% While they are less prevalent, they account for a significant amount of bottleneck computations, more so than scalar
-%% reductions.
-%% Approaches to the parallelistion of scalar reductions can be transferred to histogram reductions, making compiler based
-%% code transformations for the parallelisation of those computations possible.
-
-%% Constraint based approaches to the detection of computational idioms are more flexible than existing methods.
+\section{Summary}
