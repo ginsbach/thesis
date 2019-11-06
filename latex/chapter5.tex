@@ -889,7 +889,6 @@ End
     Crucially, the kernel functions use the scope of the loop and already
     restrict the this conditional to only depend on the allowed values.
 
-
 \begin{figure}[H]
 \lstset{
  basicstyle = \linespread{1.062}\ttfamily
@@ -1051,8 +1050,8 @@ End
 
     To determine runtime coverage and performance, all of the benchmarks were
     evaluated on the same platform.
-    This was a 64 core machine with four AMD Opteron(tm) 6376 processors and
-    one terrabyte of RAM.
+    This was a 64 core machine with four AMD Opteron 6376 processors and one
+    terrabyte of RAM.
 
 \subsection{Competing Approaches}
 
@@ -1140,9 +1139,9 @@ End
 \label{allbenchmarklist}
 \end{table}
 
-\paragraph*{Intel icc}
+\paragraph*{Intel ICC}
 
-    The Intel icc compiler is a mature compiler that incorporates
+    The Intel ICC compiler is a mature compiler that incorporates
     auto-parallelisation and vectorisation.
     It uses simpler data dependence analysis rather than the polyhedral model as
     its fundamental analysis tool.
@@ -1150,9 +1149,9 @@ End
 
     For this evaluation, the benchmarks were compiled with the
     \texttt{-parallel -qopt-report} options.
-    This generated icc optimisation reports.
-    Intel icc does not explicitly report reductions, but any reduction that was
-    within a loop that icc considered to be parallelisable was counted.
+    This generated optimisation reports.
+    Intel ICC does not explicitly report reductions, but any reduction that was
+    within a loop that ICC considered to be parallelisable was counted.
     This also included in the detection results all those loops that icc
     considered possible but inefficient.
 
@@ -1162,9 +1161,58 @@ End
     This section first presents the number of reductions found by the various
     different schemes.
     This is followed by an analysis of how significant each reduction is.
-    Finally, the performance impact of the IDL-based approach is presented.
+    Finally, the performance impact of the IDL-based approach is evaluated.
        
 \subsection{Discovery}
+
+    The detection schemes were applied to the three benchmark suites, with the
+    results shown in \Cref{npb_spotted,parboil_spotted,rodinia_spotted}. 
+    Across all the benchmark programs, the IDL specification captured a total of
+    84 scalar reductions and 6 histogram reductions.
+
+    \paragraph*{Discovered by IDL}
+    There were scalar reductions detected in nearly all of the individual NPB
+    programs, with ``UA'' having the highest number at 11.
+    Scalar reductions were less prevalent in Parboil with only 3 out of 11
+    benchmarks containing any.
+    Furthermore, these were unevenly distributed: out of a total of 9 scalar
+    reductions across all Parboil programs, 7 were in ``cutcp''.
+    The Rodinia benchmark collection contained many more identifiable reductions
+    than Parboil.
+    The IDL solver detected scalar reductions in 15 out of the 19 benchmarks,
+    with 9 reductions in the ``particlefilter'' program alone.
+
+    Every reduction that was captured by the two competing approaches was also
+    identified by the IDL solver.
+    However, there were some regions that could be classified as reductions
+    manually, but that did not adhere to the used IDL specification and thus
+    were discarded by the solver.
+    This was generally the case when the reduction loop was not the innermost
+    loop, as is the case for the example in \autoref{missedscalar}.
+    The outer three loops of this code section from the ``SP'' benchmark are
+    reduction loops, but this is obfuscated by the innermost loop.
+    Neither ICC nor Polly were able to detect this reduction.
+
+\begin{figure}[H]
+\begin{lstlisting}[language=MyCpp, label={missedscalar}, caption=
+   {Some reductions were missed by all detection approaches:
+    In this loop from ``SP'', the outer loops are reduction loops,
+    accumulating into the scalar variables
+    \texttt{rms[0]},\dots,\texttt{rms[4]},
+    but the innermost loop is not a reduction, and therefore it
+    is not captured by the IDL specification.}]
+for (k = 1; k <= nz2; k++) {
+  for (j = 1; j <= ny2; j++) {
+    for (i = 1; i <= nx2; i++) {
+      for (m = 0; m < 5; m++) {
+        add = rhs[k][j][i][m];
+        rms[m] = rms[m] + add*add;
+      } 
+    } 
+  } 
+}
+\end{lstlisting}
+\end{figure}
 
 \begin{figure}[p]
   \centering
@@ -1189,9 +1237,7 @@ End
              Only IDL detected histograms.
              Most of the benchmarks were unsuitable for analysis with Polly.}
     \label{npb_spotted}
-\end{figure}
-\begin{figure}[p]
-  \centering
+    \vspace{2.7mm}
     \begin{tikzpicture}
       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
                    xticklabel pos=bottom, bar width=.25cm,
@@ -1213,9 +1259,7 @@ End
              However, IDL identified histograms in ``histo'' and ``tpacf'', and
              was not outperformed on scalar reductions.}
     \label{parboil_spotted}
-\end{figure}
-\begin{figure}[p]
-  \centering
+    \vspace{2.7mm}
     \begin{tikzpicture}
       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
                    xticklabel pos=bottom, bar width=.15cm,
@@ -1237,57 +1281,18 @@ End
     \label{rodinia_spotted}
 \end{figure}
 
-We applied our approach to the three benchmark suites  and the results are shown in \Cref{npb_spotted,parboil_spotted,rodinia_spotted}. 
-Across the suites, our detection algorithms
-was able to identify 84 scalar reductions and 6 histogram reductions.
-
-%{\em MOB Why no reductions in FT and LU}.
-There were reductions detected in nearly all of the individual NAS benchmarks with UA having the highest number, 11.
-Reductions were less prevalent in Parboil with 5 out of 11
-benchmarks having reductions. Cutcp had the most, 7, reductions. 
-%{\em MOB Why no reductions in spmv,stencil}.
-Surprisingly, the Rodinia benchmark collection contained many more identifiable reductions than Parboil.
-Our program detected reductions in 15 out of the 19 benchmarks, with 9 reductions in the particlefilter program alone.
-
-There were some regions that we were able to identify as reductions manually that our system did not find.
-This was generally the case when the reduction loop was not the innermost loop, e.g.\ in the following code segment from SP.
-\begin{lstlisting}[language=MyCpp]
-for (k = 1; k <= nz2; k++) {
-  for (j = 1; j <= ny2; j++) {
-    for (i = 1; i <= nx2; i++) {
-      for (m = 0; m < 5; m++) {
-        add = rhs[k][j][i][m];
-        rms[m] = rms[m] + add*add;
-      } 
-    } 
-  } 
-}
-\end{lstlisting}
-
-
-Histogram reductions are rarer than scalar reductions.  However
-our algorithm was able to detect 3 in NAS, 2 in Parboil and 1 in
-Rodinia.   They were still fundamentally sums but contained
-complex expressions to compute the update values.  An  example is the
-inner most loop of this code snippet from backprop.
-\begin{lstlisting}[language=MyCpp]
-for (j = 1; j <= nh; j++) {
-  h = hidden[j];
-  sum = 0.0;
-  for (k = 1; k <= no; k++) {
-    sum += delta_o[k] * who[j][k];
-  }
-  delta_h[j] = h * (1.0 - h) * sum;
-  errsum += ABS(delta_h[j]);
-}
-\end{lstlisting}
-%{\em MOB say something interesting about the reductions found. Any unusual ones}
-
-%% The spotted hsitogram reductions looked much more diverse than the scalar reductions, which were mostly still slightly generalised sums of floating point numbers.
-%% We already saw the reduction in EP in figure \ref{complex-reduction-figure}.
-One interesting examples is tpacf from the Parboil benchmarks.
-In this reduction, the histogram index is computed via a binary search in an additional array.
-On the other hand the performance bottleneck of IS is a plain histogram without any complications.
+    Histogram reductions are rarer than scalar reductions.
+    However the IDL solver was able to detect 3 in NAS, 2 in Parboil and 1 in
+    Rodinia.
+    All of them eventually updated the bin value with an addition, but some
+    contained complex expressions in the kernel function to compute the addend,
+    as previously seen in \Cref{complex-reduction-figure} for the ``EP''
+    program.
+    Another interesting examples was tpacf from the Parboil benchmarks.
+    In this histogram reduction, the histogram index kernel function contains a
+    binary search .
+    On the other hand, the performance bottleneck of ``IS'' is a plain histogram
+    without any complications.
 \begin{lstlisting}[language=MyCpp]
 for( i=0; i<NUM_KEYS; i++ )
   key_buff_ptr[key_buff_ptr2[i]]++;
@@ -1299,7 +1304,7 @@ the NAS benchmarks: BT and SP, 1 in Parboil: sgemm and 1 in
 Rodina:leukocte. 4 in total compared to the 84 found by our scheme. It
 was unable to detect any of the histogram reductions.
 
-In contrast, the Intel icc compiler was more successful than Polly in detecting 
+In contrast, the Intel ICC compiler was more successful than Polly in detecting 
 reductions: 25  out if 38 in NAS, 3 out of 11 in Parboil and 23 out of 38 in Rodinia.
 Unfortunately, these were all scalar reductions; no histograms were detected.
 
@@ -1450,7 +1455,7 @@ These results are not entirely surprising, as the polyhedral model and Polly wer
 They do however imply that reduction detection based on Polly is severely limited.
 
 \paragraph{icc}
-The Intel icc compiler is more robust and does not require static
+The Intel ICC compiler is more robust and does not require static
 control flow as a precondition for its analysis. On the well
 structured NAS benchmarks, it performs well but fails to detect any
 reductions in IS.
