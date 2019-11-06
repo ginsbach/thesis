@@ -714,7 +714,7 @@ all flow from {loop_carried[1..3]} ([or]) any origin
     The three of these that can reach $sx''$ through the graph are explicitly
     killed as ``dominators''.
 
-\begin{figure*}[p]
+\begin{figure}[p]
 \centering
 \begin{tabular}{|c|rl|l|}
 \hline
@@ -792,9 +792,9 @@ all flow from {loop_carried[1..3]} ([or]) any origin
     reconstructed, as shown at the bottom.
     \parfillskip=0pt}
 \label{kernelexample}
-\end{figure*}
+\end{figure}
 
-\begin{figure*}[p]
+\begin{figure}[p]
 \lstset{
  basicstyle = \linespread{1.112}\ttfamily
 }
@@ -848,7 +848,7 @@ Constraint ScalarPart
        and {kernel.inputs} as {out})
 End
 \end{lstlisting}
-\end{figure*}
+\end{figure}
 
 \subsection{Encapsulating Kernel Functions in IDL}
 
@@ -945,7 +945,7 @@ End
     calls within the loop.
     Together, these constraints rule out unwanted side effects of the loop.
 
-\begin{figure*}[p]
+\begin{figure}[p]
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
    {Complex reductions and histograms as an IDL specification}]
 Constraint ComplexReductionsAndHistograms
@@ -989,7 +989,7 @@ Constraint ComplexReductionsAndHistograms
     {call[i].function} has attribute pure))
 End
 \end{lstlisting}
-\end{figure*}
+\end{figure}
 
 \section{Code Generation}
 
@@ -1579,118 +1579,6 @@ On tpacf we achieve an almost linear speedup of $35.7074x$.
 %{\em MOB probably drop this text This result was achieved in a semi-manual fashion due to current limitations of our gode generator.
 %We did however follow the same approach mechanically.}
 The original version of this program is implemented poorly using a critical section, resulting in slowdown versus sequential execution on our highly parallel machine.% {\em MOB show the slowdown}.
-
-%% \begin{figure*}[p]
-%%   \centering
-%%   \begin{subfigure}[b]{0.49\textwidth}
-%%     \centering
-%%     \begin{tikzpicture}
-%%       \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
-%%                    xticklabel pos=upper, bar width=.3cm,
-%%                    ymin=0, ymax=20, ytick={0,2,4,6,8,10,12,14,16,18,20},
-%%                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
-%%                    xticklabel style={rotate=0},
-%%                    width=9cm, height=5.56230589875cm, legend pos=north west]
-%%         \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
-%%         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\NASPollyData};
-%%         \legend{reduction SCoPs, other SCoPs}
-%%       \end{axis}
-%%     \end{tikzpicture}
-%%     \caption{NAS Parallel Benchmarks}
-%%     \label{npb_scops}
-%%   \end{subfigure}
-%%   \begin{subfigure}[b]{0.49\textwidth}
-%%     \centering
-%%     \begin{tikzpicture}
-%%       \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
-%%                    xticklabel pos=upper, bar width=.3cm,
-%%                    ymin=0, ymax=3, ytick={0,1,2},
-%%                    symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
-%%                    xticklabel style={rotate=90},
-%%                    width=9cm, height=5.56230589875cm, legend pos=north east]
-%%         \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
-%%         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\ParboilPollyData};
-%%         \legend{reduction SCoPs, other SCoPs}
-%%       \end{axis}
-%%     \end{tikzpicture}
-%%     \caption{Parboil Benchmarks}
-%%     \label{parboil_scops}
-%%   \end{subfigure}
-%%   \begin{subfigure}[b]{\textwidth}
-%%     \centering
-%%     \begin{tikzpicture}
-%%       \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
-%%                    xticklabel pos=upper, bar width=.3cm,
-%%                    ymin=0, ymax=6, ytick={0,1,2,3,4,5},
-%%                    symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
-%%                    xticklabel style={rotate=90},
-%%                    width=14.5623058988cm, height=5.56230589875cm, legend pos=north east]
-%%         \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\RodiniaPollyData};
-%%         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\RodiniaPollyData};
-%%         \legend{reduction SCoPs, other SCoPs}
-%%       \end{axis}
-%%     \end{tikzpicture}
-%%     \caption{Rodinia}
-%%     \label{rodinia_scops}
-%%   \end{subfigure}
-%% \caption{Polly SCoPs in the Individual Benchmark Collections}
-%% \end{figure*}
-
-%\begin{figure*}[p]
-%  \centering
-%  \begin{subfigure}[b]{0.49\textwidth}
-%    \centering
-%    \begin{tikzpicture}
-%      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data,
-%                   xticklabel pos=upper, bar width=.3cm,
-%                   ymin=0, ymax=13, ytick={0,2,4,6,8,10,12},
-%                   symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
-%                   xticklabel style={rotate=0},
-%                   width=9cm, height=5.56230589875cm, legend pos=north west]
-%        \addplot table[x=benchmark,y=detected by icc]{\NASICCData};
-%        \addplot table[x=benchmark,y=not detected by icc]{\NASICCData};
-%        \legend{detected by icc, not detected by icc}
-%      \end{axis}
-%    \end{tikzpicture}
-%    \caption{NAS Parallel Benchmarks}
-%    \label{npb_scops}
-%  \end{subfigure}
-%  \begin{subfigure}[b]{0.49\textwidth}
-%    \centering
-%    \begin{tikzpicture}
-%      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data,
-%                   xticklabel pos=upper, bar width=.3cm,
-%                   ymin=0, ymax=9, ytick={0,2,4,6,8},
-%                   symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
-%                   xticklabel style={rotate=90},
-%                   width=9cm, height=5.56230589875cm, legend pos=north east]
-%        \addplot table[x=benchmark,y=detected by icc]{\ParboilICCData};
-%        \addplot table[x=benchmark,y=not detected by icc]{\ParboilICCData};
-%        \legend{detected by icc, not detected by icc}
-%      \end{axis}
-%    \end{tikzpicture}
-%    \caption{Parboil Benchmarks}
-%    \label{parboil_scops}
-%  \end{subfigure}
-%  \begin{subfigure}[b]{\textwidth}
-%    \centering
-%    \begin{tikzpicture}
-%      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data,
-%                   xticklabel pos=upper, bar width=.3cm,
-%                   ymin=0, ymax=11, ytick={0,2,4,6,8,10},
-%                   symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
-%                   xticklabel style={rotate=90},
-%                   width=15cm, height=6cm, legend pos=north west]
-%        \addplot table[x=benchmark,y=detected by icc]{\RodiniaICCData};
-%        \addplot table[x=benchmark,y=not detected by icc]{\RodiniaICCData};
-%        \legend{detected by icc, not detected by icc}
-%      \end{axis}
-%    \end{tikzpicture}
-%    \caption{Rodinia}
-%    \label{rodinia_scops}
-%  \end{subfigure}
-%\caption{Reductions Detected by Intel icc}
-%\end{figure*}
 
 \section{Conclusion}
 

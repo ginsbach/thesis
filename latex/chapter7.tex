@@ -87,14 +87,14 @@ It also works on standard C/C++ and FORTRAN benchmark programs and C++ graph
 improvement across heterogeneous platforms, from 1.1x to over 10x, without any
 user intervention.
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \includegraphics[width=\textwidth]{figures/lilac_overview.pdf}
 \caption{LiLAC applied to NPB Conjugate Gradient:
          Code that matches the LiLAC-What specification is replaced with calls
          to a harness function. The harness is generated from a LiLAC-How
          specification to utilize Intel MKL.}
 \label{motivationcode}
-\end{figure*}
+\end{figure}
 
 \section{Overview}
 \label{sec:overview}
@@ -121,14 +121,14 @@ the right of the figure (5).
 The resulting shared library is then linked with the application binary at
 runtime, interfacing the underlying library implementation (6).
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \includegraphics[width=\textwidth]{figures/whathowflow.pdf}
 \caption{Overview of the LiLAC internals: On the left is the entire LiLAC
          program the library implementer must write. This results in a modified
          LiLAC-compiler in the bottom right that behaves as the shown in
          \autoref{motivationcode}.}
 \label{motivationflow}
-\end{figure*}
+\end{figure}
 
 \subsection{Implementation Overview}
 
@@ -789,7 +789,7 @@ memory transfer optimizations.
 
 \subsection{Performance}
 
-\begin{figure*}[t]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/baseline.pdf}
   \includegraphics[width=\linewidth]{figures/baseline_bench.pdf}
@@ -799,7 +799,7 @@ memory transfer optimizations.
            Bars show geometric mean speedup of best-performing LiLAC harness across the
            set of input examples for each benchmark and platform. }
   \label{spmv_app_perf}
-\end{figure*}
+\end{figure}
 
 The speedups that LiLAC achieves on real applications as well as benchmarks are
 shown in \autoref{spmv_app_perf}.

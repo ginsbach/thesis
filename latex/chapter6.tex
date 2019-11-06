@@ -891,19 +891,19 @@ Finally, we again replace the idiom code in the user's code with a call to the c
     We also compare against the handwritten OpenMP and OpenCL implementations
     that are included with the benchmark suites as reference implementations.
 
-\begin{figure*}[t]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/asplosplots/detection.pdf}
   \caption{The different computational idioms found in all benchmarks.}
   \label{detection-figure}
-\end{figure*}
-\begin{figure*}[t]
+\end{figure}
+\begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/asplosplots/coverage.pdf}
   \caption{Runtime coverage of the detected idioms in all benchmarks.}
   \label{coverage-figure}
   \vspace{0.5em}
-\end{figure*}
+\end{figure}
 
 \subsection{Idiom Detection}
 
@@ -1021,7 +1021,7 @@ All results include data transfer overhead to and from the GPUs.
 Here the best performing API is shown;
 \Cref{tab:detailed-results} provides detailed results for all APIs. 
 
-\begin{figure*}[t]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/asplosplots/speedup_vs_sequential_wide.pdf}
   \caption{Speedup compared to the sequential C program.
@@ -1034,14 +1034,14 @@ Here the best performing API is shown;
   \caption{Speedup of our constraints based approach (executed on the best hardware and highlighted in red) compared to handwritten parallel OpenCL (executed on the GPU) and OpenMP (executed on the CPU) implementations.}
   \label{fig:speedup-figure-2}
   \vspace{0.5em}
-\end{figure*}
+\end{figure}
 
 \newlength{\txtwd}
 \newcommand{\msb}[1]{\settowidth{\txtwd}{#1}{\scriptsize\ttfamily\bfseries \hfill\tiny #1}}
 \newcommand{\ms}[1]{\settowidth{\txtwd}{#1}{\scriptsize\ttfamily \hfill\tiny #1}}
 
 \addtolength{\tabcolsep}{-.25em}
-\begin{sidewaysfigure*}[p]
+\begin{sidewaysfigure}[p]
   \centering
   \scriptsize
   \begin{tabular}{l
@@ -1072,7 +1072,7 @@ Here the best performing API is shown;
 \caption{Detailed performance results for each heterogeneous API used in milliseconds.
          Fastest implementations for each benchmark and target hardware are highlighted in bold.}
 \label{tab:detailed-results}
-\end{sidewaysfigure*}
+\end{sidewaysfigure}
 \addtolength{\tabcolsep}{+.25em}
 
     For five benchmarks we obtain moderate speedups from 1.26$\times$ for
