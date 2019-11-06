@@ -1478,8 +1478,8 @@ histograms and missed all instances of them.
                  ylabel={speedup vs sequential baseline},
                  xticklabel style={rotate=0},
                  width=\textwidth, height=5.6cm, legend pos=north west]
-      \addplot [fill=lightgray!80!white] table[x=benchmark,y=parallel version]{\ParallelisationData};
-      \addplot [fill=black!80!white] table[x=benchmark,y=reduction parallelism]{\ParallelisationData};
+      \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=parallel version]{\ParallelisationData};
+      \addplot [bar shift=+0.15cm,fill=black!80!white] table[x=benchmark,y=reduction parallelism]{\ParallelisationData};
       \legend{manual parallel version, reduction parallelism}
     \end{axis}
     \end{tikzpicture}
