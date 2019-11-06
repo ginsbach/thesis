@@ -1354,36 +1354,43 @@ for( i=0; i<NUM_KEYS; i++ )
     \label{rodinia_scops}
 \end{figure}
 
-\paragraph*{Polly+Reduction}
-Polly+Reductions, however, is able to find just 2 scalar reductions in
-the NAS benchmarks: BT and SP, 1 in Parboil: sgemm and 1 in
-Rodina:leukocte. 4 in total compared to the 84 found by our scheme. It
-was unable to detect any of the histogram reductions.
+    \paragraph*{Polly-Reduction}
+    The Polly compiler captured only four code regions across all benchmark
+    programs that contained a single scalar reduction each.
+    These are in ``BT'' and ``SP'' from the NAS Parallel Benchmarks,
+    ``sgemm'' from the Parboil Benchmarks, and ``leukocte'' from Rodinia.
+    As expected, all of the loops that contain histogram computations were
+    unsuitable for polyhedral analysis.
+    This is due to the indirect memory access that forms an integral part of any
+    histogram computation.
 
-Polly+Reduction generally struggled with the more complex code bases of the
-Rodinia and Parboil benchmarks.  This was often not due to fundamental
-limitations of the polyhedral model.  Instead it was mostly the result
-of not statically known iteration spaces and the use of flat array
-structures. 
-\Cref{npb_scops,parboil_scops,rodinia_scops}
-show the number of static control
-parts (SCoPs) that baseline Polly finds. As the reduction pass of
-Polly requires SCoPS these provide a natural upper bound on the
-number of restrictions.  On 23 of the 40 benchmarks, Polly found no
-SCoPs at all.  This corresponded to $40\%$ of NPB, $63.6\%$ of the
-Parboil Benchmarks and $63.2\%$ of Rodinia.
+    Aside from the fundamental limitation for histogram computations, Polly
+    struggled with the more complex code bases of the Rodinia and Parboil
+    benchmarks.
+    This was not always due to fundamental limitations of the polyhedral model.
+    Instead, it was often the result of not statically known iteration spaces
+    and the use of flat array structures.
 
-The vast majority of the SCoPs that Polly detected were in stencil computations.
-The stencil based programs LU, BT, SP and MG in the NAS Parallel Benchmarks alone accounted for 37 of the 62 SCoPs that were found across all benchmarks ($59.6\%$). 
-In the NAS Parallel Benchmarks and the Parboil Benchmarks we were only able to identify three scalar reductions contained in SCoPs.
+    \Cref{npb_scops,parboil_scops,rodinia_scops} show the number of Static
+    Control Parts (SCoPs) that Polly finds accross the 40 individual programs.
+    Detecting such SCoPs is the first part of any polyhedral analysis.
+    As program code outside of SCoPs is left untouched by Polly, this provides
+    an upper bound for the detection of reductions.
+    In 23 of the 40 benchmarks, Polly found no
+    SCoPs at all.  This corresponded to $40\%$ of NPB, $63.6\%$ of the
+    Parboil Benchmarks and $63.2\%$ of Rodinia.
 
-These results are not entirely surprising, as the polyhedral model and Polly were not created for the purpose of optimising reduction operations in particular.
-They do however imply that reduction detection based on Polly is severely limited.
+    The vast majority of the SCoPs that Polly detected were in stencil
+    computations.
+    The stencil based programs ``LU'', ``BT'', ``SP'' and ``MG'' in the NAS
+    Parallel Benchmarks alone accounted for 37 of the 62 SCoPs that were found
+    across all benchmarks ($59.6\%$). 
 
-\paragraph*{Intel ICC}
-In contrast, the Intel ICC compiler was more successful than Polly in detecting 
-reductions: 25  out if 38 in NAS, 3 out of 11 in Parboil and 23 out of 38 in Rodinia.
-Unfortunately, these were all scalar reductions; no histograms were detected.
+    \paragraph*{Intel ICC}
+    The Intel ICC compiler was more successful than Polly in detecting
+    reductions: 25 out of 38 in NAS, 3 out of 11 in Parboil and 23 out of 38 in
+    Rodinia.
+    These were all scalar reductions; no histograms were detected.
 
 The Intel ICC compiler is more robust and does not require static
 control flow as a precondition for its analysis. On the well
