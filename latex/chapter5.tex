@@ -1422,7 +1422,7 @@ histograms and missed all instances of them.
                    ymin=0, ymax=1.5, ytick={0.2,0.4,0.6,0.8,1.0},
                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
                    xticklabel style={rotate=90},
-                   width=\textwidth, height=6cm, legend pos=north west]
+                   width=\textwidth, height=5.6cm, legend pos=north west]
         \addplot [bar shift=0.00cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\NASCoverageData};
         \addplot [bar shift=0.00cm,fill=black!80!white] table[x=benchmark,y=histogram reductions]{\NASCoverageData};
         \legend{scalar reductions, histogram reductions}
@@ -1438,7 +1438,7 @@ histograms and missed all instances of them.
                    ymin=0, ymax=1.5, ytick={0.2,0.4,0.6,0.8,1.0},
                    symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
                    xticklabel style={rotate=60,anchor=east},
-                   width=\textwidth, height=6cm, legend pos=north east]
+                   width=\textwidth, height=5.6cm, legend pos=north east]
         \addplot [bar shift=-0.05cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\ParboilCoverageData};
         \addplot [bar shift=-0.05cm,fill=black!80!white] table[x=benchmark,y=histogram reductions]{\ParboilCoverageData};
         \legend{scalar reductions, histogram reductions}
@@ -1451,14 +1451,14 @@ histograms and missed all instances of them.
              Four of the five histograms were performance bottlenecks,
              but only one of the scalar reductions.}
     \label{npb_coverage}
-    \vspace{0.5mm}
+    \vspace{5.5mm}
     \begin{tikzpicture}
       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
                    xticklabel pos=bottom, bar width=.3cm,
                    ymin=0, ymax=1.05, ytick={0.2,0.4,0.6,0.8,1.0},
                    symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
                    xticklabel style={rotate=60,anchor=east},
-                   width=\textwidth, height=6cm, legend pos=north east]
+                   width=\textwidth, height=5.6cm, legend pos=north east]
         \addplot [fill=black!80!white] table[x=benchmark,y=histogram reductions]{\RodiniaCoverageData};
         \legend{histogram reductions}
       \end{axis}
@@ -1468,7 +1468,7 @@ histograms and missed all instances of them.
              performance impact only on ``kmeans'', which spent
              almost the entire run time on a histogram.}
     \label{rodinia_coverage}
-    \vspace{0.5mm}
+    \vspace{5.5mm}
     \begin{tikzpicture}
     \begin{axis}[ybar, ymode=log, log ticks with fixed point, legend style={font=\small},
                  ymajorgrids, xtick style={transparent}, xtick=data,
@@ -1477,7 +1477,7 @@ histograms and missed all instances of them.
                  symbolic x coords={EP,IS,histo,kmeans,tpacf},
                  ylabel={speedup vs sequential baseline},
                  xticklabel style={rotate=0},
-                 width=\textwidth, height=6cm, legend pos=north west]
+                 width=\textwidth, height=5.6cm, legend pos=north west]
       \addplot [fill=lightgray!80!white] table[x=benchmark,y=parallel version]{\ParallelisationData};
       \addplot [fill=black!80!white] table[x=benchmark,y=reduction parallelism]{\ParallelisationData};
       \legend{manual parallel version, reduction parallelism}
