@@ -1191,7 +1191,7 @@ End
     loop, as is the case for the example in \autoref{missedscalar}.
     The outer three loops of this code section from the ``SP'' benchmark are
     reduction loops, but this is obfuscated by the innermost loop.
-    Neither ICC nor Polly were able to detect this reduction.
+    None of the competing approaches were able to detect this reduction either.
 
 \begin{figure}[H]
 \begin{lstlisting}[language=MyCpp, label={missedscalar}, caption=
@@ -1281,112 +1281,29 @@ for (k = 1; k <= nz2; k++) {
     \label{rodinia_spotted}
 \end{figure}
 
-    Histogram reductions are rarer than scalar reductions.
+    Histogram reductions were rarer than scalar reductions.
     However the IDL solver was able to detect 3 in NAS, 2 in Parboil and 1 in
     Rodinia.
     All of them eventually updated the bin value with an addition, but some
     contained complex expressions in the kernel function to compute the addend,
     as previously seen in \Cref{complex-reduction-figure} for the ``EP''
     program.
-    Another interesting examples was tpacf from the Parboil benchmarks.
-    In this histogram reduction, the histogram index kernel function contains a
-    binary search .
-    On the other hand, the performance bottleneck of ``IS'' is a plain histogram
-    without any complications.
+    Another interesting example was tpacf from the Parboil benchmarks.
+    In this histogram reduction, the histogram index kernel function contained a
+    binary search.
+    At the other extreme, the performance bottleneck of ``IS'' was a plain
+    histogram without any complications.
 \begin{lstlisting}[language=MyCpp]
 for( i=0; i<NUM_KEYS; i++ )
   key_buff_ptr[key_buff_ptr2[i]]++;
 \end{lstlisting}
-%{\em MOB say something interesting about the histograms found. Any unusual ones}
-
-Polly+Reductions, however, is able to find just 2 scalar reductions in
-the NAS benchmarks: BT and SP, 1 in Parboil: sgemm and 1 in
-Rodina:leukocte. 4 in total compared to the 84 found by our scheme. It
-was unable to detect any of the histogram reductions.
-
-In contrast, the Intel ICC compiler was more successful than Polly in detecting 
-reductions: 25  out if 38 in NAS, 3 out of 11 in Parboil and 23 out of 38 in Rodinia.
-Unfortunately, these were all scalar reductions; no histograms were detected.
-
-%% Only one of the histogram reduction operations need a slight
-%% relaxation of our constraint system (tpacf from the Parboil
-%% benchmarks).  The figures \ref{npb_spotted}, \ref{parboil_spotted}
-%% and \ref{rodinia_spotted} show the detection results in detail.
-
-%% \begin{figure*}[p]
-%%   \centering
-%%   \begin{subfigure}[b]{0.49\textwidth}
-%%     \centering
-%%     \begin{tikzpicture}
-%%       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
-%%                    xticklabel pos=upper, bar width=.15cm,
-%%                    ymin=0, ymax=13, ytick={0,2,4,6,8,10,12},
-%%                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
-%%                    xticklabel style={rotate=0},
-%%                    width=9cm, height=5.56230589875cm, legend style={at={(3.5cm,3.88cm)},anchor=north}]
-%%         \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\NASDetectionData};
-%%         \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\NASDetectionData};
-%%         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\NASICCData};
-%%         \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
-%%         \legend{histogram reductions, scalar reductions,icc reductions, Polly+reductions}
-%%       \end{axis}
-%%     \end{tikzpicture}
-%%     \caption{NAS Parallel Benchmarks}
-%%     \label{npb_spotted}
-%%   \end{subfigure}
-%%   \begin{subfigure}[b]{0.49\textwidth}
-%%     \centering
-%%     \begin{tikzpicture}
-%%       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
-%%                    xticklabel pos=upper, bar width=.15cm,
-%%                    ymin=0, ymax=9, ytick={0,2,4,6,8},
-%%                    symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
-%%                    xticklabel style={rotate=90},
-%%                    width=9cm, height=5.56230589875cm, legend pos=north east]
-%% %        \addplot table[x=benchmark,y=scalar reductions]{\ParboilDetectionData};
-%% %        \addplot table[x=benchmark,y=histogram reductions]{\ParboilDetectionData};
-%% %        \legend{scalar reductions, histogram reductions}
-%%         \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\ParboilDetectionData};
-%%         \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\ParboilDetectionData};
-%%         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\ParboilICCData};
-%%         \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
-%%         \legend{histogram reductions, scalar reductions,icc reductions, Polly+reductions}
-%%       \end{axis}
-%%     \end{tikzpicture}
-%%     \caption{Parboil Benchmarks}
-%%     \label{parboil_spotted}
-%%   \end{subfigure}
-%%   \begin{subfigure}[b]{\textwidth}
-%%     \centering
-%%     \begin{tikzpicture}
-%%       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
-%%                    xticklabel pos=upper, bar width=.15cm,
-%%                    ymin=0, ymax=11, ytick={0,2,4,6,8,10},
-%%                    symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
-%%                    xticklabel style={rotate=90},
-%%                    width=14.5623058988cm, height=5.56230589875cm, legend pos=north west]
-%% %        \addplot table[x=benchmark,y=scalar reductions]{\RodiniaDetectionData};
-%% %        \addplot table[x=benchmark,y=histogram reductions]{\RodiniaDetectionData};
-%% %        \legend{scalar reductions, histogram reductions}
-%%         \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\RodiniaDetectionData};
-%%         \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\RodiniaDetectionData};
-%%         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\RodiniaICCData};
-%%         \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\RodiniaPollyData};
-%%         \legend{histogram reductions, scalar reductions,icc reductions, Polly reductions}
-%%       \end{axis}
-%%     \end{tikzpicture}
-%%     \caption{Rodinia}
-%%     \label{rodinia_spotted}
-%%   \end{subfigure}
-%%   \caption{Spotted Reductions in the Individual Benchmark Collections}
-%% \end{figure*}
 
 \begin{figure}[p]
-  \centering
+    \centering
     \begin{tikzpicture}
-      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+      \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
                    xticklabel pos=bottom, bar width=.3cm,
-                   ymin=0, ymax=20, ytick={0,2,4,6,8,10,12,14,16,18,20},
+                   ymin=0, ymax=19, ytick={0,2,4,6,8,10,12,14,16,18,20},
                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
                    xticklabel style={rotate=0},
                    width=\textwidth, height=6cm, legend pos=north west]
@@ -1395,32 +1312,34 @@ Unfortunately, these were all scalar reductions; no histograms were detected.
         \legend{reduction SCoPs, other SCoPs}
       \end{axis}
     \end{tikzpicture}
-    \caption{SCoPs in NAS}
+    \caption{Static Control Parts (SCoPs) identified by Polly in {\bf NPB}:
+             Six of the programs had code regions that were representable in
+             the polyhedral model; two of them contained reductions.}
     \label{npb_scops}
-\end{figure}
-\begin{figure}[p]
+    \vspace{7.5mm}
     \centering
     \begin{tikzpicture}
-      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+      \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
                    xticklabel pos=bottom, bar width=.3cm,
-                   ymin=0, ymax=3, ytick={0,1,2},
+                   ymin=0, ymax=5.5, ytick={0,1,2,3,4,5},
                    symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
                    xticklabel style={rotate=30,anchor=east},
                    width=\textwidth, height=6cm, legend pos=north east]
-        \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
-        \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\ParboilPollyData};
+        \addplot [bar shift=0.00cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
+        \addplot [bar shift=0.00cm,style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\ParboilPollyData};
         \legend{reduction SCoPs, other SCoPs}
       \end{axis}
     \end{tikzpicture}
-    \caption{SCoPS in Parboil}
+    \caption{Static Control Parts (SCoPs) identified by Polly in {\bf Parboil}:
+             Most of the programs were unsuitable for Polly, only
+             the reduction of the matrix multiplication in ``sgemm'' was captured.}
     \label{parboil_scops}
-\end{figure}
-\begin{figure}[p]
+    \vspace{7.5mm}
     \centering
     \begin{tikzpicture}
-      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
-                   xticklabel pos=bottom, bar width=.3cm,
-                   ymin=0, ymax=6, ytick={0,1,2,3,4,5},
+      \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+                   xticklabel pos=bottom, bar width=.2cm,
+                   ymin=0, ymax=5.5, ytick={0,1,2,3,4,5},
                    symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
                    xticklabel style={rotate=60,anchor=east},
                    width=\textwidth, height=6cm, legend pos=north east]
@@ -1429,11 +1348,18 @@ Unfortunately, these were all scalar reductions; no histograms were detected.
         \legend{reduction SCoPs, other SCoPs}
       \end{axis}
     \end{tikzpicture}
-    \caption{SCoPs in Rodinia}
+    \caption{Static Control Parts (SCoPs) identified by Polly in {\bf Rodinia}:
+             Seven programs had code regions that were representable in
+             the polyhedral model, but only one captured a reduction.}
     \label{rodinia_scops}
 \end{figure}
 
-\paragraph{Polly+Reduction}
+\paragraph*{Polly+Reduction}
+Polly+Reductions, however, is able to find just 2 scalar reductions in
+the NAS benchmarks: BT and SP, 1 in Parboil: sgemm and 1 in
+Rodina:leukocte. 4 in total compared to the 84 found by our scheme. It
+was unable to detect any of the histogram reductions.
+
 Polly+Reduction generally struggled with the more complex code bases of the
 Rodinia and Parboil benchmarks.  This was often not due to fundamental
 limitations of the polyhedral model.  Instead it was mostly the result
@@ -1454,7 +1380,11 @@ In the NAS Parallel Benchmarks and the Parboil Benchmarks we were only able to i
 These results are not entirely surprising, as the polyhedral model and Polly were not created for the purpose of optimising reduction operations in particular.
 They do however imply that reduction detection based on Polly is severely limited.
 
-\paragraph{icc}
+\paragraph*{Intel ICC}
+In contrast, the Intel ICC compiler was more successful than Polly in detecting 
+reductions: 25  out if 38 in NAS, 3 out of 11 in Parboil and 23 out of 38 in Rodinia.
+Unfortunately, these were all scalar reductions; no histograms were detected.
+
 The Intel ICC compiler is more robust and does not require static
 control flow as a precondition for its analysis. On the well
 structured NAS benchmarks, it performs well but fails to detect any
