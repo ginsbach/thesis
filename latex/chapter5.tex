@@ -1413,58 +1413,81 @@ histograms and missed all instances of them.
 \subsection{Runtime Coverage}
 
 \begin{figure}[p]
-  \centering
+    \centering
+    \begin{minipage}[t]{0.496\textwidth}
+    \vspace{0pt}
     \begin{tikzpicture}
-      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
-                   xticklabel pos=upper, bar width=.3cm,
+      \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+                   yticklabel pos=left, xticklabel pos=bottom, bar width=.3cm,
                    ymin=0, ymax=1.5, ytick={0.2,0.4,0.6,0.8,1.0},
                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
-                   xticklabel style={rotate=0},
-                   width=\textwidth, height=5.56230589875cm, legend pos=north west]
-        \addplot [fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\NASCoverageData};
-        \addplot [fill=black!80!white] table[x=benchmark,y=histogram reductions]{\NASCoverageData};
+                   xticklabel style={rotate=90},
+                   width=\textwidth, height=6cm, legend pos=north west]
+        \addplot [bar shift=0.00cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\NASCoverageData};
+        \addplot [bar shift=0.00cm,fill=black!80!white] table[x=benchmark,y=histogram reductions]{\NASCoverageData};
         \legend{scalar reductions, histogram reductions}
       \end{axis}
     \end{tikzpicture}
-    \caption{Runtime coverage in NAS}
-    \label{npb_coverage}
-\end{figure}
-
-\begin{figure}[p]
-    \centering
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.496\textwidth}
+    \vspace{0pt}
     \begin{tikzpicture}
-      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
-                   xticklabel pos=upper, bar width=.3cm,
+      \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+                   yticklabel pos=right, xticklabel pos=bottom, bar width=.3cm,
                    ymin=0, ymax=1.5, ytick={0.2,0.4,0.6,0.8,1.0},
                    symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
-                   xticklabel style={rotate=90},
-                   width=\textwidth, height=5.56230589875cm, legend pos=north east]
-        \addplot [fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\ParboilCoverageData};
-        \addplot [fill=black!80!white] table[x=benchmark,y=histogram reductions]{\ParboilCoverageData};
+                   xticklabel style={rotate=60,anchor=east},
+                   width=\textwidth, height=6cm, legend pos=north east]
+        \addplot [bar shift=-0.05cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\ParboilCoverageData};
+        \addplot [bar shift=-0.05cm,fill=black!80!white] table[x=benchmark,y=histogram reductions]{\ParboilCoverageData};
         \legend{scalar reductions, histogram reductions}
       \end{axis}
     \end{tikzpicture}
-    \caption{Runtime coverage in Parboil}
-    \label{parboil_coverage}
-\end{figure}
-
-\begin{figure}[p]
-    \centering
+    \end{minipage}
+    \caption{Run time coverage of reductions in {\bf NPB} and {\bf Parboil}:
+             Five of the programs spent a significant portion of their run time
+             performing complex histogram and reduction computations.
+             Four of the five histograms were performance bottlenecks,
+             but only one of the scalar reductions.}
+    \label{npb_coverage}
+    \vspace{0.5mm}
     \begin{tikzpicture}
-      \begin{axis}[ybar stacked, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
-                   xticklabel pos=upper, bar width=.3cm,
-                   ymin=0, ymax=1.5, ytick={0.2,0.4,0.6,0.8,1.0},
+      \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data, legend style={font=\small},
+                   xticklabel pos=bottom, bar width=.3cm,
+                   ymin=0, ymax=1.05, ytick={0.2,0.4,0.6,0.8,1.0},
                    symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
-                   xticklabel style={rotate=90},
-                   width=\textwidth, height=5.56230589875cm, legend pos=north east]
+                   xticklabel style={rotate=60,anchor=east},
+                   width=\textwidth, height=6cm, legend pos=north east]
         \addplot [fill=black!80!white] table[x=benchmark,y=histogram reductions]{\RodiniaCoverageData};
         \legend{histogram reductions}
       \end{axis}
     \end{tikzpicture}
-    \caption{Runtime coverage of Rodinia}
+    \caption{Run time coverage of reductions in {\bf Rodinia}:
+             Scalar and histogram reductions had a
+             performance impact only on ``kmeans'', which spent
+             almost the entire run time on a histogram.}
     \label{rodinia_coverage}
+    \vspace{0.5mm}
+    \begin{tikzpicture}
+    \begin{axis}[ybar, ymode=log, log ticks with fixed point, legend style={font=\small},
+                 ymajorgrids, xtick style={transparent}, xtick=data,
+                 xticklabel pos=bottom, bar width=.3cm,
+                 ymin=1, ymax=200, ytick={1,2,5,10,20,50,100,200},
+                 symbolic x coords={EP,IS,histo,kmeans,tpacf},
+                 ylabel={speedup vs sequential baseline},
+                 xticklabel style={rotate=0},
+                 width=\textwidth, height=6cm, legend pos=north west]
+      \addplot [fill=lightgray!80!white] table[x=benchmark,y=parallel version]{\ParallelisationData};
+      \addplot [fill=black!80!white] table[x=benchmark,y=reduction parallelism]{\ParallelisationData};
+      \legend{manual parallel version, reduction parallelism}
+    \end{axis}
+    \end{tikzpicture}
+    \caption{Speedup Achieved with Histogram Parallelism on a Logarithmic Scale:
+             Only ``histo'' does not profit from IDL-based parallelisation
+             due to large data size and low arithmetic intensity.}
+    \label{speedup-figure}
 \end{figure}
-
 
 Detecting large numbers of reductions is encouraging, but does not
 address whether or not such detection is useful. To measure this we
@@ -1527,34 +1550,6 @@ baseline is the sequential version of the benchmark programs.
 %%   \label{speedup-figure}
 %% \end{figure}
 
-\pgfplotstableread[row sep=\\,col sep=&]{
-    benchmark & parallel version & reduction parallelism \\
-    EP        &          32.7848 &                1.6207 \\
-    IS        &           6.3429 &                2.9211 \\
-    histo     &           1.0000 &                1.0000 \\
-    tpacf     &           1.0000 &               35.7074 \\
-    kmeans    &          21.3778 &               21.3778 \\
-    }\ParallelisationData
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}
-    \begin{axis}[ybar, ymode=log, log ticks with fixed point, legend style={font=\small},
-                 ymajorgrids, xtick style={transparent}, xtick=data,
-                 xticklabel pos=upper, bar width=.3cm,
-                 ymin=1, ymax=200, ytick={1,2,5,10,20,50,100,200},
-                 symbolic x coords={EP,IS,histo,kmeans,tpacf},
-                 ylabel={speedup vs sequential baseline},
-                 xticklabel style={rotate=0},
-                 width=0.75\textwidth, height=6cm, legend pos=north west]
-      \addplot [fill=lightgray!80!white] table[x=benchmark,y=parallel version]{\ParallelisationData};
-      \addplot [fill=black!80!white] table[x=benchmark,y=reduction parallelism]{\ParallelisationData};
-      \legend{original parallel version, reduction parallelism}
-    \end{axis}
-  \end{tikzpicture}
-  \caption{Speedup Potential in Reduction Operations}
-  \label{speedup-figure}
-\end{figure}
 
 In EP we achieve $62\%$ speedup over the whole program.
 On this benchmark program, our approach is limited by the coverage of the parallelized reduction operation.

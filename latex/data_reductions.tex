@@ -208,3 +208,12 @@ pathfinder     & 0 & 0\\
 srad           & 2 & 0\\
 streamcluster  & 2 & 1\\
 }\RodiniaICCData
+
+\pgfplotstableread[row sep=\\,col sep=&]{
+benchmark & parallel version & reduction parallelism \\
+EP        &          32.7848 &                1.6207 \\
+IS        &           6.3429 &                2.9211 \\
+histo     &           1.0000 &                1.0000 \\
+tpacf     &           1.0000 &               35.7074 \\
+kmeans    &          21.3778 &               21.3778 \\
+}\ParallelisationData
