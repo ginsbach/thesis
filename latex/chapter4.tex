@@ -295,7 +295,7 @@ End
 \centering
 \begin{tabular}{|c|}
     \hline
-    $formula ::= \text{\it atomic}\mid\text{\it conjunction}\mid\text{\it disjunction}\mid\text{\it con\_range}\mid \text{\it dis\_range}\mid\text{\it include}\mid\text{\it collect}$\\
+    $formula ::= \text{\it atomic}\mid\text{\it conjunction}\mid\text{\it disjunction}\mid\text{\it conRange}\mid \text{\it disRange}\mid\text{\it include}\mid\text{\it collect}$\\
     \hline
 \end{tabular}
 \end{figure}
@@ -305,8 +305,8 @@ End
     bound together by logical connectives ``$\land$'' and ``$\lor$''
     ({\it conjunction} and {\it disjunction}), as well as other higher level
     constructs.
-    These include two kinds of range structures ({\it con\_range},
-    {\it dis\_range}), and a system for modularity ({\it include}).
+    These include two kinds of range structures ({\it conRange},
+    {\it disRange}), and a system for modularity ({\it include}).
     Lastly, the {\it collect} construct allows for the formulation of more
     complex constraints that require quantifiers from first-order logic.
     The individual classes of atomic constraints are introduced next,
@@ -537,8 +537,8 @@ End
   \centering
   \begin{tabular}{|c|}
     \hline
-    $con\_range ::= \text{\it formula}\ \text{\bf foreach}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}$\\
-    $dis\_range ::= \text{\it formula}\ \text{\bf forany}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}$\\
+    $conRange ::= \text{\it formula}\ \text{\bf foreach}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}$\\
+    $disRange ::= \text{\it formula}\ \text{\bf forany}\ \left<\text{\bf s}\right>\ \text{\bf =}\ \text{\it index}\ \text{\bf ..}\ \text{\it index}$\\
     \hline
   \end{tabular}
 \end{figure}
@@ -547,14 +547,14 @@ End
     These constructs allow the replication of a constraint formula over a range
     of indices.
     This is demonstrated in \Cref{fig:forall}, which shows two equivalent
-    CAnDL programs, the first one formulated with {\it con\_range} and the
+    CAnDL programs, the first one formulated with {\it conRange} and the
     second one without.
     In both cases, the program specifies an array of five variables with data
     flow from each element to the next.
-    This shows how {\it con\_range} can be expanded by duplicating the contained
+    This shows how {\it conRange} can be expanded by duplicating the contained
     formula, with logical conjunctions binding the replicas of the
     formula together.
-    Otherwise identical, the {\it dis\_range} construct is based on logical
+    Otherwise identical, the {\it disRange} construct is based on logical
     disjunctions instead.
 
     The syntactic structure of variable identifiers carries no semantic
@@ -924,7 +924,7 @@ Constraint LoopWithOnlyArrayAccesses
     order constructs of CAnDL.
     The {\it inheritance} clauses are inlined and contained variables
     transformed accordingly.
-    Also, {\it con\_range} and {\it dis\_range} statements are lowered to
+    Also, {\it conRange} and {\it disRange} statements are lowered to
     conjunction and disjunction constructs by duplicating the contained
     constraint code and then renaming its variables appropriately
     for each iteration.
