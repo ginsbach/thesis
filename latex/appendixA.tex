@@ -16,40 +16,39 @@ export ::= Export
 specification ::= Constraint <s> <@formula> End
 
 @formula ::= <atom> | <conjunction> | <disjunction>
- | <rename> | <if> | <default> | <collect> | <@nested>
+ | <rename> | <collect> | <if> | <default> | <@nested>
 
-@nested ::= '(' <@formula> ')'
+conjunction ::= '(' <@formula> ∧ <@formula>
+                             { ∧ <@formula> } ')'
 
-conjunction ::= '(' <@formula> '∧' <@formula>
-                             { '∧' <@formula> } ')'
-
-disjunction ::= '(' <@formula> '∨' <@formula>
-                             { '∨' <@formula> } ')'
+disjunction ::= '(' <@formula> ∨ <@formula>
+                             { ∨ <@formula> } ')'
 
 rename ::= ( <conRange> | <disRange> | <include> | <for> )
-           [ '(' <@variable> '->' <@variable>
-           { ',' <@variable> '->' <@variable> } ')' ]
-           [ '@' <@variable> ]
+           [ '(' <@variable> -> <@variable>
+           {  ,  <@variable> -> <@variable> } ')' ]
+           [  @  <@variable> ]
 
 include ::= include <s> [ '[' <s> = <@index>
-                        { ',' <s> = <@index> } ']' ]
+                        {  , <s> = <@index> } ']' ]
 
+conRange ::= <@formula> foreach <s> = <@index> .. <@index>
+disRange ::= <@formula> forany  <s> = <@index> .. <@index>
 for      ::= <@formula> for     <s> = <@index>
-conRange ::= <@formula> foreach <s> = <@index> '..' <@index>
-disRange ::= <@formula> forany  <s> = <@index> '..' <@index>
+
+collect ::= collect <s> <n> <@formula>
 
 if ::= if <@index> = <@index> then <@formula>
-                                else <@formula> endif
+                              else <@formula> endif
 
 default ::= <@formula> for <s> = <@index>
             if not otherwise specified
 \end{lstlisting}
 \end{figure}
-
 \begin{figure}[p]
 \begin{lstlisting}[language=BNF,basicstyle=\linespread{0.8}\ttfamily,
                    firstnumber=36]
-collect ::= collect <s> <n> <@formula>
+@nested ::= '(' <@formula> ')'
 
 atom ::= <IntegerType> | <FloatType>
  | <VectorType> | <PointerType>
@@ -64,7 +63,7 @@ atom ::= <IntegerType> | <FloatType>
  | <Dominate> | <DominateStrict>
  | <Postdom> | <PostdomStrict> | <Blocked>
  | <IncomingValue> | <FunctionAttribute>
- | <Opcode> | <GeneralizedSame>
+ | <Opcode> | <SameSets>
 
 IntegerType ::= data_type <@variable> = integer
 FloatType   ::= data_type <@variable> = float
@@ -83,75 +82,74 @@ Argument     ::= ir_type <@variable> = argument
 Instruction  ::= ir_type <@variable> = instruction
 
 Same     ::= <@variable> = <@variable>
-Distinct ::= <@variable> '≠' <@variable>
+Distinct ::= <@variable> ≠ <@variable>
 
-DFGEdge ::= <@variable> '∈' <@variable> '.' args
-CFGEdge ::= <@variable> '∈' <@variable> '.' successors
+DFGEdge ::= <@variable> ∈ <@variable> . args
+CFGEdge ::= <@variable> ∈ <@variable> . successors
 CDGEdge ::= <@variable> has control dominance to <@variable>
 PDGEdge ::= <@variable> has dependence edge to <@variable>
 
-FirstOperand    ::= <@variable> =
-                    <@variable> '.' args '[' 0 ']'
-SecondOperand   ::= <@variable> =
-                    <@variable> '.' args '[' 1 ']'
-ThirdOperand    ::= <@variable> =
-                    <@variable> '.' args '[' 2 ']'
-FourthOperand   ::= <@variable> =
-                    <@variable> '.' args '[' 3 ']'
+FirstOperand  ::= <@variable> =
+                  <@variable> . args '[' 0 ']'
+SecondOperand ::= <@variable> =
+                  <@variable> . args '[' 1 ']'
+ThirdOperand  ::= <@variable> =
+                  <@variable> . args '[' 2 ']'
+FourthOperand ::= <@variable> =
+                  <@variable> . args '[' 3 ']'
 \end{lstlisting}
 \end{figure}
-
 \begin{figure}[p]
 \begin{lstlisting}[language=BNF,basicstyle=\linespread{0.8}\ttfamily,
                    firstnumber=86]
 FirstSuccessor  ::= <@variable> =
-                    <@variable> '.' successors '[' 0 ']'
+                    <@variable> . successors '[' 0 ']'
 SecondSuccessor ::= <@variable> =
-                    <@variable> '.' successors '[' 1 ']'
+                    <@variable> . successors '[' 1 ']'
 ThirdSuccessor  ::= <@variable> =
-                    <@variable> '.' successors '[' 2 ']'
+                    <@variable> . successors '[' 2 ']'
 FourthSuccessor ::= <@variable> =
-                    <@variable> '.' successors '[' 3 ']'
+                    <@variable> . successors '[' 3 ']'
 
 Dominate       ::= domination
-                   '(' <@variable> ',' <@variable> ')'
+                   '(' <@variable> , <@variable> ')'
 Postdom        ::= post_domination
-                   '(' <@variable> ',' <@variable> ')'
+                   '(' <@variable> , <@variable> ')'
 DominateStrict ::= strict_domination
-                   '(' <@variable> ',' <@variable> ')'
+                   '(' <@variable> , <@variable> ')'
 PostdomStrict  ::= strict_post_domination
-                   '(' <@variable> ',' <@variable> ')'
+                   '(' <@variable> , <@variable> ')'
 
-IncomingValue ::= <@variable> '->' <@variable> 'Φ' <@variable>
+IncomingValue ::= <@variable> -> <@variable> Φ <@variable>
 
 Blocked ::= all control flow from <@variable> to <@variable>
             passes through <@variable>
 
 FunctionAttribute ::= <@variable> has attribute pure
 
-GeneralizedSame ::= <@variable> is the same set as <@variable>
+SameSets ::= <@variable> is the same set as <@variable>
 
 @variable ::= <slottuple> | '{' <@openslot> '}'
 
-slottuple ::= '{' <@openslot> ',' <@openslot>
-                            { ',' <@openslot> } '}'
+slottuple ::= '{' <@openslot> , <@openslot>
+                            { , <@openslot> } '}'
 
 @openslot ::= <slotmember> | <slotindex> | <slotrange>
             | <slottuple>  | <slotbase>
 
 slotbase   ::= <s>
-slotmember ::= <@openslot> '.' <s>
+slotmember ::= <@openslot> . <s>
 slotindex  ::= <@openslot> '[' <@index> ']'
-slotrange  ::= <@openslot> '[' <@index> '..' <@index> ']'
+slotrange  ::= <@openslot> '[' <@index> .. <@index> ']'
 
 @index ::= <basevar> | <baseconst>
  | <addvar> | <addconst> | <subvar> | <subconst>
 
 basevar   ::= <s>
 baseconst ::= <n>
-addvar    ::= <@index> '+' <s>
-addconst  ::= <@index> '+' <n>
-subvar    ::= <@index> '-' <s>
-subconst  ::= <@index> '-' <n>
+addvar    ::= <@index> + <s>
+addconst  ::= <@index> + <n>
+subvar    ::= <@index> - <s>
+subconst  ::= <@index> - <n>
 \end{lstlisting}
 \end{figure}

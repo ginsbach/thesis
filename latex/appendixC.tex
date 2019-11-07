@@ -16,9 +16,7 @@ export ::= Export
 specification ::= Constraint <s> <@formula> End
 
 @formula ::= <atom> | <conjunction> | <disjunction>
- | <rename> | <if> | <default> | <collect> | <@nested>
-
-@nested ::= '(' <@formula> ')'
+ | <rename> | <collect> | <if> | <default> | <@nested>
 
 conjunction ::= '(' <@formula> and <@formula>
                              { and <@formula> } ')'
@@ -32,25 +30,25 @@ rename ::= ( <conRange> | <disRange> | <include> | <for> )
            [ at <@variable> ]
 
 include ::= inherits <s> [ '(' <s> = <@index>
-                         { ',' <s> = <@index> } ')' ]
+                         {  ,  <s> = <@index> } ')' ]
 
+conRange ::= <@formula> for all  <s> = <@index> .. <@index>
+disRange ::= <@formula> for some <s> = <@index> .. <@index>
 for      ::= <@formula> for      <s> = <@index>
-conRange ::= <@formula> for all  <s> = <@index> '..' <@index>
-disRange ::= <@formula> for some <s> = <@index> '..' <@index>
+
+collect ::= collect <s> <n> <@formula>
 
 if ::= if <@index> = <@index> then <@formula>
                               else <@formula> endif
 
 default ::= <@formula> for <s> = <@index>
             if not otherwise specified
-
 \end{lstlisting}
 \end{figure}
-
 \begin{figure}[p]
 \begin{lstlisting}[language=BNF,basicstyle=\linespread{0.8}\ttfamily,
                    firstnumber=36]
-collect ::= collect <s> <n> <@formula>
+@nested ::= '(' <@formula> ')'
 
 atom ::= <IntegerType> | <FloatType>
  | <VectorType> | <PointerType>
@@ -65,7 +63,7 @@ atom ::= <IntegerType> | <FloatType>
  | <Dominate> | <DominateStrict>
  | <Postdom> | <PostdomStrict> | <Blocked>
  | <IncomingValue> | <FunctionAttribute>
- | <Opcode> | <GeneralizedSame>
+ | <Opcode> | <SameSets>
  | <GeneralizedDominance> | <NotNumericConstant> | <Block>
 
 IntegerType ::= <@variable> is an integer
@@ -104,7 +102,6 @@ FourthOperand ::= <@variable> is fourth
                    argument of <@variable>
 \end{lstlisting}
 \end{figure}
-
 \begin{figure}[p]
 \begin{lstlisting}[language=BNF,basicstyle=\linespread{0.8}\ttfamily,
                    firstnumber=89]
@@ -134,33 +131,33 @@ Blocked ::= all control flow from <@variable> to <@variable>
 
 FunctionAttribute ::= <@variable> has attribute pure
 
-GeneralizedSame ::= <@variable> is the same set as <@variable>
+SameSets ::= <@variable> is the same set as <@variable>
 
-GeneralizedDominance ::= all flow from <@variable> or any origin
-                         to any of <@variable> passes through
-                         at least one of <@variable>
+GeneralizedDominance ::= all flow from <@variable> or any
+                         origin to any of <@variable> passes
+                         through at least one of <@variable>
 
 @variable ::= <slottuple> | '{' <@openslot> '}'
 
-slottuple ::= '{' <@openslot> ',' <@openslot>
-                            { ',' <@openslot> } '}'
+slottuple ::= '{' <@openslot> , <@openslot>
+                            { , <@openslot> } '}'
 
 @openslot ::= <slotmember> | <slotindex> | <slotrange>
             | <slottuple>  | <slotbase>
 
 slotbase   ::= <s>
-slotmember ::= <@openslot> '.' <s>
+slotmember ::= <@openslot> . <s>
 slotindex  ::= <@openslot> '[' <@index> ']'
-slotrange  ::= <@openslot> '[' <@index> '..' <@index> ']'
+slotrange  ::= <@openslot> '[' <@index> .. <@index> ']'
 
 @index ::= <basevar> | <baseconst>
  | <addvar> | <addconst> | <subvar> | <subconst>
 
 basevar   ::= <s>
 baseconst ::= <n>
-addvar    ::= <@index> '+' <s>
-addconst  ::= <@index> '+' <n>
-subvar    ::= <@index> '-' <s>
-subconst  ::= <@index> '-' <n>
+addvar    ::= <@index> + <s>
+addconst  ::= <@index> + <n>
+subvar    ::= <@index> - <s>
+subconst  ::= <@index> - <n>
 \end{lstlisting}
 \end{figure}

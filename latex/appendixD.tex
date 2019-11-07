@@ -1,324 +1,226 @@
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.85}\small\ttfamily,
+\begin{figure}[h]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
                    captionpos=t,caption=
-   {Constraint specification in CAnDL of Scalar Control Parts (SCoPs):
-    These regular loop nests enable polyhedral transformations to be applied,
-    due to their structured control flow, side effect free function calls and
-    the well-behaved memory access that is affine in loop iterators.
-    The involved CAnDL code is displayed, including relevant parts of the CAnDL
-    standard library.
+   {Constraint specification of Complex Reduction and Histogram Computations in
+    IDL
     \parfillskip=0pt}]
-Constraint SCoP
-( include For
-∧ include StructuredControlFlowPart({body.begin}->{begin},
-                                      {body.end}->{end})
-                                 @ {constraint_control}
-∧ include SideEffectFreePart({begin}->{begin},
-                               {end}->{end})
-                     @ {constraint_effects}
-∧ {constraint_memory.input[0]} = {iterator}
-∧ {constraint_memory.input[i+1]} =
-      {constraint_control.loop[i].iterator} foreach i=0..7
-∧ include AffineMemoryAccessPart({begin}->{begin},
-                                   {end}->{end})
-                          @ {constraint_memory}
-∧ include AffineControlFlowPart({body.begin}->{begin},
-                   {constraint_memory.input}->{input})
-                               @ {constraint_control})
+Constraint ComplexReductionsAndHistograms
+( inherits For at {loop} and
+  collect k 32
+  ( inherits VectorRead
+        with {loop.iterator}  as {input_index}
+         and {read_values[k]} as {value}
+         and {loop}           as {scope}
+                              at {read[k]}) and
+  collect k 2
+  ( inherits HistoPart
+        with {loop.begin}  as {begin}
+         and {read}        as {read}
+         and {loop}        as {loop}
+         and {read_values} as {read_values}
+                           at {histo[k]}) and
+  collect k 2
+  ( inherits ScalarPart
+        with {loop.begin}  as {begin}
+         and {loop}        as {loop}
+         and {read_values} as {read_values}
+                           at {scalar[k]}) and
+  {scalar[0].kernel.result} is not the
+      same ([as]) {histo[0].update.store_instr} and
+  collect i 2
+  ( {histo[i].update.store_instr}
+        is store instruction and
+    {loop.begin} control flow
+        dominates {histo[i].update.store_instr} and
+    {loop.end} control flow post
+        dominates {histo[i].update.store_instr}) and
+  collect i 32
+  ( inherits LocalFunctionCall
+        with {loop.begin} as {begin}
+         and {loop.end}   as {end} at {call[i]}) and
+  collect i 32
+  ( inherits LocalFunctionCall
+        with {loop.begin} as {begin}
+         and {loop.end}   as {end} at {call[i]} and
+    {call[i].function} has attribute pure))
+End
+\end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
+                   firstnumber=42]
+Constraint ScalarPart
+( {kernel.result} reaches phi node
+      {old_value} from {loop.end} and
+  {loop.begin} control flow
+      dominates {old_value} and
+  {loop.end} strictly control flow
+      post dominates {old_value} and
+  {kernel.result} has data flow to {final_value} and
+  {loop.end} strictly control flow
+      dominates {final_value} and
+  inherits KernelFunction
+      with {loop} as {scope} at {kernel} and
+  inherits Concat(N1=31,N2=1)
+      with {read_values}   as {in1}
+       and {old_value}     as {in2}
+       and {kernel.inputs} as {out})
 End
 
-Constraint StructuredControlFlowPart
-( collect i 16 ( opcode{branch[i].value} = branch
-               ∧ {branch[i].dummy} =
-                     {branch[i].value}.successors[1]
-               ∧ include LocalValue(
-                          {branch[i].value}->{value}))
-∧ collect i  8 ( include For @ {loop[i]}
-               ∧ domination({begin}, {loop[i].begin})
-               ∧ post_domination({end}, {loop[i].end}))
-∧ collect i  8 ( include IfBlock @ {conditional[i]}
-               ∧ domination({begin},
-                            {conditional[i].precursor})
-               ∧ post_domination({end},
-                                 {conditional[i].successor}))
-∧ {loop[0..8].end,conditional[0..8].precursor}
-      is the same set as {branch[0..16].value})
+Constraint HistoPart
+( inherits ConditionalReadModifyWrite
+      with {loop}              as {scope}
+       and {idx_kernel.result} as {address}
+       and {val_kernel.result} as {new_value}
+                               at {update} and
+  inherits KernelFunction
+      with {loop}        as {scope}
+       and {read_values} as {inputs} at {idx_kernel} and
+  inherits KernelFunction
+      with {loop} as {scope} at {val_kernel} and
+  inherits Concat(N1=31,N2=1)
+      with {read_values}      as {in1}
+       and {update.old_value} as {in2}
+       and {val_kernel.inputs}    as {out})
 End
 
-Constraint SideEffectFreePart
-( collect i 32 ( include LocalFunctionCall({begin}->{begin},
-                                             {end}->{end})
-                                              @ {call[i]}) 
-∧ collect i 32 ( include LocalFunctionCall({begin}->{begin},
-                                             {end}->{end})
-                                              @ {call[i]}
-               ∧ {call[i].function} has attribute pure))
+Constraint ConditionalReadModifyWrite
+( {store_instr} is store instruction and
+  inherits MaxOnceInScope
+      with {scope}       as {scope}
+       and {store_instr} as {value} at {maxonce} and
+  {address} is second argument of {store_instr} and
+  {address} is gep instruction and
+  {address} is first argument of {old_value} and
+  {old_value} is load instruction and
+  {new_value} is first argument of {store_instr})
 End
 
-Constraint AffineMemoryAccessPart
-( collect x 24 ( include MemoryAccess({begin}->{begin},
-                                        {end}->{end})
-                                    @ {newaccess[x]})
-∧ collect x 24 ( include MemoryAccess({begin}->{begin},
-                                        {end}->{end})
-                                    @ {newaccess[x]}
-               ∧ ( ( opcode{newaccess[x].pointer} = gep
-                   ∧ domination({begin}, {newaccess[x].pointer})
-                   ∧ {newaffine[x].value} =
-                         {newaccess[x].pointer}.args[1]
-                   ∧ ir_type{begin} = instruction)
-                 ∨ ( include LocalConst(
-                              {newaccess[x].pointer}->{value})
-                   ∧ {newaffine[x].value} is unused))
-               ∧ include AffineCalculation[M=8,N=6](
-                          {input}->{input},
-                          {begin}->{begin}) @ {newaffine[x]}))
-End
-
-Constraint AffineControlFlowPart
-( include AffineCalculation[M=8,N=1](
-           {conditional[i].compare_left}->{value},
-                                 {input}->{input},
-                                 {begin}->{begin})
-                    @{conditional_affine_left[i]} foreach i=0..8
-∧ include AffineCalculation[M=8,N=1](
-          {conditional[i].compare_right}->{value},
-                                 {input}->{input},
-                                 {begin}->{begin})
-                   @{conditional_affine_right[i]} foreach i=0..8
-∧ include AffineCalculation[M=8,N=1](
-           {loop[i].iter_begin}->{value},
-                        {input}->{input},
-                        {begin}->{begin})
-                 @{loop_affine_begin[i]} foreach i=0..8
-∧ include AffineCalculation[M=8,N=1](
-           {loop[i].iter_end}->{value},
-                      {input}->{input},
-                      {begin}->{begin})
-                 @{loop_affine_end[i]} foreach i=0..8)
-End
-
-Constraint For
-( include Loop
-∧ {increment} -> {iterator} Φ {body.end}
-∧ {increment} ∈ {comparison}.args
-∧ opcode{comparison} = icmp
-∧ {comparison} ∈ {end}.args
-∧ {increment} ∈ {iterator}.args
-∧ opcode{increment} = add
-∧ {iterator} ∈ {increment}.args
-∧ {iter_end} ∈ {comparison}.args
-∧ include LocalConst({iter_end}->{value},{begin}->{begin})
-∧ {iter_begin} ∈ {iterator}.args
-∧ include LocalConst({iter_begin}->{value},{begin}->{begin})
-∧ {iter_step} ∈ {increment}.args
-∧ include LocalConst({iter_step}->{value},{begin}->{begin}))
-End
-
-Constraint MemoryAccess
-( ( ( opcode{access} = store
-    ∧ {pointer} = {access}.args[1])
-  ∨ ( opcode{access} = load
-    ∧ {pointer} = {access}.args[0]))
-∧ domination({begin}, {access})
-∧ post_domination({end}, {access}))
-End
-
-Constraint AffineCalculation
-if N=0 then
-( ( include LocalConst
-  ∧ ( data_type{input[j]} = integer
-    ∨ {input[j]} is unused) foreach j=0..M)
-∨ ( ( {value} = {input[i]}
-    ∧ ir_type{begin} = instruction
-    ∧ ( data_type{input[j]} = integer
-      ∨ {input[j]} is unused) foreach j=0..M) forany i=0..M))
-else
-( ( ( include AffineCalculation[M=M,N=0]
-    ∧ {l.value} is unused
-    ∧ {r.value} is unused)
-  ∨ ( ( ( ( opcode{value} = add
-          ∨ opcode{value} = sub)
-        ∧ {l.value} = {value}.args[0]
-        ∧ {r.value} = {value}.args[1])
-      ∨ ( opcode{value} = select
-        ∧ {l.value} = {value}.args[1]
-        ∧ {r.value} = {value}.args[2])
-      ∨ ( opcode{value} = mul
-        ∧ include ArgumentsPermuted({l.value}->{src1},
-                                    {r.value}->{src2},
-                                      {value}->{dst})
-        ∧ ir_type{l.value} = preexecution
-        ∧ ir_type{r.value} = instruction))
-    ∧ ir_type{begin} = instruction
-    ∧ domination({begin}, {value})
-    ∧ ( data_type{input[j]} = integer
-      ∨ {input[j]} is unused) foreach j=0..M))
-∧ include AffineCalculation[M=M,N=N-1]({input}->{input},
-                                       {begin}->{begin}) @ {l}
-∧ include AffineCalculation[M=M,N=N-1]({input}->{input},
-                                       {begin}->{begin}) @ {r})
-endif
+Constraint MaxOnceInScope
+( {scope.begin} control flow dominates {value} and
+  {scope.end} control flow post dominates {value} and
+  {value} has control flow to {value_after} and
+  all control flow from {value_after} to
+      {value} passes through {scope.end} and
+  all control flow from {value_after} to
+      {value} passes through {scope.begin})
 End
 
 Constraint LocalFunctionCall
-( opcode{callsite} = call
-∧ {function} = {callsite}.args[0]
-∧ include LocalValue({callsite}->{value}))
-End
-
-Constraint IfBlock
-( include PotentialSESE({truebegin}->{begin},{trueend}->{end})
-∧ {truebegin} = {precursor}.successors[0]
-∧ {falsebegin} = {precursor}.successors[1]
-∧ include PotentialSESE({falsebegin}->{begin},{falseend}->{end})
-∧ {trueend} ≠ {falseend}
-∧ {condition} = {precursor}.args[0]
-∧ opcode{condition} = icmp
-∧ {compare_left} = {condition}.args[0]
-∧ {compare_right} = {condition}.args[1])
-End
-
-Constraint PotentialSESE
-( opcode{precursor} = branch
-∧ {precursor} ∈ {begin}.successors
-∧ opcode{end} = branch
-∧ {end} ∈ {successor}.successors
-∧ ( ( domination({begin}, {end})
-    ∧ post_domination({end}, {begin})
-    ∧ all control flow from {begin} to {precursor}
-                        passes through {end}
-    ∧ all control flow from {successor} to {end}
-                            passes through {begin})
-  ∨ ( {begin} = {end}
-    ∧ {precursor} ∈ {begin}.successors
-    ∧ {end} ∈ {successor}.successors)
-  ∨ ( {precursor} = {end}
-    ∧ {begin} = {successor})))
-End
-
-Constraint LocalValue
-( domination({begin}, {value})
-∧ post_domination({end}, {value}))
-End
-
-Constraint Distributive
-( opcode{value} = add
-∧ {sum1.value} = {value}.args[0]
-∧ {sum2.value} = {value}.args[1]
-∧ include SumChain @ {sum1}
-∧ {product1.value} = {sum1.last_factor}
-∧ include MulChain @ {product1}
-∧ {product1.last_factor} = {product2.last_factor}
-∧ include SumChain @ {sum2}
-∧ {product2.value} = {sum2.last_factor}
-∧ include MulChain @ {product2})
-End
-
-Constraint SumChain
-( data_type{value} = integer
-∧ {value} = {results[0]}
-∧ ( ( opcode{results[i]} = add
-    ∧ include ArgumentsPermuted({results[i]}->{dst},
-                              {results[i+1]}->{src1},
-                                {factors[i]}->{src2})
-    ∧ data_type{last_factor} = integer)
-  ∨ ( ( ( data_type{results[i]} = integer
-        ∧ {last_factor} = {factors[i]})
-      ∨ ( {results[i]} is unused
-        ∧ {factors[i]} is unused
-        ∧ data_type{last_factor} = integer))
-    ∧ {results[i]} = {factors[i]}
-    ∧ {results[i+1]} is unused)) foreach i=0..N
-∧ {factors[N]} is unused)
-for N=4 if not otherwise specified
-End
-
-Constraint MulChain
-( data_type{value} = integer
-∧ {value} = {results[0]}
-∧ ( ( opcode{results[i]} = mul
-    ∧ include ArgumentsPermuted({results[i]}->{dst},
-                              {results[i+1]}->{src1},
-                                {factors[i]}->{src2})
-    ∧ data_type{last_factor} = integer)
-  ∨ ( ( ( data_type{results[i]} = integer
-        ∧ {last_factor} = {factors[i]})
-      ∨ ( {results[i]} is unused
-        ∧ {factors[i]} is unused
-        ∧ data_type{last_factor} = integer))
-    ∧ {results[i]} = {factors[i]}
-    ∧ {results[i+1]} is unused)) foreach i=0..N
-∧ {factors[N]} is unused)
-for N=4 if not otherwise specified
-End
-
-Constraint ArgumentsPermuted
-( ( {src1} = {dst}.args[0]
-  ∧ {src2} = {dst}.args[1])
-∨ ( {src2} = {dst}.args[0]
-  ∧ {src1} = {dst}.args[1]))
-End
-
-Constraint HoistSelect
-( opcode{select} = select
-∧ {input1} = {select}.args[1]
-∧ {base} = {input1}.args[0]
-∧ {input2} = {select}.args[2]
-∧ {base} = {input2}.args[0]
-∧ opcode{input1} = gep
-∧ opcode{input2} = gep)
-End
-
-Constraint ForWithIteratorTest
-( include Loop
-∧ {increment} -> {iterator} Φ {body.end}
-∧ {iterator} ∈ {comparison}.args
-∧ opcode{comparison} = icmp
-∧ {comparison} ∈ {end}.args
-∧ {increment} ∈ {iterator}.args
-∧ opcode{increment} = add
-∧ {iterator} ∈ {increment}.args
-∧ {iter_end} ∈ {comparison}.args
-∧ include LocalConst({iter_end}->{value},{begin}->{begin})
-∧ {iter_begin} ∈ {iterator}.args
-∧ include LocalConst({iter_begin}->{value},{begin}->{begin})
-∧ {iter_step} ∈ {increment}.args
-∧ include LocalConst({iter_step}->{value},{begin}->{begin}))
-End
-
-Constraint Loop
-( include SESE
-∧ {body.begin} = {begin}
-∧ {body.end} = {end}
-∧ {body.precursor} = {precursor}
-∧ {body.successor} = {successor}
-∧ {end} ∈ {begin}.successors)
-End
-
-Constraint InductionVar
-{new_ind} -> {old_ind} Φ {end}
-End
-
-Constraint LocalConst
-( ( ir_type{begin} = instruction
-  ∧ ir_type{value} = preexecution)
-∨ strict_domination({value}, {begin})
-∨ ( ir_type{begin} = instruction
-  ∧ {value} is unused))
-End
-
-Constraint SESE
-( opcode{precursor} = branch
-∧ {precursor} ∈ {begin}.successors
-∧ opcode{end} = branch
-∧ {end} ∈ {successor}.successors
-∧ domination({begin}, {end})
-∧ post_domination({end}, {begin})
-∧ strict_domination({precursor}, {begin})
-∧ strict_post_domination({successor}, {end})
-∧ all control flow from {begin} to {precursor}
-                    passes through {end}
-∧ all control flow from {successor} to {end}
-                        passes through {begin})
+( {callsite} is call instruction and
+  {function} is first argument of {callsite} and
+  {begin} control flow dominates {callsite} and
+  {end} control flow post dominates {callsite})
 End
 \end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
+                   firstnumber=106]
+Constraint For
+( inherits Loop and
+  {increment} reaches phi node {iterator} from {end} and
+  {increment} has data flow to {comparison} and
+  {comparison} is icmp instruction and
+  {comparison} has data flow to {end} and
+  {increment} has data flow to {iterator} and
+  {increment} is add instruction and
+  {iterator} has data flow to {increment} and
+  {iter_end} has data flow to {increment} and
+  inherits LocalConst
+      with {begin}    as {scope.begin}
+       and {iter_end} as {value} and
+  {iter_begin} has data flow to {increment} and
+  inherits LocalConst
+      with {begin}      as {scope.begin}
+       and {iter_begin} as {value} and
+  {iter_step} has data flow to {increment} and
+  inherits LocalConst
+      with {begin}     as {scope.begin}
+       and {iter_step} as {value})
+End
+
+Constraint VectorRead
+( {value} is load instruction and
+  {address} is first argument of {value} and
+  {base_pointer} is first argument of {address} and
+  inherits LocalConst
+      with {base_pointer} as {value} and
+  {final_index} is second argument of {address} and
+  ( ( {final_index} is add instruction and
+      inherits ArgumentsPermuted
+          with {final_index}   as {dst}
+           and {strided_index} as {src1}
+           and {offset}        as {src2} and
+      inherits LocalConst
+          with {offset} as {value} and
+      {strided_index} is mul instruction and
+      inherits ArgumentsPermuted
+          with {strided_index} as {dst}
+           and {input_index}   as {src1}
+           and {stride}        as {src2} and
+      inherits LocalConst
+          with {stride} as {value}) or 
+    ( {final_index} is mul instruction and
+      inherits ArgumentsPermuted
+          with {final_index} as {dst}
+           and {input_index} as {src1}
+           and {stride}      as {src2} and
+      inherits LocalConst
+          with {stride} as {value} and
+      {strided_index} is the same as {final_index} and
+      {offset} is unused) or 
+    ( {final_index} is the same as {input_index} and
+      {strided_index} is the same as {final_index} and
+      {offset} is unused and
+      {stride} is unused and
+      {scope.begin} is instruction)))
+End
+\end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
+                   firstnumber=166]
+Constraint KernelFunction
+( collect i  4 ( {entries[i]} has control
+                     flow to {scope.begin}) and
+  collect i 24 ( inherits LocalConst
+                     with {scope} as {scope}
+                                  at {outside[i]} and
+                 {outside[i].value}
+                     is not a numeric constant and
+                 {outside[i].value} has data
+                     flow to {outside[i].use} and
+                 {scope.begin} control flow
+                     dominates {outside[i].use}) and
+  collect i  8 ( {loop_carried[i].update} reaches
+                     phi node {loop_carried[i].value}
+                     from {scope.end} and
+                 {scope.begin} control flow
+                     dominates {loop_carried[i].value}) and
+  all flow from {loop_carried[0..8].value} ([or]) any origin
+      to any of {result} passes through ([at]) least one of
+      {inputs[0..32],entries[0..4],outside[0..24].value})
+End
+
+Constraint Concat
+( if N1=1 then
+    {out[0]} is the same ([as]) {in1}
+  else
+    {out[i]} is the same ([as]) {in1[i]} for all i=0..N1
+  endif and
+  if N2=1 then
+    {out[N1+0]} is the same ([as]) {in2}
+  else
+    {out[N1+i]} is the same ([as]) {in2[i]} for all i=0..N1
+  endif and
+  if N3=1 then
+    {out[N1+N2+0]} is the same ([as]) {in3}
+  else
+    {out[N1+N2+i]} is the same ([as]) {in3[i]} for all i=0..N3
+  endif)
+for N2=0 if not otherwise specified
+for N3=0 if not otherwise specified
+End
+\end{lstlisting}
+\end{figure}
