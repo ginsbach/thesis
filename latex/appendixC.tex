@@ -1,5 +1,5 @@
 \begin{figure}[h]
-\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.8}\ttfamily,
+\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.85}\ttfamily,
                    captionpos=t,caption=
    {Verbatim display of the grammar file that is used to generate the parser for
     IDL.
@@ -9,9 +9,7 @@
     The character ``\#'' marks the top-level language construct.
     Any expression that does not ultimately become part of this construct
     constitutes a syntax error.\parfillskip=0pt}]
-# ::= <specification> | <export>
-
-export ::= Export
+# ::= <specification>
 
 specification ::= Constraint <s> <@formula> End
 
@@ -46,8 +44,8 @@ default ::= <@formula> for <s> = <@index>
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.8}\ttfamily,
-                   firstnumber=36]
+\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.85}\ttfamily,
+                   firstnumber=34]
 @nested ::= '(' <@formula> ')'
 
 atom ::= <IntegerType> | <FloatType>
@@ -103,8 +101,8 @@ FourthOperand ::= <@variable> is fourth
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.8}\ttfamily,
-                   firstnumber=89]
+\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.85}\ttfamily,
+                   firstnumber=87]
 FirstSuccessor  ::= <@variable> is first
                     successor of <@variable>
 SecondSuccessor ::= <@variable> is second
