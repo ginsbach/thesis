@@ -1,4 +1,5 @@
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.85}\small\ttfamily,
+\begin{figure}[h]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\small\ttfamily,
                    captionpos=t,caption=
    {Constraint specification in CAnDL of Scalar Control Parts (SCoPs):
     These regular loop nests enable polyhedral transformations to be applied,
@@ -43,7 +44,11 @@ Constraint StructuredControlFlowPart
 ∧ {loop[0..8].end,conditional[0..8].precursor}
       is the same set as {branch[0..16].value})
 End
-
+\end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
+                   firstnumber=38]
 Constraint SideEffectFreePart
 ( collect i 32 ( include LocalFunctionCall({begin}->{begin},
                                              {end}->{end})
@@ -96,7 +101,11 @@ Constraint AffineControlFlowPart
                       {begin}->{begin})
                  @{loop_affine_end[i]} foreach i=0..8)
 End
-
+\end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
+                   firstnumber=91]
 Constraint For
 ( include Loop
 ∧ {increment} -> {iterator} Φ {body.end}
@@ -159,7 +168,11 @@ else
                                        {begin}->{begin}) @ {r})
 endif
 End
-
+\end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
+                   firstnumber=154]
 Constraint LocalFunctionCall
 ( opcode{callsite} = call
 ∧ {function} = {callsite}.args[0]
@@ -213,7 +226,11 @@ Constraint Distributive
 ∧ {product2.value} = {sum2.last_factor}
 ∧ include MulChain @ {product2})
 End
-
+\end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
+                   firstnumber=208]
 Constraint SumChain
 ( data_type{value} = integer
 ∧ {value} = {results[0]}
@@ -268,7 +285,11 @@ Constraint HoistSelect
 ∧ opcode{input1} = gep
 ∧ opcode{input2} = gep)
 End
-
+\end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
+                   firstnumber=263]
 Constraint ForWithIteratorTest
 ( include Loop
 ∧ {increment} -> {iterator} Φ {body.end}
@@ -322,3 +343,4 @@ Constraint SESE
                         passes through {begin})
 End
 \end{lstlisting}
+\end{figure}
