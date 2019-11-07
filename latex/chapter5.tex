@@ -5,38 +5,40 @@
     directly available to the LLVM infrastructure and the Clang compiler.
     The previous chapter showed how this enables powerful compiler analysis
     generation for many established compiler analysis tasks,
-    from reimplementing peephole optimisations to detecting well-behaved code
+    from reimplementing peephole optimisations to detecting code that is
     suitable for polyhedral analysis.
-
-    This chapter uses CAnDL to go beyond established analysis methods and
-    implement novel detection functionality to enable the automatic
+    This chapter extends this language to the Idiom Description Language (IDL)
+    and uses it to implement novel detection functionality for the automatic
     parallelisation of a wide class of programs.
+
     The previously overlooked ``complex reduction and histogram computations''
     are identified as an important class of parallelisation opportunities that
     are not accessible via conventional analysis approaches.
-    Complex reductions and histogram computations may contain indirect memory
-    access and kernel computations with non-trivial control flow.
-
-    Complex reduction and histogram computations were not previously
+    Relevant loops contain indirect memory access and reduction operators
+    with non-trivial control flow.
+    Complex reduction and histogram computations were previously not
     interpreted as a single class of calculations.
-    Instead, the focus was on simpler scalar reductions, with no connection to
-    histograms.
     However, this chapter demonstrates that several standard benchmark programs
-    are dominated by loops that can be classified as complex reduction and
-    histogram computations.
-    Furthermore, they can be parallelised in the same way, by privatising scalar
-    reduction variables and histogram reduction arrays.
-    This allows for the automatic parallelisation of programs that were
-    previously largely inaccessible to compiler analysis.
+    are dominated by such computations.
 
+    After introducing the {\em computational idiom} of complex reductions and
+    histograms, their specification with constraints is investigated.
+    IDL is specified as an extension to CAnDL, with additional language features
+    to capture well-behaved kernel functions.
+    Such kernel functions are an integral component of reductions, where they
+    model the reduction operator.
+    However, this extends also to many other important computational idioms,
+    such as stencil codes.
+    
     By grouping complex reductions and histogram computations together and
-    formulating them in CAnDL, a completely automatic detection in C/C++ code is
+    formulating them in IDL, a completely automatic detection in C/C++ code is
     possible.
-    Parallelisation routines are then implemented to complement the detection.
-    Well-established parallelisation approaches then result in good speedups on
-    several relevant programs.
-    This was evaluated on the NAS parallel benchmark suite as well as the
-    Parboil benchmarks.
+    Parallelisation routines were implemented to complement the detection.
+    Established parallelisation methods for reductions then resulted in good
+    speedups on several relevant programs.
+    This was evaluated on the NAS Parallel Benchmark suite, the Parboil
+    benchmarks, and Rodinia.
+
 
 \section{Introduction}
 
@@ -1569,25 +1571,23 @@ for( i=0; i<NUM_KEYS; i++ )
 
 \section{Conclusion}
 
-This chapter developed a new compiler based approach that
-automatically detects a wide class of reductions. 
-%% Such reductions can
-%% contain general control-flow and non-linear access to arrays. 
-This approach is based on a constraint based formulation which has
-been implemented as an LLVM pass. We use a customized constraint
-solver to identify program subsets that adhere to the constraint
-specification.  By representing general reductions in a formal
-constraint language, we separate specification from detection
-providing a modular and extendable approach to idiom recognition.We
-showed a brief example of how this could be used to detect dense
-matrix multiplication code.  Once reductions are discovered, we
-automatically generate parallel code to exploit the reduction. This
-approach is robust and was evaluated on C versions of three well known
-benchmark suites: NAS, Parboil and Rodinia. We detected 
-more reductions than existing approaches and were alone in being able
-to detect computationally intense  histogram reductions. Such
-reductions were shown to give significant performance improvement.
-Future work will extend the constraint formulation to consider other
-commonly occurring idioms and target domain specific languages. Once the number of idioms detected begins to grow, a smart profitability analysis will be needed and will also be the subject of future work.
+    This chapter developed a new compiler based approach that automatically
+    detects a wide class of reductions.
+    This approach is based on a constraint based formulation which has
+    been implemented as an LLVM pass. We use a customized constraint
+    solver to identify program subsets that adhere to the constraint
+    specification.  By representing general reductions in a formal
+    constraint language, we separate specification from detection
+    providing a modular and extendable approach to idiom recognition.We
+    showed a brief example of how this could be used to detect dense
+    matrix multiplication code.  Once reductions are discovered, we
+    automatically generate parallel code to exploit the reduction. This
+    approach is robust and was evaluated on C versions of three well known
+    benchmark suites: NAS, Parboil and Rodinia. We detected 
+    more reductions than existing approaches and were alone in being able
+    to detect computationally intense  histogram reductions. Such
+    reductions were shown to give significant performance improvement.
+    Future work will extend the constraint formulation to consider other
+    commonly occurring idioms and target domain specific languages. Once the number of idioms detected begins to grow, a smart profitability analysis will be needed and will also be the subject of future work.
 
 \section{Summary}
