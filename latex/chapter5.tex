@@ -144,7 +144,7 @@
     {The most conventional example of a reduction is adding up all values in an
      array.
      The reduction operator ``{\tt+}'' {\it reduces} the array \texttt{a} to a
-     single element -- the reduction variable {\tt sum}.\parfillskip=0pt}]
+     single element -- the reduction variable {\tt sum}.}]
 sum = 0;
 for(i = 0; i < n; i++)
   sum += a[i];
@@ -174,8 +174,8 @@ for(i = 0; i < n; i++)
 \begin{lstlisting}[language=MyCpp,label={complex-reduction-figure},caption=
    {Example of ``complex reductions and histograms'' computation:
     The bottleneck from NAS Parallel Benchmarks can be parallelised as
-    reductions by privatising variables \texttt{sx}, \texttt{sy}, \texttt{q[]}.
-    \parfillskip=0pt}]
+    reductions by privatising variables \texttt{sx}, \texttt{sy},
+    \texttt{q[]}.}]
 for(i = 0; i < NK; i++) {
   x1 = 2.0 * x[2*i] - 1.0;
   x2 = 2.0 * x[2*i+1] - 1.0;
@@ -231,7 +231,7 @@ for(i = 0; i < NK; i++) {
 \caption{Parallelisation of \Cref{complex-reduction-figure}:
          The input array \texttt{x} is split over two threads (red/blue)
          that operate on private copies of \texttt{sx}, \texttt{sy}, \texttt{q[]}.
-         These copies are then merged after synchronisation.\parfillskip=0pt}
+         These copies are then merged after synchronisation.}
 \label{nice-picture}
 \end{figure}
 
@@ -448,7 +448,7 @@ for(i = 0; i < n; i++)
 \begin{lstlisting}[language=MyCpp,label={counterexamples},caption=
    {Counterexamples to the four conditions: None of these computations can be
     parallelised as scalar reductions.
-    The first and last example implement the same program.\parfillskip=0pt}]
+    The first and last example implement the same program.}]
 sum = 0;
 active = true;
 for(i = 0; i < n; i++) {
@@ -554,8 +554,7 @@ for(i = 0; i < n; i++) {
 \begin{lstlisting}[language=MyCpp,label={counterexamples2},caption=
    {Counterexamples to the last three conditions:
     None of these computations can be parallelised as histograms.
-    The final two example loops implement the same functionality.
-    \parfillskip=0pt}]
+    The final two example loops implement the same functionality.}]
 active = true;
 for(i = 0; i < n; i++) {
     if(a[i] > 9)
@@ -619,7 +618,7 @@ for(i = 0; i < n; i++) {
     \caption{The Idiom Description Language (IDL) is derived from CAnDL.
              However, it uses a more descriptive syntax, without uncommon
              unicode characters such as ``$\land$'', ``$\lor$'', ``$\in$'',
-             and ``$\neq$''.\parfillskip=0pt}
+             and ``$\neq$''.}
     \label{CanDLtoIDL}
 \end{table}
 
@@ -770,8 +769,7 @@ all flow from {loop_carried[1..3]} ([or]) any origin
     right, checking that all paths end in the predetermined function arguments
     \mbox{$sx$, $t_1$ and $t_5$ (\textcolor{color_types}{\bf red})}.
     The kernel function can then be extracted and valid SSA
-    reconstructed, as shown at the bottom.
-    \parfillskip=0pt}
+    reconstructed, as shown at the bottom.}
 \label{kernelexample}
 \end{figure}
 
@@ -808,8 +806,7 @@ End
     The kernel function operates within a loop.
     Its input \texttt{kernel.inputs} is composed of \texttt{read\_values} and
     the reduction value of the previous iteration, concatednated with
-    \texttt{Concat}.
-    \parfillskip=0pt}]
+    \texttt{Concat}.}]
 Constraint ScalarPart
 ( {kernel.result} reaches phi node
       {old_value} from {loop.end} and

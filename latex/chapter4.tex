@@ -757,7 +757,7 @@ Constraint Loop
     execution of a loop.
     It is underspecified on its own, and should be included in larger CAnDL
     programs that also include {\tt Loop}, renaming {\tt value} to the specific
-    variable that needs to be constrained in this way. \parfillskip=0pt}]
+    variable that needs to be constrained in this way.}]
 Constraint LocalConst
 ( ir_type{value} = literal
 ∨ ir_type{value} = argument
@@ -765,7 +765,7 @@ Constraint LocalConst
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL, label={fig:arrayloop}, caption=
    {Building blocks are combined to restrict the permitted memory access within
-    a loop. \leftskip=0pt\rightskip=0pt}]
+    a loop.\leftskip=0pt\rightskip=0pt}]
 Constraint PointerAccess
 ( ( (opcode{access} = store ∧ {pointer} = {access}.args[1])
   ∨ (opcode{access} = load  ∧ {pointer} = {access}.args[0]))
@@ -913,7 +913,7 @@ Constraint LoopWithOnlyArrayAccesses
 \includegraphics[width=0.85\textwidth]{figures/candlstages.pdf}
 \caption{Flow within the CAnDL compiler:
          The CAnDL source code gets lowered in several steps to generated C++
-         source code.\parfillskip=0pt}
+         source code.}
 \label{fig:compilerflow}
 \end{minipage}
 \end{figure}
@@ -959,7 +959,7 @@ Constraint SimpleAddition
 \begin{lstlisting}[language=MyCpp,label={fig:codegen},caption=
    {C++ code generation: The code is generated to first instantiate atomic
     constraints, then compose higher-level constructs and finally assemble a
-    backtracking solution for the solver.\parfillskip=0pt}]
+    backtracking solution for the solver.}]
 // Step 1: Instantiate Atomic Constraints
 auto constr0 = make_shared<AddInstruction>(model);
 auto constr1 = make_shared<FirstArgument> (model);
@@ -1017,8 +1017,7 @@ result[2] = make_pair("right",    select<1>(constr2));
 \includegraphics[width=\textwidth]{figures/visual_gui2.png}
 \caption{Interactive CAnDL test tool: The left hand panel shows a Static Control
         Part (SCoP) in Polybench jacobi-2d, the right hand panel shows the
-        constraint solutions found by the solver.
-        \parfillskip=0pt}
+        constraint solutions found by the solver.}
 \label{fig:gui}
 \end{figure}
 
@@ -1200,7 +1199,7 @@ Total Compilation time & 152.2s & 152.2s+7.8s \\
    {CAnDL defines multiplication chains with genuine vectors and hoisted
     scalars:
     After separating the two cases, some of the multiplications can be performed
-    on scalars instead.\parfillskip=0pt}]
+    on scalars instead.}]
 Constraint FloatingPointAssociativeReorder
 ( include VectorMulChain
 ∧ collect j N
