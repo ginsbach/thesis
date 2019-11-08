@@ -26,10 +26,10 @@ Constraint ComplexReductionsAndHistograms
                  inherits ScopeValue
                      with {loop}      as {scope}
                       and {stores[i]} as {value}) and
-  {stores[0..2]} is the same set as
+  {stores[0..2]} is the same set ([as])
       {histo[0..2].update.store_instr} and
-  {scalar[0].kernel.result} is not the
-      same as {histo[0].update.store_instr} and
+  {scalar[0].kernel.result} is ([not]) the
+      same ([as]) {histo[0].update.store_instr} and
   inherits SideEffectFreeCalls
       with {loop} as {scope})
 End
@@ -66,10 +66,10 @@ Constraint VectorRead
            and {stride}      as {src2} and
       inherits LocalConst
           with {stride} as {value} and
-      {strided_index} is the same as {final_index} and
+      {strided_index} is the same ([as]) {final_index} and
       {offset} is unused) or 
-    ( {final_index} is the same as {input_index} and
-      {strided_index} is the same as {final_index} and
+    ( {final_index} is the same ([as]) {input_index} and
+      {strided_index} is the same ([as]) {final_index} and
       {offset} is unused and
       {stride} is unused and
       {scope.begin} is instruction)))
@@ -215,7 +215,7 @@ Constraint KernelFunction
                      with {scope} as {scope}
                                   at {outside[i]} and
                  {outside[i].value}
-                     is not a numeric constant and
+                     is ([not]) a numeric constant and
                  {outside[i].value} has data
                      flow to {outside[i].use} and
                  {scope.begin} control flow
@@ -225,8 +225,8 @@ Constraint KernelFunction
                      from {scope.end} and
                  {scope.begin} control flow
                      dominates {loop_carried[i].value}) and
-  all flow from {loop_carried[0..8].value} or any origin
-      to any of {result} passes through at least one of
+  all flow from {loop_carried[0..8].value} ([or]) any origin
+      to any of {result} passes through ([at]) least one of
       {inputs[0..32],entries[0..4],outside[0..24].value})
 End
 
@@ -239,19 +239,19 @@ End
 
 Constraint Concat
 ( if N1=1 then
-    {out[0]} is the same as {in1}
+    {out[0]} is the same ([as]) {in1}
   else
-    {out[i]} is the same as {in1[i]} for all i=0..N1
+    {out[i]} is the same ([as]) {in1[i]} for all i=0..N1
   endif and
   if N2=1 then
-    {out[N1+0]} is the same as {in2}
+    {out[N1+0]} is the same ([as]) {in2}
   else
-    {out[N1+i]} is the same as {in2[i]} for all i=0..N1
+    {out[N1+i]} is the same ([as]) {in2[i]} for all i=0..N1
   endif and
   if N3=1 then
-    {out[N1+N2+0]} is the same as {in3}
+    {out[N1+N2+0]} is the same ([as]) {in3}
   else
-    {out[N1+N2+i]} is the same as {in3[i]} for all i=0..N3
+    {out[N1+N2+i]} is the same ([as]) {in3[i]} for all i=0..N3
   endif)
 for N2=0 if not otherwise specified
 for N3=0 if not otherwise specified

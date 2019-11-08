@@ -141,7 +141,7 @@ Constraint Reduction
   inherits InductionVar
        with {old_value}       as {old_ind}
         and {kernel.output}   as {new_ind} and
-  {old_value} is not the same as {iterator} and
+  {old_value} is ([not]) the same ([as]) {iterator} and
   inherits Concat
       with {read_value}   as {in1}
        and {old_value}    as {in2}

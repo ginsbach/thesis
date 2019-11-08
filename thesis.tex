@@ -111,6 +111,7 @@
  captionpos       = b,
  escapeinside     = {([}{])},
  literate         = {∧}{$\land$}1{∨}{$\lor$}1{∈}{$\in$}1{≠}{$\neq$}1{Φ}{$\Phi$}1
+                    {@}{@}1
 }
 
 \lstdefinelanguage{MyCpp}{
@@ -133,7 +134,7 @@
 }
 
 \lstdefinelanguage{CAnDL}{
- morekeywords = { with, collect, for, foreach, forany, unused, is,
+ morekeywords = { with, collect, for, foreach, forany,
                   if, then, else, endif, not, otherwise, specified},
  morekeywords = [2]{Constraint, End, include},
  morekeywords = [3]{SqrtOfSquare, ValueChain, Sum, SumOfSums, CollectArguments,
@@ -156,7 +157,11 @@
                     HistoPart, ConditionalReadModifyWrite,
                     ComplexReductionsAndHistograms, For, VectorRead,
                     SideEffectFreeCalls, ArgumentsPermuted, MaxOnceInScope,
-                    Loop, SESE, },
+                    Loop, SESE, Reduction, Stencil, ForNest, StencilRead,
+                    PermMultidStore, SPMV, GEMM, VectorStore, VectorRead,
+                    DotProductLoop, MatrixStore, MatrixRead, Histogram,
+                    ForLoop, OffsetAdd, InductionVar, RangeCheck,
+                    FactorizationOpportunity},
  morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
 }
 
