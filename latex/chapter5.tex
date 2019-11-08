@@ -780,10 +780,10 @@ all flow from {loop_carried[1..3]} ([or]) any origin
  basicstyle = \linespread{1.173}\ttfamily
 }
 \begin{lstlisting}[language=IDL]
-Constraint ([\bfseries KernelFunction])
+Constraint KernelFunction
 ( collect i  4 ( {entries[i]} has control
                      flow to {scope.begin}) and
-  collect i 24 ( inherits ([\bfseries LocalConst])
+  collect i 24 ( inherits LocalConst
                      with {scope} as {scope}
                                   at {outside[i]} and
                  {outside[i].value}
@@ -810,18 +810,18 @@ End
     the reduction value of the previous iteration, concatednated with
     \texttt{Concat}.
     \parfillskip=0pt}]
-Constraint ([\bfseries ScalarPart])
+Constraint ScalarPart
 ( {kernel.result} reaches phi node
       {old_value} from {loop.end} and
-  inherits ([\bfseries ScopeValue])
+  inherits ScopeValue
       with {loop}      as {scope}
        and {old_value} as {value} and 
   {kernel.result} has data flow to {final_value} and
   {loop.end} strictly control flow
       dominates {final_value} and
-  inherits ([\bfseries KernelFunction])
+  inherits KernelFunction
       with {loop} as {scope} at {kernel} and
-  inherits ([\bfseries Concat])(N1=31,N2=1)
+  inherits Concat(N1=31,N2=1)
       with {read_values}   as {in1}
        and {old_value}     as {in2}
        and {kernel.inputs} as {out})
@@ -877,18 +877,18 @@ End
     Two kernel functions are present: lines 7--9 calculate the index into the
     histogram array, lines 10--11 generate the updated value.
     The read-modify-write step may be conditional.}]
-Constraint ([\bfseries HistoPart])
-( inherits ([\bfseries ConditionalReadModifyWrite])
+Constraint HistoPart
+( inherits ConditionalReadModifyWrite
       with {loop}              as {scope}
        and {idx_kernel.result} as {address}
        and {val_kernel.result} as {new_value}
                                at {update} and
-  inherits ([\bfseries KernelFunction])
+  inherits KernelFunction
       with {loop}        as {scope}
        and {read_values} as {inputs} at {idx_kernel} and
-  inherits ([\bfseries KernelFunction])
+  inherits KernelFunction
       with {loop} as {scope} at {val_kernel} and
-  inherits ([\bfseries Concat])(N1=31,N2=1)
+  inherits Concat(N1=31,N2=1)
       with {read_values}       as {in1}
        and {update.old_value}  as {in2}
        and {val_kernel.inputs} as {out})
@@ -925,33 +925,33 @@ End
 \begin{figure}[p]
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
    {Complex reductions and histograms as an IDL specification}]
-Constraint ([\bfseries ComplexReductionsAndHistograms])
-( inherits ([\bfseries For]) at {loop} and
-  collect k 32 ( inherits ([\bfseries VectorRead])
+Constraint ComplexReductionsAndHistograms
+( inherits For at {loop} and
+  collect k 32 ( inherits VectorRead
                      with {loop.iterator}  as {input_index}
                       and {read_values[k]} as {value}
                       and {loop}           as {scope}
                                            at {read[k]}) and
-  collect k  2 ( inherits ([\bfseries HistoPart])
+  collect k  2 ( inherits HistoPart
                      with {loop.begin}  as {begin}
                       and {read}        as {read}
                       and {loop}        as {loop}
                       and {read_values} as {read_values}
                                         at {histo[k]}) and
-  collect k  2 ( inherits ([\bfseries ScalarPart])
+  collect k  2 ( inherits ScalarPart
                      with {loop.begin}  as {begin}
                       and {loop}        as {loop}
                       and {read_values} as {read_values}
                                         at {scalar[k]}) and
   collect i  2 ( {stores[i]} is store instruction and
-                 inherits ([\bfseries ScopeValue])
+                 inherits ScopeValue
                      with {loop}      as {scope}
                       and {stores[i]} as {value}) and
   {stores[0..2]} is the same set ([as])
       {histo[0..2].update.store_instr} and
   {scalar[0].kernel.result} is ([not]) the
       same ([as]) {histo[0].update.store_instr} and
-  inherits ([\bfseries SideEffectFreeCalls])
+  inherits SideEffectFreeCalls
       with {loop} as {scope})
 End
 \end{lstlisting}
