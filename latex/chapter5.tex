@@ -73,25 +73,6 @@
     representation \citep{benabderrahmane2010polyhedral} as the basis for
     their analysis.
 
-%    Most prior work has focused on the exploitation of generalised reductions
-%    rather than discovery.
-%    Among this work, \citet{yu2006adaptive} examined performance trade-offs in
-%    implementations, and \citet{Huo2011HiPC} studied the exploitation of novel
-%    hardware.
-%    Early work focused on well structured Fortran and paid little attention to
-%    compiler-based detection.
-%    More recent work by \citet{Han2010Speculative} has attempted to find
-%    reductions in more complex C based code with partial reduction variables.
-%    This approach is  based on update chains in the dependence graph and
-%    requires hardware speculation support to check dependences, but is unable to
-%    detect histogram reductions.
-%    In \cite{Johnson:2012:SSP:2254064.2254107}, a complex system is
-%    proposed to allow structure privatization, yet it only exploits simple
-%    scalar reductions.
-%    The difficulty in automatically detecting reductions has led to language or
-%    annotation based approaches where it is the user's responsibility to mark
-%    reductions in the program \cite{Reddy2016Reduction,ciesko2015scaling}.
-%
     This chapter develops a new compiler based approach that automatically
     detects a wide class of generalised reductions.
     Such reductions can span large sections of code, contain general
@@ -253,7 +234,6 @@ for(i = 0; i < NK; i++) {
          These copies are then merged after synchronisation.\parfillskip=0pt}
 \label{nice-picture}
 \end{figure}
-
 
 \begin{figure}[p]
 \centering
@@ -797,17 +777,17 @@ all flow from {loop_carried[1..3]} ([or]) any origin
 
 \begin{figure}[p]
 \lstset{
- basicstyle = \linespread{1.112}\ttfamily
+ basicstyle = \linespread{1.173}\ttfamily
 }
 \begin{lstlisting}[language=IDL]
-Constraint KernelFunction
+Constraint ([\bfseries KernelFunction])
 ( collect i  4 ( {entries[i]} has control
                      flow to {scope.begin}) and
-  collect i 24 ( inherits LocalConst
+  collect i 24 ( inherits ([\bfseries LocalConst])
                      with {scope} as {scope}
                                   at {outside[i]} and
                  {outside[i].value}
-                     is not a numeric constant and
+                     is ([not]) a numeric constant and
                  {outside[i].value} has data
                      flow to {outside[i].use} and
                  {scope.begin} control flow
@@ -830,20 +810,18 @@ End
     the reduction value of the previous iteration, concatednated with
     \texttt{Concat}.
     \parfillskip=0pt}]
-Constraint ScalarPart
-( {kernel.output} reaches phi node
+Constraint ([\bfseries ScalarPart])
+( {kernel.result} reaches phi node
       {old_value} from {loop.end} and
-  {loop.begin} control flow
-      dominates {old_value} and
+  inherits ([\bfseries ScopeValue])
+      with {loop}      as {scope}
+       and {old_value} as {value} and 
+  {kernel.result} has data flow to {final_value} and
   {loop.end} strictly control flow
-      post dominates {old_value} and
-  {kernel.output} reaches phi node
-      {final_value} from {loop.end} and
-  {final_value} strictly control flow
-      post dominates {loop.end} and
-  inherits KernelFunction
+      dominates {final_value} and
+  inherits ([\bfseries KernelFunction])
       with {loop} as {scope} at {kernel} and
-  inherits Concat(N1=31,N2=1)
+  inherits ([\bfseries Concat])(N1=31,N2=1)
       with {read_values}   as {in1}
        and {old_value}     as {in2}
        and {kernel.inputs} as {out})
@@ -856,7 +834,7 @@ End
     Kernel functions can be encapsulated as shown in the top half of
     \Cref{IDLscalarPart} in IDL.
     The specification is built around the previously introduced generalised
-    graph dominance constraint, which is in lines 18--22.
+    graph dominance constraint, which is in lines 18--20.
     The relevant arrays which are passed to this final constraint are filled
     using several collect-all constraints in lines 2--17.
     Lines 2--3 collect all the entry points of control flow.
@@ -871,14 +849,13 @@ End
     At the bottom of \Cref{IDLscalarPart} is the IDL specification of a
     scalar reduction within a complex reduction and histogram computation.
     This IDL specification is built around a kernel function, incorporating the
-    specification in lines 12--13.
+    specification in lines 10--11.
     The arguments to this kernel function are set using the ``{\tt Concat}''
-    specification in lines 14--17.
+    specification in lines 12--15.
     This kernel function is connected with a loop-carried $\Phi$-instruction in
-    lines 2--7.
-    Finally, lines 8--11 introduce another $\Phi$-instruction
-    ``{\tt final\_value}'' that captures the reduction result after the loop
-    execution finished.
+    lines 2--6.
+    Finally, lines 7--9 make sure that the reduction value actually leaves the
+    loop, excluding loop-carried iterators that are only used within the loop.
 
     \autoref{IDLhistoPart} shows how histogram reductions are specified
     similarly.
@@ -899,23 +876,22 @@ End
     histogram computation:
     Two kernel functions are present: lines 7--9 calculate the index into the
     histogram array, lines 10--11 generate the updated value.
-    The read-modify-write step may be conditional.
-    \parfillskip=0pt}]
-Constraint HistoPart
-( inherits ConditionalReadModifyWrite
+    The read-modify-write step may be conditional.}]
+Constraint ([\bfseries HistoPart])
+( inherits ([\bfseries ConditionalReadModifyWrite])
       with {loop}              as {scope}
        and {idx_kernel.result} as {address}
        and {val_kernel.result} as {new_value}
                                at {update} and
-  inherits KernelFunction
+  inherits ([\bfseries KernelFunction])
       with {loop}        as {scope}
        and {read_values} as {inputs} at {idx_kernel} and
-  inherits KernelFunction
+  inherits ([\bfseries KernelFunction])
       with {loop} as {scope} at {val_kernel} and
-  inherits Concat(N1=31,N2=1)
-      with {read_values}      as {in1}
-       and {update.old_value} as {in2}
-       and {val_kernel.inputs}    as {out})
+  inherits ([\bfseries Concat])(N1=31,N2=1)
+      with {read_values}       as {in1}
+       and {update.old_value}  as {in2}
+       and {val_kernel.inputs} as {out})
 End
 \end{lstlisting}
 \end{figure}
