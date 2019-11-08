@@ -905,65 +905,54 @@ End
 
     Such computations are always encapsulated by a single for loop, as
     stipulated in line 2.
-    Lines 3--8 specify that input values are read from one or several input
+    Lines 3--7 specify that input values are read from one or several input
     arrays, according to the specification ``{\tt VectorRead}''.
     The values are redirected to the ``{\tt read\_value}'' array, which is
-    passed in lines 14,20 to the individual ``{\tt HistoPart}'' and
+    passed in lines 12,17 to the individual ``{\tt HistoPart}'' and
     ``{\tt ScalarPart}'' invocations.
 
-    Lines 22--23 implement a trick: The two compared variables can only be the
+    Lines 19--24 make sure that there are no array writes aside from the
+    histogram updates.
+    Furthermore, lines 27--28 eliminate the possibility of effectful function
+    calls within the loop.
+    Together, these constraints rule out unwanted side effects of the loop.
+
+    Lines 23--24 implement a trick: The two compared variables can only be the
     same, if they are both {\tt unused}.
     Therefore, these lines simply enforce that the loop has to contain at least
     one reduction or histogram computation.
 
-    Lines 24--30 make sure that there are no array writes aside from the
-    histogram updates.
-    Furthermore, lines 31--39 eliminate the possibility of effectful function
-    calls within the loop.
-    Together, these constraints rule out unwanted side effects of the loop.
-
 \begin{figure}[p]
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
    {Complex reductions and histograms as an IDL specification}]
-Constraint ComplexReductionsAndHistograms
-( inherits For at {loop} and
-  collect k 32
-  ( inherits VectorRead
-        with {loop.iterator}  as {input_index}
-         and {read_values[k]} as {value}
-         and {loop}           as {scope}
-                              at {read[k]}) and
-  collect k 2
-  ( inherits HistoPart
-        with {loop.begin}  as {begin}
-         and {read}        as {read}
-         and {loop}        as {loop}
-         and {read_values} as {read_values}
-                           at {histo[k]}) and
-  collect k 2
-  ( inherits ScalarPart
-        with {loop.begin}  as {begin}
-         and {loop}        as {loop}
-         and {read_values} as {read_values}
-                           at {scalar[k]}) and
-  {scalar[0].kernel.result} is not the
+Constraint ([\bfseries ComplexReductionsAndHistograms])
+( inherits ([\bfseries For]) at {loop} and
+  collect k 32 ( inherits ([\bfseries VectorRead])
+                     with {loop.iterator}  as {input_index}
+                      and {read_values[k]} as {value}
+                      and {loop}           as {scope}
+                                           at {read[k]}) and
+  collect k  2 ( inherits ([\bfseries HistoPart])
+                     with {loop.begin}  as {begin}
+                      and {read}        as {read}
+                      and {loop}        as {loop}
+                      and {read_values} as {read_values}
+                                        at {histo[k]}) and
+  collect k  2 ( inherits ([\bfseries ScalarPart])
+                     with {loop.begin}  as {begin}
+                      and {loop}        as {loop}
+                      and {read_values} as {read_values}
+                                        at {scalar[k]}) and
+  collect i  2 ( {stores[i]} is store instruction and
+                 inherits ([\bfseries ScopeValue])
+                     with {loop}      as {scope}
+                      and {stores[i]} as {value}) and
+  {stores[0..2]} is the same set ([as])
+      {histo[0..2].update.store_instr} and
+  {scalar[0].kernel.result} is ([not]) the
       same ([as]) {histo[0].update.store_instr} and
-  collect i 2
-  ( {histo[i].update.store_instr}
-        is store instruction and
-    {loop.begin} control flow
-        dominates {histo[i].update.store_instr} and
-    {loop.end} control flow post
-        dominates {histo[i].update.store_instr}) and
-  collect i 32
-  ( inherits LocalFunctionCall
-        with {loop.begin} as {begin}
-         and {loop.end}   as {end} at {call[i]}) and
-  collect i 32
-  ( inherits LocalFunctionCall
-        with {loop.begin} as {begin}
-         and {loop.end}   as {end} at {call[i]} and
-    {call[i].function} has attribute pure))
+  inherits ([\bfseries SideEffectFreeCalls])
+      with {loop} as {scope})
 End
 \end{lstlisting}
 \end{figure}
