@@ -144,7 +144,7 @@
                     ScalarHoist, SCoP, For, StructuredControlFlow,
                     AffineControlFlow, AffineMemAccesses,
                     SideEffectFreeCalls, ScopeValue, IfBlock, MemoryAccess,
-                    AffineCalc},
+                    AffineCalc, PotentialSESE, ArgumentsPermuted,},
  morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
 }
 
@@ -155,7 +155,8 @@
  morekeywords = [3]{KernelFunction, LocalConst, ScalarPart, ScopeValue, Concat,
                     HistoPart, ConditionalReadModifyWrite,
                     ComplexReductionsAndHistograms, For, VectorRead,
-                    SideEffectFreeCalls},
+                    SideEffectFreeCalls, ArgumentsPermuted, MaxOnceInScope,
+                    Loop, SESE, },
  morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
 }
 
