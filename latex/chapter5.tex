@@ -98,32 +98,11 @@
     This transformation pass achieved significant speedups on those benchmarks
     where reductions are performance bottlenecks.
 
-%    Our constraint based approach can be used for a wide range of optimizations 
-%    beyond reduction detection.
-%    To illustrate this we prototyped a linear algebra kernel detection pass
-%    which replaces dense and sparse matrix operations with the appropriate
-%    library call leading to significant speedup.
-%
-%    This paper makes the following contributions:
-%
-%    \begin{itemize}
-%    \item Detection of more general reductions than previous work. 
-%    \item Works in the presence of general control-flow, arrays with non-linear
-%          access functions, and complex operations within the reduction program
-%          scope.
-%    \item First constraint based formulation of general reductions allowing
-%          decoupling from the detection algorithm.
-%    \item When implemented in LLVM and applied to large scale benchmark suites,
-%          it detects more reductions than existing approaches.
-%    \item Demonstrates that general reductions can give significant performance
-%          improvement.  
-%    \end{itemize}
-
 \section{Motivation}
 
     \Cref{sum-figure} shows a standard scalar reduction.
-    In a single loop, the elements of the array \texttt{a} are successively
-    accumulated in the variable \texttt{sum} with the ``\texttt{+=}'' operator.
+    Inside a single loop, the elements of the array \texttt{a} are successively
+    accumulated in the variable \texttt{sum} using the ``\texttt{+=}'' operator.
     This accumulation creates dependencies between successive loop iterations,
     but they can easily be broken:
     Rather than sequentially accumulating {\tt a} into {\tt sum}, it is possible
@@ -132,8 +111,8 @@
 
 \begin{figure}[h]
 \begin{lstlisting}[language=MyCpp,label={sum-figure},caption=
-    {The most conventional example of a reduction is adding up all values in an
-     array.
+    {The most conventional example of a reduction is the adding up of values
+     in an array:
      The reduction operator ``{\tt+}'' {\it reduces} the array \texttt{a} to a
      single element -- the reduction variable {\tt sum}.}]
 sum = 0;
@@ -142,13 +121,13 @@ for(i = 0; i < n; i++)
 \end{lstlisting}
 \end{figure}
 
-    Simple reductions frequently occur and can be readily detected by existing
-    compilers.
-    However, such scalar reductions rarely dominate execution in a program, and
-    when they do, they are often part of more prominent algorithms such as
+    Simple reductions like this frequently occur, and existing compilers readily
+    exploit them.
+    However, such scalar reductions rarely dominate execution time in a program,
+    and when they do, they are often part of more prominent algorithms such as
     matrix multiplications.
     In that case, outer scope parallelism is often more profitable to exploit.
-    The parallelisation of simple reductions alone, therefore, often has a
+    The parallelisation of simple reductions alone, therefore, often has only a
     limited impact on program performance.
 
     \Cref{complex-reduction-figure} shows a more complex section of code that
@@ -163,9 +142,9 @@ for(i = 0; i < n; i++)
 
 \begin{figure}[h]
 \begin{lstlisting}[language=MyCpp,label={complex-reduction-figure},caption=
-   {Example of ``complex reductions and histograms'' computation:
-    The bottleneck from NAS Parallel Benchmarks can be parallelised as
-    reductions by privatising variables \texttt{sx}, \texttt{sy},
+   {Example of a Complex Reduction and Histogram Computation:
+    The bottleneck from NAS Parallel Benchmarks can be parallelised as a
+    reduction by privatising variables \texttt{sx}, \texttt{sy},
     \texttt{q[]}.}]
 for(i = 0; i < NK; i++) {
   x1 = 2.0 * x[2*i] - 1.0;
@@ -185,25 +164,23 @@ for(i = 0; i < NK; i++) {
 \end{figure}
 
     The loop in \ref{complex-reduction-figure} is considered as a
-    ``complex reductions and histograms'' calculation due to the following
-    features:
-    First, There is an input array \texttt{x}, from which values are read
-    pairwise.
+    CReHC due to the following features:
+    Firstly, there is an input array \texttt{x}, from which values are read
+    successively in each iteration.
     Secondly, the values \texttt{sx} and \texttt{sy} are scalar reduction
-    variables, as visible in lines 11-12.
-    They are only incremented conditionally, and the added value is the result
-    of a complex calculation.
-    However, both the calculation and the branching condition only depend on the
+    variables, as is evident from lines 11-12.
+    They are incremented conditionally, and the added value is not merely
+    \texttt{x[i]} but the result of a complex calculation with control flow.
+    However, the calculation and the branching condition only depend on the
     input values \texttt{x[2*i]} and \texttt{x[2*i+1]}.
-    Thirdly, the array \texttt{q[]} is updated as a histogram calculation in
-    line 10.
+    Thirdly, the array \texttt{q[]} is updated as a histogram array at line 10.
     The index \texttt{l} is not directly read from an input array as in a
     conventional histogram, but again the calculation only depends on the input
     values.
 
     As in the case of the simple sum, the parallelisation of this code
-    requires the computation of partial results in a separate memory
-    location before merging together the partial results.
+    requires the computation of partial results in separate memory locations
+    before merging together the partial results.
     The whole process is illustrated in Figure \ref{nice-picture}, with the
     different colours on the right showing the distribution of the program
     over two threads.
@@ -211,9 +188,9 @@ for(i = 0; i < NK; i++) {
     privatised.
     Partial results are then accumulated in the local copies by partitioning the
     input array across the two threads. 
-    Finally, the threads are synchronised and partial results merged together.
+    Finally, the threads are synchronised, and partial results merged together.
     This is done by adding together the local copies of \texttt{sx}, \texttt{sy}
-    and by performing an element wise addition of the local copies of
+    and by performing an element-wise addition of the local copies of
     \texttt{q}. 
 
 \begin{figure}[t]
@@ -222,7 +199,7 @@ for(i = 0; i < NK; i++) {
 \caption{Parallelisation of \Cref{complex-reduction-figure}:
          The input array \texttt{x} is split over two threads (red/blue)
          that operate on private copies of \texttt{sx}, \texttt{sy}, \texttt{q[]}.
-         These copies are then merged after synchronisation.}
+         The copies are merged after a synchronisation barrier.}
 \label{nice-picture}
 \end{figure}
 
@@ -237,8 +214,9 @@ for(i = 0; i < NK; i++) {
     \Cref{nice-picture2} gives an insight into why existing schemes do not
     detect such reductions by showing the compiler representation of this 
     program.
-    The histogram update occurs in the 3rd basic block with the load, assign and
-    store operations but it is by no means obvious that it is a safe reduction.
+    The histogram update occurs in the third basic block with the ``load'',
+    assignment and ``store'' operation, but it is by no means obvious that this
+    is a safe reduction.
     In fact, accurately detecting reductions is non-trivial.
     If in the original program, shown in \Cref{complex-reduction-figure}, the
     condition on line 5 was changed to {\tt t1<=sx}, there would be no longer a
@@ -246,7 +224,7 @@ for(i = 0; i < NK; i++) {
     result.
     This is turn would manifest as an additional data dependence edge from
     block 3 to block 2 in \Cref{nice-picture2}.
-    Furthermore the code segment can only be classified as a reduction because
+    Furthermore, the code segment can only be classified as a reduction because
     all the function calls that are present are pure.
     Such details have to be checked to ensure correctness.
     What is needed is a way to specify these conditions exactly and to then
