@@ -39,71 +39,64 @@
 
 \section{Introduction}
 
-    Reductions occur widely in numerical applications, and there are established
-    techniques for parallelising them \citep{Jradi2017fast}.
+    Reductions occur widely in numerical applications and techniques for
+    parallelising them were established, among others by
+    \citet{rauchwerger1999lrpd,yu2006adaptive,Jradi2017fast}.
     Typical reductions successively apply an arithmetic operator to an
     array of numeric values, in order to compute, for example, the sum of a set
     of floating point numbers.
     Perhaps most prominently, a reduction features in the innermost loop of the
-    matrix multiplication kernel in the form of a dot product.
+    matrix multiplication kernel as a dot product.
     In this form, reductions are critical to many high performance computing
-    (HPC) workloads based on linear algebra, as well as embedded benchmarks and
+    workloads based on linear algebra, as well as embedded benchmarks and
     emerging machine learning and computer vision applications
     \citep{Reddy2016Reduction}.
+    Even so, linear algebra allows for much more targeted optimisation methods.
+    Interpreting the innermost loop of matrix multiplication as an arbitrary
+    reduction is unlikely to achieve comparable performance.
 
     However, there is a much larger class of computations that can be
-    interpreted as reductions than these scalar computations, and this class
-    consitutes another important set of common kernels.
-    The computations that this chapter will investigate include irregular
-    reductions and histograms.
-    Such reductions are typically more intense computationally and can be
-    more profitably exploited on their own.
+    parallelised in much the same way.
+    This is the class of Complex Reduction and Histogram Computations (CReHCs),
+    a broad generalisation of conventional reductions that may also contain
+    updates to dynamically selected elements in arrays.
+    This manner of array access is characteristic for the calculation of
+    histograms.
+    CReHCs constitute an important set of standard program kernels.
+    They typically have a higher arithmetic intensity and can be more profitably
+    exploited on their own than simple scalar reductions.
 
     Discovering and exploiting scalar reductions in programs has been
     studied for many years, among others by \citet{pottenger1995idiom}.
     The treatment of generalisations of reduction operations has received less
     attention.
     While some work has been published on parallelising such computations,
-    automatic detection mostly evades the common compiler analysis methods.
+    automatic detection mostly evades established compiler analysis methods.
     The reason is that histogram reductions intrinsically contain indirect
-    memory accesses, which poses a challenge to compilers that use
-    data dependence \citep{kuck1981dependence} or polyhedral
-    representation \citep{benabderrahmane2010polyhedral} as the basis for
-    their analysis.
+    memory accesses, posing a challenge to compilers that use
+    standard data dependence \citep{kuck1981dependence} or the polyhedral model
+    \citep{benabderrahmane2010polyhedral} as the basis of their analysis.
 
+    The constraint programming approach derived in \Cref{chapter:theory},
+    however, is not fundamentally inhibited by indirect memory accesses.
+    Furthermore, the previous \Cref{chapter:candl} already used this to
+    constructed the constraint programming language CAnDL that can capture
+    complex control flow.
     This chapter develops a new compiler based approach that automatically
     detects a wide class of generalised reductions.
-    Such reductions can span large sections of code, contain general
-    control-flow, have non-linear access to arrays and include histograms.
-    Rather than developing a bespoke detection pass, the methodology is based on
-    the previously introduced CAnDL constraint programming language.
     This formulation allows us to specify the reduction idiom using data flow
     and control flow constraints.
-    During compilation, the CAnDL solver automatically identifies
-    subsets within LLVM IR that constitute a reduction operation.
+    During compilation, the CAnDL solver automatically identifies subsets within
+    LLVM IR that constitute a reduction operation.
 
-    The chapter focuses on the detection of reductions and then assumes later
-    compiler stages are responsible for mapping to existing tuned libraries.
+    The chapter focuses on deriving the detection of reductions and assumes
+    that later compiler stages are responsible for mapping this to dedicated
+    code gneration backends.
     However, to illustrate the potential performance of the scheme, a code
     generation pass was implemented that generates templated parallel pthread
     reduction code.
     This transformation pass achieved significant speedups on those benchmarks
     where reductions are performance bottlenecks.
-
-    The approach was applied to C/C++ versions of three well known benchmark
-    suites:
-    NAS \cite{seo2011performance},
-    Parboil \cite{stratton2012parboil} and
-    Rodinia \cite{Che2009Rodinia}.
-    These are non-trivial code bases and vary considerably in terms of code
-    structure and complexity.
-    State-of-the-art polyhedral and data dependence approaches are compared
-    against.
-    None of them find general histogram reductions, whereas the CAnDL approach
-    detects 84 scalar reductions and 6 histograms.
-    %% In order to further evaluate our approach, we manually profiled and
-    %% examined the code and found that our approach is able to determine xyz\% of 
-    %% all possible reductions.
 
 %    Our constraint based approach can be used for a wide range of optimizations 
 %    beyond reduction detection.
