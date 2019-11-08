@@ -240,9 +240,9 @@ Constraint PotentialSESE
 ∧ ( ( domination({begin}, {end})
     ∧ post_domination({end}, {begin})
     ∧ all control flow from {begin} to {precursor}
-                        passes through {end}
+             passes through {end}
     ∧ all control flow from {successor} to {end}
-                            passes through {begin})
+             passes through {begin})
   ∨ ( {begin} = {end}
     ∧ {begin} ∈ {precursor}.successors
     ∧ {successor} ∈ {end}.successors)
