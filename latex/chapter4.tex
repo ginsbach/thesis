@@ -722,7 +722,7 @@ End
 
 \begin{figure}[p]
 \lstset {
- basicstyle=\linespread{0.962}\ttfamily
+ basicstyle=\linespread{0.910}\ttfamily
 }
 \begin{lstlisting}[language=CAnDL, label=CAnDLSESE, caption=
    {Single entry single exit region in CAnDL:
@@ -761,7 +761,7 @@ Constraint Loop
 Constraint LocalConst
 ( ir_type{value} = literal
 ∨ ir_type{value} = argument
-∨ strict_domination({value}, {loop.begin})) End
+∨ strict_domination({value}, {scope.begin})) End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL, label={fig:arrayloop}, caption=
    {Building blocks are combined to restrict the permitted memory access within
@@ -769,19 +769,21 @@ Constraint LocalConst
 Constraint PointerAccess
 ( ( (opcode{access} = store ∧ {pointer} = {access}.args[1])
   ∨ (opcode{access} = load  ∧ {pointer} = {access}.args[0]))
-∧ domination({loop.begin}, {access})
-∧ post_domination({loop.end}, {access})) End
+∧ domination({scope.begin}, {access})
+∧ post_domination({scope.end}, {access})) End
 
 Constraint ArrayAccess
 ( include PointerAccess
-∧ opcode{pointer} = getelementptr
+∧ opcode{pointer} = gep
 ∧ {base_pointer} = {pointer}.args[0]
 ∧ include LocalConst({base_pointer}->{value})) End
 
 Constraint LoopWithOnlyArrayAccesses
-( include Loop
-∧ collect i N (include PointerAccess({}->{loop})@acc[i])
-∧ collect i N (include ArrayAccess({}->{loop})@acc[i])) End
+( include Loop @ {loop}
+∧ collect i N (include PointerAccess({loop}->{scope})
+                                           @{acc[i]})
+∧ collect i N (include ArrayAccess  ({loop}->{scope})
+                                           @{acc[i]})) End
 \end{lstlisting}
 \end{figure}
 
