@@ -1,145 +1,43 @@
 \begin{figure}[h]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\ttfamily,
                    captionpos=t,caption=
    {Constraint specification of Complex Reduction and Histogram Computations in
     IDL
     \parfillskip=0pt}]
 Constraint ComplexReductionsAndHistograms
 ( inherits For at {loop} and
-  collect k 32
-  ( inherits VectorRead
-        with {loop.iterator}  as {input_index}
-         and {read_values[k]} as {value}
-         and {loop}           as {scope}
-                              at {read[k]}) and
-  collect k 2
-  ( inherits HistoPart
-        with {loop.begin}  as {begin}
-         and {read}        as {read}
-         and {loop}        as {loop}
-         and {read_values} as {read_values}
-                           at {histo[k]}) and
-  collect k 2
-  ( inherits ScalarPart
-        with {loop.begin}  as {begin}
-         and {loop}        as {loop}
-         and {read_values} as {read_values}
-                           at {scalar[k]}) and
+  collect k 32 ( inherits VectorRead
+                     with {loop.iterator}  as {input_index}
+                      and {read_values[k]} as {value}
+                      and {loop}           as {scope}
+                                           at {read[k]}) and
+  collect k  2 ( inherits HistoPart
+                     with {loop.begin}  as {begin}
+                      and {read}        as {read}
+                      and {loop}        as {loop}
+                      and {read_values} as {read_values}
+                                        at {histo[k]}) and
+  collect k  2 ( inherits ScalarPart
+                     with {loop.begin}  as {begin}
+                      and {loop}        as {loop}
+                      and {read_values} as {read_values}
+                                        at {scalar[k]}) and
+  collect i  2 ( {stores[i]} is store instruction and
+                 inherits ScopeValue
+                     with {loop}      as {scope}
+                      and {stores[i]} as {value}) and
+  {stores[0..2]} is the same set as
+      {histo[0..2].update.store_instr} and
   {scalar[0].kernel.result} is not the
-      same ([as]) {histo[0].update.store_instr} and
-  collect i 2
-  ( {histo[i].update.store_instr}
-        is store instruction and
-    {loop.begin} control flow
-        dominates {histo[i].update.store_instr} and
-    {loop.end} control flow post
-        dominates {histo[i].update.store_instr}) and
-  collect i 32
-  ( inherits LocalFunctionCall
-        with {loop.begin} as {begin}
-         and {loop.end}   as {end} at {call[i]}) and
-  collect i 32
-  ( inherits LocalFunctionCall
-        with {loop.begin} as {begin}
-         and {loop.end}   as {end} at {call[i]} and
-    {call[i].function} has attribute pure))
+      same as {histo[0].update.store_instr} and
+  inherits SideEffectFreeCalls
+      with {loop} as {scope})
 End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
-                   firstnumber=42]
-Constraint ScalarPart
-( {kernel.result} reaches phi node
-      {old_value} from {loop.end} and
-  {loop.begin} control flow
-      dominates {old_value} and
-  {loop.end} strictly control flow
-      post dominates {old_value} and
-  {kernel.result} has data flow to {final_value} and
-  {loop.end} strictly control flow
-      dominates {final_value} and
-  inherits KernelFunction
-      with {loop} as {scope} at {kernel} and
-  inherits Concat(N1=31,N2=1)
-      with {read_values}   as {in1}
-       and {old_value}     as {in2}
-       and {kernel.inputs} as {out})
-End
-
-Constraint HistoPart
-( inherits ConditionalReadModifyWrite
-      with {loop}              as {scope}
-       and {idx_kernel.result} as {address}
-       and {val_kernel.result} as {new_value}
-                               at {update} and
-  inherits KernelFunction
-      with {loop}        as {scope}
-       and {read_values} as {inputs} at {idx_kernel} and
-  inherits KernelFunction
-      with {loop} as {scope} at {val_kernel} and
-  inherits Concat(N1=31,N2=1)
-      with {read_values}      as {in1}
-       and {update.old_value} as {in2}
-       and {val_kernel.inputs}    as {out})
-End
-
-Constraint ConditionalReadModifyWrite
-( {store_instr} is store instruction and
-  inherits MaxOnceInScope
-      with {scope}       as {scope}
-       and {store_instr} as {value} at {maxonce} and
-  {address} is second argument of {store_instr} and
-  {address} is gep instruction and
-  {address} is first argument of {old_value} and
-  {old_value} is load instruction and
-  {new_value} is first argument of {store_instr})
-End
-
-Constraint MaxOnceInScope
-( {scope.begin} control flow dominates {value} and
-  {scope.end} control flow post dominates {value} and
-  {value} has control flow to {value_after} and
-  all control flow from {value_after} to
-      {value} passes through {scope.end} and
-  all control flow from {value_after} to
-      {value} passes through {scope.begin})
-End
-
-Constraint LocalFunctionCall
-( {callsite} is call instruction and
-  {function} is first argument of {callsite} and
-  {begin} control flow dominates {callsite} and
-  {end} control flow post dominates {callsite})
-End
-\end{lstlisting}
-\end{figure}
-\begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
-                   firstnumber=106]
-Constraint For
-( inherits Loop and
-  {increment} reaches phi node {iterator} from {end} and
-  {increment} has data flow to {comparison} and
-  {comparison} is icmp instruction and
-  {comparison} has data flow to {end} and
-  {increment} has data flow to {iterator} and
-  {increment} is add instruction and
-  {iterator} has data flow to {increment} and
-  {iter_end} has data flow to {increment} and
-  inherits LocalConst
-      with {begin}    as {scope.begin}
-       and {iter_end} as {value} and
-  {iter_begin} has data flow to {increment} and
-  inherits LocalConst
-      with {begin}      as {scope.begin}
-       and {iter_begin} as {value} and
-  {iter_step} has data flow to {increment} and
-  inherits LocalConst
-      with {begin}     as {scope.begin}
-       and {iter_step} as {value})
-End
-
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\ttfamily,
+                   firstnumber=31]
 Constraint VectorRead
 ( {value} is load instruction and
   {address} is first argument of {value} and
@@ -176,11 +74,140 @@ Constraint VectorRead
       {stride} is unused and
       {scope.begin} is instruction)))
 End
+
+Constraint ScalarPart
+( {kernel.result} reaches phi node
+      {old_value} from {loop.end} and
+  inherits ScopeValue
+      with {loop}      as {scope}
+       and {old_value} as {value} and 
+  {kernel.result} has data flow to {final_value} and
+  {loop.end} strictly control flow
+      dominates {final_value} and
+  inherits KernelFunction
+      with {loop} as {scope} at {kernel} and
+  inherits Concat(N1=31,N2=1)
+      with {read_values}   as {in1}
+       and {old_value}     as {in2}
+       and {kernel.inputs} as {out})
+End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
-                   firstnumber=166]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\ttfamily,
+                   firstnumber=85]
+Constraint HistoPart
+( inherits ConditionalReadModifyWrite
+      with {loop}              as {scope}
+       and {idx_kernel.result} as {address}
+       and {val_kernel.result} as {new_value}
+                               at {update} and
+  inherits KernelFunction
+      with {loop}        as {scope}
+       and {read_values} as {inputs} at {idx_kernel} and
+  inherits KernelFunction
+      with {loop} as {scope} at {val_kernel} and
+  inherits Concat(N1=31,N2=1)
+      with {read_values}       as {in1}
+       and {update.old_value}  as {in2}
+       and {val_kernel.inputs} as {out})
+End
+
+Constraint ConditionalReadModifyWrite
+( {store_instr} is store instruction and
+  inherits MaxOnceInScope
+      with {scope}       as {scope}
+       and {store_instr} as {value} at {maxonce} and
+  {address} is second argument of {store_instr} and
+  {address} is gep instruction and
+  {address} is first argument of {old_value} and
+  {old_value} is load instruction and
+  {new_value} is first argument of {store_instr})
+End
+
+Constraint MaxOnceInScope
+( inherits ScopeValue and
+  {value} has control flow to {value_after} and
+  all control flow from {value_after} to
+      {value} passes through {scope.end} and
+  all control flow from {value_after} to
+      {value} passes through {scope.begin})
+End
+
+Constraint ScopeValue
+( {scope.begin} control flow dominates {value} and
+  {scope.end} strictly control flow post dominates {value})
+End
+
+Constraint SideEffectFreeCalls
+( collect i 20 ( {callsite[i]} is call instruction and
+                 inherits ScopeValue
+                     with {callsite[i]} as {value}) and
+  collect i 20 ( {callsite[i]} is call instruction and
+                 inherits ScopeValue
+                     with {callsite[i]} as {value} and
+                 {function[i]} is first
+                     argument of {callsite[i]} and
+                 {function[i]} has attribute pure))
+End
+\end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\ttfamily,
+                   firstnumber=140]
+Constraint For
+( inherits Loop and
+  {increment} reaches phi node {iterator} from {end} and
+  {increment} has data flow to {comparison} and
+  {comparison} is icmp instruction and
+  {comparison} has data flow to {end} and
+  {increment} has data flow to {iterator} and
+  {increment} is add instruction and
+  {iterator} has data flow to {increment} and
+  {iter_end} has data flow to {increment} and
+  inherits LocalConst
+      with {begin}    as {scope.begin}
+       and {iter_end} as {value} and
+  {iter_begin} has data flow to {increment} and
+  inherits LocalConst
+      with {begin}      as {scope.begin}
+       and {iter_begin} as {value} and
+  {iter_step} has data flow to {increment} and
+  inherits LocalConst
+      with {begin}     as {scope.begin}
+       and {iter_step} as {value})
+End
+
+Constraint Loop
+( inherits SESE and
+  {end} has control flow to {begin})
+End
+
+Constraint SESE
+( {precursor} is branch instruction and
+  {precursor} has control flow to {begin} and
+  {end} is branch instruction and
+  {end} has control flow to {successor} and
+  {begin} control flow dominates {end} and
+  {end} control flow post dominates {begin} and
+  {precursor} strictly control flow dominates {begin} and
+  {successor} strictly control flow post dominates {end} and
+  all control flow from {begin} to {precursor}
+         passes through {end} and
+  all control flow from {successor} to {end}
+         passes through {begin})
+End
+
+Constraint LocalConst
+( ( {scope.begin} is instruction and
+    {value} is preexecution) or
+  {value} strictly control flow dominates {scope.begin})
+End
+\end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\ttfamily,
+                   firstnumber=189]
 Constraint KernelFunction
 ( collect i  4 ( {entries[i]} has control
                      flow to {scope.begin}) and
@@ -198,26 +225,33 @@ Constraint KernelFunction
                      from {scope.end} and
                  {scope.begin} control flow
                      dominates {loop_carried[i].value}) and
-  all flow from {loop_carried[0..8].value} ([or]) any origin
-      to any of {result} passes through ([at]) least one of
+  all flow from {loop_carried[0..8].value} or any origin
+      to any of {result} passes through at least one of
       {inputs[0..32],entries[0..4],outside[0..24].value})
+End
+
+Constraint ArgumentsPermuted
+( ( {src1} is first  argument of {dst} and
+    {src2} is second argument of {dst}) or
+  ( {src2} is first  argument of {dst} and
+    {src1} is second argument of {dst}))
 End
 
 Constraint Concat
 ( if N1=1 then
-    {out[0]} is the same ([as]) {in1}
+    {out[0]} is the same as {in1}
   else
-    {out[i]} is the same ([as]) {in1[i]} for all i=0..N1
+    {out[i]} is the same as {in1[i]} for all i=0..N1
   endif and
   if N2=1 then
-    {out[N1+0]} is the same ([as]) {in2}
+    {out[N1+0]} is the same as {in2}
   else
-    {out[N1+i]} is the same ([as]) {in2[i]} for all i=0..N1
+    {out[N1+i]} is the same as {in2[i]} for all i=0..N1
   endif and
   if N3=1 then
-    {out[N1+N2+0]} is the same ([as]) {in3}
+    {out[N1+N2+0]} is the same as {in3}
   else
-    {out[N1+N2+i]} is the same ([as]) {in3[i]} for all i=0..N3
+    {out[N1+N2+i]} is the same as {in3[i]} for all i=0..N3
   endif)
 for N2=0 if not otherwise specified
 for N3=0 if not otherwise specified

@@ -133,13 +133,16 @@
 }
 
 \lstdefinelanguage{CAnDL}{
- morekeywords = { Constraint, End, include, with, collect, for, foreach,
-                  forany, unused, is, if, not, otherwise, specified},
+ morekeywords = { with, collect, for, foreach, forany, unused, is,
+                  if, then, else, endif, not, otherwise, specified},
+ morekeywords = [2]{Constraint, End, include},
  morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
 }
 
 \lstdefinelanguage{IDL}{
- morekeywords = { Constraint, End, inherits, with, collect, and, or, at, as },
+ morekeywords = { with, collect, for, and, or, at, as 
+                  if, then, else, endif, not, otherwise, specified},
+ morekeywords = [2]{Constraint, End, inherits},
  morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
 }
 
