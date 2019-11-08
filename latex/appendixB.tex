@@ -1,5 +1,5 @@
 \begin{figure}[h]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\small\ttfamily,
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\ttfamily,
                    captionpos=t,caption=
    {Constraint specification in CAnDL of Scalar Control Parts (SCoPs):
     These regular loop nests enable polyhedral transformations to be applied,
@@ -9,106 +9,103 @@
     standard library.
     \parfillskip=0pt}]
 Constraint SCoP
-( include For
-∧ include StructuredControlFlowPart({body.begin}->{begin},
-                                      {body.end}->{end})
-                                 @ {constraint_control}
-∧ include SideEffectFreePart({begin}->{begin},
-                               {end}->{end})
-                     @ {constraint_effects}
-∧ {constraint_memory.input[0]} = {iterator}
-∧ {constraint_memory.input[i+1]} =
-      {constraint_control.loop[i].iterator} foreach i=0..7
-∧ include AffineMemoryAccessPart({begin}->{begin},
-                                   {end}->{end})
-                          @ {constraint_memory}
-∧ include AffineControlFlowPart({body.begin}->{begin},
-                   {constraint_memory.input}->{input})
-                               @ {constraint_control})
+( include For @ {loop}
+∧ include StructuredControlFlow({loop}->{scope}) @ {control}
+∧ {inputs[0]} = {loop.iterator}
+∧ {inputs[i]} = {control.loop[i-1].iterator} foreach i=1..10
+∧ include AffineControlFlow({loop}->{scope},
+                          {inputs}->{inputs}) @ {control}
+∧ include AffineMemAccesses({loop}->{scope},
+                          {inputs}->{inputs}) @ {accesses}
+∧ include SideEffectFreeCalls({loop}->{scope}) @ {effects})
 End
 
-Constraint StructuredControlFlowPart
-( collect i 16 ( opcode{branch[i].value} = branch
-               ∧ {branch[i].dummy} =
+Constraint StructuredControlFlow
+( collect i 20 ( opcode{branch[i].value} = branch
+               ∧ {branch[i].target1} =
+                     {branch[i].value}.successors[0]
+               ∧ {branch[i].target2} =
                      {branch[i].value}.successors[1]
-               ∧ include LocalValue(
+               ∧ include ScopeValue({scope}->{scope},
                           {branch[i].value}->{value}))
-∧ collect i  8 ( include For @ {loop[i]}
-               ∧ domination({begin}, {loop[i].begin})
-               ∧ post_domination({end}, {loop[i].end}))
-∧ collect i  8 ( include IfBlock @ {conditional[i]}
-               ∧ domination({begin},
-                            {conditional[i].precursor})
-               ∧ post_domination({end},
-                                 {conditional[i].successor}))
-∧ {loop[0..8].end,conditional[0..8].precursor}
-      is the same set as {branch[0..16].value})
+∧ collect i 10 ( include For @ {loop[i]}
+               ∧ domination({scope.begin},
+                          {loop[i].begin})
+               ∧ strict_post_domination({scope.end},
+                                      {loop[i].end}))
+∧ collect i  10 ( include IfBlock @ {ifblock[i]}
+               ∧ domination({scope.begin},
+                       {ifblock[i].precursor})
+               ∧ strict_post_domination({scope.end},
+                                   {ifblock[i].successor}))
+∧ {loop[0..10].end,ifblock[0..10].precursor}
+      is the same set as {branch[0..20].value})
 End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
-                   firstnumber=38]
-Constraint SideEffectFreePart
-( collect i 32 ( include LocalFunctionCall({begin}->{begin},
-                                             {end}->{end})
-                                              @ {call[i]}) 
-∧ collect i 32 ( include LocalFunctionCall({begin}->{begin},
-                                             {end}->{end})
-                                              @ {call[i]}
-               ∧ {call[i].function} has attribute pure))
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\ttfamily,
+                   firstnumber=35]
+Constraint AffineControlFlow
+( include AffineCalc[M=10,N=1](
+                           {scope}->{scope},
+              {loop[i].iter_begin}->{value},
+                          {inputs}->{input})
+                @ {forloop_affine_begin[i]} foreach i=0..10
+∧ include AffineCalc[M=10,N=1](
+                           {scope}->{scope},
+                {loop[i].iter_end}->{value},
+                          {inputs}->{input})
+                  @ {forloop_affine_end[i]} foreach i=0..10
+∧ include AffineCalc[M=10,N=1](
+                           {scope}->{scope},
+         {ifblock[i].compare_left}->{value},
+                          {inputs}->{input})
+                 @ {ifblock_affine_left[i]} foreach i=0..10
+∧ include AffineCalc[M=10,N=1](
+                           {scope}->{scope},
+        {ifblock[i].compare_right}->{value},
+                          {inputs}->{input})
+                @ {ifblock_affine_right[i]} foreach i=0..10)
 End
 
-Constraint AffineMemoryAccessPart
-( collect x 24 ( include MemoryAccess({begin}->{begin},
-                                        {end}->{end})
-                                    @ {newaccess[x]})
-∧ collect x 24 ( include MemoryAccess({begin}->{begin},
-                                        {end}->{end})
-                                    @ {newaccess[x]}
-               ∧ ( ( opcode{newaccess[x].pointer} = gep
-                   ∧ domination({begin}, {newaccess[x].pointer})
-                   ∧ {newaffine[x].value} =
-                         {newaccess[x].pointer}.args[1]
-                   ∧ ir_type{begin} = instruction)
-                 ∨ ( include LocalConst(
-                              {newaccess[x].pointer}->{value})
-                   ∧ {newaffine[x].value} is unused))
-               ∧ include AffineCalculation[M=8,N=6](
-                          {input}->{input},
-                          {begin}->{begin}) @ {newaffine[x]}))
+Constraint AffineMemAccesses
+( collect x 20 ( include MemoryAccess({scope}->{scope})
+                                      @ {newaccess[x]}
+               ∧ opcode{newaccess[x].pointer} = gep
+               ∧ domination({scope.begin},
+                     {newaccess[x].pointer})
+               ∧ {newaffine[x].value} =
+                     {newaccess[x].pointer}.args[1])
+∧ collect x 20 ( include MemoryAccess({scope}->{scope})
+                                      @ {newaccess[x]}
+               ∧ opcode{newaccess[x].pointer} = gep
+               ∧ domination({scope.begin},
+                     {newaccess[x].pointer})
+               ∧ {newaffine[x].value} =
+                     {newaccess[x].pointer}.args[1]
+               ∧ include AffineCalc[M=10,N=6](
+                                          {scope}->{scope},
+                                         {inputs}->{input})
+                                          @ {newaffine[x]}))
 End
 
-Constraint AffineControlFlowPart
-( include AffineCalculation[M=8,N=1](
-           {conditional[i].compare_left}->{value},
-                                 {input}->{input},
-                                 {begin}->{begin})
-                    @{conditional_affine_left[i]} foreach i=0..8
-∧ include AffineCalculation[M=8,N=1](
-          {conditional[i].compare_right}->{value},
-                                 {input}->{input},
-                                 {begin}->{begin})
-                   @{conditional_affine_right[i]} foreach i=0..8
-∧ include AffineCalculation[M=8,N=1](
-           {loop[i].iter_begin}->{value},
-                        {input}->{input},
-                        {begin}->{begin})
-                 @{loop_affine_begin[i]} foreach i=0..8
-∧ include AffineCalculation[M=8,N=1](
-           {loop[i].iter_end}->{value},
-                      {input}->{input},
-                      {begin}->{begin})
-                 @{loop_affine_end[i]} foreach i=0..8)
+Constraint SideEffectFreeCalls
+( collect i 20 ( opcode{callsite[i]} = call
+               ∧ include ScopeValue({callsite[i]}->{value}))
+∧ collect i 20 ( opcode{callsite[i]} = call
+               ∧ include ScopeValue({callsite[i]}->{value})
+               ∧ {function[i]} = {callsite[i]}.args[0]
+               ∧ {function[i]} has attribute pure))
 End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
-                   firstnumber=91]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\ttfamily,
+                   firstnumber=88]
 Constraint For
 ( include Loop
-∧ {increment} -> {iterator} Φ {body.end}
+∧ {increment} -> {body.end} Φ {iterator}
 ∧ {increment} ∈ {comparison}.args
 ∧ opcode{comparison} = icmp
 ∧ {comparison} ∈ {end}.args
@@ -116,33 +113,68 @@ Constraint For
 ∧ opcode{increment} = add
 ∧ {iterator} ∈ {increment}.args
 ∧ {iter_end} ∈ {comparison}.args
-∧ include LocalConst({iter_end}->{value},{begin}->{begin})
+∧ include LocalConst({begin}->{scope.begin},
+                  {iter_end}->{value})
 ∧ {iter_begin} ∈ {iterator}.args
-∧ include LocalConst({iter_begin}->{value},{begin}->{begin})
+∧ include LocalConst({begin}->{scope.begin},
+                {iter_begin}->{value})
 ∧ {iter_step} ∈ {increment}.args
-∧ include LocalConst({iter_step}->{value},{begin}->{begin}))
+∧ include LocalConst({begin}->{scope.begin},
+                 {iter_step}->{value}))
 End
 
-Constraint MemoryAccess
-( ( ( opcode{access} = store
-    ∧ {pointer} = {access}.args[1])
-  ∨ ( opcode{access} = load
-    ∧ {pointer} = {access}.args[0]))
-∧ domination({begin}, {access})
-∧ post_domination({end}, {access}))
+Constraint Loop
+( include SESE
+∧ {begin} ∈ {end}.successors)
 End
 
-Constraint AffineCalculation
+Constraint SESE
+( opcode{precursor} = branch
+∧ {begin} ∈ {precursor}.successors
+∧ opcode{end} = branch
+∧ {successor} ∈ {end}.successors
+∧ domination({begin}, {end})
+∧ post_domination({end}, {begin})
+∧ strict_domination({precursor}, {begin})
+∧ strict_post_domination({successor}, {end})
+∧ all control flow from {begin} to {precursor}
+         passes through {end}
+∧ all control flow from {successor} to {end}
+         passes through {begin})
+End
+
+Constraint IfBlock
+( include PotentialSESE({truebegin}->{begin},
+                          {trueend}->{end})
+∧ {truebegin} = {precursor}.successors[0]
+∧ {falsebegin} = {precursor}.successors[1]
+∧ include PotentialSESE({falsebegin}->{begin},
+                          {falseend}->{end})
+∧ {trueend} ≠ {falseend}
+∧ {condition} = {precursor}.args[0]
+∧ opcode{condition} = icmp
+∧ {compare_left} = {condition}.args[0]
+∧ {compare_right} = {condition}.args[1])
+End
+\end{lstlisting}
+\end{figure}
+\begin{figure}[p]
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\ttfamily,
+                   firstnumber=142]
+Constraint AffineCalc
 if N=0 then
-( ( include LocalConst
+( ( ( include LocalConst
+    ∨ ( {value} is unused
+      ∧ ir_type{scope.begin} = instruction))
   ∧ ( data_type{input[j]} = integer
     ∨ {input[j]} is unused) foreach j=0..M)
 ∨ ( ( {value} = {input[i]}
-    ∧ ir_type{begin} = instruction
+    ∧ ir_type{scope.begin} = instruction
     ∧ ( data_type{input[j]} = integer
-      ∨ {input[j]} is unused) foreach j=0..M) forany i=0..M))
+      ∨ {input[j]} is unused) foreach j=0..M)
+                              forany  i=0..M))
 else
-( ( ( include AffineCalculation[M=M,N=0]
+( ( ( include AffineCalc[M=M,N=0]
     ∧ {l.value} is unused
     ∧ {r.value} is unused)
   ∨ ( ( ( ( opcode{value} = add
@@ -158,115 +190,15 @@ else
                                       {value}->{dst})
         ∧ ir_type{l.value} = preexecution
         ∧ ir_type{r.value} = instruction))
-    ∧ ir_type{begin} = instruction
-    ∧ domination({begin}, {value})
+    ∧ ir_type{scope.begin} = instruction
+    ∧ domination({scope.begin}, {value})
     ∧ ( data_type{input[j]} = integer
       ∨ {input[j]} is unused) foreach j=0..M))
-∧ include AffineCalculation[M=M,N=N-1]({input}->{input},
-                                       {begin}->{begin}) @ {l}
-∧ include AffineCalculation[M=M,N=N-1]({input}->{input},
-                                       {begin}->{begin}) @ {r})
+∧ include AffineCalc[M=M,N=N-1]({input}->{input},
+                                {scope}->{scope}) @ {l}
+∧ include AffineCalc[M=M,N=N-1]({input}->{input},
+                                {scope}->{scope}) @ {r})
 endif
-End
-\end{lstlisting}
-\end{figure}
-\begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
-                   firstnumber=154]
-Constraint LocalFunctionCall
-( opcode{callsite} = call
-∧ {function} = {callsite}.args[0]
-∧ include LocalValue({callsite}->{value}))
-End
-
-Constraint IfBlock
-( include PotentialSESE({truebegin}->{begin},{trueend}->{end})
-∧ {truebegin} = {precursor}.successors[0]
-∧ {falsebegin} = {precursor}.successors[1]
-∧ include PotentialSESE({falsebegin}->{begin},{falseend}->{end})
-∧ {trueend} ≠ {falseend}
-∧ {condition} = {precursor}.args[0]
-∧ opcode{condition} = icmp
-∧ {compare_left} = {condition}.args[0]
-∧ {compare_right} = {condition}.args[1])
-End
-
-Constraint PotentialSESE
-( opcode{precursor} = branch
-∧ {precursor} ∈ {begin}.successors
-∧ opcode{end} = branch
-∧ {end} ∈ {successor}.successors
-∧ ( ( domination({begin}, {end})
-    ∧ post_domination({end}, {begin})
-    ∧ all control flow from {begin} to {precursor}
-                        passes through {end}
-    ∧ all control flow from {successor} to {end}
-                            passes through {begin})
-  ∨ ( {begin} = {end}
-    ∧ {precursor} ∈ {begin}.successors
-    ∧ {end} ∈ {successor}.successors)
-  ∨ ( {precursor} = {end}
-    ∧ {begin} = {successor})))
-End
-
-Constraint LocalValue
-( domination({begin}, {value})
-∧ post_domination({end}, {value}))
-End
-
-Constraint Distributive
-( opcode{value} = add
-∧ {sum1.value} = {value}.args[0]
-∧ {sum2.value} = {value}.args[1]
-∧ include SumChain @ {sum1}
-∧ {product1.value} = {sum1.last_factor}
-∧ include MulChain @ {product1}
-∧ {product1.last_factor} = {product2.last_factor}
-∧ include SumChain @ {sum2}
-∧ {product2.value} = {sum2.last_factor}
-∧ include MulChain @ {product2})
-End
-\end{lstlisting}
-\end{figure}
-\begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
-                   firstnumber=208]
-Constraint SumChain
-( data_type{value} = integer
-∧ {value} = {results[0]}
-∧ ( ( opcode{results[i]} = add
-    ∧ include ArgumentsPermuted({results[i]}->{dst},
-                              {results[i+1]}->{src1},
-                                {factors[i]}->{src2})
-    ∧ data_type{last_factor} = integer)
-  ∨ ( ( ( data_type{results[i]} = integer
-        ∧ {last_factor} = {factors[i]})
-      ∨ ( {results[i]} is unused
-        ∧ {factors[i]} is unused
-        ∧ data_type{last_factor} = integer))
-    ∧ {results[i]} = {factors[i]}
-    ∧ {results[i+1]} is unused)) foreach i=0..N
-∧ {factors[N]} is unused)
-for N=4 if not otherwise specified
-End
-
-Constraint MulChain
-( data_type{value} = integer
-∧ {value} = {results[0]}
-∧ ( ( opcode{results[i]} = mul
-    ∧ include ArgumentsPermuted({results[i]}->{dst},
-                              {results[i+1]}->{src1},
-                                {factors[i]}->{src2})
-    ∧ data_type{last_factor} = integer)
-  ∨ ( ( ( data_type{results[i]} = integer
-        ∧ {last_factor} = {factors[i]})
-      ∨ ( {results[i]} is unused
-        ∧ {factors[i]} is unused
-        ∧ data_type{last_factor} = integer))
-    ∧ {results[i]} = {factors[i]}
-    ∧ {results[i+1]} is unused)) foreach i=0..N
-∧ {factors[N]} is unused)
-for N=4 if not otherwise specified
 End
 
 Constraint ArgumentsPermuted
@@ -276,71 +208,46 @@ Constraint ArgumentsPermuted
   ∧ {src1} = {dst}.args[1]))
 End
 
-Constraint HoistSelect
-( opcode{select} = select
-∧ {input1} = {select}.args[1]
-∧ {base} = {input1}.args[0]
-∧ {input2} = {select}.args[2]
-∧ {base} = {input2}.args[0]
-∧ opcode{input1} = gep
-∧ opcode{input2} = gep)
+Constraint LocalConst
+( ( ir_type{scope.begin} = instruction
+  ∧ ir_type{value} = preexecution)
+∨ strict_domination({value}, {scope.begin}))
 End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\small\ttfamily,
-                   firstnumber=263]
-Constraint ForWithIteratorTest
-( include Loop
-∧ {increment} -> {iterator} Φ {body.end}
-∧ {iterator} ∈ {comparison}.args
-∧ opcode{comparison} = icmp
-∧ {comparison} ∈ {end}.args
-∧ {increment} ∈ {iterator}.args
-∧ opcode{increment} = add
-∧ {iterator} ∈ {increment}.args
-∧ {iter_end} ∈ {comparison}.args
-∧ include LocalConst({iter_end}->{value},{begin}->{begin})
-∧ {iter_begin} ∈ {iterator}.args
-∧ include LocalConst({iter_begin}->{value},{begin}->{begin})
-∧ {iter_step} ∈ {increment}.args
-∧ include LocalConst({iter_step}->{value},{begin}->{begin}))
+\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\ttfamily,
+                   firstnumber=195]
+Constraint MemoryAccess
+( ( ( opcode{access} = store
+    ∧ {pointer} = {access}.args[1])
+  ∨ ( opcode{access} = load
+    ∧ {pointer} = {access}.args[0]))
+∧ domination({scope.begin}, {access})
+∧ post_domination({scope.end}, {access}))
 End
 
-Constraint Loop
-( include SESE
-∧ {body.begin} = {begin}
-∧ {body.end} = {end}
-∧ {body.precursor} = {precursor}
-∧ {body.successor} = {successor}
-∧ {end} ∈ {begin}.successors)
+Constraint ScopeValue
+( domination({scope.begin}, {value})
+∧ strict_post_domination({scope.end}, {value}))
 End
 
-Constraint InductionVar
-{new_ind} -> {old_ind} Φ {end}
-End
-
-Constraint LocalConst
-( ( ir_type{begin} = instruction
-  ∧ ir_type{value} = preexecution)
-∨ strict_domination({value}, {begin})
-∨ ( ir_type{begin} = instruction
-  ∧ {value} is unused))
-End
-
-Constraint SESE
+Constraint PotentialSESE
 ( opcode{precursor} = branch
-∧ {precursor} ∈ {begin}.successors
+∧ {begin} ∈ {precursor}.successors
 ∧ opcode{end} = branch
-∧ {end} ∈ {successor}.successors
-∧ domination({begin}, {end})
-∧ post_domination({end}, {begin})
-∧ strict_domination({precursor}, {begin})
-∧ strict_post_domination({successor}, {end})
-∧ all control flow from {begin} to {precursor}
-                    passes through {end}
-∧ all control flow from {successor} to {end}
-                        passes through {begin})
+∧ {successor} ∈ {end}.successors
+∧ ( ( domination({begin}, {end})
+    ∧ post_domination({end}, {begin})
+    ∧ all control flow from {begin} to {precursor}
+                        passes through {end}
+    ∧ all control flow from {successor} to {end}
+                            passes through {begin})
+  ∨ ( {begin} = {end}
+    ∧ {begin} ∈ {precursor}.successors
+    ∧ {successor} ∈ {end}.successors)
+  ∨ ( {precursor} = {end}
+    ∧ {begin} = {successor})))
 End
 \end{lstlisting}
 \end{figure}
