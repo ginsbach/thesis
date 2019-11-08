@@ -136,6 +136,15 @@
  morekeywords = { with, collect, for, foreach, forany, unused, is,
                   if, then, else, endif, not, otherwise, specified},
  morekeywords = [2]{Constraint, End, include},
+ morekeywords = [3]{SqrtOfSquare, ValueChain, Sum, SumOfSums, CollectArguments,
+                    FloatingPointInstruction, SESE, Loop, LocalConst,
+                    PointerAccess, ArrayAccess, LoopWithOnlyArrayAccesses,
+                    SimpleAddition, ComplexFactorisation,
+                    FloatingPointAssociativeReorder, VectorMulChain,
+                    ScalarHoist, SCoP, For, StructuredControlFlow,
+                    AffineControlFlow, AffineMemAccesses,
+                    SideEffectFreeCalls, ScopeValue, IfBlock, MemoryAccess,
+                    AffineCalc},
  morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
 }
 
@@ -143,6 +152,10 @@
  morekeywords = { with, collect, for, and, or, at, as,
                   if, then, else, endif, not, otherwise, specified},
  morekeywords = [2]{Constraint, End, inherits},
+ morekeywords = [3]{KernelFunction, LocalConst, ScalarPart, ScopeValue, Concat,
+                    HistoPart, ConditionalReadModifyWrite,
+                    ComplexReductionsAndHistograms, For, VectorRead,
+                    SideEffectFreeCalls},
  morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
 }
 
