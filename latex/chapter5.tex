@@ -1,43 +1,41 @@
 
-    The Compiler Analysis Description Language (CAnDL)
-    makes the constraint methodology introduced in
-    \Cref{chapter:theory}
-    directly available to the LLVM infrastructure and the Clang compiler.
+    The Compiler Analysis Description Language makes the constraint methodology
+    introduced in \Cref{chapter:theory} directly accessible to the Clang
+    compiler within the LLVM compiler infrastructure.
     The previous chapter showed how this enables powerful compiler analysis
-    generation for many established compiler analysis tasks,
-    from reimplementing peephole optimisations to detecting code that is
-    suitable for polyhedral analysis.
-    This chapter extends this language to the Idiom Description Language (IDL)
-    and uses it to implement novel detection functionality for the automatic
-    parallelisation of a wide class of programs.
+    tools to be generated from declarative specifications, replicating and
+    extending established analysis approaches.
+    This chapter goes beyond such restating of existing functionality.
+    Instead, it presents methods for the automatic parallelisation of
+    programs that were previously inaccessible to compiler reasoning.
 
-    The previously overlooked ``complex reduction and histogram computations''
-    are identified as an important class of parallelisation opportunities that
-    are not accessible via conventional analysis approaches.
-    Relevant loops contain indirect memory access and reduction operators
-    with non-trivial control flow.
-    Complex reduction and histogram computations were previously not
-    interpreted as a single class of calculations.
-    However, this chapter demonstrates that several standard benchmark programs
-    are dominated by such computations.
+    The previously disregarded Complex Reduction and Histogram Computations
+    (CReHCs) are identified as a {\em computational idiom} -- a class of program
+    kernels that constitute bottlenecks of important benchmark programs and that
+    share common structure which allows for specific, targeted acceleration and
+    parallelisation approaches.
+    In contrast to the better-understood scalar reductions, CReHCs may contain
+    indirect memory accesses and non-trivial control flow.
+    Such loops were not typically studied as a single class of calculations
+    previously, but this chapter demonstrates that they share structure that
+    allows for automatic detection and parallelisation.
 
-    After introducing the {\em computational idiom} of complex reductions and
-    histograms, their specification with constraints is investigated.
-    IDL is specified as an extension to CAnDL, with additional language features
-    to capture well-behaved kernel functions.
-    Such kernel functions are an integral component of reductions, where they
-    model the reduction operator.
-    However, this extends also to many other important computational idioms,
-    such as stencil codes.
+    After introducing CReHCs, the chapter presents the Idiom Description
+    Language (IDL) as an extension of CAnDL and uses it to implement the
+    detection of this computational idiom.
+    The additional language features of IDL enable it to capture well-behaved
+    kernel functions.
+    These are an integral component of CRoHCs, where they model the reduction
+    operators, but they also feature prominently in other idioms, such as
+    stencil codes.
     
-    By grouping complex reductions and histogram computations together and
-    formulating them in IDL, a completely automatic detection in C/C++ code is
-    possible.
-    Parallelisation routines were implemented to complement the detection.
-    Established parallelisation methods for reductions then resulted in good
-    speedups on several relevant programs.
-    This was evaluated on the NAS Parallel Benchmark suite, the Parboil
-    benchmarks, and Rodinia.
+    Grouping reductions and histograms together and formulating
+    CReHCs in IDL makes the automatic detection in C/C++ program code possible.
+    The evaluation section of the chapter shows results from benchmarking this
+    using parallelisation routines that were implemented to complement the
+    detection.
+    Significant speedups were achieved on several programs from the
+    NAS Parallel Benchmark suite, the Parboil Benchmarks, and Rodinia.
 
 \section{Introduction}
 
