@@ -38,50 +38,51 @@
 
 \section{Introduction}
 
-    Heterogeneous accelerators provide the potential for great performance, but
-    achieving that potential is difficult and requires significant effort.
-    In order to target heterogeneous systems, programms need to be partially
-    rewritten, making use of a diverse range of broad and narrow interfaces that 
-    are quickly evolving.
-    General purpose languages such as OpenCL \citep{nvidia11guide} provide
+    Heterogeneous accelerators provide the potential for superior performance.
+    However, realising this potential in practice is difficult and requires
+    significant programmer effort.
+    Programs have to be partially rewritten to target heterogeneous systems,
+    using a diverse range of broad and narrow interfaces.
+    General-purpose languages such as OpenCL \citep{nvidia11guide} provide
     some portability across heterogeneous devices, but the achieved performance
-    often disappoints, as documented in \citet{lee09openmp}.
-    Despite the functional portability, rewrites are required in practice.
+    often disappoints \citep{lee09openmp}.
+    Despite the functional portability, rewrites are required in practice to
+    achieve competitive performance.
     Optimised numerical libraries provide more reliable performance, but they
     are more specialised and often provided by hardware vendors without
     portability in mind \citep{clblas,cublas,cusparse,clsparse}.
-    More narrow domain specific languages (DSLs), such as \citet{Franchetti09OL,
-    Rompf:2012:LMS:2184319.2184345}, have been proposed in attempts to deliver
-    both portability and performance \citep{Ragan-Kelley2013Halide}.
-    However, this class is quickly evolving and with mostly academic projects
-    the adoption and long term support remain unclear.
+    More narrow domain-specific languages (DSLs) have been proposed by
+    \citet{Ragan-Kelley2013Halide,Franchetti09OL,Rompf:2012:LMS:2184319.2184345}
+    among others in attempts to deliver both portability and performance.
+    However, this class is quickly evolving, and with most of these DSLs being
+    academic projects, the adoption and long term support remain unclear.
 
     Hardware is becoming increasingly heterogeneous, most recently with the
     development of deep neural network accelerators such as the Google TPU
     \citep{jouppi2017datacenter}.
-    This means library or DSL based programming is likely to become far more
-    common.
+    This means that library or DSL based programming is likely to become far
+    more common.
     The problems with this trend that arise due to the aforementioned tradeoffs
-    are clear:
-    Firstly, application developers have to learn multiple specialized DSLs and
+    are evident:
+    Firstly, application developers have to learn multiple specialised DSLs and
     vendor-specific libraries if they want good performance.
     Secondly, they will have to rewrite their existing applications to use them.
-    Thirdly, this ties their code into an ecosystem with unclear future support
-    that might deprecate quickly.
+    Thirdly, this ties code into an ecosystem with unclear future support
+    that might soon become obsolete.
     This situation is a severe impediment to the wide-spread efficient
     exploitation of heterogeneous hardware.
 
-    Ideally, we would like a compiler that automatically maps existing code to
+    The ideal would be a compiler that automatically maps existing code to
     heterogeneous hardware, with full performance and requiring no directions
     from the application programmer.
     While this is unrealistic in general, the system that is presented in this
-    chapter achieves a good approximation of such a general purpose system by
-    utilising the knowhow that is already available, encapsulated in the
+    chapter achieves an approximation of such a general-purpose system,
+    utilising the knowhow that is already available and encapsulated in the
     existing interfaces as an intermediary.
     Instead of implementing code generation for several heterogeneous
-    accelerators, it maps user code to heterogeneous hardware using the
-    existing libraries and domain specific languages, effectively outsorcing the
-    code genration to hardware specialists.
+    accelerators, the system maps user code to heterogeneous hardware using the
+    existing libraries and domain-specific languages, effectively outsourcing
+    the code generation to hardware and domain specialists.
 
     The approach is based on detecting specific {\em computational idioms} in
     application code that correspond to the functionality of existing APIs for
