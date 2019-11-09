@@ -817,12 +817,13 @@ Here the best performing API is shown;
   \vspace{0.5em}
 \end{figure}
 
+\begin{landscape}
 \newlength{\txtwd}
 \newcommand{\msb}[1]{\settowidth{\txtwd}{#1}{\scriptsize\ttfamily\bfseries \hfill\tiny #1}}
 \newcommand{\ms}[1]{\settowidth{\txtwd}{#1}{\scriptsize\ttfamily \hfill\tiny #1}}
 
 \addtolength{\tabcolsep}{-.25em}
-\begin{sidewaysfigure}[p]
+\begin{figure}[p]
   \centering
   \scriptsize
   \begin{tabular}{l
@@ -853,8 +854,10 @@ Here the best performing API is shown;
 \caption{Detailed performance results for each heterogeneous API used in milliseconds.
          Fastest implementations for each benchmark and target hardware are highlighted in bold.}
 \label{tab:detailed-results}
-\end{sidewaysfigure}
+\end{figure}
 \addtolength{\tabcolsep}{+.25em}
+
+\end{landscape}
 
     For five benchmarks we obtain moderate speedups from 1.26$\times$ for
     \emph{histo} up to 4.5$\times$ for \emph{IS}.
