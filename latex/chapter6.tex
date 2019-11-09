@@ -320,8 +320,12 @@ the corresponding computations.
 \end{bmatrix}
 \end{align*}
 \end{minipage}
-\caption{Compressed Sparse Row representation as used by the LiLAC-What example
-         in \autoref{motivationcode}}
+\vspace{0.5em}
+\hrule
+\vspace{0.3em}
+\includegraphics[width=\linewidth]{figures/spmvcsrwhat.pdf}
+\vspace{-1.2em}
+\caption{Compressed Sparse Row in LiLAC-What}
 \label{csr_lilacwhat_fig}
 \vspace{1.5em}
 \centering
@@ -358,7 +362,7 @@ The number of rows in the matrix is given directly by the length of the
 \textbf{row\_ptr} array minus one, however the number of columns is not
 explicitly stored.
 In \autoref{csr_lilacwhat_fig}, a 5x5 matrix is shown represented in this
-format, the LiLAC-What code is in the top left of \autoref{motivationflow}.
+format.
 
 \subsubsection{Jagged Diagonal Storage}
 For Jagged Diagonal Storage (JDS) \cite{doi:10.1137/0910073}, the rows of the
