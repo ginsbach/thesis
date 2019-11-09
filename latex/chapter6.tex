@@ -716,21 +716,17 @@ Finally, we again replace the idiom code in the user's code with a call to the c
 
 \begin{table}[t]
 \centering
-  \footnotesize
   \begin{tabular}{lP{2.16cm}P{2.16cm}P{2.16cm}P{2.163cm}P{2.163cm}}
   \toprule
-  & Scalar\newline{}Reduction & Histogram\newline{}Reduction & Stencil & Matrix~Op. & Sparse\newline{}Matrix~Op.\\
+  \hspace{1.18cm} & Scalar\newline{}Reduction & Histogram\newline{}Reduction & Stencil & Matrix~Op. & Sparse\newline{}Matrix~Op.\\
   \midrule
-  Polly &  3  &  --- &   5  &  --- & --- \\[0.25em]
-  ICC   &  28 &  --- &  --- &  --- & --- \\[0.25em]
+  Polly &  3  &  --- &   5  &  --- & --- \\
+  ICC   &  28 &  --- &  --- &  --- & --- \\
   IDL   &  45 &   5  &   6  &   1  &  3  \\
   \bottomrule
 \end{tabular}
-
-  \vspace{.1cm}
 \caption{Idioms detected by IDL, ICC, Polly}
 \label{tab:detection}
-\vspace{-1em}
 \end{table}
 
 \subsection{Runtime Coverage}
@@ -748,56 +744,50 @@ Finally, we again replace the idiom code in the user's code with a call to the c
 
 \subsection{Performance Results}
 
-\addtolength{\tabcolsep}{-.3em}
 \begin{table}[t]
-  \scriptsize
-  \begin{tabular}{lcccccccccccc}
+\centering
+\begin{tabular}{lcccccccccccc}
   \toprule
-  & \hspace{.631mm}BT\hspace{.631mm}
-  & \hspace{.631mm}CG\hspace{.631mm}
-  & \hspace{.631mm}DC\hspace{.631mm}
-  & \hspace{.631mm}EP\hspace{.631mm}
-  & \hspace{.631mm}FT\hspace{.631mm}
-  & \hspace{.631mm}IS\hspace{.631mm}
-  & \hspace{.631mm}LU\hspace{.631mm}
-  & \hspace{.631mm}MG\hspace{.631mm}
-  & \hspace{.631mm}SP\hspace{.631mm}
-  & \hspace{.631mm}UA\hspace{.631mm}
-  & \hspace{.631mm}bfs\hspace{.631mm}
-  & \hspace{.631mm}cutcp\hspace{.631mm} \\
+  & \hspace{0.17mm}BT\hspace{0.17mm}
+  & \hspace{0.17mm}CG\hspace{0.17mm}
+  & \hspace{0.17mm}DC\hspace{0.17mm}
+  & \hspace{0.17mm}EP\hspace{0.17mm}
+  & \hspace{0.17mm}FT\hspace{0.17mm}
+  & \hspace{0.17mm}IS\hspace{0.17mm}
+  & \hspace{0.17mm}LU\hspace{0.17mm}
+  & \hspace{0.17mm}MG\hspace{0.17mm}
+  & \hspace{0.17mm}SP\hspace{0.17mm}
+  & \hspace{0.17mm}UA\hspace{0.17mm}
+  & \hspace{0.17mm}bfs\hspace{0.17mm}
+  & \hspace{0.17mm}cutcp\hspace{0.17mm} \\
   \midrule
 without IDL    & 1.9 & 0.5 & 1.0 & 0.3 & 0.6 & 0.3 & 1.9 & 0.8 & 1.6 & 2.7 & 0.4 & 0.4 \\[0.25em]
 with IDL       & 4.0 & 0.8 & 1.6 & 0.6 & 1.2 & 0.5 & 3.9 & 4.5 & 3.2 & 7.3 & 0.5 & 0.6 \\[0.75em]
 overhead in \% & 116 &  77 &  57 &  77 &  93 &  62 & 103 & 484 &  97 & 169 &  30 &  65 \\
-
   \bottomrule
 \end{tabular}
+\vspace{5mm}
 
-\vspace{2em}
-
-  \begin{tabular}{lccccccccc}
+\begin{tabular}{lccccccccc}
   \toprule
-  & \hspace{0.530mm}histo\hspace{0.53mm}
-  & \hspace{0.530mm}lbm\hspace{0.530mm}
-  & \hspace{0.530mm}mri-g\hspace{0.530mm}
-  & \hspace{0.530mm}mri-q\hspace{0.530mm}
-  & \hspace{0.530mm}sad\hspace{0.530mm}
-  & \hspace{0.530mm}sgemm\hspace{0.530mm}
-  & \hspace{0.530mm}spmv\hspace{0.530mm}
-  & \hspace{0.530mm}stencil\hspace{0.530mm}
-  & \hspace{0.530mm}tpacf\hspace{0.530mm} \\
+  & \hspace{0.44mm}histo\hspace{0.44mm}
+  & \hspace{0.44mm}lbm\hspace{0.44mm}
+  & \hspace{0.44mm}mri-g\hspace{0.44mm}
+  & \hspace{0.44mm}mri-q\hspace{0.44mm}
+  & \hspace{0.44mm}sad\hspace{0.44mm}
+  & \hspace{0.44mm}sgemm\hspace{0.44mm}
+  & \hspace{0.44mm}spmv\hspace{0.44mm}
+  & \hspace{0.44mm}stencil\hspace{0.44mm}
+  & \hspace{0.44mm}tpacf\hspace{0.44mm} \\
   \midrule
 without IDL    & 0.2 & 0.3 & 0.2 & 0.2 & 0.4 & 0.6 & 0.3 & 0.2 & 0.2 \\[0.25em]
 with IDL       & 0.2 & 0.6 & 0.4 & 0.3 & 0.6 & 0.7 & 0.7 & 0.2 & 0.4 \\[0.75em]
 overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
   \bottomrule
 \end{tabular}
-
-  \vspace{.1cm}
 \caption{Compile time cost in seconds}
 \label{tab:compiletimecost}
 \end{table}
-\addtolength{\tabcolsep}{+.3em}
 
 \paragraph*{Speedup vs. Sequential}
 \Cref{fig:speedup-figure} shows the end-to-end speedup obtained by accelerating idioms with heterogeneous APIs on a CPU, an integrated GPU, and an external GPU.
