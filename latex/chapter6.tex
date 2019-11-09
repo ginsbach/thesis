@@ -1,12 +1,15 @@
 
-    The previously introduced CAnDL constraint programming language can generate
-    compiler analysis functionality from terse and easily scalable, declarative
-    problem specifications.
-    This chapter takes a broader view of what automatic compiler analysis can
-    encompass with such a powerful tool at hand.
-    Using the Idiom Description Language (IDL) -- an extended version of CAnDL
-    with a modified syntax -- this chapter capturies broader computational
-    concepts than were demonstrated previously.
+    The previous chapter introduced a computational idiom --
+    Complex Reduction and Histogram Computations (CReHCs) -- and showed how the
+    Idiom Description Language (IDL) enables its discovery and automatic
+    parallelisation.
+    This chapter takes a broader view of automatic idiom detection that also
+    includes common sparse and dense linear algebra computations and stencil
+    codes.
+    Instead of implementing bespoke parallelisation passes, the chapter
+    follows the vision laid out in the introduction, using the detection results
+    to relevant program parts into stronger models.
+    Existing tools are then used to leverage the implied domain knowledge.
 
     The goal of this chapter is to take abstract algorithmic concepts, which are
     conventionally explored outside the context of compiler analysis --
@@ -18,8 +21,8 @@
     improve performance, especially with accelerators that were designed
     with similar computations in mind.
     The focus is therefore on calculations that are well supported by
-    accelerators and their software ecosystems: sparse and dense linear algebra,
-    stencil codes and generalised reductions and histograms.
+    accelerators and their software ecosystems: linear algebra,
+    stencil codes and CReHCs.
 
     The IDL specifications are used to build a prototype compiler that
     automatically detects the idioms and uses them to circumvent the code
