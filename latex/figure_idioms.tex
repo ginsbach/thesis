@@ -1,33 +1,5 @@
-\begin{figure}[p]
-\begin{lstlisting}[language=IDL,
-                   label={fig:histogram},caption=
-   {IDL specification of generalized histogram}]
-Constraint Histogram
-( inherits For and
-  inherits ConditionalReadModifyWrite
-      with {indexkernel.output} as {address}
-       and {kernel.output} as {value} and
-  collect i
-  ( inherits VectorRead
-        with {read_value[i]} as {value}
-         and {iterator} as {idx}
-         and {begin} as {begin} at {read[i]}) and
-  inherits Concat
-      with {read_value}   as {in1}
-       and {old_value}    as {in2}
-       and {kernel.input} as {out} and
-  inherits KernelFunction
-      with {begin} as {outer}
-       and {body.begin} as {inner} at {kernel} and
-  inherits KernelFunction
-      with {read_value} as {input}
-       and {begin} as {outer}
-       and {body.begin} as {inner} at {indexkernel})
-End
-\end{lstlisting}
-\end{figure}
 
-\begin{figure}[p]
+\begin{figure}[h]
 \begin{lstlisting}[language=IDL,
                    label={fig:gemm},caption={IDL specification of GEMM}]
 Constraint GEMM
@@ -49,28 +21,6 @@ Constraint GEMM
        and {input1.value}   as {src1}
        and {input2.value}   as {src2}
        and {output.address} as {update_address})
-End
-\end{lstlisting}
-\end{figure}
-
-\begin{figure}[p]
-\begin{lstlisting}[language=IDL,
-                   label={fig:sese},caption={IDL specification of SESE region}]
-Constraint SESE
-( {precursor} is branch instruction and
-  {precursor} has control flow to {begin} and
-  {end} is branch instruction and
-  {end} has control flow to {successor} and
-  {begin} control flow dominates {end} and
-  {end} control flow post dominates {begin} and
-  {precursor} strictly control flow dominates
-      {begin} and
-  {successor} strictly control flow post dominates
-      {end} and
-  all control flow from {begin} to {precursor}
-      passes through {end} and
-  all control flow from {successor} to {end}
-      passes through {begin})
 End
 \end{lstlisting}
 \end{figure}
@@ -120,32 +70,6 @@ Constraint Stencil
        and {kernel.input[i]} as {value}
        and {begin} as {begin} at {reads[i]}) and
   {kernel.output} is first argument of {write.store} and
-  inherits KernelFunction
-      with {begin}      as {outer}
-       and {body.begin} as {inner} at {kernel})
-End
-\end{lstlisting}
-\end{figure}
-
-\begin{figure}[p]
-\begin{lstlisting}[language=IDL,
-                   label={fig:scalarreduction},caption=
-   {IDL specification of scalar reductions}]
-Constraint Reduction
-( inherits For and
-  collect i
-  ( inherits VectorRead
-        with {iterator}         as {idx}
-         and {read_value[i]}    as {value}
-         and {begin} as {begin} at {read[i]}) and
-  inherits InductionVar
-       with {old_value}       as {old_ind}
-        and {kernel.output}   as {new_ind} and
-  {old_value} is ([not]) the same ([as]) {iterator} and
-  inherits Concat
-      with {read_value}   as {in1}
-       and {old_value}    as {in2}
-       and {kernel.input} as {out} and
   inherits KernelFunction
       with {begin}      as {outer}
        and {body.begin} as {inner} at {kernel})
