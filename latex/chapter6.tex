@@ -104,7 +104,7 @@
     In addition to this, the Lift language \cite{SteuwerRD17} is used - a data
     parallel language that supports generalized reductions as well as stencils
     and linear algebra.
-    This allows the freedom to target many APIs for the same idiom and pick the
+    This allows the freedom to target many APIs per idiom and pick the
     implementation that best suits the target platform.
 
     New idioms can be easily added thanks to the flexibility of IDL.
@@ -125,12 +125,12 @@
           heterogeneous systems
     \end{itemize}
 
-    While there has been much research in using constraints for program
-    analysis~\cite{nielson2015principles}, there is little prior work in its use
+    There has been much research in using constraints for program
+    analysis~\cite{nielson2015principles}, but there is little prior work in its use
     for idiom detection.
-    In \cite{ginsbach2017discovery}, constraints are used for detecting
-    reductions, but this is tightly coupled to a specialized code generation
-    phase for small-scale multi-core systems.
+    \cite{ginsbach2017discovery} use constraints for detecting
+    reductions, but it is tightly coupled to a specialized code generation
+    for small-scale multi-core systems.
 
     The work most similar in approach discovers stencil computations and maps to
     the Halide DSL for acceleration.
