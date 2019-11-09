@@ -389,24 +389,6 @@ in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
     patterns are specified independently and then combined together in order to
     define the complete constraint specifications.
 
-\subsection{Building Blocks}
-
-    Before any algorithmic idiom can be specified, we need some basic control
-    flow constructs.
-    The most fundamental is the single entry single exit region (SESE)
-    \cite{johnson1994program} which is used amongst other things to determine
-    loop bodies.
-    A SESE region is a part of code spanned by two instructions $A$ and $B$ such
-    that $A$ dominates $B$, $B$ postdominates $A$ and every cycle containing
-    either $A$ or $B$ also contains the other.
-    It is defined in \Cref{fig:sese}.
-
-    Using simple building blocks such as SESE, we can define more complex
-    control structures such as loops and important memory access patterns such
-    as matrix reads.
-    From this we build powerful idiom definitions that capture complex
-    computational patterns that can include arbitrary control flow.
-
 \subsection{Full Idiom Definition}
 
     The generalized matrix multiplication idiom is described in \Cref{fig:gemm}.
@@ -419,22 +401,16 @@ in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
     This also contains the linear combination with factors \texttt{alpha} and
     \texttt{beta} that is part of the generalized matrix multiplication.
 
-    \Cref{fig:histogram} shows the generalized histogram idiom.
-    It is contained in a for loop and the basic memory access pattern is a
-    read-modify-write to a bin array.
-    This memory access can be conditional as long as the condition is well
-    behaved, which is guaranteed by the later
-    \texttt{KernelFunction} idiom.
-    The histogram uses input data that is read from input arrays using the loop iterator as a base index (that can be
-    strided, offset etc.).
-    Finally there are two well behaved kernel functions in a histogram, one to compute the access index and one to compute
-    the updated value.
-
-The sparse matrix vector multiplication defined in \Cref{fig:spmv} is different to the other idioms in that
-the control flow of the skeleton of the idiom does not consist of perfectly nested for loops.
-Instead, the iteration space of the inner loop is read from an array using the \texttt{ReadRange} idiom.
-The actual computation that SPMV performs is a dot product and thus it uses the same \texttt{DotProductLoop} idiom as
-\texttt{GEMM} but the memory access pattern is different, with indirect memory access in \texttt{indir\_read}.
+    The sparse matrix vector multiplication defined in \Cref{fig:spmv} is
+    different to the other idioms in that
+    the control flow of the skeleton of the idiom does not consist of perfectly
+    nested for loops.
+    Instead, the iteration space of the inner loop is read from an array using
+    the \texttt{ReadRange} idiom.
+    The actual computation that SPMV performs is a dot product and thus it uses
+    the same \texttt{DotProductLoop} idiom as
+    \texttt{GEMM} but the memory access pattern is different, with indirect
+    memory access in \texttt{indir\_read}.
 
     \Cref{fig:stencilcompute} shows the basic stencil idiom.
     Stencils consist of a loop nest with a multi-dimensional memory access to
@@ -443,10 +419,6 @@ The actual computation that SPMV performs is a dot product and thus it uses the 
     values that are constraint by the
     \texttt{StencilRead} idiom, which specifies multidimensional array access
     with only constant offsets in all dimensions.
-
-The scalar reduction idiom is specified in \Cref{fig:scalarreduction}.
-Its structure is similar to the histogram idiom, but instead of a read-modify-write memory access
-it operates on an induction variable that is implemented with the \texttt{InductionVar} idiom.
 
 \subsection{Not Syntactic Pattern Matching}
 The idiom descriptions may at first appear to be shallow syntactic pattern matching.
