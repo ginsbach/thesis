@@ -825,28 +825,25 @@ Here the best performing API is shown;
 \addtolength{\tabcolsep}{-.25em}
 \begin{figure}[p]
   \centering
-  \scriptsize
-  \begin{tabular}{l
-                  P{0.146cm}
-                  P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm}
-                  P{0.146cm}
-                  P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm}
-                  P{0.146cm}
-                  P{1.3cm} P{1.2cm} P{1.2cm} P{1.1cm}}
+  \footnotesize
+  \begin{tabular}{|l|
+                  P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm}|
+                  P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm} P{1.2cm}|
+                  P{1.3cm} P{1.2cm} P{1.2cm} P{1.1cm}|}
   \toprule
-  & & \multicolumn{6}{c}{\bfseries\small CPU} & & \multicolumn{5}{c}{\bfseries\small iGPU} & & \multicolumn{4}{c}{\bfseries\small GPU} \\[0.5em]
-  & & MKL & libSPMV & Halide & clBLAS & CLBlast & Lift & & clSPARSE & libSPMV & clBLAS & CLBlast & Lift & & cuSPARSE & libSPMV & cuBLAS & Lift \\
+  & \multicolumn{6}{c|}{\bfseries\large CPU} & \multicolumn{5}{c|}{\bfseries\large iGPU} & \multicolumn{4}{c|}{\bfseries\large GPU} \\[0.5em]
+  & MKL & libSPMV & Halide & clBLAS & CLBlast & Lift & clSPARSE & libSPMV & clBLAS & CLBlast & Lift & cuSPARSE & libSPMV & cuBLAS & Lift \\
   \midrule
-  {\footnotesize CG} &  & \msb{1504.21} & --- & --- & --- & --- & --- & & \msb{644.02} & --- & --- & --- & --- &  & \msb{113.51} & --- & --- & --- \\[0.5em]
-  {\footnotesize EP} &  & --- & --- & --- & --- & --- &  \msb{32762.50} &  & --- & --- & --- & --- & \msb{30983.40}  & & --- & --- & --- & \msb{24680.70} \\[0.5em]
-  {\footnotesize IS} &  & --- & --- & \msb{426.95} & ---  & --- & \ms{1765.61} &  &  --- & --- & --- & --- & \msb{547.28}  & & --- & --- & --- & \msb{99.95} \\[0.5em]
-  {\footnotesize MG} &  & --- & --- & --- & --- & --- &  \msb{4699.63} &  & --- & --- & --- & --- & \msb{1439.58}  & & --- & --- & --- & \msb{2211.56} \\[0.5em]
-  {\footnotesize histo} &  & --- & --- & --- & --- & --- &  \msb{27.42} &  & --- & --- & --- & --- & \msb{17.20}  & & --- & --- & --- & \msb{19.54} \\[0.5em]
-  {\footnotesize lbm} &  & --- & --- & --- & --- & --- &  \msb{6457.93} &  & --- & --- & --- & --- & \msb{5335.09}  & & --- & --- & --- & \msb{590.60} \\[0.5em]
-  {\footnotesize sgemm} &  & \msb{53.50} & --- & --- & \ms{1661.75} & \ms{660.44} & \ms{1339.15} &  & --- & --- & \msb{14.73} & \ms{19.03} & \ms{15.04}  & & --- & --- & \msb{5.99} & \ms{7.87} \\[0.5em]
-  {\footnotesize spmv} &  & --- & \msb{218.17} & --- & --- & --- & --- & & --- &\msb{102.233} & --- & --- & --- & & --- &\msb{18.437} & --- &  ---\\[0.5em]
-  {\footnotesize stencil} &  & --- & ---& \msb{5760.81} & --- & --- & \ms{21951.80} &  & --- & ---& --- & --- & \msb{2261.48} &  & --- & ---& --- & \msb{279.38} \\[0.5em]
-  {\footnotesize tpacf} &  & --- & ---& --- & --- & --- & \msb{19276.40} &  & --- & ---& --- & --- & \msb{61111.90}  & & --- & ---& --- & \msb{23358.20} \\
+  {\normalsize CG}  & \msb{1504.21} & --- & --- & --- & --- & --- & \msb{644.02} & --- & --- & --- & --- &  \msb{113.51} & --- & --- & --- \\[0.5em]
+  {\normalsize EP}  & --- & --- & --- & --- & --- &  \msb{32762.50}  & --- & --- & --- & --- & \msb{30983.40}  & --- & --- & --- & \msb{24680.70} \\[0.5em]
+  {\normalsize IS}  & --- & --- & \msb{426.95} & ---  & --- & \ms{1765.61}  &  --- & --- & --- & --- & \msb{547.28}  & --- & --- & --- & \msb{99.95} \\[0.5em]
+  {\normalsize MG}  & --- & --- & --- & --- & --- &  \msb{4699.63}  & --- & --- & --- & --- & \msb{1439.58}  & --- & --- & --- & \msb{2211.56} \\[0.5em]
+  {\normalsize histo}  & --- & --- & --- & --- & --- &  \msb{27.42}  & --- & --- & --- & --- & \msb{17.20}  & --- & --- & --- & \msb{19.54} \\[0.5em]
+  {\normalsize lbm} & --- & --- & --- & --- & --- &  \msb{6457.93}  & --- & --- & --- & --- & \msb{5335.09}  & --- & --- & --- & \msb{590.60} \\[0.5em]
+  {\normalsize sgemm}  & \msb{53.50} & --- & --- & \ms{1661.75} & \ms{660.44} & \ms{1339.15}  & --- & --- & \msb{14.73} & \ms{19.03} & \ms{15.04}  & --- & --- & \msb{5.99} & \ms{7.87} \\[0.5em]
+  {\normalsize spmv}  & --- & \msb{218.17} & --- & --- & --- & --- & --- &\msb{102.233} & --- & --- & --- & --- &\msb{18.437} & --- &  ---\\[0.5em]
+  {\normalsize stencil}  & --- & ---& \msb{5760.81} & --- & --- & \ms{21951.80}  & --- & ---& --- & --- & \msb{2261.48} & --- & ---& --- & \msb{279.38} \\[0.5em]
+  {\normalsize tpacf}  & --- & ---& --- & --- & --- & \msb{19276.40}  & --- & ---& --- & --- & \msb{61111.90} & --- & ---& --- & \msb{23358.20} \\
   \bottomrule
 \end{tabular}
 
