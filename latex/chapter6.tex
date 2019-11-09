@@ -662,15 +662,22 @@ Finally, we again replace the idiom code in the user's code with a call to the c
     considered parallelizable.
 
 \newpage
+\phantom{placeholder}
+\newpage
 
 \section{Results}
 \label{sec:idiomresults}
 
-    We first evaluate how often our approach is able to detect idioms and its
-    compile time cost.
-    We then investigate the runtime coverage of the idioms to see where
-    exploitation might be beneficial.
-    Where runtime coverage is substantial, we report speedups over sequential C
+    The approach was evaluated in several steps.
+    Firstly, the number of detected idioms and their distribution over the
+    benchmark programs was established.
+    During this analysis, the run time of the IDL-enabled Clang compiler was
+    measured, and the compile time overhead of the solver over standard
+    compilation evaluated.
+    Next, the run time coverage of the idioms was determined for each
+    benchmark program, to see where exploitation might be beneficial.
+
+    Where runtime coverage was substantial, we report speedups over sequential C
     code and compare the performance of each of the targets APIs.
     We also compare against the handwritten OpenMP and OpenCL implementations
     that are included with the benchmark suites as reference implementations.
