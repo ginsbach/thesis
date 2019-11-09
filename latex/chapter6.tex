@@ -75,24 +75,27 @@
     The ideal would be a compiler that automatically maps existing code to
     heterogeneous hardware, with full performance and requiring no directions
     from the application programmer.
-    While this is unrealistic in general, the system that is presented in this
-    chapter achieves an approximation of such a general-purpose system,
-    utilising the knowhow that is already available and encapsulated in the
-    existing interfaces as an intermediary.
-    Instead of implementing code generation for several heterogeneous
-    accelerators, the system maps user code to heterogeneous hardware using the
+    While this is unrealistic in general, the chapter presents a system that
+    approximates such a general-purpose system by utilising know-how that is
+    already available and encapsulated in the existing backend interfaces.
+    Instead of implementing code generation for each heterogeneous
+    accelerator, the system maps user code to heterogeneous hardware using the
     existing libraries and domain-specific languages, effectively outsourcing
     the code generation to hardware and domain specialists.
 
     The approach is based on detecting specific {\em computational idioms} in
-    application code that correspond to the functionality of existing APIs for
-    heterogeneous acceleration.
-    The covered idioms are largely a reflection of the existing libraries and
-    DSLs, with a focus on sparse and dense linear algebra, stencils and
-    generalized reductions and histograms.
-    These idioms are formulated using the purpose-built constraint programming
-    language IDL, which allows the concise formulation and fast detection in
-    optimised LLVM IR code.
+    application code that correspond to the functionality of existing interfaces
+    -- libraries and DSLs -- for heterogeneous acceleration.
+    In addition to the Complex Reduction and Histogram Computations (CReHCs)
+    introduced in \Cref{chapter:reductions}, the focus is on
+    sparse and dense linear algebra, as well as stencils.
+    The covered idioms are a reflection of both the most relevant program
+    bottlenecks and the available interfaces.
+    Some computational idioms are more widely supported than others, potentially
+    pointing to gaps in the accelerator landscape, but some backend was
+    available for each of them.
+    The Idiom Detection language (IDL) then enabled the automatic detection of
+    idioms.
 
     Once detected, the idioms are mechanically translated into the appropriate
     DSL or replaced with a library call.
