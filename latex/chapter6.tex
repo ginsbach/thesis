@@ -192,12 +192,11 @@
     The same idioms, of course, can be detected across many user programs, so
     the IDL program does not have to change from one run to the next.
 
-\begin{figure}[t]
+\begin{figure}[p]
     \centering
     \includegraphics[width=\linewidth]{figures/compiler_flow.pdf}
     \caption{Workflow of our system}
     \label{fig:methodology}
-    \vspace{-0.5em}
 \end{figure}
 
     The program source code is compiled to optimised LLVM intermediate
@@ -228,10 +227,6 @@
     applicable libraries and DSLs and pick the best executing
     code. Determining the best option is future work.
 
-\begin{figure}[p]
-    \input{latex/figure_spmvexample3}
-\end{figure}
-
 \subsection{Sparse Linear Algebra in IDL}
 
     Although the previous example illustrated how constraints can be applied to 
@@ -259,6 +254,10 @@
     which outputs a constraint solution as shown in \Cref{fig:spmvexample2}.
     We can see that different parts of the IR have been assigned to IDL
     variables.
+
+\begin{figure}[p]
+    \input{latex/figure_spmvexample3}
+\end{figure}
 
     \Cref{fig:spmvexample3} shows how this solution is used to generate a
     call to a cuSPARSE procedure.
@@ -827,7 +826,7 @@ Here the best performing API is shown;
   \small
   \begin{tabular}{|l||cccccc|ccccc|cccc|}
   \hline
-  & \multicolumn{6}{c|}{\bfseries\large CPU} & \multicolumn{5}{c|}{\bfseries\large iGPU} & \multicolumn{4}{c|}{\bfseries\large GPU} \\[3mm]
+  & \multicolumn{6}{c|}{\bfseries\large CPU} & \multicolumn{5}{c|}{\bfseries\large iGPU} & \multicolumn{4}{c|}{\bfseries\large GPU} \\
   & MKL & libSPMV & Halide & clBLAS & CLBlast & Lift & clSPARSE & libSPMV & clBLAS & CLBlast & Lift & cuSPARSE & libSPMV & cuBLAS & Lift \\
   \hline
   \hline
@@ -909,127 +908,7 @@ A simple interchange of two loops improved performance by almost 20 times.
     performance improvements were achieved by targeting different heterogeneous
     APIs for those benchmarks where idioms dominate execution time.
 
-\section{Related and Future Work}
-
-\paragraph*{Domain specific Languages}
-    Domain specific languages have received much attention in recent years,
-    ranging from SPIRAL \citep{ofenbeck13spiral}, a DSL for Fast Fourier
-    Transforms, over Lift \citep{steuwer15rewrite, SteuwerRD17,HagedornSSGD18}
-    to UFL \citep{Alnaes:2014:UFL:2594412.2566630}, a DSL for partial
-    differential equations.
-    Stencils in particular have received much attention
-    \citep{Mullapudi:2015:PAO:2694344.2694364,HagedornSSGD18}, the best known of
-    which is Halide \citep{Ragan-Kelley2013Halide}.
-    DSLs to exploit complex reductions are less studied.
-    \citet{Reddy2016Reduction} introduce a type of DSL via annotations
-    that allow expression of complex reductions.
-    This was based on the  Platform-Neutral Compute Intermediate Language by
-    \citet{baghdadi2015PENCIL}.
-    The Matrix multiplication idimos is well supported by
-    specific libraries \citep{clblas,mkl,cublas}.
-
-\paragraph*{Generation of Performance Portable Code for Heterogeneous Hardware}
-    Recent research has highlighted the challenges of generating code that
-    performs well on different heterogeneous hardware architectures.
-    PetaBricks by \citet{PhothilimthanaARA13} is one of the first languages to
-    address this performance portability challenge by encoding algorithmic
-    choices which are then empirically evaluated and automatically taken by the
-    compiler.
-    Similarly \cite{MuralidharanRHG16} explores automatic selection of code
-    variants using machine learning.
-    In a similar spirit, Lift~\cite{steuwer15rewrite} uses rewrite rules to
-    explore optimization choices automatically.
-
-\paragraph*{Functional Code Generation Approaches}
-    There exist multiple functional approaches for generating code for
-    heterogeneous hardware.
-    \citet{chakravarty11accelerating,mcdonell13optimising} propose Accelerate,
-    a domain specific language embedded in Haskell that generates efficient GPU
-    code.
-    Recently, \citet{collins14nova} introduced NOVA, a new functional language
-    targeted at code generation for GPUs, and Copperhead
-    \cite{catanzaro11copperhead}, a data parallel language embedded in Python.
-    Delite~\cite{brown11heterogeneous,chafi11domain} is a system that enables
-    the creation of domain-specific languages using functional parallel patterns
-    and targets multi-core CPUs or GPUs.
-    In contrast to these approaches, we require no rewriting of legacy programs.
-
-\paragraph*{Idiom Detection}
-    Idiom based optimization based on AST manipulation, as described by
-    \citet{Pinter:1994:POP:177492.177494}, has fallen out of fashion.
-    More systematic approaches based on static single assignment representation
-    \cite{lattner2004llvm} and polyhedral representations
-    \cite{benabderrahmane2010polyhedral} however were more recently
-    investigated.
-    They were largely based on syntactic pattern matching and not robust in the
-    presence of complex control and dataflow.
-    More recently, work by \citet{Andion2015Compilation} describes a compiler
-    based parallelization approach for heterogeneous computing, based on an
-    diomatic intermediate representation called KIR.  
-    It is not clear how such an approach would work on general C/C++ programs.
-
-\paragraph*{Stencils}
-    Stencil detection has been driven by the introduction of DSLs such as
-    Halide.  Helium \cite{Mendis2015Helium} tackles the challenging task
-    of detecting stencils in binary code. It relies
-    on dynamic analysis and cannot easily be extended to
-    other idioms.
-    Another closely related paper is \cite{Kamil2016Verified}, which detects stencils in FORTRAN by the
-    verified lifting of code segments to a representation that can be
-    mapped to Halide DSL.  It uses syntax guided synthesis to verify
-    translation with added constrains to ensure that it can be mapped to
-    Halide.
-    It however requires nested loops  without conditionals in well behaved FORTRAN
-    and in some cases requires user annotations.
-
-\paragraph*{Reductions}
-    Discovering and exploiting scalar reductions in programs has been
-    studied for many years based on dependence analysis and idiom detection
-     \cite{fisher1994parallelizing,pottenger1995idiom,suganuma1996detection}.
-    Alongside this data dependence based approach, there has also been a
-     large body of work exploring mapping of reductions in a
-     polyhedral setting \cite{jouvelot1989unified,redon1994scheduling}
-     The treatment of
-    more general reduction operations has received  less attention.
-    Work has focused on exploitation rather than discovery
-    \cite{Gutierrez:2000,gutierrez2003optimization,gutierrez2008analytical}, examining trade-offs in implementation \cite{yu2006adaptive}
-     or exploitation of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
-    Recent work \cite{ginsbach2017discovery} shows that more complex reductions can be 
-    detected, but this is tied to  an  ad~hoc non-portable code generation phase. 
-
-\paragraph*{Polyhedral Approaches}
-    Polyhedral compilers \cite{Baskaran:2010:ACC:2175462.2175482,Verdoolaege:2013:PPC:2400682.2400713} perform advanced loop optimizations and have been used for the generation of fast GPU kernels.
-    More recently, extensions to the polyhedral framework have been proposed, allowing it to capture reduction computations \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
-    Such efforts are described in \cite{Doerfert2015Polly}, but they are fragile in the presence of non static control flow.
-
-\paragraph*{Future Work}
-    Although idioms can be described concisely with IDL, we currently
-    have to implement a separate translation scheme for each API. While
-    much of the translation code is common, it would be preferable to have
-    an API description language similar to IDL that allows automatic
-    generation of API translators. This would allow rapid evaluation of
-    different APIs for the same idiom.
-
-    With a growing number of APIs and idioms, profitability heuristics
-    will become necessary to determine the best API to use for each
-    program and platform.  Machine learning approaches are an obvious
-    starting point as they easily adapt to changing targets.
-
-    This paper restricts its attention to five common idioms. Other idioms
-    such as graph processing can also be described. Given that IDL works on
-    the compiler IR, loop and function parallelism can also be
-    described as idioms.
-    In those cases where user codes do not quite match the platform API
-    and associated idioms, we can apply
-    program transformations to refactor or rejuvenate code to fit.
-
-    To be a robust approach to heterogeneous programming, we need to ensure correctness.
-    Syntax guided synthesis is a promising means of verifying the idiom translation.
-
-    It would be interesting  to see to whether our approach  could be used for binary optimization or  applied to 
-    heavily optimised and  complex code bases.
-
-\section{Summary}
+\section{Conclusion}
 
     This paper develops a compiler based approach that automatically
     detects a wide class of idioms supported by libraries or domain
