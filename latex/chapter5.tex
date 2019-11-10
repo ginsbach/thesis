@@ -9,16 +9,16 @@
     Instead, it presents methods for the automatic parallelisation of
     programs that were previously inaccessible to compiler reasoning.
 
-    The previously disregarded Complex Reduction and Histogram Computations
-    (CReHCs) are identified as a {\em computational idiom} -- a class of program
-    kernels that constitute bottlenecks of important benchmark programs and that
-    share common structure which allows for specific, targeted acceleration and
-    parallelisation approaches.
+    Complex Reduction and Histogram Computations (CReHCs) are identified as a
+    previously overlooked  {\em computational idiom} -- a class of kernels that
+    constitute bottlenecks of important benchmark programs and share algorithmic
+    structure that allows for targeted acceleration and parallelisation
+    approaches.
     In contrast to the better-understood scalar reductions, CReHCs may contain
     indirect memory accesses and non-trivial control flow.
     Such loops were not typically studied as a single class of calculations
-    previously, but this chapter demonstrates that they share structure that
-    allows for automatic detection and parallelisation.
+    previously, but this chapter demonstrates that grouping them together
+    allows for automatic detection and parallelisation using the same methods.
 
     After introducing CReHCs, the chapter presents the Idiom Description
     Language (IDL) as an extension of CAnDL and uses it to implement the
@@ -26,8 +26,8 @@
     The additional language features of IDL enable it to capture well-behaved
     kernel functions.
     These are an integral component of CRoHCs, where they model the reduction
-    operators, but they also feature prominently in other idioms, such as
-    stencil codes.
+    operators, but they also feature prominently in other computational idioms,
+    such as stencil codes.
     
     Grouping reductions and histograms together and formulating
     CReHCs in IDL makes the automatic detection in C/C++ program code possible.
@@ -40,11 +40,11 @@
 \section{Introduction}
 
     Reductions occur widely in numerical applications and techniques for
-    parallelising them were established, among others by
-    \citet{rauchwerger1999lrpd,yu2006adaptive,Jradi2017fast}.
-    Typical reductions successively apply an arithmetic operator to an
-    array of numeric values, in order to compute, for example, the sum of a set
-    of floating point numbers.
+    parallelising them were established by
+    \citet{rauchwerger1999lrpd,yu2006adaptive,Jradi2017fast} and others.
+    Typical reductions successively apply an arithmetic operator over an
+    array of numeric values in order to compute, for example, the sum of a set
+    of floating-point numbers.
     Perhaps most prominently, a reduction features in the innermost loop of the
     matrix multiplication kernel as a dot product.
     In this form, reductions are critical to many high performance computing
@@ -78,25 +78,24 @@
     \citep{benabderrahmane2010polyhedral} as the basis of their analysis.
 
     The constraint programming approach derived in \Cref{chapter:theory},
-    however, is not fundamentally inhibited by indirect memory accesses.
-    Furthermore, the previous \Cref{chapter:candl} already used this to
-    constructed the constraint programming language CAnDL that can capture
-    complex control flow.
-    This chapter develops a new compiler based approach that automatically
-    detects a wide class of generalised reductions.
-    This formulation allows us to specify the reduction idiom using data flow
-    and control flow constraints.
-    During compilation, the CAnDL solver automatically identifies subsets within
-    LLVM IR that constitute a reduction operation.
+    however, is not inhibited by indirect memory accesses.
+    \Cref{chapter:candl} already used this approach to implement
+    the constraint programming language CAnDL, which can also recognise
+    intricate control flow.
+    This chapter presents the Idiom Description Language (IDL) as an extension
+    of CAnDL and uses it to implement the detection of CReHCs.
+    The additional language features enable IDL to express well-behaved
+    kernel functions, which capture the reduction operators of CReHCs.
+    The IDL solver automatically identifies conforming subsets of LLVM IR during
+    compilation.
 
     The chapter focuses on deriving the detection of reductions and assumes
     that later compiler stages are responsible for mapping this to dedicated
-    code gneration backends.
-    However, to illustrate the potential performance of the scheme, a code
-    generation pass was implemented that generates templated parallel pthread
-    reduction code.
-    This transformation pass achieved significant speedups on those benchmarks
-    where reductions are performance bottlenecks.
+    code generation backends.
+    However, to illustrate the potential performance of the scheme, it uses
+    also introduces a complementing code generation pass.
+    This transformation pass achieved significant program-wide speedups on those
+    benchmarks where reductions are performance bottlenecks.
 
 \section{Motivation}
 
