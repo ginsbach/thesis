@@ -286,7 +286,57 @@
     patterns are specified independently and then combined together in order to
     define the complete constraint specifications.
 
-\input{latex/figure_idioms}
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,
+                   label={fig:spmv},caption={IDL specification of SPMV}]
+Constraint SPMV
+( inherits For and
+  inherits VectorStore
+      with {iterator} as {idx}
+       and {begin} as {begin} at {output} and
+  inherits ReadRange
+      with {iterator} as {idx}
+       and {inner.iter_begin} as {range_begin}
+       and {inner.iter_end}   as {range_end} and
+  inherits For at {inner} and
+  inherits VectorRead
+      with {inner.iterator} as {idx}
+       and {begin} as {begin} at {idx_read} and
+  inherits VectorRead
+      with {idx_read.value} as {idx}
+       and {begin} as {begin} at {indir_read} and
+  inherits VectorRead
+      with {inner.iterator} as {idx}
+       and {begin} as {begin} at {seq_read} and
+  inherits DotProductLoop
+      with {inner}            as {loop}
+       and {indir_read.value} as {src1}
+       and {seq_read.value}   as {src2}
+       and {output.address}   as {update_address})
+End
+\end{lstlisting}
+\end{figure}
+
+\begin{figure}[p]
+\begin{lstlisting}[language=IDL,
+                   label={fig:stencilcompute},caption={IDL specification of simple stencil}]
+Constraint Stencil
+( inherits ForNest and
+  inherits PermMultidStore
+      with {iterator} as {input}
+       and {begin} as {begin} at {write} and
+  collect i
+  ( inherits StencilRead
+      with {write.input_index} as {input}
+       and {kernel.input[i]} as {value}
+       and {begin} as {begin} at {reads[i]}) and
+  {kernel.output} is first argument of {write.store} and
+  inherits KernelFunction
+      with {begin}      as {outer}
+       and {body.begin} as {inner} at {kernel})
+End
+\end{lstlisting}
+\end{figure}
 
 \subsection{Dense Linear Algebra}
 
