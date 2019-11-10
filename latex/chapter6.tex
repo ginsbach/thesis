@@ -822,7 +822,7 @@ Here the best performing API is shown;
 \newcommand{\msb}[1]{\settowidth{\txtwd}{#1}{\tiny\ttfamily\bfseries \hfill #1}}
 \newcommand{\ms}[1]{\settowidth{\txtwd}{#1}{\tiny\ttfamily \hfill #1}}
 \addtolength{\tabcolsep}{-0.64mm}
-\begin{figure}[p]
+\begin{table}[p]
   \centering
   \small
   \begin{tabular}{|l||cccccc|ccccc|cccc|}
@@ -843,12 +843,13 @@ Here the best performing API is shown;
    tpacf   & --- & ---& --- & --- & --- & \msb{19276.40}  & --- & ---& --- & --- & \msb{61111.90} & --- & ---& --- & \msb{23358.20} \\
   \hline
 \end{tabular}
-
-  \vspace{.2cm}
-\caption{Detailed performance results for each heterogeneous API used in milliseconds.
-         Fastest implementations for each benchmark and target hardware are highlighted in bold.}
+\caption{Detailed performance results for each heterogeneous backend interface:
+         The run time of benchmark program is measured in milliseconds for every
+         compatible combination in each platform.
+         The fastest implementations for each benchmark and target hardware are
+         highlighted in bold.}
 \label{tab:detailed-results}
-\end{figure}
+\end{table}
 \end{landscape}
 
     For five benchmarks we obtain moderate speedups from 1.26$\times$ for
