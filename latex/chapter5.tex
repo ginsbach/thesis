@@ -23,11 +23,11 @@
     After introducing CReHCs, the chapter presents the Idiom Description
     Language (IDL) as an extension of CAnDL and uses it to implement the
     detection of this computational idiom.
-    The additional language features of IDL enable it to capture well-behaved
+    The additional language features of IDL enable capturing well-behaved
     kernel functions.
     These are an integral component of CRoHCs, where they model the reduction
-    operators, but they also feature prominently in other computational idioms,
-    such as stencil codes.
+    operators, but they are also necessary for the formulation of other
+    computational idioms, such as stencil codes.
     
     Grouping reductions and histograms together and formulating
     CReHCs in IDL makes the automatic detection in C/C++ program code possible.
@@ -45,7 +45,7 @@
     Typical reductions successively apply an arithmetic operator over an
     array of numeric values in order to compute, for example, the sum of a set
     of floating-point numbers.
-    Perhaps most prominently, a reduction features in the innermost loop of the
+    Perhaps most prominently, a reduction makes up the innermost loop of the
     matrix multiplication kernel as a dot product.
     In this form, reductions are critical to many high performance computing
     workloads based on linear algebra, as well as embedded benchmarks and
@@ -77,11 +77,11 @@
     standard data dependence \citep{kuck1981dependence} or the polyhedral model
     \citep{benabderrahmane2010polyhedral} as the basis of their analysis.
 
-    The constraint programming approach derived in \Cref{chapter:theory},
-    however, is not inhibited by indirect memory accesses.
-    \Cref{chapter:candl} already used this approach to implement
-    the constraint programming language CAnDL, which can also recognise
-    intricate control flow.
+    The constraint programming methodology derived in \Cref{chapter:theory},
+    however, is not inhibited by such indirect memory accesses.
+    \Cref{chapter:candl} developed the constraint programming language CAnDL
+    using this methodology and showed that it could also recognise intricate
+    control flow.
     This chapter presents the Idiom Description Language (IDL) as an extension
     of CAnDL and uses it to implement the detection of CReHCs.
     The additional language features enable IDL to express well-behaved
@@ -345,12 +345,12 @@ for(i = 0; i < NK; i++) {
 
 \subsection{Constraint based formulation}
 
-    The motivation section described how reductions can be parallelised and
+    The motivation section described how reductions could be parallelised and
     suggested that the same basic technique can be applied to a wide range of
     generalised reductions.
-    To enable compilers to exploit this, a precise definition of the kinds
-    of computations that fit this approach is needed.
-    This section formulates scalar and generalized reductions with constraints.
+    For compilers to apply this parallelisation automatically, a precise
+    specification of the suitable program loops is needed.
+    This section formulates scalar and generalised reductions with constraints.
 
 \subsubsection{Scalar Reductions}
 \label{section:scalarcond}
@@ -362,11 +362,11 @@ for(i = 0; i < NK; i++) {
         \item The code is contained in a for loop and the iteration space of the
               loop is known in advance (not necessarily at compile time).
         \item There is a scalar value $x$ that is updated in every iteration.
-        \item One or multiple values $a_1,\dots,a_n$ are read from arrays and
-              the indices are affine in the loop iterator.
+        \item One or multiple values $a_1,\dots,a_n$ are read from arrays, and
+              the access indices are affine in the loop iterator.
         \item The updated value $x'$ is computed as a term only of $x$, the
-              array values $a_1,\dots,a_n$ and values that are constant within
-              the loop.
+              array values $a_1,\dots,a_n$ and of values that are constant
+              within the loop.
     \end{enumerate}
 
     The definition is broader than usual.
@@ -455,24 +455,25 @@ for(i = 0; i < n; i++) {
     \begin{enumerate}
         \item The code is contained in a for loop and the iteration space of the
               loop is known in advance (not necessarily at compile time).
-        \item One or multiple values $a_1,\dots,a_n$ are read from arrays and
-              the indices are affine in the loop iterator.
+        \item One or multiple values $a_1,\dots,a_n$ are read from arrays, and
+              the access indices are affine in the loop iterator.
         \item A value {\tt idx} is computed as a term only of the array values
-              $a_1,\dots,a_n$ and values that are constant within the loop.
+              $a_1,\dots,a_n$ and of values that are constant within the loop.
         \item A value $x$ is read from an array at index {\tt idx} and a
               modified value $x'$ is written at the same index.
               The writing might be control dependent only on $a_1,\dots,a_n$ and
               it may not be in a nested loop.
         \item The updated value $x'$ is computed as a term only of $x$, the
-              array values $a_1,\dots,a_n$ and values that are constant within
-              the loop.
+              array values $a_1,\dots,a_n$ and of values that are constant
+              within the loop.
     \end{enumerate}
 
-    Again, additional commutativity conditions are required in order to restrict
-    this to only parallelisable histograms.
-    Note that the statement on control dependency and nested loops has to be
-    made only for the write location, as writing to memory is the only side
-    effect of the loop.
+    Histogram reductions are only parallelisable if their update operator is
+    commutative, just as is the case for scalar reductions.
+    However, checking this condition requires a post-processing step,
+    which is independent of the detection of the algorithmic structure.
+    For the purposes of this research, checking commutativity is considered the
+    responsibility of code generation.
 
     \paragraph*{Example}
     The first two conditions are the same as those in the previous discussion of
@@ -534,15 +535,15 @@ for(i = 0; i < n; i++) {
 
 \section{The Idiom Description Language}
 
-    For automatic detection during compilation, these conditions need to be
-    specified formally in a constraint language.
-    The CAnDL programming language from \Cref{chapter:candl} is taken as the
-    basis for this formulation.
+    For automatic detection during compilation, the conditions from
+    \Cref{section:histocond,section:scalarcond} are specified formally in
+    a constraint language.
+    CAnDL from \Cref{chapter:candl} is taken as the basis for this formulation.
     However, additional language constructs are required in order to capture
     the kernel computations that are part of complex reduction and histogram
     computations.
 
-    This extensions of CAnDL leads to the definition of the
+    This extension of CAnDL leads to the definition of the
     Idiom Description Language (IDL).
     IDL uses the solver infrastructure of CAnDL and retains the same high-level
     program structure.
@@ -615,8 +616,8 @@ for(i = 0; i < n; i++) {
 \end{figure}
 
     \noindent
-    The verbose syntax of this atomic constraint is quite discriptive, however
-    some details require explanation.
+    The syntax of this atomic constraint is quite discriptive, but some
+    details require explanation.
     Firstly, ``flow'' in this constraint does not only capture data flow.
     To cover kernel functions with non-trivial control flow, the
     underlying graph on which this constraint operates is formed as an extension
@@ -796,10 +797,10 @@ End
 
 \subsection{Encapsulating Kernel Functions in IDL}
 
-    Kernel functions can be encapsulated as shown in the top half of
-    \Cref{IDLscalarPart} in IDL.
+    \Cref{IDLscalarPart} encapsulates kernel functions in an IDL constraint
+    specification.
     The specification is built around the previously introduced generalised
-    graph dominance constraint, which is in lines 18--20.
+    graph dominance constraint, which is invoked in lines 18--20.
     The relevant arrays which are passed to this final constraint are filled
     using several collect-all constraints in lines 2--17.
     Lines 2--3 collect all the entry points of control flow.
@@ -811,23 +812,22 @@ End
     Finally, lines 13--17 collect all the loop-carried $\Phi$-instructions,
     which only exist in case the scope is a loop.
 
-    At the bottom of \Cref{IDLscalarPart} is the IDL specification of a
-    scalar reduction within a complex reduction and histogram computation.
+    The bottom of \Cref{IDLscalarPart} shows the IDL specification of a
+    scalar reduction component within a CReHC loop.
     This IDL specification is built around a kernel function, incorporating the
     specification in lines 10--11.
     The arguments to this kernel function are set using the ``{\tt Concat}''
     specification in lines 12--15.
     This kernel function is connected with a loop-carried $\Phi$-instruction in
     lines 2--6.
-    Finally, lines 7--9 make sure that the reduction value actually leaves the
+    Finally, lines 7--9 make sure that the reduction value eventually leaves the
     loop, excluding loop-carried iterators that are only used within the loop.
 
     \autoref{IDLhistoPart} shows how histogram reductions are specified
     similarly.
-    Two kernel functions are used to calculate the index of the bin in
-    the histogram (lines 7--9) and the updated value of its contents
-    (lines 10--15).
-    The histogram in each iteration may be conditional, as expressed with
+    Two kernel functions calculate the index of the bin in the histogram
+    (lines 7--9) and the updated value of its contents (lines 10--15).
+    The histogram update in each iteration may be conditional, as expressed with
     ``{\tt ConditionalReadModifyWrite}'' in lines 2--6.
     Crucially, the kernel functions use the scope of the loop and already
     restrict the this conditional to only depend on the allowed values.
@@ -947,14 +947,14 @@ End
     After both threads finished their work, the copy is merged with the original
     histogram element wise and the copy is deallocated.
 
-    In general, the size of the histogram array can not be determined at
-    compile time.
-    We therefore use dynamic boundary checking in all the branched off threads
-    and reallocate the histogram array when necessary.
-    This introduces some overhead but proved acceptable in many benchmark
-    programs.
+    In general, determining the size of the histogram at compile time is not
+    possible with static methods.
+    All the branched-off threads, therefore, use dynamic boundary checking and
+    reallocate the histogram array when necessary.
+    This on-demand enlargement introduces some overhead but proved acceptable in
+    many benchmark programs.
 
-    Optimal code generation was not the main focus of this research and more
+    Optimal code generation was not the main focus of this research, and more
     sophisticated methods for the parallelization of reductions could be added.
 
 \section{Experimental Setup}
@@ -993,13 +993,12 @@ End
 
 \paragraph*{Polly-Reduction}
 
-    \citet{Doerfert2015Polly} developed a compiler analysis and transformation
-    within that detects reductions in code that is captured by the
-    polyhedral model.
-    This is implemented in Polly, an LLVM-based polyhedral compiler
+    \citet{Doerfert2015Polly} develop a compiler analysis and transformation
+    system that detects reductions within code captured by the polyhedral model.
+    This system augments Polly, an LLVM-based polyhedral compiler
     \citep{Lengauer2012Polly}.
-    The polyhedral model is extremely powerful when applicable, and as Polly is
-    also LLVM based, this allows for comparison against another approach that
+    The polyhedral model is extremely powerful when applicable, and Polly being
+    based on LLVM IR allows for comparison of IDL against another approach that
     uses the same compiler infrastructure.
 
     The sequential versions of the benchmark programs were compiled using
@@ -1099,7 +1098,7 @@ End
     The detection schemes were applied to the three benchmark suites, with the
     results shown in \Cref{npb_spotted,parboil_spotted,rodinia_spotted}. 
     Across all the benchmark programs, the IDL specification captured a total of
-    84 scalar reductions and 6 histogram reductions.
+    90 reductions: 84 scalar reductions and 6 histogram reductions.
 
     \paragraph*{Discovered by IDL}
     There were scalar reductions detected in nearly all of the individual NPB
@@ -1113,11 +1112,11 @@ End
     The IDL solver detected scalar reductions in 15 out of the 19 benchmarks,
     with 9 reductions in the ``particlefilter'' program alone.
 
-    Every reduction that was captured by the two competing approaches was also
+    Every reduction captured by the other two competing approaches was also
     identified by the IDL solver.
     However, there were some regions that could be classified as reductions
     manually, but that did not adhere to the used IDL specification and thus
-    were discarded by the solver.
+    remained unrecognised.
     This was generally the case when the reduction loop was not the innermost
     loop, as is the case for the example in \autoref{missedscalar}.
     The outer three loops of this code section from the ``SP'' benchmark are
@@ -1149,38 +1148,38 @@ for (k = 1; k <= nz2; k++) {
   \centering
     \begin{tikzpicture}
       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
-                   xticklabel pos=bottom, bar width=.25cm,
+                   xticklabel pos=bottom, bar width=.25cm, legend cell align={left},
                    ymin=0, ymax=13, ytick={0,2,4,6,8,10,12},
                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
                    xticklabel style={rotate=0},
                    width=\textwidth, height=6cm, legend style={at={(0.5,0.98)},anchor=north}]
-        \addplot [bar shift=-0.25cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\NASDetectionData};
+        \addplot [bar shift=-0.25cm,fill=black!80!white,nodes near coords] table[x=benchmark,y=total reductions]{\NASDetectionData};
         \addplot [bar shift=-0.25cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\NASDetectionData};
         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\NASICCData};
         \addplot [bar shift=0.25cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
-        \legend{histogram reductions, scalar reductions,icc reductions, Polly+reductions}
+        \legend{IDL histogram reductions, IDL scalar reductions,ICC reductions, Polly reductions}
       \end{axis}
     \end{tikzpicture}
     \caption{Reductions and histograms detected by the three competing
              approaches in {\bf NPB}:
-             Most programs contain scalar reductions, which IDL detected
-             somewhat more reliably than ICC.
+             Most programs contain scalar reductions, of which IDL consistently
+             recognised more than ICC.
              Only IDL detected histograms.
              Most of the benchmarks were unsuitable for analysis with Polly.}
     \label{npb_spotted}
     \vspace{2.7mm}
     \begin{tikzpicture}
       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
-                   xticklabel pos=bottom, bar width=.25cm,
+                   xticklabel pos=bottom, bar width=.25cm, legend cell align={left},
                    ymin=0, ymax=9, ytick={0,2,4,6,8},
                    symbolic x coords={bfs,cutcp,histo,lbm,mri-gridding,mri-q,sad,sgemm,spmv,stencil,tpacf},
                    xticklabel style={rotate=30,anchor=east},
                    width=\textwidth, height=6cm, legend style={at={(0.98,0.98)},anchor=north east}]
-        \addplot [bar shift=-0.25cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\ParboilDetectionData};
+        \addplot [bar shift=-0.25cm,fill=black!80!white,nodes near coords] table[x=benchmark,y=total reductions]{\ParboilDetectionData};
         \addplot [bar shift=-0.25cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\ParboilDetectionData};
         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\ParboilICCData};
         \addplot [bar shift=0.25cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\ParboilPollyData};
-        \legend{histogram reductions, scalar reductions,icc reductions, Polly+reductions}
+        \legend{IDL histogram reductions, IDL scalar reductions,ICC reductions, Polly reductions}
       \end{axis}
     \end{tikzpicture}
     \caption{Reductions and histograms detected by the three competing
@@ -1193,16 +1192,16 @@ for (k = 1; k <= nz2; k++) {
     \vspace{2.7mm}
     \begin{tikzpicture}
       \begin{axis}[ybar=0.0, ymajorgrids, xtick style={transparent}, xtick=data,legend style={font=\small},
-                   xticklabel pos=bottom, bar width=.15cm,
+                   xticklabel pos=bottom, bar width=.15cm, legend cell align={left},
                    ymin=0, ymax=11, ytick={0,2,4,6,8,10},
                    symbolic x coords={backprop,bfs,b+tree,cfd,heartwall,hotspot,hotspot3D,kmeans,lavaMD,leukocyte,lud,mummergpu,myocyte,nn,nw,particlefilter,pathfinder,srad,streamcluster},
                    xticklabel style={rotate=60,anchor=east},
                    width=\textwidth, height=6cm, legend style={at={(0.02,0.98)},anchor=north west}]
-        \addplot [bar shift=-0.15cm,fill=black!80!white] table[x=benchmark,y=total reductions]{\RodiniaDetectionData};
+        \addplot [bar shift=-0.15cm,fill=black!80!white,nodes near coords] table[x=benchmark,y=total reductions]{\RodiniaDetectionData};
         \addplot [bar shift=-0.15cm,fill=lightgray!80!white] table[x=benchmark,y=scalar reductions]{\RodiniaDetectionData};
         \addplot [bar shift=0.00cm,style={pattern=crosshatch dots}] table[x=benchmark,y=detected by icc]{\RodiniaICCData};
         \addplot [bar shift=0.15cm,style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\RodiniaPollyData};
-        \legend{histogram reductions, scalar reductions,icc reductions, Polly reductions}
+        \legend{IDL histogram reductions, IDL scalar reductions,ICC reductions, Polly reductions}
       \end{axis}
     \end{tikzpicture}
   \caption{Reductions and histograms detected by the 3 competing approaches
@@ -1238,7 +1237,7 @@ for( i=0; i<NUM_KEYS; i++ )
                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
                    xticklabel style={rotate=0},
                    width=\textwidth, height=6cm, legend pos=north west]
-        \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
+        \addplot [style={pattern=crosshatch},nodes near coords] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\NASPollyData};
         \legend{reduction SCoPs, other SCoPs}
       \end{axis}
@@ -1320,7 +1319,7 @@ for( i=0; i<NUM_KEYS; i++ )
     \paragraph*{Intel ICC}
     The Intel ICC compiler was more successful than Polly at recognising
     reductions:
-    It detected 25 out of 38 reductions in NPB, 3 out of 11 in Parboil and
+    It detected 25 out of 37 reductions in NPB, 3 out of 9 in Parboil and
     23 out of 38 in Rodinia.
     However, these were all scalar reductions; no histograms were detected.
 
