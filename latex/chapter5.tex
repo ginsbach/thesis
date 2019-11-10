@@ -102,11 +102,11 @@
     \Cref{sum-figure} shows a standard scalar reduction.
     Inside a single loop, the elements of the array \texttt{a} are successively
     accumulated in the variable \texttt{sum} using the ``\texttt{+=}'' operator.
-    This accumulation creates dependencies between successive loop iterations,
-    but they can easily be broken:
+    This accumulation creates dependencies between successive loop iterations.
+    However, those are easy to break:
     Rather than sequentially accumulating {\tt a} into {\tt sum}, it is possible
-    to calculate in parallel several partial sums into private copies of
-    \texttt{sum}, which are then added together to form the final value.
+    to calculate in parallel several partial sums into thread-private copies of
+    \texttt{sum}, which are then added to form the final value.
 
 \begin{figure}[h]
 \begin{lstlisting}[language=MyCpp,label={sum-figure},caption=
