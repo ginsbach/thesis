@@ -388,7 +388,7 @@ the corresponding computations.
 \label{bnfgrammar}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{minipage}[b]{0.3\linewidth}
 \includegraphics[width=0.9\linewidth]{figures/csrorder.png}
 \vspace{0.04em}
@@ -472,6 +472,7 @@ in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
     \texttt{StencilRead} idiom, which specifies multidimensional array access
     with only constant offsets in all dimensions.
 
+\newpage
 \subsection{Not Syntactic Pattern Matching}
 The idiom descriptions may at first appear to be shallow syntactic pattern matching.
 In fact, because it operates on the IR level, it can detect idioms that are written in superficially distinct style but are semantically equivalent.
@@ -532,6 +533,7 @@ for(int i = 0; i < 1000; i++)
     This solver is based on standard backtracking.
     As shown in the results section, this increases compilation time, but the overhead is modest.
 
+\newpage
 \section{Targeted Heterogeneous APIs}
 
     After idiom detection, we must transform the user program to exploit the
@@ -711,9 +713,6 @@ Finally, we again replace the idiom code in the user's code with a call to the c
     considered parallelizable.
 
 \newpage
-\phantom{placeholder}
-\newpage
-
 \section{Results}
 \label{sec:idiomresults}
 
@@ -726,10 +725,14 @@ Finally, we again replace the idiom code in the user's code with a call to the c
     Next, the run time coverage of the idioms was determined for each
     benchmark program, to see where exploitation might be beneficial.
 
-    Where runtime coverage was substantial, we report speedups over sequential C
-    code and compare the performance of each of the targets APIs.
-    We also compare against the handwritten OpenMP and OpenCL implementations
-    that are included with the benchmark suites as reference implementations.
+    Where run time coverage was substantial, speedups over sequential C code
+    are reported.
+    Detailed results capture the performance of each trageted backend interface.
+    Finally, the evaluation includes comparison to the handwritten OpenMP and
+    OpenCL implementations that are included with the benchmark suites as
+    reference implementations.
+    These provide a suitable estimator for the upper bound of available
+    performance.
 
 \begin{figure}[t]
   \centering
@@ -747,13 +750,19 @@ Finally, we again replace the idiom code in the user's code with a call to the c
 
 \subsection{Idiom Detection}
 
-    \Cref{tab:detection} shows the number of idioms found by our approach, Polly, and ICC.
-    Polly finds 3 scalar reductions and 6 stencils while ICC which just considers  scalar reduction finds 28.
-    Polly is unable to perform idiom specific optimizations on GEMM.
-    Other approaches do not detect any histograms or sparse matrix operations, because such code involves indirect and thus non-affine memory accesses.
-    This fundamentally contradicts assumptions that these tools rely on and is not merely an implementation artifact.
-    Our IDL approach detects 60 idioms overall with the compile time cost shown in figure \Cref{tab:compiletimecost}.
-    On average, the compilation time is increased by 82\%, which can be reduced further by optimizing the solver.
+    \Cref{tab:detection} shows the number of computational idioms found by IDL,
+    Polly, and ICC.
+    Polly found 3 scalar reductions and 6 stencils while ICC recognised only
+    28 scalar reduction.
+    Polly was unable to perform idiom specific optimizations on GEMM.
+    Other approaches did not detect any histograms or sparse matrix operations,
+    because such code involves indirect and thus non-affine memory accesses.
+    This fundamentally contradicts assumptions that these tools rely on and is
+    not merely an implementation artifact.
+    Our IDL approach detects 60 idioms overall with the compile time cost shown
+    in figure \Cref{tab:compiletimecost}.
+    On average, the compilation time is increased by 82\%, which can be reduced
+    further by optimizing the solver.
 
     \Cref{detection-figure} shows the different idioms detected across
     the  benchmarks. We detect both scalar
@@ -866,6 +875,26 @@ Here the best performing API is shown;
   \vspace{0.5em}
 \end{figure}
 
+    For five benchmarks we obtain moderate speedups from 1.26$\times$ for
+    \emph{histo} up to 4.5$\times$ for \emph{IS}.
+    All of these benchmarks besides \emph{MG} have a scalar or histogram
+    reduction as their performance bottleneck and are, therefore, not
+    computationally expensive.
+    Interestingly, we can see that for different benchmarks, different hardware
+    is beneficial:
+    for \emph{tpcaf}  the CPU is the best platform, beating the GPU  for which
+    the data transfer time dominates;
+    for \emph{MG} and \emph{histo} the integrated GPU strikes the right balance
+    between computational power while avoiding the movement of data to the
+    external GPU;
+    and, finally, for \emph{EP} and \emph{IS} the data transfer to the GPU pays
+    off exploiting the high GPU internal memory bandwidth.
+    These results emphasize the significance of heterogeneous code generation
+    flexibility.
+
+For five of the benchmarks we achieve significantly higher performance gains, from 17$\times$ for \emph{CG} and up to over 275$\times$ for \emph{sgemm}.
+These benchmarks are computationally expensive and the external GPU is always the fastest architecture by a considerable margin.
+
 \begin{landscape}
 \newlength{\txtwd}
 \newcommand{\msb}[1]{\settowidth{\txtwd}{#1}{\tiny\ttfamily\bfseries \hfill #1}}
@@ -901,25 +930,6 @@ Here the best performing API is shown;
 \end{table}
 \end{landscape}
 
-    For five benchmarks we obtain moderate speedups from 1.26$\times$ for
-    \emph{histo} up to 4.5$\times$ for \emph{IS}.
-    All of these benchmarks besides \emph{MG} have a scalar or histogram
-    reduction as their performance bottleneck and are, therefore, not
-    computationally expensive.
-    Interestingly, we can see that for different benchmarks, different hardware
-    is beneficial:
-    for \emph{tpcaf}  the CPU is the best platform, beating the GPU  for which
-    the data transfer time dominates;
-    for \emph{MG} and \emph{histo} the integrated GPU strikes the right balance
-    between computational power while avoiding the movement of data to the
-    external GPU;
-    and, finally, for \emph{EP} and \emph{IS} the data transfer to the GPU pays
-    off exploiting the high GPU internal memory bandwidth.
-    These results emphasize the significance of heterogeneous code generation
-    flexibility.
-
-For five of the benchmarks we achieve significantly higher performance gains, from 17$\times$ for \emph{CG} and up to over 275$\times$ for \emph{sgemm}.
-These benchmarks are computationally expensive and the external GPU is always the fastest architecture by a considerable margin.
 
 The red highlighting in the plot indicates an important runtime optimization:
 redundant data transfers for the iterative \emph{CG}, \emph{lbm}, \emph{spmv} and \emph{stencil} benchmarks.
