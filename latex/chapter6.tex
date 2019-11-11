@@ -863,14 +863,19 @@ Here the best performing API is shown;
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/asplosplots/speedup_vs_sequential_wide.pdf}
-  \caption{Speedup compared to the sequential C program.
-           Results for the best performing heterogeneous API on each device are shown.
-           The red bars indicate a manual runtime optimization for avoiding unnecessary data transfers.}
+  \caption{Speedup over sequential:
+           Results for the best-performing backend on each platform are shown.
+           The red bars indicate a manual modification for minimising redundant
+           data transfers.}
   \label{fig:speedup-figure}
   \vspace{1.5em}
   \centering
   \includegraphics[width=\textwidth]{figures/asplosplots/comparison.pdf}
-  \caption{Speedup of our constraints based approach (executed on the best hardware and highlighted in red) compared to handwritten parallel OpenCL (executed on the GPU) and OpenMP (executed on the CPU) implementations.}
+  \caption{IDL versus manual expert parallelisation:
+           Speedup over the sequential baseline was measured for IDL
+           (selecting best performing backend; red bars) and the
+           handwritten reference OpenCL and OpenMP implementations
+           (provided by the benchmark developers; yellow bars).}
   \label{fig:speedup-figure-2}
   \vspace{0.5em}
 \end{figure}
