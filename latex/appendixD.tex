@@ -158,21 +158,21 @@ End
 Constraint For
 ( inherits Loop and
   {increment} reaches phi node {iterator} from {end} and
-  {increment} has data flow to {comparison} and
+  {increment} is first argument of {comparison} and
   {comparison} is icmp instruction and
-  {comparison} has data flow to {end} and
-  {increment} has data flow to {iterator} and
+  {comparison} is first argument of {end} and
   {increment} is add instruction and
-  {iterator} has data flow to {increment} and
-  {iter_end} has data flow to {increment} and
+  {iterator} is first argument of {increment} and
+  {iter_end} is second argument of {comparison} and
   inherits LocalConst
       with {begin}    as {scope.begin}
        and {iter_end} as {value} and
-  {iter_begin} has data flow to {increment} and
+  {iter_begin} reaches phi node
+      {iterator} from {precursor} and
   inherits LocalConst
       with {begin}      as {scope.begin}
        and {iter_begin} as {value} and
-  {iter_step} has data flow to {increment} and
+  {iter_step} is second argument of {increment} and
   inherits LocalConst
       with {begin}     as {scope.begin}
        and {iter_step} as {value})
