@@ -287,8 +287,32 @@
     define the complete constraint specifications.
 
 \begin{figure}[p]
+\lstset{ basicstyle=\linespread{0.8}\ttfamily }
 \begin{lstlisting}[language=IDL,
-                   label={fig:spmv},caption={IDL specification of SPMV}]
+                   label={fig:gemm},caption={IDL specification of GEMM}]
+Constraint GEMM
+( inherits ForNest(N=3) and
+  inherits MatrixStore
+      with {iterator[0]} as {col}
+       and {iterator[1]} as {row}
+       and {begin} as {begin} at {output} and
+  inherits MatrixRead
+      with {iterator[0]} as {col}
+       and {iterator[2]} as {row}
+       and {begin} as {begin} at {input1} and
+  inherits MatrixRead
+      with {iterator[1]} as {col}
+       and {iterator[2]} as {row}
+       and {begin} as {begin} at {input2} and
+  inherits DotProductLoop
+      with {loop[2]}        as {loop}
+       and {input1.value}   as {src1}
+       and {input2.value}   as {src2}
+       and {output.address} as {update_address})
+End
+\end{lstlisting}
+\begin{lstlisting}[language=IDL,
+                   label={fig:spmv},caption={IDL specification of sparse matrix vector}]
 Constraint SPMV
 ( inherits For and
   inherits VectorStore
@@ -317,27 +341,6 @@ End
 \end{lstlisting}
 \end{figure}
 
-\begin{figure}[p]
-\begin{lstlisting}[language=IDL,
-                   label={fig:stencilcompute},caption={IDL specification of simple stencil}]
-Constraint Stencil
-( inherits ForNest and
-  inherits PermMultidStore
-      with {iterator} as {input}
-       and {begin} as {begin} at {write} and
-  collect i
-  ( inherits StencilRead
-      with {write.input_index} as {input}
-       and {kernel.input[i]} as {value}
-       and {begin} as {begin} at {reads[i]}) and
-  {kernel.output} is first argument of {write.store} and
-  inherits KernelFunction
-      with {begin}      as {outer}
-       and {body.begin} as {inner} at {kernel})
-End
-\end{lstlisting}
-\end{figure}
-
 \subsection{Dense Linear Algebra}
 
     The generalized matrix multiplication idiom is described in \Cref{fig:gemm}.
@@ -361,6 +364,7 @@ End
     \texttt{GEMM} but the memory access pattern is different, with indirect
     memory access in \texttt{indir\_read}.
 
+\newpage
 \subsection{Sparse Linear Algebra}
 At the heart of our approach is a simple language to specify sparse and dense
 linear algebra operations.
@@ -471,6 +475,28 @@ in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
     values that are constrained by
     \texttt{StencilRead}, which specifies multidimensional array access
     with only constant offsets in all dimensions.
+
+\begin{figure}[h]
+\begin{lstlisting}[language=IDL,
+                   label={fig:stencilcompute},caption={IDL specification of simple stencil}]
+Constraint Stencil
+( inherits ForNest and
+  inherits PermMultidStore
+      with {iterator} as {input}
+       and {begin} as {begin} at {write} and
+  collect i
+  ( inherits StencilRead
+      with {write.input_index} as {input}
+       and {kernel.input[i]} as {value}
+       and {begin} as {begin} at {reads[i]}) and
+  {kernel.output} is first argument of {write.store} and
+  inherits KernelFunction
+      with {begin}      as {outer}
+       and {body.begin} as {inner} at {kernel})
+End
+\end{lstlisting}
+\end{figure}
+
 
 \newpage
 \subsection{Not Syntactic Pattern Matching}
