@@ -195,7 +195,13 @@
 \begin{figure}[p]
     \centering
     \includegraphics[width=\linewidth]{figures/compiler_flow.pdf}
-    \caption{Workflow of our system}
+    \caption{Workflow of the IDL acceleration system:
+             The IDL solver extracts idiomatic loops in the optimised LLVM IR
+             of user programs.
+             These loops are extracted and replaced with shim function calls.
+             Domain-specific code generators implement the calls as library
+             objects, or they are taken directly from pre-generated vendor
+             libraries for idioms not requiring kernel functions.}
     \label{fig:methodology}
 \end{figure}
 
@@ -378,7 +384,6 @@ to allow automatic generation of robust detection functionality, yet to be able
 to capture interesting functionality.
 Crucial for sparse linear algebra routines is capturing the many different
 memory access patterns, the control flow on the other hand is very rigid.
-This is reflected in the grammar as shown in \autoref{bnfgrammar}.
 
 \subsection{Sparse Matrix Variations in LiLAC-What}
 Sparse matrices can be stored in different formats.
