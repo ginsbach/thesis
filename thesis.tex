@@ -158,10 +158,12 @@
                     ComplexReductionsAndHistograms, For, VectorRead,
                     SideEffectFreeCalls, ArgumentsPermuted, MaxOnceInScope,
                     Loop, SESE, Reduction, Stencil, ForNest, StencilRead,
-                    PermMultidStore, SPMV, GEMM, VectorStore, VectorRead,
-                    DotProductLoop, MatrixStore, MatrixRead, Histogram,
+                    PermMultidStore, SPMV, SPMV_CSR, SPMV_JDS, GEMM,
+                    VectorStore, VectorRead, DotProductLoop, DotProductFor,
+                    MatrixStore, MatrixRead, Histogram,
                     ForLoop, OffsetAdd, InductionVar, RangeCheck,
-                    FactorizationOpportunity, ReadRange},
+                    FactorizationOpportunity, ReadForLoopRanges,
+                    Addition, ReadForLoopIterations},
  morecomment  = [s][\color{color_strings}\bfseries]{\{}{\}}
 }
 

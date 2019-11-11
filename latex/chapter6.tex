@@ -385,11 +385,23 @@ Sparse matrices can be stored in different formats.
 In this section we introduce two of them and show how LiLAC-What can express
 the corresponding computations.
 
-\begin{figure}[t]
-\input{latex/figure_lilacwhat}
-\vspace{-1.5em}
-\caption{Grammar of the LiLAC-What language}
-\label{bnfgrammar}
+\begin{figure}[p]
+\lstset {
+ basicstyle=\linespread{1.0}\small\ttfamily
+}
+\begin{lstlisting}[language=IDL, label={spmvbase}, caption=
+   {Skeleton of the sparse matrix-vector product (SPMV) constraint
+    specification in IDL: The precise sparse access patterns are specific to
+    chosen storage formats for sparse matrices.}]
+Constraint SPMV
+( inherits For at {outer_loop} and
+  inherits DotProductFor at {inner_loop} and
+  {outer_loop.begin} strictly
+      control flow dominates {inner_loop.begin} and
+  {outer_loop.end} strictly
+      control flow post dominates {inner_loop.end} and
+([\dots])
+\end{lstlisting}
 \end{figure}
 
 \begin{figure}[p]
@@ -415,9 +427,42 @@ the corresponding computations.
 \vspace{0.3em}
 \includegraphics[width=\linewidth]{figures/spmvcsrwhat.pdf}
 \vspace{-1.2em}
-\caption{Compressed Sparse Row in LiLAC-What}
+\lstset {
+ basicstyle=\linespread{1.0}\small\ttfamily
+}
+\begin{lstlisting}[language=IDL]
+([\dots])
+  inherits VectorStore
+      with {outer_loop}          as {scope}
+       and {outer_loop.iterator} as {input_index} at {output} and
+  inherits VectorRead
+      with {outer_loop}          as {scope}
+       and {inner_loop.src1}     as {value}
+       and {inner_loop.iterator} as {input_index} at {val} and
+  inherits VectorRead
+      with {outer_loop}      as {scope}
+       and {inner_loop.src2} as {value}
+       and {col_ind.value}   as {input_index} at {vector} and
+  inherits VectorRead
+      with {outer_loop}          as {scope}
+       and {inner_loop.iterator} as {input_index} at {col_ind} and
+  inherits ReadForLoopRanges
+     with {outer_loop}          as {scope}
+      and {inner_loop}          as {for}
+      and {outer_loop.iterator} as {input_index} at {row_ptr})
+End
+\end{lstlisting}
+\caption{Compressed Sparse Row in IDL:
+         The top section of the figure shows the different involved arrays.
+         The pseudocode in the middle row of the
+         figure then directly gives a completion of \Cref{spmvbase}.
+         Walking through the expressions and emitting IDL code on-by-one is
+         sufficient.}
 \label{csr_lilacwhat_fig}
 \vspace{1.5em}
+\end{figure}
+
+\begin{figure}{p}
 \centering
 \begin{minipage}[b]{0.3\linewidth}
 \includegraphics[width=0.9\linewidth]{figures/jdsorder.png}
@@ -438,6 +483,35 @@ the corresponding computations.
 \vspace{0.3em}
 \includegraphics[width=\linewidth]{figures/spmvjdswhat.pdf}
 \vspace{-1.2em}
+\begin{lstlisting}[language=IDL,basicstyle=\small\ttfamily]
+  inherits VectorStore
+      with {outer_loop} as {scope}
+       and {perm.value} as {input_index} at {output} and
+  inherits VectorRead
+      with {outer_loop}          as {scope}
+       and {outer_loop.iterator} as {input_index} at {perm} and
+  inherits VectorRead
+      with {outer_loop}      as {scope}
+       and {inner_loop.src1} as {value}
+       and {tmp1.value}      as {input_index} at {val} and
+  inherits Addition
+      with {jd_ptr.value}        as {input}
+       and {outer_loop.iterator} as {addend} at {tmp1} and
+  inherits VectorRead
+      with {outer_loop}          as {scope}
+       and {inner_loop.iterator} as {input_index} at {jd_ptr} and
+  inherits VectorRead
+      with {outer_loop}      as {scope}
+       and {inner_loop.src2} as {value}
+       and {col_ind.value}   as {input_index} at {vector} and
+  inherits VectorRead
+      with {outer_loop} as {scope}
+       and {tmp1.value} as {input_index} at {col_ind} and
+  inherits ReadForLoopIterations
+     with {outer_loop}          as {scope}
+      and {inner_loop}          as {for}
+      and {outer_loop.iterator} as {input_index} at {read_range}
+\end{lstlisting}
 \caption{Jagged Diagonal Storage in LiLAC-What}
 \label{jds_lilacwhat_fig}
 \end{figure}
