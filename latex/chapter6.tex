@@ -405,32 +405,36 @@ Constraint SPMV
 \end{figure}
 
 \begin{figure}[p]
+\hfill
 \begin{minipage}[b]{0.3\linewidth}
-\includegraphics[width=0.9\linewidth]{figures/csrorder.png}
-\vspace{0.04em}
+\includegraphics[width=0.95\linewidth]{figures/csrorder.png}
 \end{minipage}
-\begin{minipage}[b]{0.65\linewidth}
+\hfill
+\begin{minipage}[b]{0.5\linewidth}
 \begin{align*}
 \text{\bf val} =& \begin{bmatrix}
 1\ \ 1\ \ 2\ \ 2\ \ \text{-}1\ \ 3\ \ 2\ \ 2\ \ \text{-}1\ \ 1\\
-\end{bmatrix}\\
+\end{bmatrix}\\[4mm]
 \text{\bf col\_ind} =& \begin{bmatrix}
 0\ \ 2\ \ 1\ \ 3\ \ 1\ \ 2\ \ 3\ \ 3\ \ 2\ \ 4\\
-\end{bmatrix}\\
+\end{bmatrix}\\[4mm]
 \text{\bf row\_ptr} =& \begin{bmatrix}
 0\ \ 2\ \ 4\ \ 7\ \ 8\ \ 10\\
 \end{bmatrix}
 \end{align*}
 \end{minipage}
-\vspace{0.5em}
+\hfill
+
+\vspace{0.8em}
 \hrule
 \vspace{0.3em}
+
 \includegraphics[width=\linewidth]{figures/spmvcsrwhat.pdf}
-\vspace{-1.2em}
+\vspace{-1.5em}
 \lstset {
  basicstyle=\linespread{1.0}\small\ttfamily
 }
-\begin{lstlisting}[language=IDL]
+\begin{lstlisting}[language=IDL,firstnumber=7]
 ([\dots])
   inherits VectorStore
       with {outer_loop}          as {scope}
@@ -459,31 +463,37 @@ End
          Walking through the expressions and emitting IDL code on-by-one is
          sufficient.}
 \label{csr_lilacwhat_fig}
-\vspace{1.5em}
 \end{figure}
 
-\begin{figure}{p}
-\centering
+\begin{figure}[p]
+\hfill
 \begin{minipage}[b]{0.3\linewidth}
 \includegraphics[width=0.9\linewidth]{figures/jdsorder.png}
-\vspace{0.04em}
 \end{minipage}
+\hfill
 \begin{minipage}[b]{0.65\linewidth}
 \footnotesize
 \begin{align*}
-\text{\bf perm} =& \begin{bmatrix}1\ \ 2\ \ 0\ \ 4\ \ 3\\\end{bmatrix}\\[-0.4em]
-\text{\bf val} =& \begin{bmatrix}\text{-}1\ \ 1\ \ 2\ \ \text{-}1\ \ 2\ \ 3\ \ 1\ \ 2\ \ 1\ \ 2\\\end{bmatrix}\\[-0.4em]
-\text{\bf col\_ind} =& \begin{bmatrix}1\ \ 0\ \ 1\ \ 2\ \ 3\ \ 2\ \ 2\ \ 3\ \ 4\ \ 3\\\end{bmatrix}\\[-0.4em]
-\text{\bf jd\_ptr} =& \begin{bmatrix}0\ \ 5\ \ 9\ \ 10\\\end{bmatrix}\\[-0.4em]
+\text{\bf perm} =& \begin{bmatrix}1\ \ 2\ \ 0\ \ 4\ \ 3\\\end{bmatrix}\\[-0.75mm]
+\text{\bf val} =& \begin{bmatrix}\text{-}1\ \ 1\ \ 2\ \ \text{-}1\ \ 2\ \ 3\ \ 1\ \ 2\ \ 1\ \ 2\\\end{bmatrix}\\[-0.75mm]
+\text{\bf col\_ind} =& \begin{bmatrix}1\ \ 0\ \ 1\ \ 2\ \ 3\ \ 2\ \ 2\ \ 3\ \ 4\ \ 3\\\end{bmatrix}\\[-0.75mm]
+\text{\bf jd\_ptr} =& \begin{bmatrix}0\ \ 5\ \ 9\ \ 10\\\end{bmatrix}\\[-0.75mm]
 \text{\bf nzcnt} =& \begin{bmatrix}3\ \ 2\ \ 2\ \ 2\ \ 1\end{bmatrix}
 \end{align*}
 \end{minipage}
-\vspace{0.5em}
+\hfill
+
+\vspace{0.8em}
 \hrule
 \vspace{0.3em}
+
 \includegraphics[width=\linewidth]{figures/spmvjdswhat.pdf}
-\vspace{-1.2em}
-\begin{lstlisting}[language=IDL,basicstyle=\small\ttfamily]
+\vspace{-1.5em}
+\lstset {
+ basicstyle=\linespread{1.0}\small\ttfamily
+}
+\begin{lstlisting}[language=IDL,firstnumber=7]
+([\dots])
   inherits VectorStore
       with {outer_loop} as {scope}
        and {perm.value} as {input_index} at {output} and
@@ -512,7 +522,12 @@ End
       and {inner_loop}          as {for}
       and {outer_loop.iterator} as {input_index} at {read_range}
 \end{lstlisting}
-\caption{Jagged Diagonal Storage in LiLAC-What}
+\caption{Jagged Diagonal Storage in IDL:
+         The top section of the figure shows the different involved arrays.
+         The pseudocode in the middle row of the
+         figure then directly gives a completion of \Cref{spmvbase}.
+         Walking through the expressions and emitting IDL code on-by-one is
+         sufficient.}
 \label{jds_lilacwhat_fig}
 \end{figure}
 
