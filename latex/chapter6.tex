@@ -464,12 +464,12 @@ The product of a sparse matrix in JDS format with a dense vector is specified
 in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
 
 \subsection{Stencils}
-    \Cref{fig:stencilcompute} shows the basic stencil idiom.
+    \Cref{fig:stencilcompute} shows the base version of the stencil idiom.
     Stencils consist of a loop nest with a multi-dimensional memory access to
     store the updated cell value.
-    This updated value is computed with a kernel function using a number of
-    values that are constraint by the
-    \texttt{StencilRead} idiom, which specifies multidimensional array access
+    The updated value is computed by a kernel function using a number of
+    values that are constrained by
+    \texttt{StencilRead}, which specifies multidimensional array access
     with only constant offsets in all dimensions.
 
 \newpage
@@ -560,7 +560,8 @@ for(int i = 0; i < 1000; i++)
     optimizing compiler targeted at image processing applications.
     Optimised code is generated for CPUs as well as GPUs.
     Halide separates the functional description of the problem from the
-    description of the implementation which is called a \emph{schedule}.
+    description of the implementation.
+    This involves a separate execution \emph{schedule}.
     This allows retargeting of Halide programs to different platforms.
     We translate some of the stencil idioms and linear algebra idioms into
     Halide.
