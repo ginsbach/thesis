@@ -330,7 +330,7 @@
 
 \begin{figure}[p]
 \lstset {
- basicstyle=\linespread{1.0}\small\ttfamily
+ basicstyle=\linespread{1.069}\small\ttfamily
 }
 \begin{lstlisting}[language=IDL, label={spmvbase}, caption=
    {Skeleton of the sparse matrix-vector product (SPMV) constraint
@@ -375,7 +375,7 @@ Constraint SPMV
 \includegraphics[width=\linewidth]{figures/spmvcsrwhat.pdf}
 \vspace{-1.5em}
 \lstset {
- basicstyle=\linespread{1.0}\small\ttfamily
+ basicstyle=\linespread{1.069}\small\ttfamily
 }
 \begin{lstlisting}[language=IDL,firstnumber=7]
 ([\dots])
@@ -408,6 +408,51 @@ End
 \label{csr_lilacwhat_fig}
 \end{figure}
 
+\subsubsection{Compressed Sparse Row}
+
+    The Compressed Sparse Row (CSR) format is one of the most widely used
+    formats for sparse matrices \cite{doi:10.1137/1.9780898718003}.
+    An example matrix stored in CSR format is shown at the top of
+    \autoref{csr_lilacwhat_fig}.
+    The 5x5 matrix on the left is stored in the three separate arrays on the
+    right: \textbf{val}, \textbf{col\_ind}, and \textbf{row\_ptr}.
+
+    All non-zero entries of the matrix are stored in a flat array \textbf{val}
+    in a row-by-row order.
+    The \textbf{col\_ind} array stores the column position for each value.
+    Finally, the \textbf{row\_ptr} array stores the beginning of each row of the
+    matrix as an offset into the other two arrays.
+    The number of rows in the matrix is given directly by the length of the
+    \textbf{row\_ptr} array minus one.
+    However, the number of columns is not explicitly stored.
+
+    The middle row of \autoref{csr_lilacwhat_fig} shows the corresponding
+    SPMV computation in pseudocode.
+    Finally, the bottom of the figure shows the continuation of the {\tt SPMV}
+    IDL specification for CSR matrices.
+    This continuation is immediately derived by walking through the pseudocode
+    expressions and emitting {\tt inherits} directives to the corresponding
+    IDL subprograms.
+
+\subsubsection{Jagged Diagonal Storage}
+
+    For Jagged Diagonal Storage (JDS) \cite{doi:10.1137/0910073}, the rows of
+    the matrix are permuted such that the number of nonzeros per row  decreases.
+    The permutation is stored in a vector \textbf{perm}, the number of nonzeros
+    in \textbf{nzcnt}.
+    The nonzero entries are then stored in an array \textbf{val} in the
+    following order:
+    The first nonzero entry in each row, then the second nonzero entry in
+    each row and so on.
+    The array \textbf{col\_ind} stores the column for each of the values and
+    \textbf{jd\_ptr} stores offsets into \textbf{val} and \textbf{col\_idx}.
+
+    \autoref{jds_lilacwhat_fig} shows this on the example sparse matrix from
+    \autoref{csr_lilacwhat_fig}, and derives the corresponding IDL code for the
+    {\tt SPMV\_JDS} idiom underneath.
+    Note that the sparse matrix in this example is shown after the permutation
+    operation that JDS requires.
+
 \begin{figure}[p]
 \hfill
 \begin{minipage}[b]{0.3\linewidth}
@@ -433,7 +478,7 @@ End
 \includegraphics[width=\linewidth]{figures/spmvjdswhat.pdf}
 \vspace{-1.5em}
 \lstset {
- basicstyle=\linespread{1.0}\small\ttfamily
+ basicstyle=\linespread{1.271}\small\ttfamily
 }
 \begin{lstlisting}[language=IDL,firstnumber=7]
 ([\dots])
@@ -474,57 +519,30 @@ End
 \label{jds_lilacwhat_fig}
 \end{figure}
 
-\subsubsection{Compressed Sparse Row}
-For Compressed Sparse Row (CSR) \cite{doi:10.1137/1.9780898718003}, all non-zero
-entries are stored in a flat array \textbf{val}.
-The \textbf{col\_ind} array stores the column position for each value.
-Finally, the \textbf{row\_ptr} array stores the beginning of each row of the
-matrix as an offset into the other two arrays.
-The number of rows in the matrix is given directly by the length of the
-\textbf{row\_ptr} array minus one, however the number of columns is not
-explicitly stored.
-In \autoref{csr_lilacwhat_fig}, a 5x5 matrix is shown represented in this
-format.
-
-\subsubsection{Jagged Diagonal Storage}
-For Jagged Diagonal Storage (JDS) \cite{doi:10.1137/0910073}, the rows of the
-matrix are permuted such that the number of nonzeros  per row  decreases. The
-permutation is stored in a vector \textbf{perm}, the number of nonzeros in
-\textbf{nzcnt}.
-The nonzero entries are then stored in an array \textbf{val} in the following
-order: The first nonzero entry in each row, then the second nonzero entry in
-each row etc.
-The array \textbf{col\_ind} stores the column for each of the values and
-\textbf{jd\_ptr} stores offsets into \textbf{val} and \textbf{col\_idx}.
-The product of a sparse matrix in JDS format with a dense vector is specified 
-in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
-
 \subsection{Dense Linear Algebra}
 
-    The generalized matrix multiplication idiom is described in \Cref{fig:gemm}.
+    Describing dense linear algebra does not require storage format
+    consideration aside from the simple {\it row-major} and {\it column-major}
+    distinction.
+    The generalised matrix multiplication idiom is shown in \Cref{fig:gemm}.
     The control flow is captured by three nested for loops.
-    Inside these loops, the memory access is characterized by three matrix
+    Inside these loops, the memory access is characterised by three matrix
     accesses, each with a different subset of the loop iterators.
     The corresponding \texttt{MatrixRead} and \texttt{MatrixWrite} idioms model
     generic access to matrices allowing strides, transposed matrices etc.
-    The actual computation is encapsulated by the \texttt{DotProductLoop} idiom.
-    This also contains the linear combination with factors \texttt{alpha} and
-    \texttt{beta} that is part of the generalized matrix multiplication.
+    The actual computation is encapsulated by the
+    \texttt{DotProductForAlphaBeta} idiom, which extends the
+    \texttt{DotProductFor} specification to capture the the linear combination
+    with factors \texttt{alpha} and \texttt{beta} that is part of the
+    generalised matrix multiplication idiom ($C\gets\alpha AB+\beta C$).
 
-    The sparse matrix vector multiplication defined in \Cref{csr_lilacwhat_fig}
-    is different to the other idioms in that
-    the control flow of the skeleton of the idiom does not consist of perfectly
-    nested for loops.
-    Instead, the iteration space of the inner loop is read from an array using
-    the \texttt{ReadRange} idiom.
-    The actual computation that SPMV performs is a dot product and thus it uses
-    the same \texttt{DotProductLoop} idiom as
-    \texttt{GEMM} but the memory access pattern is different, with indirect
-    memory access in \texttt{indir\_read}.
-
-\begin{figure}[h]
-\begin{lstlisting}[language=IDL,
-                   label={fig:gemm},caption={IDL specification of GEMM}]
+\begin{figure}[H]
+\lstset {
+ basicstyle = \linespread{0.865}\ttfamily
+}
+\begin{lstlisting}[language=IDL, label={fig:gemm}, caption=
+   {IDL specification of the generalised dense matrix-vector multiplication
+    (GEMM)\leftskip=0pt\rightskip=0pt}]
 Constraint GEMM
 ( inherits ForNest(N=3) and
   inherits MatrixStore
@@ -539,7 +557,7 @@ Constraint GEMM
       with {iterator[1]} as {col}
        and {iterator[2]} as {row}
        and {begin} as {begin} at {input2} and
-  inherits DotProductLoop
+  inherits DotProductForAlphaBeta
       with {loop[2]}        as {loop}
        and {input1.value}   as {src1}
        and {input2.value}   as {src2}
