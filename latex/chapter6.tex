@@ -231,7 +231,7 @@
     Currently, for this chapter, all applicable libraries and DSLs were
     evaluated, and the best-performing versions selected after profiling.
 
-\subsection{Sparse Linear Algebra in IDL}
+\subsection{Accelerating Sparse Linear Algebra}
 
     Sparse linear algebra is central to many scientific codes and increasingly
     important as a basis for graph algorithms and data analytics
@@ -263,30 +263,29 @@
 
     IDL can express this sparse idiom
     (\Cref{sec:idioms}, \Cref{csr_lilacwhat_fig}).
-    The LLVM IR code, together with the IDL program, is fed into a constraint
+    The LLVM IR code, together with the IDL program, is input to a constraint
     solver,  which outputs a constraint solution as shown in
     \Cref{fig:spmvexample2}.
     Different parts of the IR have been assigned to IDL variables.
-
-\begin{figure}[p]
-    \input{latex/figure_spmvexample}
-\end{figure}
 
     \Cref{fig:spmvexample3} shows how this solution is used to generate a
     call to a cuSPARSE procedure.
     The individual solution variables are inserted into the {\tt cusparseDcsrmv}
     code template as function arguments. 
     The original code is then cut out and replaced with this function call.
-    The cuSPARSE library is then linked with the object code produced by the
-    LLVM compiler, resulting in a speedup of $17\times$ on a GPU as described in
-    \Cref{sec:idiomresults}.
+    In practice, this involves a shim function that manages the device context
+    and memory transfers from and to the GPU.
+    Finally, the cuSPARSE library is linked with the object code produced by the
+    Clang compiler, resulting in a speedup of $17\times$ on a GPU as described
+    in more detail in\Cref{sec:idiomresults}.
 
-    Central to our approach is the ability to detect idioms.
-    In the next section we introduce a powerful description language that is
-    capable of expressing a wide class of idioms that are suitable for
-    acceleration by heterogeneous hardware.
+    Central to this approach is the ability to detect computational idioms.
+    In the next section, the formulation of linear algebra and stencils in the
+    Idiom Detection Language is derived in detail.
 
-\newpage
+\begin{figure}[p]
+    \input{latex/figure_spmvexample}
+\end{figure}
 
 \section{Specification of Idioms in IDL}
 \label{sec:idioms}
@@ -577,7 +576,7 @@ in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
     \texttt{StencilRead}, which specifies multidimensional array access
     with only constant offsets in all dimensions.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \begin{lstlisting}[language=IDL,
                    label={fig:stencilcompute},caption={IDL specification of simple stencil}]
 Constraint Stencil
