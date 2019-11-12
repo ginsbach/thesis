@@ -233,31 +233,40 @@
 
 \subsection{Sparse Linear Algebra in IDL}
 
-    Although the previous example illustrated how constraints can be applied to 
-    program analysis, we want to detect much more complex idioms and 
-    map them to existing APIs.
+    Sparse linear algebra is central to many scientific codes and increasingly
+    important as a basis for graph algorithms and data analytics
+    \cite{Kepner2015GraphsMA}, but they contain indirect data access that limits
+    compiler optimisation.
+    Instead, programmers rely on library implementations that are hand optimised
+    and utilise accelerator hardware.
+    This reliance on libraries comes at a cost, however, as it ties programs
+    into vendor-specific software ecosystems and results in non-portable code.
+    The IDL approach offers an alternative by recognising sparse linear algebra
+    operations in compiler intermediate representation and then incorporating
+    domain-specific backends without source code changes.
 
-    The code in \Cref{fig:spmvexample1} shows the performance bottleneck of
-    the NAS \emph{Conjugate Gradient (GC)} benchmark, as well as the
-    corresponding LLVM IR code.
-    It implements a standard operation from sparse linear algebra, namely a
-    multiplication of a sparse matrix in Compressed Sparse Row (CSR) format with
-    a dense vector.
+    The code at the top of \Cref{fig:spmvexample1} is the performance
+    bottleneck of the ``Conjugate Gradient” benchmark program in the NAS
+    Parallel Benchmarks, with the corresponding LLVM~IR code underneath.
+    This bottleneck loop implements a standard operation from sparse linear
+    algebra, namely the multiplication of a sparse matrix in
+    Compressed Sparse Row (CSR) format with a dense vector.
 
-    This code contains several features that make it unsuitable for most
-    established compiler optimizations:
-    The iteration domain of the nested loop is memory dependent (line 3) and
-    there is indirect memory access (line 4).
-    This makes the iteration domain of the loop nest non-polyhedral and the
-    access structure to memory non-affine.
+    The structure of this computation has several features that make it
+    unsuitable for most established compiler optimisations:
+    Firstly, the iteration domain of the nested loop is memory dependent
+    (line 3), and secondly, there is indirect memory access (line 4).
+    This makes the iteration domain of the loop nest as a whole non-polyhedral
+    and the access structure to memory non-affine.
     Under these conditions, simple data dependence models, but also
-    sophisticated analysis based on the polyhedral model, would fail.
+    sophisticated analysis based on the polyhedral model, fail.
 
-    We can express this idiom in IDL (\Cref{sec:idioms}, \Cref{fig:spmv}).
-    The IR code, together with the IDL program, is fed into a constraint solver,
-    which outputs a constraint solution as shown in \Cref{fig:spmvexample2}.
-    We can see that different parts of the IR have been assigned to IDL
-    variables.
+    IDL can express this sparse idiom
+    (\Cref{sec:idioms}, \Cref{csr_lilacwhat_fig}).
+    The LLVM IR code, together with the IDL program, is fed into a constraint
+    solver,  which outputs a constraint solution as shown in
+    \Cref{fig:spmvexample2}.
+    Different parts of the IR have been assigned to IDL variables.
 
 \begin{figure}[p]
     \input{latex/figure_spmvexample3}

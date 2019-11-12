@@ -134,6 +134,6 @@ indir\_read.base\_pointer   & \texttt{\%\bf z}\\
 cusparseDcsrmv(context,
     CUSPARSE_OPERATION_NON_TRANSPOSE, ([{\bf m}]), n,
     ([{\bf rowstr}])[([{\bf m}])+1]-([{\bf rowstr}])[0], &gpu_1, descr, gpu_([{\bf a}]),
-    gpu_[({\bf rowstr}]), gpu_([{\bf colidx}]), gpu_([{\bf z}]), &gpu_0, gpu_([{\bf r}]));
+    gpu_([{\bf rowstr}]), gpu_([{\bf colidx}]), gpu_([{\bf z}]), &gpu_0, gpu_([{\bf r}]));
 \end{lstlisting}
 \vspace{-0.287cm}
