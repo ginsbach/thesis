@@ -246,27 +246,32 @@
     domain-specific backends without source code changes.
 
     The code at the top of \Cref{fig:spmvexample1} is the performance
-    bottleneck of the ``Conjugate Gradient” benchmark program in the NAS
+    bottleneck of the ``Conjugate Gradient'' benchmark program in the NAS
     Parallel Benchmarks, with the corresponding LLVM~IR code underneath.
     This bottleneck loop implements a standard operation from sparse linear
     algebra, namely the multiplication of a sparse matrix in
     Compressed Sparse Row (CSR) format with a dense vector.
+    This computation is supported on accelerator hardware, using well-optimised
+    libraries such as cuSPARSE and clSPARSE.
+    However, compilers are unable to recognise and accelerate the computation
+    automatically.
 
-    The structure of this computation has several features that make it
-    unsuitable for most established compiler optimisations:
+    The structure of this sparse linear algebra computation has several features
+    that make it unsuitable for most established compiler optimisations:
     Firstly, the iteration domain of the nested loop is memory dependent
-    (line 3), and secondly, there is indirect memory access (line 4).
+    (line 3), and secondly, there is indirect memory access (line~4).
     This makes the iteration domain of the loop nest as a whole non-polyhedral
     and the access structure to memory non-affine.
     Under these conditions, simple data dependence models, but also
     sophisticated analysis based on the polyhedral model, fail.
 
-    IDL can express this sparse idiom
-    (\Cref{sec:idioms}, \Cref{csr_lilacwhat_fig}).
-    The LLVM IR code, together with the IDL program, is input to a constraint
-    solver,  which outputs a constraint solution as shown in
-    \Cref{fig:spmvexample2}.
-    Different parts of the IR have been assigned to IDL variables.
+    IDL can express this sparse idiom, as derived in \Cref{sec:idioms},
+    \Cref{csr_lilacwhat_fig}.
+    The ``Conjugate Gradient'' LLVM IR code, together with the ``SPMV-CSR''
+    IDL specification, are input to the constraint solver, which outputs a
+    constraint solution, as shown in \Cref{fig:spmvexample2}.
+    In the solution, different values for the LLVM IR have been assigned to all
+    IDL variables in the ``SPMV-CSR'' specification.
 
     \Cref{fig:spmvexample3} shows how this solution is used to generate a
     call to a cuSPARSE procedure.
@@ -279,9 +284,10 @@
     Clang compiler, resulting in a speedup of $17\times$ on a GPU as described
     in more detail in\Cref{sec:idiomresults}.
 
-    Central to this approach is the ability to detect computational idioms.
-    In the next section, the formulation of linear algebra and stencils in the
-    Idiom Detection Language is derived in detail.
+    Central to this approach is the ability to detect computational idioms
+    reliably.
+    The next section derives in detail the formulation of linear algebra -- both
+    sparse and dense -- and stencils in the Idiom Detection Language.
 
 \begin{figure}[p]
     \input{latex/figure_spmvexample}
@@ -500,8 +506,8 @@ in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
     This also contains the linear combination with factors \texttt{alpha} and
     \texttt{beta} that is part of the generalized matrix multiplication.
 
-    The sparse matrix vector multiplication defined in \Cref{fig:spmv} is
-    different to the other idioms in that
+    The sparse matrix vector multiplication defined in \Cref{csr_lilacwhat_fig}
+    is different to the other idioms in that
     the control flow of the skeleton of the idiom does not consist of perfectly
     nested for loops.
     Instead, the iteration space of the inner loop is read from an array using
