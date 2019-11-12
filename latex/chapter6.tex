@@ -447,9 +447,9 @@ End
     The array \textbf{col\_ind} stores the column for each of the values and
     \textbf{jd\_ptr} stores offsets into \textbf{val} and \textbf{col\_idx}.
 
-    \autoref{jds_lilacwhat_fig} shows this on the example sparse matrix from
-    \autoref{csr_lilacwhat_fig}, and derives the corresponding IDL code for the
-    {\tt SPMV\_JDS} idiom underneath.
+    \autoref{jds_lilacwhat_fig} demonstrates this format on the example sparse
+    matrix from \autoref{csr_lilacwhat_fig}, and derives the corresponding IDL
+    code for the {\tt SPMV\_JDS} idiom underneath.
     Note that the sparse matrix in this example is shown after the permutation
     operation that JDS requires.
 
@@ -604,9 +604,9 @@ End
     idioms that are written in superficially distinct style but are semantically
     equivalent.
 
-    For example, there are two syntactically distinct programs in
-    \Cref{fig:gemmexamples}, which nevertheless are both implementations of
-    general matrix multiplication.
+    For example, \Cref{fig:gemmexamples} shows two syntactically distinct
+    programs, which nevertheless are both implementations of general matrix
+    multiplication.
     The solver -- using \Cref{fig:gemm} -- discovers that both of these
     loop nests are instances of GEMM and they can be replaced with the same
     API call.
@@ -670,7 +670,7 @@ for(int i = 0; i < 1000; i++)
 
     There are limitations to this semantic matching.
     In particular, the use of low-level manual optimisations that circumvent the
-    usual LLVM IR representation, {\em e.g.} SIMD compiler intrinsics, would
+    usual IR representation, {\em e.g.} SIMD compiler intrinsics, would
     distort the algorithms beyond recognition.
     In practice, this is rarely encountered.
 
