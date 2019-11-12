@@ -298,85 +298,6 @@
     patterns are specified independently and then combined together in order to
     define the complete constraint specifications.
 
-\begin{figure}[p]
-\lstset{ basicstyle=\linespread{0.8}\ttfamily }
-\begin{lstlisting}[language=IDL,
-                   label={fig:gemm},caption={IDL specification of GEMM}]
-Constraint GEMM
-( inherits ForNest(N=3) and
-  inherits MatrixStore
-      with {iterator[0]} as {col}
-       and {iterator[1]} as {row}
-       and {begin} as {begin} at {output} and
-  inherits MatrixRead
-      with {iterator[0]} as {col}
-       and {iterator[2]} as {row}
-       and {begin} as {begin} at {input1} and
-  inherits MatrixRead
-      with {iterator[1]} as {col}
-       and {iterator[2]} as {row}
-       and {begin} as {begin} at {input2} and
-  inherits DotProductLoop
-      with {loop[2]}        as {loop}
-       and {input1.value}   as {src1}
-       and {input2.value}   as {src2}
-       and {output.address} as {update_address})
-End
-\end{lstlisting}
-\begin{lstlisting}[language=IDL,
-                   label={fig:spmv},caption={IDL specification of sparse matrix vector}]
-Constraint SPMV
-( inherits For and
-  inherits VectorStore
-      with {iterator} as {idx}
-       and {begin} as {begin} at {output} and
-  inherits ReadRange
-      with {iterator} as {idx}
-       and {inner.iter_begin} as {range_begin}
-       and {inner.iter_end}   as {range_end} and
-  inherits For at {inner} and
-  inherits VectorRead
-      with {inner.iterator} as {idx}
-       and {begin} as {begin} at {idx_read} and
-  inherits VectorRead
-      with {idx_read.value} as {idx}
-       and {begin} as {begin} at {indir_read} and
-  inherits VectorRead
-      with {inner.iterator} as {idx}
-       and {begin} as {begin} at {seq_read} and
-  inherits DotProductLoop
-      with {inner}            as {loop}
-       and {indir_read.value} as {src1}
-       and {seq_read.value}   as {src2}
-       and {output.address}   as {update_address})
-End
-\end{lstlisting}
-\end{figure}
-
-\subsection{Dense Linear Algebra}
-
-    The generalized matrix multiplication idiom is described in \Cref{fig:gemm}.
-    The control flow is captured by three nested for loops.
-    Inside these loops, the memory access is characterized by three matrix
-    accesses, each with a different subset of the loop iterators.
-    The corresponding \texttt{MatrixRead} and \texttt{MatrixWrite} idioms model
-    generic access to matrices allowing strides, transposed matrices etc.
-    The actual computation is encapsulated by the \texttt{DotProductLoop} idiom.
-    This also contains the linear combination with factors \texttt{alpha} and
-    \texttt{beta} that is part of the generalized matrix multiplication.
-
-    The sparse matrix vector multiplication defined in \Cref{fig:spmv} is
-    different to the other idioms in that
-    the control flow of the skeleton of the idiom does not consist of perfectly
-    nested for loops.
-    Instead, the iteration space of the inner loop is read from an array using
-    the \texttt{ReadRange} idiom.
-    The actual computation that SPMV performs is a dot product and thus it uses
-    the same \texttt{DotProductLoop} idiom as
-    \texttt{GEMM} but the memory access pattern is different, with indirect
-    memory access in \texttt{indir\_read}.
-
-\newpage
 \subsection{Sparse Linear Algebra}
 At the heart of our approach is a simple language to specify sparse and dense
 linear algebra operations.
@@ -567,6 +488,55 @@ The array \textbf{col\_ind} stores the column for each of the values and
 The product of a sparse matrix in JDS format with a dense vector is specified 
 in LiLAC-What at the bottom of \autoref{jds_lilacwhat_fig}.
 
+\subsection{Dense Linear Algebra}
+
+    The generalized matrix multiplication idiom is described in \Cref{fig:gemm}.
+    The control flow is captured by three nested for loops.
+    Inside these loops, the memory access is characterized by three matrix
+    accesses, each with a different subset of the loop iterators.
+    The corresponding \texttt{MatrixRead} and \texttt{MatrixWrite} idioms model
+    generic access to matrices allowing strides, transposed matrices etc.
+    The actual computation is encapsulated by the \texttt{DotProductLoop} idiom.
+    This also contains the linear combination with factors \texttt{alpha} and
+    \texttt{beta} that is part of the generalized matrix multiplication.
+
+    The sparse matrix vector multiplication defined in \Cref{fig:spmv} is
+    different to the other idioms in that
+    the control flow of the skeleton of the idiom does not consist of perfectly
+    nested for loops.
+    Instead, the iteration space of the inner loop is read from an array using
+    the \texttt{ReadRange} idiom.
+    The actual computation that SPMV performs is a dot product and thus it uses
+    the same \texttt{DotProductLoop} idiom as
+    \texttt{GEMM} but the memory access pattern is different, with indirect
+    memory access in \texttt{indir\_read}.
+
+\begin{figure}[h]
+\begin{lstlisting}[language=IDL,
+                   label={fig:gemm},caption={IDL specification of GEMM}]
+Constraint GEMM
+( inherits ForNest(N=3) and
+  inherits MatrixStore
+      with {iterator[0]} as {col}
+       and {iterator[1]} as {row}
+       and {begin} as {begin} at {output} and
+  inherits MatrixRead
+      with {iterator[0]} as {col}
+       and {iterator[2]} as {row}
+       and {begin} as {begin} at {input1} and
+  inherits MatrixRead
+      with {iterator[1]} as {col}
+       and {iterator[2]} as {row}
+       and {begin} as {begin} at {input2} and
+  inherits DotProductLoop
+      with {loop[2]}        as {loop}
+       and {input1.value}   as {src1}
+       and {input2.value}   as {src2}
+       and {output.address} as {update_address})
+End
+\end{lstlisting}
+\end{figure}
+
 \subsection{Stencils}
     \Cref{fig:stencilcompute} shows the base version of the stencil idiom.
     Stencils consist of a loop nest with a multi-dimensional memory access to
@@ -597,8 +567,6 @@ End
 \end{lstlisting}
 \end{figure}
 
-
-\newpage
 \subsection{Not Syntactic Pattern Matching}
 The idiom descriptions may at first appear to be shallow syntactic pattern matching.
 In fact, because it operates on the IR level, it can detect idioms that are written in superficially distinct style but are semantically equivalent.
