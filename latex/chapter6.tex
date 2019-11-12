@@ -567,36 +567,37 @@ End
 \end{figure}
 
 \subsection{Stencils}
+
     \Cref{fig:stencilcompute} shows the base version of the stencil idiom.
-    Stencils consist of a loop nest with a multi-dimensional memory access to
-    store the updated cell value.
-    The updated value is computed by a kernel function using a number of
+    Stencils consist of a loop nest with multi-dimensional memory access
+    (lines 3--5) to store the updated cell value.
+    The updated value is computed by a kernel function using several
     values that are constrained by
     \texttt{StencilRead}, which specifies multidimensional array access
     with only constant offsets in all dimensions.
 
 \begin{figure}[t]
 \begin{lstlisting}[language=IDL,
-                   label={fig:stencilcompute},caption={IDL specification of simple stencil}]
+                   label={fig:stencilcompute},caption=
+   {IDL specification of a basic stencil computation}]
 Constraint Stencil
 ( inherits ForNest and
   inherits PermMultidStore
       with {iterator} as {input}
-       and {begin} as {begin} at {write} and
-  collect i
+       and {begin}    as {begin} at {write} and
+  collect i 32
   ( inherits StencilRead
       with {write.input_index} as {input}
-       and {kernel.input[i]} as {value}
-       and {begin} as {begin} at {reads[i]}) and
+       and {kernel.inputs[i]}  as {value}
+       and {begin} as {begin}  at {reads[i]}) and
   {kernel.output} is first argument of {write.store} and
   inherits KernelFunction
-      with {begin}      as {outer}
-       and {body.begin} as {inner} at {kernel})
+      with {loop[0]} as {scope} at {kernel})
 End
 \end{lstlisting}
 \end{figure}
 
-\subsection{Not Syntactic Pattern Matching}
+\section{Not Syntactic Pattern Matching}
 The idiom descriptions may at first appear to be shallow syntactic pattern matching.
 In fact, because it operates on the IR level, it can detect idioms that are written in superficially distinct style but are semantically equivalent.
 For example, there are two syntactically distinct programs in \Cref{fig:gemmexamples}, which in fact are both implementations of general matrix multiplication.
