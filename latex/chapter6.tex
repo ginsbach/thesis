@@ -571,25 +571,24 @@ End
     \Cref{fig:stencilcompute} shows the base version of the stencil idiom.
     Stencils consist of a loop nest with multi-dimensional memory access
     (lines 3--5) to store the updated cell value.
-    The updated value is computed by a kernel function using several
-    values that are constrained by
-    \texttt{StencilRead}, which specifies multidimensional array access
-    with only constant offsets in all dimensions.
+    The updated value is computed by a kernel function (lines 12--13) using
+    several values that are constrained by \texttt{StencilRead} (lines 6--10),
+    which specifies multi-dimensional array access with only constant offsets in
+    all dimensions.
 
 \begin{figure}[t]
-\begin{lstlisting}[language=IDL,
-                   label={fig:stencilcompute},caption=
+\begin{lstlisting}[language=IDL, label={fig:stencilcompute}, caption=
    {IDL specification of a basic stencil computation}]
 Constraint Stencil
 ( inherits ForNest and
   inherits PermMultidStore
       with {iterator} as {input}
        and {begin}    as {begin} at {write} and
-  collect i 32
+  collect i M
   ( inherits StencilRead
-      with {write.input_index} as {input}
-       and {kernel.inputs[i]}  as {value}
-       and {begin} as {begin}  at {reads[i]}) and
+        with {write.input_index} as {input}
+         and {kernel.inputs[i]}  as {value}
+         and {begin} as {begin}  at {reads[i]}) and
   {kernel.output} is first argument of {write.store} and
   inherits KernelFunction
       with {loop[0]} as {scope} at {kernel})
@@ -598,12 +597,29 @@ End
 \end{figure}
 
 \section{Not Syntactic Pattern Matching}
-The idiom descriptions may at first appear to be shallow syntactic pattern matching.
-In fact, because it operates on the IR level, it can detect idioms that are written in superficially distinct style but are semantically equivalent.
-For example, there are two syntactically distinct programs in \Cref{fig:gemmexamples}, which in fact are both implementations of general matrix multiplication.
-The IDL in \Cref{fig:gemm} discovers they are both instances of GEMM and they can both be replaced with an API call to GEMM.
 
-\begin{figure}[ht]
+    The idiom descriptions may at first appear to be shallow syntactic pattern
+    matching.
+    In fact, because it operates on the IR level, the solver can detect
+    idioms that are written in superficially distinct style but are semantically
+    equivalent.
+
+    For example, there are two syntactically distinct programs in
+    \Cref{fig:gemmexamples}, which nevertheless are both implementations of
+    general matrix multiplication.
+    The solver -- using \Cref{fig:gemm} -- discovers that both of these
+    loop nests are instances of GEMM and they can be replaced with the same
+    API call.
+
+    The reverse is also true:
+    Syntactically identical but semantically distinct programs are weeded out by
+    the solver.
+    The listing in \Cref{fig:gemmcounterexamples} shows such an example.
+    The loop nest in lines 5--9 appears to compute a standard GEMM, but in fact,
+    the matrices are not stored contiguously, and acceleration with standard
+    libraries is impossible.
+
+\begin{figure}[p]
 \begin{lstlisting}[language=MyCpp]
 for (int mm = 0; mm < m; ++mm) {
   for (int nn = 0; nn < n; ++nn) {
@@ -619,7 +635,31 @@ for (int mm = 0; mm < m; ++mm) {
 }
 \end{lstlisting}
 \begin{lstlisting}[language=MyCpp,label={fig:gemmexamples},caption=
-   {Two matching instances of GEMM}]
+   {Two matching instances of GEMM:
+    Although both loop nests are implemented very differently, they both match
+    the same IDL specification and can be accelerated identically.}]
+double M1[1000][1000];
+double M2[1000][1000];
+double M2[1000][1000];
+//...
+for(int i = 0; i < 1000; i++)
+    for(int j = 0; j < 1000; j++) {
+        M3[i][j] = 0.0f;
+        for(int k = 0; k < 1000; k++)
+           M3[i][j]+=M1[i][k]*M2[k][j]; }
+\end{lstlisting}
+\begin{lstlisting}[language=MyCpp,label={fig:gemmcounterexamples},caption=
+   {This C program that does not match {\tt GEMM}.
+    Although the loop syntax is identical to the matching example from
+    \Cref{fig:gemmexamples}, the different types of the matrices prevent
+    detection.
+    This is desirable:
+    Established backends are incompatible with such non-contiguous memory
+    layout.}]
+double *M1[1000];
+double *M2[1000];
+double *M2[1000];
+//...
 for(int i = 0; i < 1000; i++)
     for(int j = 0; j < 1000; j++) {
         M3[i][j] = 0.0f;
@@ -629,14 +669,10 @@ for(int i = 0; i < 1000; i++)
 \end{figure}
 
     There are limitations to this semantic matching.
-    In particular, the use of low level manual optimizations that circumvent the
-    usual IR representation, {\em e.g.}  SIMD compiler intrinsics, would distort
-    the algorithms beyond recognition by our system.
+    In particular, the use of low-level manual optimisations that circumvent the
+    usual LLVM IR representation, {\em e.g.} SIMD compiler intrinsics, would
+    distort the algorithms beyond recognition.
     In practice, this is rarely encountered.
-
-\newpage
-\phantom{placeholder}
-\newpage
 
 \section{Compilation Process and Implementation}
 \label{sec:compilation}
