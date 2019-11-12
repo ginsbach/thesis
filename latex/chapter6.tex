@@ -674,82 +674,69 @@ for(int i = 0; i < 1000; i++)
     distort the algorithms beyond recognition.
     In practice, this is rarely encountered.
 
-\section{Compilation Process and Implementation}
-\label{sec:compilation}
+\section{Targeting Heterogeneous Backends}
 
-    Idiom definitions are compiled to C++ functions that perform idiom
-    recognition on LLVM IR.
-    In a first step, the compiler eliminates
-    $\left<\text{\tt inheritance}\right>$, $\left<\text{\tt forall}\right>$,
-    $\left<\text{\tt forsome}\right>$, $\left<\text{\tt if}\right>$,
-    $\left<\text{\tt rename}\right>$ and $\left<\text{\tt rebase}\right>$.
-    They are replaced with simpler $\left<\text{\tt conjunction}\right>$ and
-    $\left<\text{\tt disjunction}\right>$ constructs.
-    This also involves removing all parameterizations from the formula and
-    flattening all variable names.
-    Next, variables are collected and ordered to assist constraint solving.
-    The ordering impacts performance, as it determines how well the search space
-    is pruned. 
-    For each variable, all the constraints associated with the variable are
-    assembled.
+    After idiom detection, user programs must be transformed to exploit the
+    relevant APIs.
+    Two types of heterogeneous APIs were targeted:
+    libraries and domain-specific languages with their optimising compilers.
 
-    The compiler then emits C++ code which is passed to a generic solver based on \cite{ginsbach2017discovery} to search for idiom instances.
-    This solver is based on standard backtracking.
-    As shown in the results section, this increases compilation time, but the overhead is modest.
+\subsection{Domain-Specific Libraries}
 
-\section{Targeted Heterogeneous APIs}
-
-    After idiom detection, we must transform the user program to exploit the
-    relevant API.
-    Two types of heterogeneous APIs are currently targeted: libraries and domain
-    specific languages with their optimizing compilers.
-
-    \subsection{Domain Specific Libraries}
     Libraries provide narrow interfaces but are often highly optimised.
     For example, the cuBLAS library is only suitable for a limited set of dense
     linear algebra operations and only works on Nvidia GPUs, but its
     implementation provides outstanding performance.
-    For sparse linear algebra we use the vendor provided cuSPARSE, clSPARSE, and
-    MKL libraries.
-    For dense BLAS routines cuBLAS, clBLAS, CLBlast, and MKL are used.
+    For sparse linear algebra, the vendor-provided cuSPARSE, clSPARSE, and
+    Intel MKL libraries were used.
+    For dense BLAS routines, the available backends were cuBLAS, clBLAS,
+    CLBlast, and Intel MKL.
 
-    \subsection{Domain Specific Code Generators}
-    Domain Specific Languages provide wider interfaces than libraries and allow
-    problems to be expressed as composition of dedicated language constructs.
-    An optimizing compiler then specializes the program for the target hardware.
-    We currently support Halide and Lift as domain specific code generators.
+\subsection{Domain-Specific Code Generators}
 
-    \paragraph*{Halide}~\cite{Ragan-Kelley2013Halide} is a language and
-    optimizing compiler targeted at image processing applications.
+    Domain-Specific Languages provide wider interfaces than libraries and allow
+    problems to be expressed as compositions of dedicated language constructs.
+    Most importantly, this allows DSLs to capture kernel functions of idioms
+    that are higher-order functions, e.g.\ stencils and reductions.
+    The domain-specific optimising compiler then specialises the program for the
+    target hardware.
+
+    The eventual result is a library object, which can then be treated
+    identically to pre-generated vendor libraries.
+    For this research,  domain-specific code generators are, therefore,
+    effectively used as on-demand library generators.
+    The evaluation used Halide and Lift as domain-specific code generators.
+
+    \paragraph*{Halide}~\citet{Ragan-Kelley2013Halide} introduce a language and
+    optimising compiler targeted at image processing applications.
     Optimised code is generated for CPUs as well as GPUs.
     Halide separates the functional description of the problem from the
     description of the implementation.
     This involves a separate execution \emph{schedule}.
     This allows retargeting of Halide programs to different platforms.
-    We translate some of the stencil idioms and linear algebra idioms into
-    Halide.
-    Stencils involving control flow in their computations are not easily
-    expressible in Halide.
+    Some of the stencil and linear algebra idioms were translated into Halide.
+    However, stencils involving control flow in their computations are not
+    easily expressible in Halide and were excluded for this backend.
 
-    \paragraph*{Lift}~\cite{steuwer15rewrite, SteuwerRD17, HagedornSSGD18} is an
-    optimizing code generator based on rewrite rules.
+    \paragraph*{Lift}~\citet{steuwer15rewrite} introduce an optimising code
+    generator based on rewrite rules \citep{SteuwerRD17, HagedornSSGD18}.
     The Lift language consists of functional parallel patterns such as
-    \emph{map} and \emph{reduce} which  express a range of parallel
+    ``\emph{map}'' and ``\emph{reduce}'', which  express a range of parallel
     applications.
-    For this work we translate stencil idioms, complex reductions and linear
-    algebra idioms to Lift.
+    Stencil idioms, complex reductions and linear algebra idioms were translated
+    to Lift.
 
 \section{Translating Computational Idioms}
 
     This section describes how the detected idioms are mapped to the previously
-    described library APIs domain specific languages.
-    The two types of APIs (library interfaces and domain specific languages) are
+    described library APIs and domain-specific languages.
+    The two types of APIs (library interfaces and domain-specific languages) are
     treated individually.
 
-\subsection{Library}
+\subsection{Domain-Specific Libraries}
 
-    For library call interfaces, the original code is removed and an appropriate
-    function call is inserted.
+    For library call interfaces, the original code is removed, and an
+    appropriate function call is inserted.
     The solution that is generated by the solver using the IDL program contains
     both the IR instructions to remove as well as the arguments that are to be
     used for the function call.
@@ -758,39 +745,44 @@ for(int i = 0; i < 1000; i++)
     \Cref{fig:gemm}, the original code is removed by deleting the IR
     instruction at {\tt output.store\_instr} explicitly, which captures the
     store instruction of the {\tt MatrixStore} subprogram.
-    The remaining cleanup is left to the standard dead code elimination pass.
+    The remaining cleanup is left to the standard {\em dead code elimination}
+    pass.
     The arguments that specify the matrix dimensions are taken from
     {\tt ForNest} in combination with the stride and offset determined by
     {\tt MatrixRead} and {\tt MatrixWrite}.
 
     The mapping of solution variables to the arguments of the generated function
-    call needs to be implemented individually for each backend, as we have no
-    way to describe it in IDL itself.
+    call needs to be implemented individually for each backend, as it cannot be
+    described using IDL itself.
     Once the code is replaced, LLVM continues with code generation as usual.
 
-\subsection{DSL}
+\subsection{Domain-Specific Code Generators}
 
-    For domain specific languages, the situation is a bit more involved.
-    Reduction, histogram and stencil idioms are higher order functions that
-    contain a kernel function or reduction operator that has to be represented
-    for the DSL.
+    For domain-specific code generators, the situation is a bit more involved.
+    Stencils and Complex Reduction and Histogram Computations are higher-order
+    functions that contain kernel functions or reduction operators that have to
+    be represented for the DSL.
 
-    For each combination of idiom and DSL there is a parameterized
+    For each combination of idiom and DSL, there is a parameterised
     skeleton program.
-    This skeleton is then specialized for the appropriate data types and numeric
+    This skeleton is then specialised for the appropriate data types and numeric
     parameters as well as the kernel function or reduction operator.
 
     Numerical parameters are picked from the constraint solution in the same way
     that was described previously for library call interfaces.
-    Also from the constraint solution, we have the loop body that contains the
-    kernel function or reduction operator, as well as the input values and the
-    result value used.
-    We use this information to cut out the kernel function that is then used to
-    generate code appropriate for the DSL backends:
+    Also, from the constraint solution, the loop body that contains the kernel
+    function or reduction operator is accessible, as well as the input values
+    and the result value used.
+    This information is enough to cut out the kernel function, which is then
+    used to generate code appropriate for the DSL backends.
 
-\paragraph*{Lift}  expects stencil kernels or reduction operators to be sequential C code with a specific function interface that
-is used internally by Lift when generating OpenCL code.
-We therefore implemented a rudimentary LLVM IR to C backend for generating this function.
+    \paragraph*{Lift}
+    expects stencil kernels or reduction operators to be sequential C code with
+    a specific function interface, which it requires for generating valid
+    OpenCL code.
+    As the kernel functions are only directly available as LLVM IR code from the
+    constraint solution, the implementation of a rudimentary LLVM IR to C
+    backend was necessary to generate input for the Lift compiler.
 
 \paragraph*{Halide} is a language embedded in C++, it requires a syntax tree of the kernel functions built using a class hierarchy.
 
