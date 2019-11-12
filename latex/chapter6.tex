@@ -116,7 +116,7 @@
     compiler.
     The idioms addressed in this paper can be expressed in less than 500 lines
     of IDL code.
-    The approach is also highly robust, has been applied to the entire NAS
+    The approach is also highly robust, has been applied to the entire NPB
     and Parboil benchmark suites and was evaluated on three platforms.
 
     The chapter presents a novel approach that:
@@ -131,33 +131,34 @@
 
     The work most similar in approach discovers stencil computations and maps to
     the Halide DSL for acceleration.
-    Helium \cite{Mendis2015Helium} recovers stencils from image-processing
-    binaries.
+    The Helium tool \citep{Mendis2015Helium} recovers stencils from
+    image-processing binaries.
     This requires large scale dynamic analysis of binary traces and replacing
     them with Halide calls. 
-    This is significantly extended in~\cite{Kamil2016Verified} which detects
-    stencils in FORTRAN.
-    In this work the focus is on inferring post invariants based on syntax
+    This is significantly extended by \citet{Kamil2016Verified}, detecting
+    stencils in Fortran code.
+    The focus of that work is on inferring post invariants based on syntax
     guided synthesis in translation to Halide.
     However, it uses a narrow approach to selecting code snippets and relies on
-    well structured FORTRAN with occasional user annotations.
-    Our approach is distinct in that we use an external  programming language to
-    describe the idioms we are interested in.
-    This allows an unbounded set of idioms  to be considered across arbitrary
-    programs and is not restricted to stencils. 
+    well-structured Fortran with occasional user annotations.
+    The IDL approach is distinct in its use of an external programming language
+    for the flexibility of describing arbitrary idioms.
+    This allows an unbounded set of idioms to be considered and is not
+    restricted to stencils. 
 
-    To summarize, this paper presents an automatic approach that discovers
+    To summarise, this chapter presents an automatic approach that discovers
     idioms in legacy code and maps them to heterogeneous platforms via libraries
     and DSLs.
-    We apply it to 21 C/C++ programs from the NAS and Parboil benchmark suites
-    and demonstrate that it detects more reductions, stencils, matrix
-    multiplications and sparse matrix-vector computations than existing schemes.
-    For the idioms that dominate execution time, we generate code and evaluate
-    on 3 platforms: a multi-core CPU, an integrated and an external GPU.
-    Overall we detect 60 idioms.
-    In 10 programs these dominate sequential execution time and are worth
-    exploiting.
-    This results in speedups ranging from 1.26$\times$ to over 20$\times$.
+    The tool was applied to 21 C/C++ programs from the NPB and Parboil benchmark
+    suites, where it detected more reductions, stencils, matrix multiplications
+    and sparse matrix-vector computations than existing schemes.
+    For the programs where idioms dominate execution time, accelerator code
+    was generated and evaluated on 3 platforms: a multi-core CPU, an integrated
+    APU, and an external GPU.
+    Overall, 60 idioms were detected, and they dominated execution time in
+    10 programs.
+    Speedup results for the accelerated code ranged from 1.26$\times$ to over
+    20$\times$.
 
 \section{Overview}
 
