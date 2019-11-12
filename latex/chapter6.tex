@@ -102,39 +102,32 @@
     This optimised code, or the pre-built optimised library, is then linked into
     the original program.
     As backends, the libraries cuSparse, clSparse, cuBLAS, clBLAS for
-    sparse and dense linear algebra and target the DSL Halide
-    \cite{Ragan-Kelley2013Halide} for stencil computations are used in the
+    sparse and dense linear algebra and the DSLs Halide
+    \cite{Ragan-Kelley2013Halide} and Lift \cite{SteuwerRD17} were used in the
     evaluation.
-    In addition to this, the Lift language \cite{SteuwerRD17} is used - a data
-    parallel language that supports generalized reductions as well as stencils
-    and linear algebra.
-    This allows the freedom to target many APIs per idiom and pick the
-    implementation that best suits the target platform.
+    The Lift language is a data-parallel functional language that supports
+    generalised reductions as well as stencils and linear algebra.
+    The wide range of backends allows the freedom to target many APIs per idiom
+    and pick the implementation that best suits the target platform.
 
-    New idioms can be easily added thanks to the flexibility of IDL.
-    This provides a powerful means of determining whether a heterogeneous
-    APIs match existing code without touching the core compiler.
+    New computational idioms can be easily added thanks to the flexibility of IDL.
+    This also provides a powerful means of determining whether a proposed
+    heterogeneous interface matches existing code, without touching the core
+    compiler.
     The idioms addressed in this paper can be expressed in less than 500 lines
     of IDL code.
-    Our approach is also highly robust, it has been applied to the entire NAS
-    and Parboil benchmark suites and is evaluated on three platforms.
+    The approach is also highly robust, has been applied to the entire NAS
+    and Parboil benchmark suites and was evaluated on three platforms.
 
-    We present a novel approach that:
+    The chapter presents a novel approach that:
     \begin{itemize}
-    \item Defines a programming language for specifying code idioms, the Idiom
-          Description Language (IDL)
-    \item Implements several common idioms in IDL to automatically discover
-     opportunities for accelerator exploitation
+    \item Proposes the Idiom Description Language (IDL) for detecting idiomatic
+          code sections that can be accelerated by domain-specific backends.
+    \item Implements several common computational idioms in IDL to automatically
+          discover opportunities for accelerator exploitation.
     \item Efficiently translates and maps the detected idioms to APIs for
-          heterogeneous systems
+          heterogeneous systems.
     \end{itemize}
-
-    There has been much research in using constraints for program
-    analysis~\cite{nielson2015principles}, but there is little prior work in its use
-    for idiom detection.
-    \cite{ginsbach2017discovery} use constraints for detecting
-    reductions, but it is tightly coupled to a specialized code generation
-    for small-scale multi-core systems.
 
     The work most similar in approach discovers stencil computations and maps to
     the Halide DSL for acceleration.
@@ -201,7 +194,7 @@
              These loops are extracted and replaced with shim function calls.
              Domain-specific code generators implement the calls as library
              objects, or they are taken directly from pre-generated vendor
-             libraries for idioms not requiring kernel functions.}
+             libraries for idioms not containing kernel functions.}
     \label{fig:methodology}
 \end{figure}
 
