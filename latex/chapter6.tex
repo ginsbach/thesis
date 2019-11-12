@@ -849,49 +849,81 @@ gemm_in_lift(A, B, C, alpha, beta) {
     reports that give the user control over the program modifications and allow
     the explicit disabling of the approach in uncertain cases.
 
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|r|l|}
+\hline
+\multirow{7}{*}{\bf NPB}
+ & BT & Block Tridiagonal Solver\\[-2.9mm]
+ & CG & Conjugate Gradient\\[-2.9mm]
+ & DC & Data Cube Operator\\[-2.9mm]
+ & EP & Embarrassingly Parallel Marsaglia Polar Method\\[-2.9mm]
+ & FT & Fast Fourier Transform\\[-2.9mm]
+ & IS & Small Integer Bucket Sort \\[-2.9mm]
+ & LU & Lower-Upper Symmetric Gauss-Seidel Solver\\[-2.9mm]
+ & MG & MultiGrid Approximation\\[-2.9mm]
+ & SP & Scalar Pentadiagonal Solver\\[-2.9mm]
+ & UA & Unstructured Adaptive Mesh\\
+\hline
+\multirow{7}{*}{\bf Parboil}
+ & bfs          & Breadth-First Search\\[-2.9mm]
+ & cutcp        & Distance-Cutoff Coulombic Potential\\[-2.9mm]
+ & histo        & Saturating Histogram\\[-2.9mm]
+ & lbm          & Lattice-Boltzmann Method Fluid Dynamics\\[-2.9mm]
+ & mri-gridding & Magnetic Resonance Imaging - Gridding\\[-2.9mm]
+ & mri-q        & Magnetic Resonance Imaging - Q\\[-2.9mm]
+ & sad          & Sum of Absolute Differences (part of MPEG encoding)\\[-2.9mm]
+ & sgemm        & Dense Matrix-Matrix Multiply\\[-2.9mm]
+ & spmv         & Sparse-Matrix Dense-Vector Multiplication\\[-2.9mm]
+ & stencil      & Iterative 3D Jacobi Stencil\\[-2.9mm]
+ & tpacf        & Two Point Angular Correlation Function\\
+\hline
+\end{tabular}
+\caption{Overview of the 21 programs used for evaluation, grouped into two
+         suites}
+\label{allbenchmarklist}
+\end{table}
+
 \section{Experimental Setup}
 
     \paragraph*{Benchmarks}
-    We applied our approach to all of the sequential C/C++ versions of the NAS
-    Parallel Benchmarks.
-    We use the SNU NPB implementation by the Seoul National University,
-    containing the original 8 NAS benchmarks plus two of the newer unstructured
-    components UA and DC.
-    We also evaluated our approach on all Parboil benchmarks, giving 21 programs
-    in total. 
+    The approach was applied to all of the sequential C/C++ programs of the NAS
+    Parallel Benchmarks, in the versions provided by Seoul National University
+    (SNU NPB) \citep{seo2011performance}.
+    Additionally, the Parboil benchmarks \citep{Stratton2018} were used,
+    giving 21 evaluation programs in total. 
 
     \paragraph*{Platform and Evaluation}
-    We use an AMD A10-7850K APU with a multi-core CPU and an integrated Radeon
-    R7 GPU on the same die using driver version 1912.5, as well as an Nvidia GTX
-    Titan X as an external GPU using driver version 375.66.
-    We report the median runtime of 10 executions for each program.
+    The evaluation platform comprised an AMD A10-7850K APU with a Radeon R7
+    integrated GPU (driver version 1912.5) and an Nvidia GTX Titan X external
+    GPU (driver version 375.66).
+    Run times were measured as the median over ten executions.
 
     \paragraph*{Alternative detection approaches}
-    \hspace{0.2cm}There are no easily available compilers to compare against
-    that perform idiom detection.
-    Instead, we consider two parallelizing compilers and examine
-    whether they detect idioms as part of their parallelization approach.
-    As their goal is parallelization and not idiom detection, this should be
-    borne in mind in the results section.
+    There were no readily available compilers to compare against performing idiom
+    detection.
+    Instead, two parallelising compilers were considered, and the evaluation
+    examined whether they accelerate idiomatic code as part of their
+    parallelisation approach.
+    \Cref{section:competition} provided a detailed discussion of both
+    competing tools: Polly and ICC.
+    Therefore, they are only presented briefly here.
+    It should be borne in mind when interpreting the results that the
+    competing compilers aim for parallelisation, not idiom detection itself.
 
-    Polly \cite{Doerfert2015Polly} is an LLVM based polyhedral compiler
-    capable of finding parallel loops and reductions in Static Control
-    Parts (SCoP) of programs.  This allows comparison against
-    another approach that uses the same compiler infrastructure.
-    We gathered the SCoPs that Polly detected with the options
-    \texttt{-O3 -mllvm -polly -mllvm -polly-export} and manually inspected
-    the reported SCoPs for stencil like parallel loops and reduction operations.
-    When Polly captured such a loop as a SCoP, we counted it as an idiom
-    detection, although Polly itself has no concept of idioms.
+    Polly is an LLVM-based polyhedral compiler.
+    The SCoPs that Polly detected with the options
+    \texttt{-O3 -mllvm -polly -mllvm -polly-export} were gathered.
+    When Polly captured a SCoP containing an idiom, it was counted as an
+    idiom detection.
     This gives an optimistic estimate as to what idiom coverage a polyhedral
     based approach can achieve.
 
     The Intel C++ Compiler (ICC) is a mature industry strength compiler that
-    provides a detection mechanism for parallelizing reduction idioms based on
-    data dependency analysis.
-    We use the \texttt{-parallel -qopt-report} command line options and checked
-    in the optimization report files whether the corresponding loop is
-    considered parallelizable.
+    performs auto-parallelisation.
+    All loops that were emitted as parallelisable using
+    \texttt{-parallel -qopt-report} and that contained idioms were counted as
+    idiom detections.
 
 \newpage
 \section{Results}
