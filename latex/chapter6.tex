@@ -296,32 +296,37 @@
 \section{Specification of Idioms in IDL}
 \label{sec:idioms}
 
-    The specification of computational idioms in IDL requires a careful
+    The specification of computational idioms in IDL requires careful
     handling of the arising complexity, using the modularity functionality that
     IDL provides.
-
-    Control flow constructs, memory access patters as well as basic data flow
-    patterns are specified independently and then combined together in order to
-    define the complete constraint specifications.
+    Control flow constructs, memory access patterns as well as basic data flow
+    patterns are specified independently and then combined in order to define
+    the complete constraint specifications.
+    This section extends upon the previously defined building blocks from
+    \Cref{chapter:candl,chapter:reductions}.
 
 \subsection{Sparse Linear Algebra}
-At the heart of our approach is a simple language to specify sparse and dense
-linear algebra operations.
-This serves two purposes in our LiLAC system: Firstly, it is used to generate
-a detection program for finding the computation in user code.
-Secondly, it identifies the variables that are arguments to the library, thus
-defining the harness interface.
 
-The key challenge in the design of this language was to stay simple enough
-to allow automatic generation of robust detection functionality, yet to be able
-to capture interesting functionality.
-Crucial for sparse linear algebra routines is capturing the many different
-memory access patterns, the control flow on the other hand is very rigid.
+    The most frequently used performance-critical sparse linear algebra routines
+    are variations on the multiplication of a sparse matrix with a dense vector
+    (SPMV).
+    Crucial for these sparse linear algebra routines is capturing the many
+    different memory access patterns.
+    On the other hand, the control flow is very rigid.
 
-\subsection{Sparse Matrix Variations in LiLAC-What}
-Sparse matrices can be stored in different formats.
-In this section we introduce two of them and show how LiLAC-What can express
-the corresponding computations.
+    \Cref{spmvbase} shows the basic skeleton of the SPMV idiom:
+    There are two for-loops, the {\tt outer\_loop} and the {\tt inner\_loop}.
+    Naturally, {\tt outer\_loop} has to contain {\tt inner\_loop} fully
+    (lines 4--7).
+    The outer loop is a standard for-loop (line 2), while the inner loop is a
+    for-loop that also contains a generalised dot product (line 3).
+    Specifically, the {\tt DotProductFor} specification requires that the
+    loop contains a scalar reduction variable that in every iteration is
+    incremented by the result of a floating-point multiplication of two values
+    {\tt src1} and {\tt src2}.
+    This skeleton is completed depending on the sparse matrix format, defining
+    the specific computations and data flow that yields {\tt src1} and
+    {\tt src2}.
 
 \begin{figure}[p]
 \lstset {
