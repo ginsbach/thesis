@@ -881,7 +881,6 @@ gemm_in_lift(A, B, C, alpha, beta) {
 \end{tabular}
 \caption{Overview of the 21 programs used for evaluation, grouped into two
          suites}
-\label{allbenchmarklist}
 \end{table}
 
 \section{Experimental Setup}
@@ -1113,6 +1112,7 @@ Here the best performing API is shown;
 For five of the benchmarks we achieve significantly higher performance gains, from 17$\times$ for \emph{CG} and up to over 275$\times$ for \emph{sgemm}.
 These benchmarks are computationally expensive and the external GPU is always the fastest architecture by a considerable margin.
 
+\pagebreak
 \begin{landscape}
 \newlength{\txtwd}
 \newcommand{\msb}[1]{\settowidth{\txtwd}{#1}{\tiny\ttfamily\bfseries \hfill #1}}
@@ -1147,7 +1147,6 @@ These benchmarks are computationally expensive and the external GPU is always th
 \label{tab:detailed-results}
 \end{table}
 \end{landscape}
-
 
 The red highlighting in the plot indicates an important runtime optimization:
 redundant data transfers for the iterative \emph{CG}, \emph{lbm}, \emph{spmv} and \emph{stencil} benchmarks.
