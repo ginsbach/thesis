@@ -924,7 +924,6 @@ gemm_in_lift(A, B, C, alpha, beta) {
     \texttt{-parallel -qopt-report} and that contained idioms were counted as
     idiom detections.
 
-\newpage
 \section{Results}
 \label{sec:idiomresults}
 
@@ -946,20 +945,6 @@ gemm_in_lift(A, B, C, alpha, beta) {
     These provide a suitable estimator for the upper bound of available
     performance.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{figures/asplosplots/detection.pdf}
-  \caption{The different computational idioms found in all benchmarks.}
-  \label{detection-figure}
-\end{figure}
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{figures/asplosplots/coverage.pdf}
-  \caption{Runtime coverage of the detected idioms in all benchmarks.}
-  \label{coverage-figure}
-  \vspace{0.5em}
-\end{figure}
-
 \subsection{Idiom Detection}
 
     \Cref{tab:detection} shows the number of computational idioms found by IDL,
@@ -967,31 +952,50 @@ gemm_in_lift(A, B, C, alpha, beta) {
     Polly found 3 scalar reductions and 6 stencils while ICC recognised only
     28 scalar reduction.
     Polly was unable to perform idiom specific optimizations on GEMM.
-    Other approaches did not detect any histograms or sparse matrix operations,
-    because such code involves indirect and thus non-affine memory accesses.
-    This fundamentally contradicts assumptions that these tools rely on and is
-    not merely an implementation artifact.
+    Other approaches did not detect any histograms or sparse matrix operations.
     Our IDL approach detects 60 idioms overall with the compile time cost shown
     in figure \Cref{tab:compiletimecost}.
     On average, the compilation time is increased by 82\%, which can be reduced
     further by optimizing the solver.
 
     \Cref{detection-figure} shows the different idioms detected across
-    the  benchmarks. We detect both scalar
-    and histogram reductions as well as stencils, dense matrix operations
-    and sparse matrix-vector multiplication.
-    Polly and ICC are only capable of detecting simple scalar
-    reductions, but we are able to detect histogram reductions, {\em e.g.} in
-    the \emph{histo} benchmark as well.  For stencils, Polly detects two
-    in \emph{lbm} and \emph{stencil} while our approach
-    detects all the stencils in \emph{lbm}, \emph{stencil} and \emph{MG}.
+    the  benchmarks.
+    IDL detected both scalar and histogram reductions as well as stencils, dense
+    matrix operations and sparse matrix-vector multiplication.
+    Polly and ICC were only capable of detecting simple scalar reductions, but
+    we are able to detect histogram reductions, {\em e.g.} in
+    the \emph{histo} benchmark as well.
+    For stencils, Polly detects two in \emph{lbm} and \emph{stencil} while our
+    approach detects all the stencils in \emph{lbm}, \emph{stencil} and
+    \emph{MG}.
     Unlike any existing approach, we detect sparse matrix-vector
     operations in {\emph CG} and {\emph spmv} as well as dense matrix
     operations in \emph{sgemm}. It is worth repeating, however, that both
     Polly and ICC are parallelizing compilers, not idiom recognition
     tools.
 
-\begin{table}[t]
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=\textwidth]{figures/asplosplots/detection.pdf}
+  \caption{The different computational idioms found across the benchmark
+           programs:
+           Scalar reductions were the most common, with 10 out of 21 programs
+           containing some.
+           Other idioms were found in 1--5 programs each.
+           Only five of the benchmarks contained no idiomatic code.}
+  \label{detection-figure}
+\end{figure}
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=\textwidth]{figures/asplosplots/coverage.pdf}
+  \caption{Run time coverage: 10 of the 21 programs have idiomatic performance
+           bottlenecks.\leftskip=0pt\rightskip=0pt}
+  \label{coverage-figure}
+  \vspace{0.5em}
+\end{figure}
+
+\begin{table}[p]
 \centering
   \begin{tabular}{lP{2.16cm}P{2.16cm}P{2.16cm}P{2.163cm}P{2.163cm}}
   \toprule
@@ -1006,22 +1010,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
 \label{tab:detection}
 \end{table}
 
-\subsection{Runtime Coverage}
-
-    To determine if the detected idioms are actually important,
-    \Cref{coverage-figure} shows the percentage of time spent in the detected
-    computational idiom.
-    This data shows that either the detected idioms have a low runtime
-    contribution or they dominate almost the entire execution.
-    \emph{EP} is the only exception where about 50\% of the runtime is spent
-    inside a detected histogram reduction.
-    We focus on the 10 programs which spend a significant amount of time in the
-    detected idioms, as only these can reasonably expect a performance gain
-    using our approach.
-
-\subsection{Performance Results}
-
-\begin{table}[t]
+\begin{table}[p]
 \centering
 \begin{tabular}{lcccccccccccc}
   \toprule
@@ -1043,8 +1032,6 @@ with IDL       & 4.0 & 0.8 & 1.6 & 0.6 & 1.2 & 0.5 & 3.9 & 4.5 & 3.2 & 7.3 & 0.5
 overhead in \% & 116 &  77 &  57 &  77 &  93 &  62 & 103 & 484 &  97 & 169 &  30 &  65 \\
   \bottomrule
 \end{tabular}
-\vspace{5mm}
-
 \begin{tabular}{lccccccccc}
   \toprule
   & \hspace{0.44mm}histo\hspace{0.44mm}
@@ -1065,6 +1052,21 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 \caption{Compile time cost in seconds}
 \label{tab:compiletimecost}
 \end{table}
+
+\subsection{Runtime Coverage}
+
+    To determine if the detected idioms are actually important,
+    \Cref{coverage-figure} shows the percentage of time spent in the detected
+    computational idiom.
+    This data shows that either the detected idioms have a low runtime
+    contribution or they dominate almost the entire execution.
+    \emph{EP} is the only exception where about 50\% of the runtime is spent
+    inside a detected histogram reduction.
+    We focus on the 10 programs which spend a significant amount of time in the
+    detected idioms, as only these can reasonably expect a performance gain
+    using our approach.
+
+\subsection{Performance Results}
 
 \paragraph*{Speedup vs. Sequential}
 \Cref{fig:speedup-figure} shows the end-to-end speedup obtained by accelerating idioms with heterogeneous APIs on a CPU, an integrated GPU, and an external GPU.
