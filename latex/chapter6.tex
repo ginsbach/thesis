@@ -1066,11 +1066,20 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 
 \subsection{Performance Results}
 
-\paragraph*{Speedup vs. Sequential}
-\Cref{fig:speedup-figure} shows the end-to-end speedup obtained by accelerating idioms with heterogeneous APIs on a CPU, an integrated GPU, and an external GPU.
-All results include data transfer overhead to and from the GPUs.
-Here the best performing API is shown;
-\Cref{tab:detailed-results} provides detailed results for all APIs. 
+\paragraph*{Speedup over Sequential}
+
+    \Cref{fig:speedup-figure} shows the end-to-end speedup obtained by
+    accelerating idioms via heterogeneous APIs on a CPU, an integrated GPU,
+    and an external GPU.
+    All of the results include data transfer overhead to and from the GPUs,
+    where required.
+    This overhead is intrinsic to the external GPU, which operate on distinct
+    physical memory.
+    The integrated GPU, on the other hand, only incurred this cost when APIs
+    enforced additional data copies.
+    Each bar shows the best-performing API for the given platform;
+    \Cref{tab:detailed-results} provides detailed results also for the other
+    API backends.
 
 \begin{figure}[t]
   \centering
@@ -1092,27 +1101,31 @@ Here the best performing API is shown;
   \vspace{0.5em}
 \end{figure}
 
-    For five benchmarks we obtain moderate speedups from 1.26$\times$ for
-    \emph{histo} up to 4.5$\times$ for \emph{IS}.
-    All of these benchmarks besides \emph{MG} have a scalar or histogram
-    reduction as their performance bottleneck and are, therefore, not
-    computationally expensive.
+    Moderate speedups were obtained for five of the benchmarks, from
+    1.26$\times$ for ``\emph{histo}'' up to 4.5$\times$ for `\emph{IS}''.
+    Besides ``\emph{MG}'', all of these benchmarks have a scalar or histogram
+    reduction as their performance bottleneck.
     Interestingly, we can see that for different benchmarks, different hardware
-    is beneficial:
-    for \emph{tpcaf}  the CPU is the best platform, beating the GPU  for which
-    the data transfer time dominates;
-    for \emph{MG} and \emph{histo} the integrated GPU strikes the right balance
-    between computational power while avoiding the movement of data to the
+    is beneficial.
+    For ``\emph{tpcaf}'', the CPU is the best platform, beating the GPU,
+    for which the data transfer time dominates;
+    for ``\emph{MG}'' and ``\emph{histo}'', the integrated GPU strikes the right
+    balance between computational power and avoiding data movement to the
     external GPU;
-    and, finally, for \emph{EP} and \emph{IS} the data transfer to the GPU pays
-    off exploiting the high GPU internal memory bandwidth.
-    These results emphasize the significance of heterogeneous code generation
-    flexibility.
+    and for ``\emph{EP}'' and ``\emph{IS}'', the data transfer to the GPU is
+    amortised by its superior raw performance.
+    The results emphasise the significance of flexible heterogeneous
+    code generation.
+    Committing to any one of the three hardware platforms in the source code
+    would have necessarily resulted in less-than-optimal performance for at
+    least some of the programs.
 
-For five of the benchmarks we achieve significantly higher performance gains, from 17$\times$ for \emph{CG} and up to over 275$\times$ for \emph{sgemm}.
-These benchmarks are computationally expensive and the external GPU is always the fastest architecture by a considerable margin.
+    For five of the benchmarks, IDL enabled significantly higher performance
+    gains, from 17$\times$ for ``\emph{CG}'' and up to over 275$\times$ for
+    ``\emph{sgemm}''.
+    These benchmarks are computationally expensive, and the external GPU is
+    always the fastest architecture by a considerable margin.
 
-\pagebreak
 \begin{landscape}
 \newlength{\txtwd}
 \newcommand{\msb}[1]{\settowidth{\txtwd}{#1}{\tiny\ttfamily\bfseries \hfill #1}}
@@ -1140,10 +1153,10 @@ These benchmarks are computationally expensive and the external GPU is always th
   \hline
 \end{tabular}
 \caption{Detailed performance results for each heterogeneous backend interface:
-         The run time of benchmark program is measured in milliseconds for every
-         compatible combination in each platform.
-         The fastest implementations for each benchmark and target hardware are
-         highlighted in bold.}
+         The run time of each benchmark program was measured in milliseconds for
+         every compatible combination on each of the three platforms.
+         The fastest implementations for per benchmark and target hardware are
+         highlighted in {\bf bold}.}
 \label{tab:detailed-results}
 \end{table}
 \end{landscape}
