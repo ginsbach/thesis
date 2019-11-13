@@ -936,44 +936,43 @@ gemm_in_lift(A, B, C, alpha, beta) {
     Next, the run time coverage of the idioms was determined for each
     benchmark program, to see where exploitation might be beneficial.
 
-    Where run time coverage was substantial, speedups over sequential C code
+    Where run time coverage was substantial, speedups over the sequential C code
     are reported.
-    Detailed results capture the performance of each targeted backend interface.
+    Detailed results are given for the performance of each targeted backend
+    interface.
     Finally, the evaluation includes comparisons to the handwritten OpenMP and
-    OpenCL implementations that are included with the benchmark suites as
-    reference implementations.
-    These provide a suitable estimator for the upper bound of available
-    performance.
+    OpenCL implementations that are provided with the benchmark suites as
+    reference implementations, providing a suitable estimator for the upper
+    bound of available performance.
 
 \subsection{Idiom Detection}
 
-    \Cref{tab:detection} shows the number of computational idioms found by IDL,
-    Polly, and ICC.
-    Polly found 3 scalar reductions and 6 stencils while ICC recognised only
-    28 scalar reduction.
-    Polly was unable to perform idiom specific optimizations on GEMM.
-    Other approaches did not detect any histograms or sparse matrix operations.
-    Our IDL approach detects 60 idioms overall with the compile time cost shown
-    in figure \Cref{tab:compiletimecost}.
-    On average, the compilation time is increased by 82\%, which can be reduced
-    further by optimizing the solver.
-
     \Cref{detection-figure} shows the different idioms detected across
-    the  benchmarks.
+    all the individual benchmark programs.
     IDL detected both scalar and histogram reductions as well as stencils, dense
     matrix operations and sparse matrix-vector multiplication.
-    Polly and ICC were only capable of detecting simple scalar reductions, but
-    we are able to detect histogram reductions, {\em e.g.} in
-    the \emph{histo} benchmark as well.
-    For stencils, Polly detects two in \emph{lbm} and \emph{stencil} while our
-    approach detects all the stencils in \emph{lbm}, \emph{stencil} and
-    \emph{MG}.
-    Unlike any existing approach, we detect sparse matrix-vector
-    operations in {\emph CG} and {\emph spmv} as well as dense matrix
-    operations in \emph{sgemm}. It is worth repeating, however, that both
-    Polly and ICC are parallelizing compilers, not idiom recognition
-    tools.
+    16 of the 21 programs contained computational idioms that IDL was able to
+    identify.
+    The most frequently occurring idiom were scalar reductions, present in 10
+    of the programs.
+    Five of the benchmarks contained histograms; three contained stencils;
+    two contained SPMV; and only a single program calculated GEMM.
 
+    \Cref{tab:detection} summarises the number of computational idioms found by
+    IDL, Polly, and ICC.
+    Polly found three scalar reductions and five stencils, and also detected the
+    GEMM operation as a generic SCoP.
+    This was counted as a detected idiom, although Polly was unable to apply any
+    domain-specific knowledge from linear algebra.
+    ICC only recognised scalar reduction, but was much more successful at it
+    than Polly, detecting a total of 28 instances.
+
+    Other approaches than IDL did not detect any histogram loops or sparse
+    matrix operations.
+    In total, IDL detected 60 idioms overall with the increase in compilation
+    time shown in figure \Cref{tab:compiletimecost}.
+    On average, the compilation time was increased by 82\%. 
+    The overhead could be reduced further by optimising the solver.
 
 \begin{figure}[p]
   \centering
@@ -1001,7 +1000,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
   \toprule
   \hspace{1.18cm} & Scalar\newline{}Reduction & Histogram\newline{}Reduction & Stencil & Matrix~Op. & Sparse\newline{}Matrix~Op.\\
   \midrule
-  Polly &  3  &  --- &   5  &  --- & --- \\
+  Polly &  3  &  --- &   5  &   1  & --- \\
   ICC   &  28 &  --- &  --- &  --- & --- \\
   IDL   &  45 &   5  &   6  &   1  &  3  \\
   \bottomrule
@@ -1055,16 +1054,15 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 
 \subsection{Runtime Coverage}
 
-    To determine if the detected idioms are actually important,
-    \Cref{coverage-figure} shows the percentage of time spent in the detected
-    computational idiom.
+    To determine if the detected idioms were impactful, \Cref{coverage-figure}
+    shows the percentage of run time spent in the detected computational idiom
+    for each benchmark program.
     This data shows that either the detected idioms have a low runtime
     contribution or they dominate almost the entire execution.
-    \emph{EP} is the only exception where about 50\% of the runtime is spent
-    inside a detected histogram reduction.
-    We focus on the 10 programs which spend a significant amount of time in the
-    detected idioms, as only these can reasonably expect a performance gain
-    using our approach.
+    \emph{EP} is the only exception with about 50\% run time coverage.
+    Heterogeneous acceleration was evaluated on the ten programs that spend a
+    significant amount of time in the detected idioms.
+    Only these can reasonably expect a performance gain.
 
 \subsection{Performance Results}
 
