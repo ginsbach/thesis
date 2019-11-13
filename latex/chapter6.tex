@@ -931,15 +931,15 @@ gemm_in_lift(A, B, C, alpha, beta) {
     Firstly, the number of detected idioms and their distribution over the
     benchmark programs was established.
     During this analysis, the run time of the IDL-enabled Clang compiler was
-    measured, and the compile time overhead of the solver over standard
+    measured, and the compile-time overhead of the solver over standard
     compilation evaluated.
     Next, the run time coverage of the idioms was determined for each
     benchmark program, to see where exploitation might be beneficial.
 
     Where run time coverage was substantial, speedups over sequential C code
     are reported.
-    Detailed results capture the performance of each trageted backend interface.
-    Finally, the evaluation includes comparison to the handwritten OpenMP and
+    Detailed results capture the performance of each targeted backend interface.
+    Finally, the evaluation includes comparisons to the handwritten OpenMP and
     OpenCL implementations that are included with the benchmark suites as
     reference implementations.
     These provide a suitable estimator for the upper bound of available
