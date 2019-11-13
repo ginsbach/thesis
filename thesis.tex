@@ -182,24 +182,24 @@
     computers.
     Heterogeneous computing has become widespread, meaning the cooperation of
     several structurally different processor cores.
-    Central processor cores are most frequencty complemented with graphics
-    processors, which despite their name are suitable for many computations
-    unrelated to computer graphics.
+    Central processor (CPU) cores are most frequently complemented with graphics
+    processors (GPUs), which despite their name are suitable for many highly
+    parallel computations unrelated to computer graphics.
     Furthermore, deep learning accelerators are rapidly gaining relevance.
 
-    Many applications could profit from heterogeneous computing, but are
-    inhibited by the surrounding software ecosystems.
-    Heterogeneous systems are a challenge for the established compilers, which
-    often only target the increasingly marginalised homogeneous CPUs.
-    Because heterogeneous acceleration is often only accessible via libraries
-    and domain specific languages, expensive application rewrites become
-    necessary.
+    Many applications could profit from heterogeneous computing but are held
+    back by the surrounding software ecosystems.
+    In particular, heterogeneous systems are a challenge for compilers, which
+    usually only target the homogeneous -- increasingly marginalised -- CPUs.
+    Therefore, heterogeneous acceleration is primarily accessible via libraries
+    and domain-specific languages, requiring expensive application rewrites
+    and resulting in vendor lock-in.
 
-    This thesis introduces a constraint programming methodology that is used to
-    define and then automatically detect algorithmic structure in compiler
-    intermediate representation.
-    This allows compilers to tackle the challenge of automatic heterogeneous
-    acceleration.
+    This thesis introduces a constraint programming methodology that enables the
+    specification and automatic detection of algorithmic structure in
+    compiler intermediate representation.
+    This approach allows compilers to tackle the challenge of automatic
+    heterogeneous acceleration.
 
     Libraries and domain specific languages are able to efficiently target
     accelerators because they provide narrower interfaces.
