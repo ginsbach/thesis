@@ -825,7 +825,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
         is a {\em backtracking solution} of $(V,C)$ if and only if for all
         $x\in\mathbb N^V$ the following is satisfied:
         \begin{align}
-            C(M,x)=1\iff\left[x_{v_k}\in B_k(M,p_{k-1}(x))=1\text{ for all }1\leq k\leq |V|\right].
+            C(M,x)=1\iff\left[x_{v_k}\in B_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq |V|\right].
         \end{align}
     \end{definition}
 \end{figure}
@@ -992,8 +992,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
     The bottom left part of the figure shows the backtracking solution
     of the SSA constraint problem that is obtained by applying
     \Cref{theo:theo1,theo:theo2,theo:theo4}.
-    The construction, according to these theorems, guarantees that the defining
-    condition in \Cref{def:backtracking} holds for $(P_k[C])_{k=1\dots3}$, and
+    The construction, according to these theorems, implies that the defining
+    condition in \Cref{def:backtracking} holds for $(B_k[C])_{k=1\dots3}$, and
     that \Cref{backtrackalg} can be applied.
     The construction of one building block in the backtracking solution is
     explained in detail as follows:
@@ -1045,7 +1045,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     Therefore, the algorithm only continues at the bottom of the figure with
     this one partial solution $(9,17)$.
 
-    In order to complete this partial solution, $P_3[C]$ requires the value for
+    In order to complete this partial solution, $B_3[C]$ requires the value for
     the ``step'' variable to be a constant of value $1$.
     Furthermore, it needs to be used as an argument to $x_2$, i.e.\ the
     ``update'' variable.
