@@ -1161,11 +1161,17 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 \end{table}
 \end{landscape}
 
-The red highlighting in the plot indicates an important runtime optimization:
-redundant data transfers for the iterative \emph{CG}, \emph{lbm}, \emph{spmv} and \emph{stencil} benchmarks.
-All of these benchmarks execute computations inside a for loop and do not require access to the data on the CPU between iterations.
-We manually applied a straightforward lazy copying technique by flagging memory objects to avoid redundant transfers, similar to~\cite{jablin11automatic}.
-As can be seen this runtime optimization is crucial for achieving high performance for these benchmarks.
+    The red highlighting in \Cref{fig:speedup-figure} indicates an important
+    runtime optimisation:
+    Redundant data transfers for the iterative ``\emph{CG}'', ``\emph{lbm}'',
+    ``\emph{spmv}'' and ``\emph{stencil}'' benchmarks were manually eliminated.
+    All of these benchmarks execute computations inside a for-loop and do not
+    require access to the data on the CPU between iterations.
+    A straightforward lazy copying technique was manually applied by flagging
+    memory objects to avoid redundant transfers, similar
+    to work by \citet{jablin11automatic}.
+    This runtime optimisation is crucial for achieving high performance on some
+    of the benchmark programs.
 
 \paragraph*{API performance comparison}
 \Cref{tab:detailed-results} shows a breakdown of the performance of each API on each program and platform.
