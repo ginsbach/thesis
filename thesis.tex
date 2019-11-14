@@ -177,7 +177,7 @@
 \author{Philip Ginsbach}
 
 \abstract{
-    The scaling limitations of multi-core processor development have lead to a
+    The scaling limitations of multi-core processor development have led to a
     diversification of the processor cores used within individual computers.
     Heterogeneous computing has become widespread, meaning the cooperation of
     several structurally different processor cores.
@@ -197,12 +197,12 @@
     This thesis presents a compiler approach to automatically target
     heterogeneous hardware from existing sequential C/C++ source code.
     A novel constraint programming methodology enables the declarative
-    specification and automatic detection of {\t computational idioms} within
+    specification and automatic detection of {\em computational idioms} within
     compiler intermediate representation.
     Computational idioms denote algorithmic structure that is common in
     performance-critical loops.
     Examples of computational idioms are stencil codes, linear algebra,
-    reductions and histogram computatoins.
+    reductions and histogram computations.
     Well-designed accelerator DSLs and libraries support computational idioms
     with their programming models and function interfaces.
     The detection of computational idioms during compilation enables the
@@ -219,8 +219,15 @@
     The pipeline is evaluated on established benchmark collections NPB and
     Parboil.
     The approach was effective on 10 of the benchmark programs, resulting in
-    significant speedups of 1.26$\times$ on ``histo'' to 275$\times$ on
+    significant speedups from 1.26$\times$ on ``histo'' to 275$\times$ on
     ``sgemm'' when starting from sequential baseline versions.
+
+    The automatic detection of computational idioms during compilation and the
+    subsequent redirection of idiomatic program parts to domain-specific code
+    generators can enable automatic heterogeneous acceleration.
+    Constraint programming on compiler intermediate representation is a suitable
+    method for formulating computational idioms that can be detected
+    automatically with a constraint solver.
 }
 
 \begin{document}
