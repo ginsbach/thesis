@@ -17,6 +17,31 @@
     Programs difficult to debug.
     SSA model needs to be reconstructed whenever acting on the results.
 
+    \paragraph*{Compile Time Cost}
+
+    \paragraph*{Finite Varaiable Numbers}
+    The most visually apparent imperfection of both CAnDL and IDL is the
+    limitation to a finite amount of variables in the underlying constraint
+    problem.
+    This results in upper bounds for the number of features in almost all idioms
+    that have no fundamental justification:
+    CReHCs can only contain a maximum of two histograms, stencil codes can only
+    use a neighbourhood of up to 32 items, and so on.
+    In practice, this involves a tradeoff between performance and the genreality
+    of the idiom specification, as each additional variable introduces a slight
+    overhead for the solver.
+
+    Similar problems are well-known in other research disciplines that involve
+    an underlying solver.
+    Most prominently, bounded model checking techniques are built on SMT solvers
+    with the same limitation.
+    The same solution could be applied to IDL: Just repeatedly run the solver
+    with more and more variables, up to a certain boundary.
+    That way easy solutions are quickly found, but difficult solutions are not
+    discarded entirely.
+
+    \paragraph*{Acting on Solutions Invalidates SSA Model}
+
 \section{Future Work}
 
     Future work will focus on extending the approach to pointer-intensive
