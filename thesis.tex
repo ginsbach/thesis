@@ -209,14 +209,18 @@
     compiler to offload code generation to these dedicated backends, which
     incorporate domain knowledge for efficient heterogeneous code generation.
 
-    Starting from an abstract model of static single assignment form compiler
-    representations, the constraint programming methodology is developed into a
-    novel constraint programming language that is eventually used to implement a
-    complete heterogeneous acceleration pipeline within LLVM.
-    Many additional applications of this language are explored.
-    This includes the parallelisation of histogram reductions that previously
-    escaped compiler analysis, a formulation of the polyhedral code model,
-    and the rapid prototyping of compiler optimisations.
+    The constraint programming methodology is derived in several steps,
+    eventually resulting in the design and implementation of the
+    Compiler Analysis Description Language (CAnDL), and the extended
+    Idiom Description Language (IDL).
+    These languages are evaluated on a range of different compiler problems,
+    culminating in a complete heterogeneous acceleration pipeline within the
+    LLVM compiler framework.
+    The pipeline is evaluated on established benchmark collections NPB and
+    Parboil.
+    The approach was effective on 10 of the benchmark programs, resulting in
+    significant speedups of 1.26$\times$ on ``histo'' to 275$\times$ on
+    ``sgemm'' when starting from sequential baseline versions.
 }
 
 \begin{document}
