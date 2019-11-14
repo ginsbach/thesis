@@ -191,34 +191,23 @@
     In particular, heterogeneous systems are a challenge for compilers, which
     usually only target the homogeneous -- increasingly marginalised -- CPUs.
     Therefore, heterogeneous acceleration is primarily accessible via libraries
-    and domain-specific languages, requiring expensive application rewrites
-    and resulting in vendor lock-in.
+    and domain-specific languages (DSLs), requiring expensive application
+    rewrites and resulting in vendor lock-in.
 
-    This thesis introduces a constraint programming methodology that enables the
-    specification and automatic detection of algorithmic structure in
+    This thesis presents a compiler approach to automatically target
+    heterogeneous hardware from existing sequential C/C++ source code.
+    A novel constraint programming methodology enables the declarative
+    specification and automatic detection of {\t computational idioms} within
     compiler intermediate representation.
-    This approach allows compilers to tackle the challenge of automatic
-    heterogeneous acceleration.
-
-    Libraries and domain specific languages are able to efficiently target
-    accelerators because they provide narrower interfaces.
-    The more restrictive semantics of domain specific languages give their
-    compilers more powerful models to analyse the program, making it possible to
-    apply domain specific optimisations and better match the target hardware.
-    The same is true for libraries, which can be thought of as particularly
-    restrictive domain specific languages.
-
-    Using constraint programming, compilers can recognise narrow interfaces
-    within programs that are written in general purpose programming languages,
-    such as C++.
-    This includes parts of the program that adhere to the polyhedral model,
-    implement linear algebra routines, or fall within a large  class of other
-    algorithmic structures.
-    Once a part of the program has been specialised, the general purpose
-    compiler can reformulate it in a more restrictive model and pass it on to
-    specialised tools for code generation.
-    This allows for the automatic heterogeneous acceleration of previously
-    sequential codes, without any need for manual source code changes.
+    Computational idioms denote algorithmic structure that is common in
+    performance-critical loops.
+    Examples of computational idioms are stencil codes, linear algebra,
+    reductions and histogram computatoins.
+    Well-designed accelerator DSLs and libraries support computational idioms
+    with their programming models and function interfaces.
+    The detection of computational idioms during compilation enables the
+    compiler to offload code generation to these dedicated backends, which
+    incorporate domain knowledge for efficient heterogeneous code generation.
 
     Starting from an abstract model of static single assignment form compiler
     representations, the constraint programming methodology is developed into a
