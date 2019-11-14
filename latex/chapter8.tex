@@ -19,6 +19,53 @@
 
 \section{Future Work}
 
-    Two of the buggest issues the presented constraint programming approaches
-    are the difficulty of debugging the specifications and the restricted to a
-    fixed number of variables in the underlying solver technology.
+    Future work will focus on extending the approach to pointer-intensive
+    idioms, improving the usability of specification, and complementing
+    the static approaches with established dynamic techniques.
+
+    \paragraph*{Additional Idioms}
+    The ability to express sparse linear algebra sets the detection ability of
+    constraint programming on compiler immediate representation apart from
+    previous approaches, involving the polyhedral model or data-flow analysis.
+    Going beyond sparse data access, IDL could be used to formulate data access
+    patters that involve pointer chases.
+    This would enable it to detect graph operations, such as depth-first search
+    and the PageRank algorithm.
+    Furthermore, this approach could detect list traversal, insertion, and
+    removal of elements.
+    Such operations are not typically performance critical, but could be a first
+    step to a deeper semantic understanding of programs in compilers.
+
+    \paragraph*{Simplify Specification Languages}
+    The specification languages CAnDL and IDL enable the detection of
+    sophisticated computational idioms, but profound knowledge of compilers is
+    required to sucessfully write correct specifications. 
+    Furthermore, the presented specifications are almost entirely independent of
+    the specific underlying intermediate representation LLVM IR.
+    However, the precise extent of this independence left unclear.
+
+    Future work will investigate higher-level languages that abstract away the
+    IR-specific nature of CAnDL and IDL, and provide a more streamlined
+    programming experience.
+    The pseudocode and corresponding IDL specifications in
+    \Cref{csr_lilacwhat_fig,jds_lilacwhat_fig} in \Cref{chapter:idioms} already
+    suggest how this can be achieved:
+    For many restricted domains (in that case SPMV), generating IDL code from
+    high-level expressions is straightforward.
+
+    \paragraph*{Complementing Dynamic Approaches}
+    Several shortcomings of the presented approaches could be alleviated with
+    dynamic approaches that complement the entirely static nature of constraint
+    programming on compiler immediate representation.
+
+    Dynamic analysis could be used to preselect candidate loops, drastically
+    reducing the compile time overhead.
+    Dynamic methods are required to efficiently transfer memory between
+    heterogeneous participants, and to rule out pointer aliasing.
+
+    \paragraph*{Generating Specifications by Example}
+    Specification could be generated from example.
+    
+
+
+
