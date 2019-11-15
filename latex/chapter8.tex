@@ -1,6 +1,31 @@
 
-    This thesis developed a constraint programming methodology that operates
-    directly of static single assigment compiler intermediate representation.
+    The thesis developed a constraint programming methodology that operates on
+    static single assigment compiler intermediate representation.
+    The Compiler Analysis Description Language (CAnDL) and the Idiom Description
+    Language (IDL) implement this functionality within the LLVM framework.
+
+    Several computational idioms were implemented in these languages,
+    enabling the automatic recognition of adhering user code sections during
+    compilation.
+    As a less established idiom, Complex Reduction and Histogram Computations
+    were introduced to complement stencil codes and different forms of both
+    sparse and dense linear algebra.
+
+    Recognising these computational idioms enabled generic compilers to apply
+    idiom-specific optimising transformations, which are traditionally available
+    only within domain-specific tools.
+    Such transformations included the automatic parallelisation of programs that
+    were inaccessible for previous analysis approaches.
+    In the final chapter, the idiom detection functionality was applied to
+    achieve the automatic heterogeneous parallelisation of sequential C/C++
+    code.
+
+    Idiomatic loops in user code were redirected to domain-specific code
+    generators, leveraging the domain knowledge that is available for code that
+    is formulated in restrictive idioms.
+    This approach was effective on 10 of the 21 benchmark programs from NPB and
+    Parboil, resulting in significant speedups from 1.26$\times$  to 275$\times$
+    against the sequential baseline versions.
 
 \section{Contributions}
 
@@ -16,6 +41,9 @@
     Only a finite number of variables.
     Programs difficult to debug.
     SSA model needs to be reconstructed whenever acting on the results.
+
+    \paragraph*{Generality of Computational Idioms}
+    
 
     \paragraph*{Compile Time Cost}
 
