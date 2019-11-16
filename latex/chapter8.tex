@@ -44,34 +44,60 @@
 
 \section{Contributions}
 
-    The major contributions are the introduction of two constraint programming
-    languages with full implementations.
-    Secondly, the formulation of important computational idioms in those.
-    And third the prototyping of an integrated heterogeneous acceleration
-    pipeline built on thta technology.
+\subsection{Constraint Programming on SSA Code}
 
-    \subsection{Constraint Programming on SSA Code}
+    \Cref{chapter:theory} introduced an approach for applying constraint
+    programming to SSA intermediate representation code.
+    Based on a model of the static structure of SSA programs, SSA constraint
+    problems were defined.
+    These are formulas that impose restrictions on compiler intermediate code,
+    turning the detection of adhering program parts into a constraint problem.
+    The chapter then derived efficient algorithms for solving SSA constraint
+    problems and discussed several significant types of constraint formulas.
+    These reflected compiler analysis methods like data flow and dominance
+    relationships.
+    The methodology was derived from algebraic formulation all the way to
+    specific implementation considerations, is transferrable to any SSA
+    intermediate representation, and can express a wide range of important
+    compiler analysis problems.
 
-    \subsection{CAnDL and IDL}
+\subsection{CAnDL and IDL}
 
-    \subsection{Formulation of Idioms}
+    \Cref{chapter:candl,chapter:reductions} designed and implemented two
+    custom declarative programming languages: The Compiler Analysis
+    Description Language (CAnDL) and the extended Idiom Description Langauge
+    (IDL).
+    These languages make the constraint programming methodology directly
+    available in the LLVM framework.
+    This enables the previously derived approach to operate or real user code,
+    directly from within the state-of-the-art Clang C/C++ compiler.
 
 \subsection{Complex Reduction and Histogram Computations}
 
-    \Cref{chapter:reductions} introduced Complex Reduction and Histogram
-    Computations as a computational idiom.
+    Complex Reduction and Histogram Computations (CReHCs) were introduced in
+    \Cref{chapter:reductions} as a computational idiom.
     CReHCs are a generalisation of well-understood scalar reductions that
     encompasses indirect array accesses as typical in calculations of
     histograms.
-    This class of computations was not previously studied as a unit, but the
-    chapter shows that common parallelisation opportunities exist.
-    Furthermore, evaluation on established benchmarks suites demonstrate that
-    significant bottlenecks in each of NPB, Parboil, and Rodinia benchmarks
-    are CReHCs.
+    This class of loops was not previously studied as one unit, but the
+    chapter showed that shared parallelisation opportunities exist.
+    Furthermore, an evaluation of established benchmark suites demonstrated
+    that significant performance bottlenecks in each of NPB, Parboil, and
+    Rodinia are CReHCs.
 
-    \subsection{Heterogeneous Acceleration Pipeline}
-    
-\pagebreak
+\subsection{Formulation of Idioms}
+
+    \Cref{chapter:candl,chapter:reductions,chapter:idioms} formulated a range of
+    different computational idioms in CAnDL and IDL.
+    These idioms included stencils, different forms of sparse and dense linear
+    algebra, Static Control Parts (SCoPs), and CReHCs.
+    This enabled the automatic recognition of higher-level structure during
+    compilation.
+
+\subsection{Heterogeneous Acceleration Pipeline}
+
+    \Cref{chapter:idioms}
+
 \section{Critical Analysis}
 
     Several iddues remain with the work.
@@ -114,7 +140,7 @@
     idioms, improving the usability of specification, and complementing
     the static approaches with established dynamic techniques.
 
-    \subsection{Additional Idioms}
+\subsection{Additional Idioms}
 
     The ability to express sparse linear algebra sets the detection ability of
     constraint programming on compiler immediate representation apart from
@@ -160,7 +186,3 @@
 \subsection{Generating Specifications by Example}
 
     Specification could be generated from example.
-    
-
-
-
