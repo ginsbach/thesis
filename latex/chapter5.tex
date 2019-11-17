@@ -1238,7 +1238,7 @@ for( i=0; i<NUM_KEYS; i++ )
                    symbolic x coords={BT,CG,DC,EP,FT,IS,LU,MG,SP,UA},
                    xticklabel style={rotate=0},
                    width=\textwidth, height=6cm, legend pos=north west]
-        \addplot [style={pattern=crosshatch},nodes near coords] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
+        \addplot [style={pattern=crosshatch}] table[x=benchmark,y=reduction SCoPs]{\NASPollyData};
         \addplot [style={pattern=north east lines}] table[x=benchmark,y=other SCoPs]{\NASPollyData};
         \legend{reduction SCoPs, other SCoPs}
       \end{axis}
