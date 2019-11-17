@@ -976,7 +976,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=\textwidth]{figures/asplosplots/detection.pdf}
+  \includegraphics[width=\textwidth]{figures/asplos_detection.pdf}
   \caption{The different computational idioms found across the benchmark
            programs:
            Scalar reductions were the most common, with 10 out of 21 programs
@@ -987,7 +987,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
 \end{figure}
 \begin{figure}[p]
   \centering
-  \includegraphics[width=\textwidth]{figures/asplosplots/coverage.pdf}
+  \includegraphics[width=\textwidth]{figures/asplos_coverage.pdf}
   \caption{Run time coverage: 10 of the 21 programs have idiomatic performance
            bottlenecks.\leftskip=0pt\rightskip=0pt}
   \label{coverage-figure}
@@ -1083,7 +1083,7 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\textwidth]{figures/asplosplots/speedup_vs_sequential_wide.pdf}
+  \includegraphics[width=\textwidth]{figures/asplos_speedup.pdf}
   \caption{Speedup over sequential:
            Results for the best-performing backend on each platform are shown.
            The red bars indicate a manual modification for minimising redundant
@@ -1091,7 +1091,7 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
   \label{fig:speedup-figure}
   \vspace{1.5em}
   \centering
-  \includegraphics[width=\textwidth]{figures/asplosplots/comparison.pdf}
+  \includegraphics[width=\textwidth]{figures/asplos_comparison.pdf}
   \caption{IDL versus manual expert parallelisation:
            Speedup over the sequential baseline was measured for IDL
            (selecting best performing backend; red bars) and the
