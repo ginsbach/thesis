@@ -165,38 +165,39 @@
     idioms, improving the usability of specification languages, and
     complementing the static approaches with dynamic techniques.
 
-\subsection*{Additional Idioms}
+\subsection*{Pointer-chasing Idioms}
 
     The ability to express sparse linear algebra sets the detection ability of
-    constraint programming on compiler immediate representation apart from
-    previous approaches, involving the polyhedral model or data-flow analysis.
-    Going beyond sparse data access, IDL could be used to formulate data access
+    constraint programming on SSA immediate representation apart from previous
+    approaches using the polyhedral model or data-flow analysis.
+    Going beyond simple data access indirection, IDL will be used on data access
     patters that involve pointer chases.
-    This would enable it to detect graph operations, such as depth-first search
+    This will enable it to detect graph operations, such as depth-first search
     and the PageRank algorithm.
     Furthermore, this approach could detect list traversal, insertion, and
     removal of elements.
-    Such operations are not typically performance critical, but could be a first
+    Such operations are not typically performance critical, but will be a first
     step to a deeper semantic understanding of programs in compilers.
 
 \subsection*{Simpler Specification Languages}
 
-    The specification languages CAnDL and IDL enable the detection of
-    sophisticated computational idioms.
-    However, profound knowledge of compilers is still required to sucessfully
-    write correct specifications. 
-    Furthermore, the presented specifications are almost entirely independent of
-    the specific underlying intermediate representation LLVM IR.
-    However, the precise extent of this independence left unclear.
+    Compared to previous approaches, the specification languages CAnDL and IDL
+    simplify the implementation of compiler analysis functionality, and enable
+    the detection of more complex idiomatic structures.
+    However, profound knowledge of compiler internals is still required to
+    sucessfully write correct specifications.
+    Furthermore, while the idiom specifications are mostly independent of
+    LLVM IR as the specific underlying intermediate representation, the precise
+    extent of this independence has not been explored thoroughly.
 
-    Future work will investigate higher-level languages that abstract away the
+    Future work will investigate higher-level languages that abstract the
     IR-specific nature of CAnDL and IDL, and provide a more streamlined
     programming experience.
     The pseudocode and corresponding IDL specifications in
     \Cref{csr_lilacwhat_fig,jds_lilacwhat_fig} in \Cref{chapter:idioms} already
     suggest how this can be achieved:
-    For many restricted domains (in that case SPMV), generating IDL code from
-    high-level expressions is straightforward.
+    For restricted domains (e.g.\ SPMV), generating IDL code from high-level
+    expressions is straightforward.
 
 \subsection*{Complementing with Dynamic Approaches}
 
