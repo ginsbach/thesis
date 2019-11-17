@@ -163,7 +163,11 @@
 
     Future work will focus on extending the approach to pointer-intensive
     idioms, improving the usability of specification languages, and
-    complementing the static approaches with dynamic techniques.
+    complementing the static detection approaches with dynamic and
+    machine learning techniques.
+    Furthermore, the automatic generation of constraint specifications from
+    code examples may eventually replace the necessity of writing constraint
+    specifications manually.
 
 \subsection*{Pointer-chasing Idioms}
 
@@ -199,7 +203,7 @@
     For restricted domains (e.g.\ SPMV), generating IDL code from high-level
     expressions is straightforward.
 
-\subsection*{Complementing with Dynamic Approaches}
+\subsection*{Complementing with Dynamic and Machine Learning Approaches}
 
     Several shortcomings of the presented approaches could be alleviated with
     dynamic approaches that complement the entirely static nature of constraint
@@ -212,4 +216,25 @@
 
 \subsection*{Generating Specifications by Example}
 
-    Specification could be generated from example.
+    Future work will investigate the automatic generation of idiom
+    specifications from example code fragments.
+    Using a graph-matching algorithm that operates on SSA code, multiple hot
+    loops that implement variations of the same idiom will be matched together
+    according to a quality metric.
+    This matching will automatically identify code structures that are shared
+    between the examples, and those that are unique to individual hot loops.
+    The common structures will then be separated and turned into constraint
+    conditions.
+    Suitable quality metrics will be critical to the success of this approach
+    and might profit from machine learning approaches, such as neural networks.
+    The manually implemented idioms from this work could provide suitable
+    training data.
+
+    Eventually, the manual curation of example codes that group toether into
+    computational idioms could become redundant.
+    Automatic profiling of large quantities of code will allow the automatic
+    identification of all the relevant hot loops.
+    The hot loops could then be grouped into computational idioms using
+    automatic clustering algorithms that use a distance metric between SSA code
+    based on a success score for the previously discussed graph matching
+    approach.
