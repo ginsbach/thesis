@@ -14,7 +14,7 @@
     Complementing these established computational idioms, Complex Reduction and
     Histogram Computations (CReHCs) were introduced as a new grouping of
     computations.
-    Evaluation on established benchmark suites NPB and Parboil demonstrated that
+    Evaluation of established benchmark suites NPB and Parboil demonstrated that
     each of these idioms covers significant performance bottlenecks.
 
     Recognising these computational idioms enabled generic compilers to apply
@@ -33,10 +33,10 @@
     Parboil, resulting in significant speedups from 1.26$\times$  to 275$\times$
     against the sequential baseline versions.
 
-    In summary, computational idioms were identified and confirmed as an
-    effective interface to heterogeneous acceleration, and the methodology
-    for automatically recognising such idioms via constraint programming was
-    derived.
+    In summary, the thesis demonstrated that computational idioms are an
+    effective interface to heterogeneous acceleration and derived the
+    methodology for automatically recognising such idioms via constraint
+    programming.
     Main contributions are the methodology of constraint programming on SSA
     intermediate representation; the design and implementation of CAnDL and IDL;
     and the identification of CReHCs as a significant class of benchmark
@@ -56,9 +56,11 @@
     The chapter derived efficient algorithms for solving SSA constraint problems
     and discussed several significant types of constraint formulas, reflecting
     compiler analysis methods like data flow and dominance relationships.
-    The methodology was derived from algebraic formulation to implementation
-    considerations, applies to any SSA intermediate representation,
-    and is suitable for a wide range of compiler analysis problems.
+
+    The constraint programming methodology was derived from an algebraic
+    formulation all the way to implementation considerations, applies
+    to any SSA intermediate representation, and is suitable for a wide range of
+    compiler analysis problems.
 
 \subsection*{CAnDL and IDL}
 
@@ -107,10 +109,17 @@
 
 \section{Critical Analysis}
 
-    Several iddues remain with the work.
-    Only a finite number of variables.
-    Programs difficult to debug.
-    SSA model needs to be reconstructed whenever acting on the results.
+    The methods of this paper were built on a thorough derivation in
+    \Cref{chapter:theory} and then evaluated in different scenarios on real
+    C/C++ program code using the LLVM compiler framework.
+    Despite this effort of bridging between the algebraic derivations and the
+    subsequent application in real-world scenarios, the work remained a
+    prototype and several issues need to be addressed before it becomes viable
+    for productive use.
+    Most importantly, this includes questions about the prevalence of idiomatic
+    code, the affordability of significant compile-time overhead, and the
+    ability to compensate fundamental limitations of the underlying solver
+    technology.
 
 \subsection*{Generality of Computational Idioms}  
 
@@ -130,6 +139,20 @@
     Some benchmark programs even within NPB and Parboil, e.g.\ the ``sad''
     program, contain idiosyncratic computations that are unlikely to reoccur
     frequently in other contexts.
+
+\subsection*{Compile Time Cost}
+
+    The compile-time cost of idiom detection was evaluated in
+    \Cref{chapter:idioms}, showing that overheads between 35 and 115 precent
+    occurred accross the benchmark programs.
+    Considering that the approach is built on constraint satisfiability
+    methods, this is reassuring result, as the compile times remain within the
+    same order of magnitude.
+    However, from the perspective of compiler optimisations, this might be
+    considered an unacceptable cost.
+    Furthermore, the compile time overhead is unevenly distributed, with
+    disproportionately higher cost on large functions and especially on code
+    sections that are near misses to satisfying the specifications.
 
 \subsection*{Finite Varaiable Numbers}
 
@@ -153,12 +176,6 @@
     That way easy solutions are quickly found, but difficult solutions are not
     discarded entirely.
 
-\subsection*{Compile Time Cost}
-
-    Compiler times costs were 
-
-\subsection*{Acting on Solutions Invalidates SSA Model}
-
 \section{Future Work}
 
     Future work will focus on extending the approach to pointer-intensive
@@ -168,6 +185,17 @@
     Furthermore, the automatic generation of constraint specifications from
     code examples may eventually replace the necessity of writing constraint
     specifications manually.
+
+\subsection*{Complementing with Dynamic and Machine Learning Approaches}
+
+    Several shortcomings of the presented approaches could be alleviated with
+    dynamic approaches that complement the entirely static nature of constraint
+    programming on compiler immediate representation.
+
+    Dynamic analysis could be used to preselect candidate loops, drastically
+    reducing the compile time overhead.
+    Dynamic methods are required to efficiently transfer memory between
+    heterogeneous participants, and to rule out pointer aliasing.
 
 \subsection*{Pointer-chasing Idioms}
 
@@ -203,17 +231,6 @@
     For restricted domains (e.g.\ SPMV), generating IDL code from high-level
     expressions is straightforward.
 
-\subsection*{Complementing with Dynamic and Machine Learning Approaches}
-
-    Several shortcomings of the presented approaches could be alleviated with
-    dynamic approaches that complement the entirely static nature of constraint
-    programming on compiler immediate representation.
-
-    Dynamic analysis could be used to preselect candidate loops, drastically
-    reducing the compile time overhead.
-    Dynamic methods are required to efficiently transfer memory between
-    heterogeneous participants, and to rule out pointer aliasing.
-
 \subsection*{Generating Specifications by Example}
 
     Future work will investigate the automatic generation of idiom
@@ -222,15 +239,18 @@
     loops that implement variations of the same idiom will be matched together
     according to a quality metric.
     This matching will automatically identify code structures that are shared
-    between the examples, and those that are unique to individual hot loops.
+    between the examples, and discard those that are unique to individual hot
+    loops.
     The common structures will then be separated and turned into constraint
     conditions.
-    Suitable quality metrics will be critical to the success of this approach
-    and might profit from machine learning approaches, such as neural networks.
+
+    Suitable quality metrics for graph matching will be critical to the success
+    of this approach and might profit from machine learning approaches, such as
+    neural networks.
     The manually implemented idioms from this work could provide suitable
     training data.
 
-    Eventually, the manual curation of example codes that group toether into
+    Eventually, the manual curation of example codes that group together into
     computational idioms could become redundant.
     Automatic profiling of large quantities of code will allow the automatic
     identification of all the relevant hot loops.
