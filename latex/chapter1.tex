@@ -3,12 +3,12 @@
     For several decades, from the 1970s until the early 2000s, advances in
     processor development followed Moore's Law \citep{4785860} and
     Dennard Scaling \citep{1050511}.
-    This meant that the density of integrated circuits approximately doubled
-    every two years, and processor clock frequencies increased proportionally
-    while maintaining steady power consumption.
-    This enabled continual processor improvements that were driven primarily by
-    rising clock frequencies and microarchitectural refinements, enabling ever
-    faster computations.
+    The density of integrated circuits doubled every two years,
+    and this allowed increased clock frequencies while maintaining
+    steady power consumption.
+    These conditions enabled continual processor improvements that were driven
+    primarily by rising clock frequencies and microarchitectural refinements,
+    enabling ever faster computations.
 
     The physics-driven nature \citep{Hutcheson2018Moore} of these advances in
     hardware has had important implications for software development.
@@ -19,9 +19,9 @@
     architectures of processors - evolved gradually and with few
     paradigmatic changes \citep{8310168}.
     This is best exemplified by the pervasive x86 instruction set architecture,
-    which still retains backward compatibility with its original inception in
+    which still retains backward compatibility with its initial version from
     1978, and dominates desktop processors to this day.
-    Software developers and users could, therefore, rely on ever-increasing
+    Therefore, software developers and users could rely on ever-increasing
     performance from hardware progress alone, without any intervention.
 
 \subsection{Via Multi-Processing to Heterogeneity}
@@ -30,18 +30,18 @@
     end of Dennard Scaling \citep{6307773}.
     While the shrinking of transistors continued, this no longer enabled
     proportionally increased clock frequencies with the same power budget.
-    Processor designers instead started using the increasing transistor
-    budget for adding additional processor cores.
+    Instead, processor designers started using the increasing transistor
+    budget for additional processor cores.
     This shift toward multi-processing has left a deep mark on software
     development.
     New programming paradigms and languages, annotation systems, programming
-    interfaces, libraries and compiler techniques were developed, and continue
-    to evolve, to address the challenges of parallel computing.
+    interfaces, libraries and compiler techniques are still being developed to
+    address the challenges of parallel computing.
 
     In recent years, transistor scaling has slowed significantly.
-    In response to the now prevailing breakdown of both Dennard Scaling and
-    Moore's Law, the hardware industry has turned toward architectural
-    innovation \citep{7878935}.
+    In response to the breakdown of both Dennard Scaling and Moore's Law, the
+    hardware industry has turned toward architectural innovation
+    \citep{7878935}.
     In particular, there is a trend toward specialised processor cores that work
     in tandem as a heterogeneous system.
     Such dedicated processor cores outperform general-purpose cores on
@@ -51,23 +51,23 @@
     different processor cores have to be masked out dynamically at runtime
     (``dark silicon'') \citep{6307773}.
     Disabling a subset of a homogeneous multi-core system renders some of its
-    cores redundant, whereas specialised cores can improve the system
-    performance overall even if they are disabled most of the time and only
-    used for the specific tasks at which they excel.
+    cores redundant.
+    However, specialised cores can improve the system performance overall even
+    if they are disabled most of the time and only used for the specific tasks
+    at which they excel.
 
 \section{The Diminished Role of Traditional Compilers}
 
     Heterogeneous computing can help overcome the scaling limitations of
     homogeneous, general-purpose processors.
-    However, it also poses a challenge to the associated software ecosystem, and
-    it puts into question many of the achievements in portability and longevity
+    However, it also poses a challenge to the associated software ecosystem,
+    putting into question many of the achievements in portability and longevity
     of programs that are taken for granted in modern computing \citep{8719512}.
     Existing software does not automatically benefit from entirely new
     accelerator designs in the way that it profited from the continuous
     improvements of established architectures.
-    Where previously, programs performed better on each succeeding hardware
-    generation, with at most a recompilation required, new accelerators arrive
-    with novel and incompatible interfaces.
+    Where programs previously performed better on each succeeding hardware
+    generation, new accelerators arrive with novel and incompatible interfaces.
 
     In particular, this new hardware landscape greatly diminishes the scope of
     responsibilities and impact that traditional compilers for languages such as
@@ -85,7 +85,7 @@
     They succeed in utilising heterogeneous hardware in situations where
     traditional compilers fail.
 
-    Two examples display the diversity of these approaches:
+    Two examples display the diversity of these approaches.
     Firstly, \citet{Ragan-Kelley2013Halide} developed the domain-specific
     language Halide for image processing.
     The Halide toolchain is able to generate fast code for heterogeneous
@@ -382,7 +382,7 @@
     representations, the chapter derives a novel constraint programming approach
     to express algorithmic program structures as constraint formulas.
     Later sections of the chapter cover implementation decisions, algorithmic
-    complexity, and the relation to established Satisfiability Modulo Theory
+    complexity, and a comparison to established Satisfiability Modulo Theory
     (SMT) problems.
     This forms the methodological basis for
     {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions}}.
@@ -404,32 +404,34 @@
     are each based on a published research article and elaborate on different
     applications of constraint programming in compilers.
 
-    {\bf\Cref{chapter:candl}} develops a full-fledged constraint programming
-    language called CAnDL, with an implementation in the LLVM compiler
-    infrastructure that automatically generates compiler analysis passes from
+    {\bf\Cref{chapter:candl}} develops a constraint programming language called
+    CAnDL and presents an implementation in the LLVM compiler infrastructure.
+    CAnDL that automatically generates compiler analysis passes from
     declarative specifications.
-    The chapter explores several compiler analysis challenges with CAnDL,
+    The chapter explores several compiler analysis tasks with CAnDL,
     including the rapid implementation of peephole optimisations and the
     prototyping of graphics shader optimisations.
-    The chapter is based on published research in
+    This chapter is based on published research in
     \citet{Ginsbach:2018:CDS:3178372.3179515}.
 
     {\bf\Cref{chapter:reductions}} extends CAnDL into the Idiom Detection
     Langauge (IDL) and develops an auto-parallelising compiler for
     complex reduction and histogram computations built on IDL-powered analysis
     functionality.
-    This covers many computations with indirect memory accesses that are
+    These computations cover many loops with indirect data access that are
     inaccessible to established approaches based on data flow and polyhedral
-    analysis, demonstrating the flexibility of constraint programming.
-    The chapter is based on published research in
+    analysis.
+    The flexibility of constraint programming allows it to still capture such
+    irregular computations.
+    This chapter is based on published research in
     \citet{ginsbach2017discovery}.
 
-    {\bf\Cref{chapter:idioms}} applies IDL for detecting algorithmic structures
-    that go beyond the scope of traditional compiler analysis: stencils,
-    complex reductions and histograms, as well as sparse and dense forms of
-    linear algebra.
+    {\bf\Cref{chapter:idioms}} applies IDL to the detection of algorithmic
+    structures that go beyond the scope of traditional compiler analysis:
+    stencils, complex reductions and histograms, as well as sparse and dense
+    forms of linear algebra.
     The detection in LLVM enables the automatic heterogeneous
     acceleration of sequential code and result in significant speedups on
     established benchmark suites.
-    The chapter is based on published research in
+    This chapter is based on published research in
     \citet{Ginsbach:2018:AML:3173162.3173182}.
