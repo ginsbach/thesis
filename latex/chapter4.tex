@@ -316,44 +316,39 @@ End
 
 \begin{table}[t]
   \centering
-  \begin{tabular}{|c|c|}
-    \hline
-    syntax & SSA model formulation \\
-    \hline
-    \hline
+  \definecolor{tableShade}{gray}{0.9}
+  \rowcolors{1}{}{tableShade}
+  \begin{tabular}{cc}
+    \toprule
+    {\bf Syntax} & {\bf SSA model formulation} \\
+    \midrule
     $\text{\bf data\_type}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ &  $(s,x)\in T_\mathcal F$\\
-    \hline
     $\text{\bf opcode}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(s,x)\in I_\mathcal F$\\
-    \hline
     $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf literal}$ &  $x\in C_\mathcal F^*$\\
     $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf argument}$ & $x\in P_\mathcal F^*$\\
     $\text{\bf ir\_type}\ \text{\it variable}\ \text{\bf =}\ \text{\bf instruction}$ & $x\in I_\mathcal F^*$\\
-    \hline
     $\text{\bf function\_name}\ \text{\it variable}\ \text{\bf =}\ \left<\text{\bf s}\right>$ & $(s,x)\in G_\mathcal F$\\
-    \hline
+    \bottomrule
   \end{tabular}
   \caption{The simplest atomic constraints operate on a single variable and
            check element-of properties for the different sets in the SSA model.
            Function names are from the global model.}
   \label{onevaratomics}
-\end{table}
 
-\begin{table}[t]
-  \centering
-  \begin{tabular}{|c|c|}
-    \hline
-    syntax & SSA model formulation \\
-    \hline
-    \hline
+  \vspace{3.7mm}
+  \definecolor{tableShade}{gray}{0.9}
+  \rowcolors{1}{}{tableShade}
+  \begin{tabular}{cc}
+    \toprule
+    {\bf Syntax} & {\bf SSA model formulation} \\
+    \midrule
     $\text{\it variable}\ \text{\bf =}\ \text{\it variable}\text{\bf.args[}\left<\text{\bf n}\right>\text{\bf]}$ & $(n,x,y)\in DFG_\mathcal F$\\
     $\text{\it variable}\ \text{\bf $\in$}\ \text{\it variable}\text{\bf .args}$ & $(x,y)\in DFG_\mathcal F^*$\\
-    \hline
     $\text{\it variable}\ \text{\bf =}\ \text{\it variable}\text{\bf.successors[}\left<\text{\bf n}\right>\text{\bf]}$ & $(n,y,x)\in CFG_\mathcal F$\\
     $\text{\it variable}\ \text{\bf $\in$}\ \text{\it variable}\text{\bf .successors}$ & $(y,x)\in CFG_\mathcal F^*$\\
-    \hline
     $\text{\it variable}\ \text{\bf =}\ \text{\it variable}$ & $x=y$\\
     $\text{\it variable}\ \text{\bf !=}\ \text{\it variable}$ & $x\neq y$\\
-    \hline
+    \bottomrule
   \end{tabular}
   \caption{The second class of atomic constraints operate on pairs of variables.
            The constraints check for graph edges in the
@@ -1141,32 +1136,30 @@ Constraint ComplexFactorisation
     suites consist of 94915 lines of code in total.
     For each benchmark suite, the total number of reported factorisations as
     well as the total compilation time were measured.
-
-    The standard LLVM optimisation was then disabled, and the CAnDL generated
-    detection functionality was used instead.
+    The standard LLVM optimisation was then disabled, and the CAnDL-generated
+    detection functionality was used.
     The same application programs were compiled with the same version of Clang
     and identical compiler options, reporting the number of factorisations
     found, and again measuring the total compilation time.
-    Note that this compilation time includes all the other passes within LLVM
-    plus the CAnDL generated code path.
+    This timing includes all the other passes within LLVM plus the CAnDL
+    code path.
 
 \subsubsection{Results}
 
 \begin{table}[t]
-\centering
-\begin{tabular}{|l||l|l|}
-\hline
-         & LLVM  &CAnDL \\
-\hline
-\hline
-Lines of Code & 203 & 12 \\
-\hline
-Detected in NPB & 1 & 1 + 2 \\
-Detected in Parboil & 0 & 0 + 1\\
-Detected in Rodinia & 24 & 24 + 4\\
-\hline
-Total Compilation time & 152.2s & 152.2s+7.8s \\
-\hline
+  \centering
+  \definecolor{tableShade}{gray}{0.9}
+  \rowcolors{1}{}{tableShade}
+  \begin{tabular}{lll}
+    \toprule
+    & {\bf LLVM} & {\bf CAnDL} \\
+    \midrule
+    Lines of Code & 203 & 12 \\
+    Detected in NPB & 1 & 1 + 2 \\
+    Detected in Parboil & 0 & 0 + 1\\
+    Detected in Rodinia & 24 & 24 + 4\\
+    Total Compilation time & 152.2s & 152.2s+7.8s \\
+    \bottomrule
 \end{tabular}
 \caption{Factorisations enabled by LLVM vs CAnDL}
 \label{fig:factorization_results}

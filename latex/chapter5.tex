@@ -554,35 +554,31 @@ for(i = 0; i < n; i++) {
     file that is used to generate the parser of the IDL compiler is in
     Appendix~\ref{appendix:IDLgrammar}.}
 
-\begin{table}[h]
+\begin{table}[H]
     \lstset{keepspaces}
     \centering
-    \begin{tabular}{|l|l|}
-        \hline
-        CAnDL & IDL\\
-        \hline
-        \hline
+    \definecolor{tableShade}{gray}{0.9}
+    \rowcolors{1}{}{tableShade}
+    \begin{tabular}{p{0.39\textwidth}p{0.553\textwidth}}
+        \toprule
+        {\bf CAnDL} & {\bf IDL}\\
+        \midrule
         {\lstinline[language=CAnDL]!∧!}, {\lstinline[language=CAnDL]!∨!} &
         {\lstinline[language=IDL]!and!}, {\lstinline[language=IDL]!or!} \\
-        \hline
-        {\lstinline[language=CAnDL]!include Spec({A}->{B}!}, &
-        {\lstinline[language=IDL]!inherits Spec with {A} as {B}!}\\[-1mm]
+        {\lstinline[language=CAnDL]!include Spec({A}->{B}!}, \vspace{-2.5mm}\newline
         {\phantom{\lstinline[language=CAnDL]!include Spec(!}\lstinline[language=CAnDL]!{C}->{D})@{E}!} &
-        {\phantom{\lstinline[language=IDL]!inherits Spec w!}\lstinline[language=IDL]!and {C} as {D} at {E}!}\\
-        \hline
+        {\lstinline[language=IDL]!inherits Spec with {A} as {B}!} \vspace{-2.5mm}\newline
+        {\phantom{\lstinline[language=IDL]!inherits Spec!}\hspace{4.4mm}\lstinline[language=IDL]!and {C} as {D} at {E}!}\\
         {\lstinline[language=CAnDL]!{A}={B}!},
         {\lstinline[language=CAnDL]!{A}≠{B}!} &
         {\lstinline[language=IDL]!{A} is [not] equal to {B}!} \\
-        \hline
         {\lstinline[language=CAnDL]!domination({A},{B})!} &
         {\lstinline[language=IDL]!{A} control flow dominates {B}!} \\
-        \hline
         {\lstinline[language=CAnDL]!opcode{A} = store!} &
         {\lstinline[language=IDL]!{A} is store instruction!} \\
-        \hline 
         {\lstinline[language=CAnDL]!{A} ∈ {B}.args!} &
         {\lstinline[language=IDL]!{A} has data flow to {B}!} \\
-        \hline
+        \bottomrule
     \end{tabular}
     \caption{The Idiom Detection Language (IDL) is derived from CAnDL.
              However, it uses a more descriptive syntax, without uncommon
