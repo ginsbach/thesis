@@ -1322,198 +1322,64 @@ private:
               $B:=\{(x_u)_{u\in U}\mid x\in S_M(V,C), x_v=z_v\text{ for all }v\in X\}\subset N^U$.
         \end{enumerate}
     \end{definition}
-%    \begin{theorem}{Backtracking Solution for Collect-all Constraint Problems}{theo5}
-%        For a constraint problem $(V,C)$ with a backtracking solution
-%        $(P_k)_{k=1\dots n}$, a subset $U\subset V$ with
-%        $U=\{v_1,\dots,v_m\}$, and some $N>1$, the predicates
-%        $(P_k[C^{N[U]}])_{k=1\dots n}$ defined by
-%        \begin{align*}
-%            P_k[C^{N[U]}](M,x,y):={}&P_k(M,x,y)&\text{for }1\leq k\leq m\\
-%            P_k[C^{N[U]}](M,x,y):={}&\left\{
-%                \begin{array}{ll}
-%                    1&\text{if }y = R(M,(x_1,\dots,x_m))_{1+k-m}\\
-%                    0&\text{otherwise}
-%                \end{array}\right.&\text{for }m<k\leq n
-%        \end{align*}
-%        give a backtracking solution of $(W,C^{N[U]})$, where
-%        $W:=V\setminus U\cup\{1,\dots,N\}\times U$ and
-%        $R(M,x)\subset\mathbb N^{(n-m)N}$ is given by
-%    \end{theorem}
 \end{figure}
 
 \subsection{Satifiability Modulo Theory}
 
-    SSA constraint problems can to a certain extent be interpreted as an
-    unconventional instance of Satisfiability Modulo Theory (SMT) problems.
-    Howeverm, where typical SMT problems might operate on the
-    {\em theory of linear arithmetic} or the {\em theory of bit-vectors},
-    SSA constraint problems operate on the {\em theory of SSA values in the
-    context of a function}.
-    This of course is not an established mathematical construct, therefore
-    off-the-shelve SMT solvers are of limited use for solving them.
+    There are some parallels between SSA constraint problems and other
+    satisfiability problems, most importantly Satisfiability Modulo Theory
+    (SMT).
+    Both methods construct formulas with constraints on variables that are
+    combined with logical connectors, and backtracking is in both cases used as
+    the basis for constructing efficient solvers.
+    This suggests that recasting SSA constraint problems in the language of SMT
+    was possible:
+    Where typical SMT problems might on the {\em theory of linear arithmetic} or
+    the {\em theory of bit-vectors}, SSA constraint problems operate on the
+    {\em theory of SSA intermediate representation}.
+    Powerful solvers have been developed for SMT problems over the last decade,
+    making this appear worthwhile.
+
+    However, the structure and usage scenario of SSA constraint problems make
+    them unfitting for this approach.
+    The contextual nature of SSA constraint problems means that the constraint
+    formulation in SMT would have to encode also the graph structure of the
+    SSA function as context.
+    This encoding is non-trivial and would introduce significant overhead.
+
+    Furthermore, one SSA constraint problem is typically evaluated with many
+    different SSA function contexts, but
+    an off-the-shelf SMT solver has no way of leveraging this knowledge.
+    SSA constraint problems are crafted by hand, and some manual tuning is
+    acceptable to enable quick solving times.
+    In particular, the backtracking order for variables can be adjusted.
+    Thus, it is a requirement for the solver to have consistently good
+    performance across all SSA function contexts, but not necessarily across
+    every possible constraint formula.
+    Instead, it can dictate specific programming styles.
+    The solver depending on such pre-processed formulas makes redundant many
+    sophisticated optimisations that are crucial for SMT.
 
 \section{Summary}
 
-%
-%\section{Implementation of Constraint Predicates}
-%
-%    With the solver approach derived, it now needs to be established how real
-%    constarint problem predicates can be algorithmically implemented in order
-%    to evaluate the required functions.
-%
-%\subsection{Important Graph Properties}
-%
-%    With our established notation, we can now transfer standard compiler
-%    analysis problems into this more formal language.
-%    Most of these are based on graph theoretic considerations, so we
-%    will firstly need to recapitulate some graph theory basics.
-%    Firstly, there is the notion of {\em cuts} of graphs, that we will introduce
-%    here in a hybrid version of edge based and vertex based modelling.
-%
-%    \begin{definition}{Connections and Cuts}{def:cuts}
-%        Consider an adjacency set $E\subset\mathbb{N}\times\mathbb{N}$ of a
-%        directed graph and let $a,b\in\mathbb{N}$.
-%        \newline
-%        A {\em connection} between $a$ and $b$ in $E$ is a subset
-%        $A\subset\mathbb{N}$ such that a finite sequence $c_1,\dots,c_n$
-%        exists with
-%        \begin{gather*}
-%            a=c_1\hspace{1cm}c_2,\dots,c_{n-1}\in A\hspace{1cm}b=c_n\\
-%            (c_k,c_{k+1})\in E\hspace{1em}\text{for all}\hspace{1em}k=1,\dots,n-1.
-%        \end{gather*}
-%        A {\em cut} between $a$ and $b$ in $E$ is a subset $B\subset E$
-%        such that no {\em connection} between $a$ and $b$ in $E\setminus B$
-%        exists.
-%        We define the {\em set of cuts} between $a$ and $b$ in $E$ as
-%        \begin{align*}
-%            \text{Cuts}_E(a,b):=\{B\subset E\mid B\text{ is {\em cut} between $a$ and $b$ in $E$}\}
-%        \end{align*}
-%    \end{definition}
-%
-%    These notions are quite intuitive, two vertices in a graph have a connection
-%    if one can reach the other via the available edges and by ``cutting'' these
-%    edges, they are no longer connected.
-%
-%    These definitions are very useful in order to identify crucial properties of
-%    data and control flow graphs.
-%    Most standard is the the definition of a dominator in the control flow
-%    graph: An instruction $d$ is said to dominate another instruction $n$ if
-%    every path from the entry node to $n$ through the control flow graph must
-%    go through $d$.
-%    In our model this is of course equivalent to the following:
-%
-%    \begin{definition}{Dominator}{def:dominator}
-%        Consider an instruction $n$ in a function $\mathcal F$.
-%        A {\em dominator} of $n$ in $\mathcal{F}$ is an instruction $d$ such
-%        that $\{(d,m)\mid(d,m)\in CFG_\mathcal{F}^*\}$ is a {\em cut} between $1$ and $n$ in $CFG_\mathcal{F}^*$.
-%    \end{definition}
-%
-%    Another important definition is the concept of control dependence.
-%    Control dependence models the behaviour of conditional control flow.
-%    Instructions that are executed only in some control flow paths are control
-%    dependent on the conditional branches that preceed them.
-%
-%    \begin{definition}{Control Dependence}{cdg}
-%        Consider instructions $a,b$.
-%        We say that an $b$ is control dependent on $a$ if a instructions
-%        $c,c'$ exist such that $(a,c),(a,c')\in CFG_\mathcal{F}^*$ and
-%        \begin{align*}
-%            \{(a,c)\}\in{}&{}\text{Cuts}_E(a,b)\\
-%            \{(a,c')\}\notin{}&{}\text{Cuts}_E(a,b)\text{.}
-%        \end{align*}
-%        We define the {\em control dependence graph} as follows
-%        \begin{align*}
-%            CDG_\mathcal{F}:=\{(a,b)\in\mathbb{N}^2\mid b\text{ control dependent on }a\}
-%        \end{align*}
-%    \end{definition}
-%
-%\begin{figure}[p]
-%    \centering
-%    \includegraphics[width=\textwidth,height=1.5\textwidth]{figures/schaubild2.pdf}
-%
-%    \vspace{27.38136pt}
-%    \caption{Computation of the control dependence graph.}
-%    \label{fig:pdg}
-%\end{figure}
-%
-%\subsection{Control Dependence Example}
-%
-%    The control dependence graph is a function of the control flow graph, as is
-%    directly apparent from \Cref{def:cdg}.
-%    We can see how an example control dependence graph is computed in
-%    \Cref{fig:pdg}, from the control flow graph of the \texttt{dot} function
-%    in \Cref{fig:derivemaths}.
-%    From the definition it is immediately obvious that we need to only consider
-%    conditional branches as origins of control dependence.
-%
-%    We can consider the two conditional branches $2$ and $16$ independently.
-%    On the right, we consider only $2$.
-%    We check the defining property: On the top of the figure, all the
-%    instructions that are not reachable from $2$ without the edge $(2,4)$ are in
-%    grey.
-%    Below this, all instructions not reachable from $2$ without $(2,3)$ are
-%    grey.
-%    We see that $4,5$ are always reachable and $1$ is never reachable, these are
-%    therefore not control dependent on $2$.
-%    All the other instructions are control dependent on $2$.
-%
-%    Once we have computed this for all conditional branches, we take the union
-%    on graphs and get the complete control dependence graph of the function.
-%    Note what this graph represents:
-%    Once the loop in the function has been unrolled, it contains a conditional
-%    and a loop.
-%    Eveything within the body of the conditional is control dependent on $2$.
-%    Everythig within the loop as well as everything afterwards is control
-%    dependent on $16$.
-%
-%\subsection{Phi Dependence Graph}
-%
-%    Phi nodes are fundamental in single static assignment form and need special
-%    care.
-%    The value that a phi node takes depends on from where a phi node was
-%    reached.
-%    We need to encapsulate this in a graph.
-%
-%    \begin{definition}{Phi Dependence Graph}{def:pog}
-%        Let $p$ a phi node and $c$ a conditional branch instruction.
-%        We say that the outcome of $p$ depends on $c$ if there is a branch
-%        instruction $b$ that reaches $p$ such that $b$ is control dependent on
-%        $c$.
-%
-%        This defines the {\em phi dependence graph} $\Phi DG_\mathcal{F}$.
-%    \end{definition}
-%
-%
-%\subsection{Program Dependence Graph}
-%
-%    After the control flow, data flow and control dependence graph, we lastly
-%    introduce the {\em program dependence graph}.
-%    It is the most exhaustive tool that we have to describe how values depend on
-%    each other.
-%
-%    \begin{definition}{Program Dependence Graph}{def:pdg}
-%        The {\em program dependence graph} is defined as the union of data flow
-%        and control dependence graphs.
-%        \begin{align*}
-%            PDG_\mathcal{F}:=DFG_\mathcal{F}^*\cup CDG_\mathcal{F}^*\cup\Phi DG_\mathcal{F}\text{.}
-%        \end{align*}
-%    \end{definition}
-%
-%    With the program dependence graph, we can now define subsections of the
-%    program that are self-contained and can be separated into their own
-%    function.
-%    This works even if they contain complicated control flow.
-%    Firstly, we need a definition of an interface.
-%
-%    \begin{definition}{Interface}{def:interface}
-%        Let $a\in CFG_\mathcal{F}^*$ and $b_1,\dots,b_n\in DFG_\mathcal{F}^*$.
-%        Furthermore let $A\subset\mathbb{N}$ a set of instructions.
-%
-%        We say that $(b_1,\dots,b_n)$ is an interface to $A$ if it is a cut
-%        between $o$ and $A$ in $PDG_\mathcal{F}$ for any of the following $o$:
-%        \begin{itemize}
-%            \item $o$ is a paramter
-%            \item $o$ is impure
-%        \end{itemize}
-%    \end{definition}
-%
+    The chapter introduced an approach for applying constraint programming to
+    SSA intermediate representation code.
+    Based on a model of the static structure of SSA programs,
+    {\it SSA constraint problems} were defined.
+    These are formulas that impose restrictions on compiler intermediate code,
+    turning the detection of adhering program parts into a constraint
+    satisfiability problem.
+    The chapter derived efficient algorithms for solving SSA constraint problems
+    and discussed several significant types of constraint formulas, reflecting
+    compiler analysis methods like data flow and dominance relationships.
+
+    Constraint programming on SSA code forms the principal methodological basis
+    of the thesis.
+    \Cref{chapter:candl,chapter:reductions} refer back to the definitions in
+    this chapter for deriving the languages CAnDL and IDL, which integrate
+    constraint programming on SSA code into LLVM.
+    Preceding that, \Cref{chapter:literature} provides a review of related
+    literature, putting the work into a broader context. 
+
+
+    
