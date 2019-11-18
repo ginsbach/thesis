@@ -103,15 +103,15 @@
     Some versions are provided directly by hardware vendors to support
     accelerators \citep{mkl,cublas,clblas,apl,qml}, while others originate as
     academic projects \citep{Wang:2013:AAG:2503210.2503219}.
-    These different competing implementations use a plethora of approaches to achieve as
+    These competing implementations use a plethora of approaches to achieve as
     close to peak performance as possible.
-    This includes manually written assembly code, but also highly advanced
+    These includes manually written assembly code, but also highly advanced
     code generation techniques, custom program representations and many more.
 
-\subsection{The Consequences of Compiler Declining}
+\subsection{The Consequences of the Decline of Compilers}
 
-    Domain-specific languages and library interface make the full performance of
-    heterogeneous systems accessible to programs.
+    Domain-specific languages and library interfaces make the full performance
+    of heterogeneous systems accessible to programs.
     These success stories, however, leave significant problems unaddressed.
     The adoption costs are high, requiring application rewrites for
     accelerators.
@@ -125,7 +125,7 @@
     hand, complete rewrites are required in entirely novel software ecosystems,
     with an unclear future of support.
 
-    On heterogeneous systems, programmers can rely on compilers for existing
+    On homogeneous systems, programmers could rely on compilers for existing
     programming languages to evolve in lockstep with processor development.
     For example, even decades-old C++ source code compiles into efficient
     programs for the newest generation of x86 processors.
@@ -139,25 +139,25 @@
     launch of core workloads in the form of computational kernels, which are
     then executed as separate and opaque programs.
 
-    It may appear evident that, for example, a full C++ or Java compiler cannot
-    be provided for a typical graphics processor -- after all, most graphics
-    processors have hardware limitations that prevent them from implementing the
-    entire language standard.
+    It may appear that, for example, a C++ or Java compiler cannot
+    be provided for a typical graphics processor.
+    After all, most graphics processors have hardware limitations that prevent
+    them from implementing the entire language standard.
     Indeed, many accelerators are even further from Turing complete.
-    However, this should not prevent a partial compiler, offloading suitable
-    subprograms, while falling back on homogeneous hardware providing a full
-    language implementation for the remainder.
+    However, this should not prevent a partial compiler.
+    Such a partial compiler would compile fitting program parts for accelerators
+    and utilise a fallback system for the remainder of the program.
     After all, that is precisely the result achieved with libraries and
-    domain-specific languages as well, and likely the desirable outcome.
+    domain-specific languages, and likely the desirable outcome.
     Despite the apparent convenience of such an approach, the next section gives
-    reasons why this has not been championed so far.
+    reasons why such a scheme has not been championed so far.
 
 \section{Host Compilers and Kernel Compilers}
 \label{sec:hostkernel}
 
     While mainstream compilers for languages such as C/C++, Fortran or Java
     generally fail to exploit the full performance of heterogeneous systems, a
-    specific class of compilers already play an essential role in
+    specific class of compilers already plays an essential role in
     targeting heterogeneous hardware.
     Many of the kernel programs that remain opaque to the application compilers
     are themselves products of other, specialised compilers.
@@ -165,21 +165,21 @@
     compilers}.
     This distinction is mirrored by the differences between {\em host languages}
     and {\em kernel languages}.
-    Host compilers translate full programs written in host languages,
-    such as the previously mentioned C/C++, Fortran and Java, while kernel
+    Host compilers translate full programs written in host languages -- such as
+    the previously mentioned C/C++, Fortran and Java -- while kernel
     compilers handle small computational kernels that are expressed in dedicated
     domain-specific programming languages.
-    The two classes of compilers have developed distinctly.
+    The two classes of compilers have developed differently.
     Kernel compilers successfully apply many of the techniques that are severely
     limited on host compilers
     \citep{Murphy2014LimitsOD,Maleki:2011:EVC:2120965.2121464}.
     They reason automatically about parallelism
-    \citep{Steuwer:2017:LFD:3049832.3049841}, are more sucessful at accurately
+    \citep{Steuwer:2017:LFD:3049832.3049841}, are more successful at accurately
     modelling data dependencies \citep{Baghdadi:2019:TPC:3314872.3314896}, and
     incorporate iterative compilation techniques
     \citep{Ansel:2014:OEF:2628071.2628092}.
 
-    This is made possible by a combination of factors that apply uniquely to
+    This is made possible by a combination of factors that uniquely apply to
     kernel compilers:
     Smaller programs allow for more expensive compilation techniques;
     more restrictive languages and intermediate representations allow for
@@ -191,7 +191,7 @@
     on generic programs.
     Furthermore, kernel compilers often run in more controlled environments,
     with less need for predictability, reproducibility, and stability.
-    The range of input programs might even be small enough to ship them in
+    The range of input programs might even be small enough to ship them in an
     already compiled form, making the compiler merely a tool in a
     library-implementation process.
 
@@ -199,15 +199,15 @@
     unsurprising that they have lagged behind these developments.
     Because they cannot rely on such a restricted environment, host compilers
     are unable to match the optimisation capabilities of kernel compilers.
-    Domain specific compilers and languages, as well as libraries, have
+    Domain-specific compilers and languages, as well as libraries, have
     therefore not been championed only because their restricted program
     spaces match the capabilities of particular heterogeneous accelerators.
     The restricted environment also makes them intrinsically more powerful and
     able to generate better code.
 
     Hybrid approaches, such as OpenCL, reinforce these observations.
-    The language is domain specific only in its expression of parallelism, but
-    otherwise designed to be general purpose.
+    The language is domain-specific in its expression of parallelism, but
+    otherwise designed to be quite general-purpose.
     Compilers are provided for many structurally different processors.
     However, as a consequence of being a relatively unrestricted language, the
     compilers often underperform and the language is notoriously lacking in
@@ -367,7 +367,7 @@
     compiler tool for efficiently mapping sequential programs onto heterogeneous
     systems.
     This develops the thesis all the way from theoretical discussions of
-    constraint programming approaches in compilers to the experimental
+    constraint programming approaches in compilers, to the experimental
     evaluation of real performance improvements on established benchmark suites
     and scientific applications.
 
