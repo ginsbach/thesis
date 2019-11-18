@@ -82,7 +82,7 @@
     \Cref{chapter:candl} developed the constraint programming language CAnDL
     using this methodology and showed that it could also recognise intricate
     control flow.
-    This chapter presents the Idiom Description Language (IDL) as an extension
+    This chapter presents the Idiom Detection Language (IDL) as an extension
     of CAnDL and uses it to implement the detection of CReHCs.
     The additional language features enable IDL to express well-behaved
     kernel functions, which capture the reduction operators of CReHCs.
@@ -533,7 +533,7 @@ for(i = 0; i < n; i++) {
 \end{lstlisting}
 \end{figure}
 
-\section{The Idiom Description Language}
+\section{The Idiom Detection Language}
 
     For automatic detection during compilation, the conditions from
     \Cref{section:histocond,section:scalarcond} are specified formally in
@@ -544,7 +544,7 @@ for(i = 0; i < n; i++) {
     computations.
 
     This extension of CAnDL leads to the definition of the
-    Idiom Description Language (IDL).
+    Idiom Detection Language (IDL).
     IDL uses the solver infrastructure of CAnDL and retains the same high-level
     program structure.
     However, it extends the language and modifies the syntax to be more
@@ -584,7 +584,7 @@ for(i = 0; i < n; i++) {
         {\lstinline[language=IDL]!{A} has data flow to {B}!} \\
         \hline
     \end{tabular}
-    \caption{The Idiom Description Language (IDL) is derived from CAnDL.
+    \caption{The Idiom Detection Language (IDL) is derived from CAnDL.
              However, it uses a more descriptive syntax, without uncommon
              unicode characters such as ``$\land$'', ``$\lor$'', ``$\in$'',
              and ``$\neq$''.}
