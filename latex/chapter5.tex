@@ -1500,23 +1500,29 @@ for( i=0; i<NUM_KEYS; i++ )
 
 \section{Conclusion}
 
-    This chapter developed a new compiler based approach that automatically
-    detects a wide class of reductions.
-    This approach is based on a constraint based formulation which has
-    been implemented as an LLVM pass. We use a customized constraint
-    solver to identify program subsets that adhere to the constraint
-    specification.  By representing general reductions in a formal
-    constraint language, we separate specification from detection
-    providing a modular and extendable approach to idiom recognition.We
-    showed a brief example of how this could be used to detect dense
-    matrix multiplication code.  Once reductions are discovered, we
-    automatically generate parallel code to exploit the reduction. This
-    approach is robust and was evaluated on C versions of three well known
-    benchmark suites: NAS, Parboil and Rodinia. We detected 
-    more reductions than existing approaches and were alone in being able
-    to detect computationally intense  histogram reductions. Such
-    reductions were shown to give significant performance improvement.
-    Future work will extend the constraint formulation to consider other
-    commonly occurring idioms and target domain specific languages. Once the number of idioms detected begins to grow, a smart profitability analysis will be needed and will also be the subject of future work.
+    The chapter developed a new compiler-based approach to recognise a broad
+    generalisation of reductions automatically during compilation.
+    The automatic detection is made possible by a constraint formulation in the
+    Idiom Detection Language (IDL), an extension of the
+    Compiler Analysis Description Language (CAnDL) in LLVM.
+    By representing Complex Reduction and Histogram Computations (CReHCs) in
+    this declarative language, the specification was kept separate from
+    detection considerations, providing a modular and extendable approach to
+    idiom recognition.
+    Reduction parallelism in recognised reductions was exploited by
+    privatising the reduction variables.
 
-\section{Summary}
+    The approach proved robust when evaluated on C versions of three well-known
+    benchmark suites: NAS, Parboil and Rodinia.
+    It detected more reductions than existing approaches and was alone in being
+    able to detect computationally intense histogram reductions.
+    Such reductions were shown to give significant performance improvements.
+
+    \paragraph*{Outlook}
+    The chapter introduced a computational idiom in detail and provided the
+    Idiom Detection Language (IDL) with the required tools to automatically
+    recognise the idiom during compilation.
+    \Cref{chapter:idioms} uses the methods 
+ to recognise a range of other
+    common algorithmic structures, together resulting in significant coverage
+    of benchmark bottlenecks.
