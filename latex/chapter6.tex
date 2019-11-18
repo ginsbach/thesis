@@ -853,33 +853,33 @@ gemm_in_lift(A, B, C, alpha, beta) {
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|r|l|}
-\hline
-\multirow{7}{*}{\bf NPB}
- & BT & Block Tridiagonal Solver\\[-2.9mm]
- & CG & Conjugate Gradient\\[-2.9mm]
- & DC & Data Cube Operator\\[-2.9mm]
- & EP & Embarrassingly Parallel Marsaglia Polar Method\\[-2.9mm]
- & FT & Fast Fourier Transform\\[-2.9mm]
- & IS & Small Integer Bucket Sort \\[-2.9mm]
- & LU & Lower-Upper Symmetric Gauss-Seidel Solver\\[-2.9mm]
- & MG & MultiGrid Approximation\\[-2.9mm]
- & SP & Scalar Pentadiagonal Solver\\[-2.9mm]
+\begin{tabular}{lrl}
+\toprule
+\multirow{6}{*}{\bf NPB}
+ & BT & Block Tridiagonal Solver\\[-3.0mm]
+ & CG & Conjugate Gradient\\[-3.0mm]
+ & DC & Data Cube Operator\\[-3.0mm]
+ & EP & Embarrassingly Parallel Marsaglia Polar Method\\[-3.0mm]
+ & FT & Fast Fourier Transform\\[-3.0mm]
+ & IS & Small Integer Bucket Sort \\[-3.0mm]
+ & LU & Lower-Upper Symmetric Gauss-Seidel Solver\\[-3.0mm]
+ & MG & MultiGrid Approximation\\[-3.0mm]
+ & SP & Scalar Pentadiagonal Solver\\[-3.0mm]
  & UA & Unstructured Adaptive Mesh\\
-\hline
+\specialrule{\lightrulewidth}{0pt}{0pt}
 \multirow{7}{*}{\bf Parboil}
- & bfs          & Breadth-First Search\\[-2.9mm]
- & cutcp        & Distance-Cutoff Coulombic Potential\\[-2.9mm]
- & histo        & Saturating Histogram\\[-2.9mm]
- & lbm          & Lattice-Boltzmann Method Fluid Dynamics\\[-2.9mm]
- & mri-gridding & Magnetic Resonance Imaging - Gridding\\[-2.9mm]
- & mri-q        & Magnetic Resonance Imaging - Q\\[-2.9mm]
- & sad          & Sum of Absolute Differences (part of MPEG encoding)\\[-2.9mm]
- & sgemm        & Dense Matrix-Matrix Multiply\\[-2.9mm]
- & spmv         & Sparse-Matrix Dense-Vector Multiplication\\[-2.9mm]
- & stencil      & Iterative 3D Jacobi Stencil\\[-2.9mm]
+ & bfs          & Breadth-First Search\\[-3.0mm]
+ & cutcp        & Distance-Cutoff Coulombic Potential\\[-3.0mm]
+ & histo        & Saturating Histogram\\[-3.0mm]
+ & lbm          & Lattice-Boltzmann Method Fluid Dynamics\\[-3.0mm]
+ & mri-gridding & Magnetic Resonance Imaging - Gridding\\[-3.0mm]
+ & mri-q        & Magnetic Resonance Imaging - Q\\[-3.0mm]
+ & sad          & Sum of Absolute Differences (part of MPEG encoding)\\[-3.0mm]
+ & sgemm        & Dense Matrix-Matrix Multiply\\[-3.0mm]
+ & spmv         & Sparse-Matrix Dense-Vector Multiplication\\[-3.0mm]
+ & stencil      & Iterative 3D Jacobi Stencil\\[-3.0mm]
  & tpacf        & Two Point Angular Correlation Function\\
-\hline
+\bottomrule
 \end{tabular}
 \caption{Overview of the 21 programs used for evaluation, grouped into two
          suites}
@@ -1136,12 +1136,11 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 \begin{table}[p]
   \centering
   \small
-  \begin{tabular}{|l||cccccc|ccccc|cccc|}
-  \hline
-  & \multicolumn{6}{c|}{\bfseries\large CPU} & \multicolumn{5}{c|}{\bfseries\large iGPU} & \multicolumn{4}{c|}{\bfseries\large GPU} \\
+  \begin{tabular}{l|cccccc|ccccc|cccc}
+  \toprule
+  & \multicolumn{6}{c|}{\bfseries\large CPU} & \multicolumn{5}{c|}{\bfseries\large iGPU} & \multicolumn{4}{c}{\bfseries\large GPU} \\
   & MKL & libSPMV & Halide & clBLAS & CLBlast & Lift & clSPARSE & libSPMV & clBLAS & CLBlast & Lift & cuSPARSE & libSPMV & cuBLAS & Lift \\
-  \hline
-  \hline
+  \midrule
    CG      & \msb{1504.21} & --- & --- & --- & --- & --- & \msb{644.02} & --- & --- & --- & --- &  \msb{113.51} & --- & --- & --- \\[3mm]
    EP      & --- & --- & --- & --- & --- &  \msb{32762.50}  & --- & --- & --- & --- & \msb{30983.40}  & --- & --- & --- & \msb{24680.70} \\[3mm]
    IS      & --- & --- & \msb{426.95} & ---  & --- & \ms{1765.61}  &  --- & --- & --- & --- & \msb{547.28}  & --- & --- & --- & \msb{99.95} \\[3mm]
@@ -1152,7 +1151,7 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
    spmv    & --- & \msb{218.17} & --- & --- & --- & --- & --- &\msb{102.233} & --- & --- & --- & --- &\msb{18.437} & --- &  ---\\[3mm]
    stencil & --- & ---& \msb{5760.81} & --- & --- & \ms{21951.80}  & --- & ---& --- & --- & \msb{2261.48} & --- & ---& --- & \msb{279.38} \\[3mm]
    tpacf   & --- & ---& --- & --- & --- & \msb{19276.40}  & --- & ---& --- & --- & \msb{61111.90} & --- & ---& --- & \msb{23358.20} \\
-  \hline
+  \bottomrule
 \end{tabular}
 \caption{Detailed performance results for each heterogeneous backend interface:
          The run time of each benchmark program was measured in milliseconds for
