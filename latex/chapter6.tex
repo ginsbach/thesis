@@ -3,13 +3,13 @@
     Complex Reduction and Histogram Computations (CReHCs) -- and showed how the
     Idiom Detection Language (IDL) enables its discovery and automatic
     parallelisation.
-    This chapter takes a broader view of automatic idiom detection that also
+    This chapter takes a broader view of automatic idiom detection, and also
     includes common sparse and dense linear algebra computations and stencil
     codes.
     Instead of implementing bespoke parallelisation passes, the chapter
-    follows the vision laid out in the introduction, using the detection results
-    to translate relevant program parts into stronger models.
-    Existing tools are then used to leverage the implied domain knowledge.
+    follows the vision laid out in the introduction:
+    The detected idioms are translated into stronger models, and external
+    code generators are then used to leverage the implied domain knowledge.
 
     The goal of this chapter is to take abstract algorithmic concepts, which are
     conventionally explored outside the context of compiler analysis --
@@ -54,8 +54,6 @@
     More narrow domain-specific languages (DSLs) have been proposed by
     \citet{Ragan-Kelley2013Halide,Franchetti09OL,Rompf:2012:LMS:2184319.2184345}
     among others in attempts to deliver both portability and performance.
-    However, this class is quickly evolving, and with most of these DSLs being
-    academic projects, the adoption and long term support remain unclear.
 
     Hardware is becoming increasingly heterogeneous, most recently with the
     development of deep neural network accelerators such as the Google TPU
@@ -67,19 +65,21 @@
     Firstly, application developers have to learn multiple specialised DSLs and
     vendor-specific libraries if they want good performance.
     Secondly, they will have to rewrite their existing applications to use them.
-    Thirdly, this ties code into an ecosystem with unclear future support
-    that might soon become obsolete.
+    Thirdly, this ties code into ecosystems that might soon become obsolete.
+    Accelerators DSLs are quickly evolving, and the adoption and long-term
+    support of academic projects remain unclear.
     This situation is a severe impediment to the wide-spread efficient
     exploitation of heterogeneous hardware.
 
     The ideal would be a compiler that automatically maps existing code to
-    heterogeneous hardware, with full performance and requiring no directions
+    heterogeneous hardware, with full performance, and requiring no directions
     from the application programmer.
-    While this is unrealistic in general, the chapter presents a system that
-    approximates such a general-purpose system by utilising know-how that is
-    already available and encapsulated in the existing backend interfaces.
+    While this remains an ambitious goal for the general case, this chapter
+    presents a system that approximates such a general-purpose solution by
+    utilising know-how that is already available and encapsulated in existing
+    backend interfaces.
     Instead of implementing code generation for each heterogeneous
-    accelerator, the system maps user code to heterogeneous hardware using the
+    accelerator, the system maps user code to heterogeneous hardware via
     existing libraries and domain-specific languages, effectively outsourcing
     the code generation to hardware and domain specialists.
 
@@ -96,11 +96,11 @@
     available for each of them.
     The Idiom Detection language (IDL) then enabled the automatic detection of
     idioms.
+    Once detected, the idioms are translated into the appropriate DSL or
+    replaced with an available library call.
+    The optimised DSL output code, or the pre-built optimised library, is then
+    linked into the original program.
 
-    Once detected, the idioms are mechanically translated into the appropriate
-    DSL or replaced with a library call.
-    This optimised code, or the pre-built optimised library, is then linked into
-    the original program.
     As backends, the libraries cuSparse, clSparse, cuBLAS, clBLAS for
     sparse and dense linear algebra and the DSLs Halide
     \cite{Ragan-Kelley2013Halide} and Lift \cite{SteuwerRD17} were used in the
@@ -119,13 +119,13 @@
     The approach is also highly robust, has been applied to the entire NPB
     and Parboil benchmark suites and was evaluated on three platforms.
 
-    The chapter presents a novel approach that:
+    The chapter presents a novel approach that
     \begin{itemize}
-    \item Proposes the Idiom Detection Language (IDL) for detecting idiomatic
-          code sections that can be accelerated by domain-specific backends.
-    \item Implements several common computational idioms in IDL to automatically
-          discover opportunities for accelerator exploitation.
-    \item Efficiently translates and maps the detected idioms to APIs for
+    \item proposes the Idiom Detection Language (IDL) for detecting idiomatic
+          code sections that can be accelerated by domain-specific backends;
+    \item implements several common computational idioms in IDL to automatically
+          discover opportunities for accelerator exploitation;
+    \item efficiently translates and maps the detected idioms to APIs for
           heterogeneous systems.
     \end{itemize}
 
@@ -139,7 +139,7 @@
     stencils in Fortran code.
     The focus of that work is on inferring post invariants based on syntax
     guided synthesis in translation to Halide.
-    However, it uses a narrow approach to selecting code snippets and relies on
+    However, it uses a narrow approach to code snippet selection and relies on
     well-structured Fortran with occasional user annotations.
     The IDL approach is distinct in its use of an external programming language
     for the flexibility of describing arbitrary idioms.
@@ -178,12 +178,13 @@
 
 \subsection{Compiler Flow}
 
-    The structure of the approach is described in more detail in
-    \Cref{fig:methodology}.
-    The compiler takes two programs as inputs: the first is the source code of
-    the user program, the second describes the computational idioms that are to
-    be detected specified in IDL.
-    The same idioms, of course, can be detected across many user programs.
+    \Cref{fig:methodology} gives a detailed overview of the compiler flow that
+    underlies the approach of this chapter.
+    The grey box at the bottom left is the IDL-enabled compiler.
+    It takes two programs as inputs: the first is the source code of
+    the user program, the second specifies the computational idioms that are to
+    be detected.
+    The same idioms can be discovered in many user programs.
     Therefore, the IDL program does not have to change from one run to the next.
 
 \begin{figure}[p]
@@ -199,36 +200,37 @@
     \label{fig:methodology}
 \end{figure}
 
-    The source code of the user program is compiled into optimised LLVM IR code,
-    and the idiom description is parsed and represented internally as a C++
+    The source code of the user program at the top left is compiled into
+    optimised LLVM IR code.
+    The idiom description is parsed and represented internally as a C++
     object, as previously described in \Cref{chapter:theory},
     \Cref{subsec:impl}.
-    The C++ representation of the constraints and the LLVM IR code
-    are then passed as inputs to the backtracking solver, which detects all
-    cases where the idioms can be found in the LLVR IR.
+    The solver takes the optimised LLVM IR code and the internal C++
+    representation of the constraint formula as inputs.
+    It uses backtracking to recognises all idiomatic parts in the user program.
 
     The recognised idioms and the LLVM IR code are then passed on to the
     transformation phase of the system.
-    The sections of code corresponding to computational idioms are extracted
-    and then reformulated for the appropriate heterogeneous backends.
+    This phase extracts the idiomatic code sections from the user program and
+    reformulates then for appropriate heterogeneous backends.
     For libraries, this means replacing the code covered by the idiom with a
     library call. 
 
     For DSL interfaces, the process is a little more involved.
     The user code captured by idioms is extracted and replaced with functions
     calls to shim interfaces.
-    The extracted code features are translated into the appropriate DSL and
-    passed on to the external DSL compiler, which optimises it and generates a
-    library object that implements the required function interfaces.
+    The extracted code features are translated into the appropriate DSL.
+    External DSL compilers are responsible for optimising this DSL code and
+    generating library objects that implement the required function interfaces.
     The translation to DSL mainly involves representing the kernel functions.
     Idioms without kernel functions correspond to fixed DSL programs and
     require no additional work.
-    The generated code is then linked with the object code from the main program.
+    The generated code is linked with the object code from the user program.
 
     Determining the best heterogeneous APIs to use for a given platform and the
     best idioms to exploit will become an essential consideration as the number
     of idioms and APIs grows.
-    Currently, for this chapter, all applicable libraries and DSLs were
+    For the results in this chapter, all applicable libraries and DSLs were
     evaluated, and the best-performing versions selected after profiling.
 
 \subsection{Accelerating Sparse Linear Algebra}
