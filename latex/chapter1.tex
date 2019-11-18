@@ -370,67 +370,20 @@
     constraint programming approaches in compilers to the experimental
     evaluation of real performance improvements on established benchmark suites
     and scientific applications.
-    \vfill
 
-%    \subsection*{extra building blocks}
-
-
-
-%    The thesis develops a methodology to generalize this approach, resulting in
-%    methods by which compilers can automatically classify code as adhering to
-%    additional semantic constraints beyond what is guaranteed by the programming
-%    language.
-%    Using this classification, the compiler can then translate the code into a
-%    more specialized domain and apply the already developed domain specific
-%    techniques -- in the simplest case by merely linking to a library -- to
-%    achieve full performance.
-
-
-%    The implication of this is that in order to achieve best performance, it is
-%    generally advisable to choose the most specialised tools available.
-%    However, considerations of portability and maintainability push programmers
-%    in the opposite direction, towards a small number of well established host
-%    compilers and traditional languages at the expense of performance.
-
-
-
-%    What is promising therefore is a combination of hand-optimised libraries,
-%    domain specific languages together with compiler automatisms.
-%    This requires a disruptive improvement in compiler analysis capabilites.
-%    The detection of higher level algorithmic structures in compilers has been
-%    investigated before, but established approaches cannot scale to what
-%    this challenge requires.
-%    Syntactic matching directly on programming languages has become
-%    unviable for the complexities of both modern programming languages and
-%    complex code bases.
-
-%    Instead, this thesis develops an entirely novel approach based on concepts
-%    from constraint solving, building a pragmatic methodology for detecting
-%    complex algorithmic structures -- computational idioms.
-
-%    In order to successfully target heterogeneous systems, host compilers need
-%    to leverage the know-how that already exists in the surrounding software
-%    ecosystem, encapsulated in special purpose libraries and code generators.
-
-%    A linear alebra compiler operates under the assumption that the program is
-%    linear algbera, and the program representation that is used with not even
-%    allow the expression of any other system.
-
-\pagebreak
-
+\newpage
 \section{Structure of the Thesis}
 
     This thesis is divided into six chapters.
     Following the introduction, the underlying methodology of this work is
     established in {\bf\Cref{chapter:theory}} and put in the context of
     conventional compiler analysis.
-    Based on a mathematical model of Static Single Assignment (SSA) form
-    compiler intermediate representations, the chapter derives a novel
-    constraint programming approach to express algorithmic program
-    structures as constraint formulas.
-    Finally, the chapter discusses implementation decisions,
-    algorithmic complexity, and the relation to established Satisfiability
-    Modulo Theory (SMT) problems.
+    Based on a model of Static Single Assignment (SSA) intermediate
+    representations, the chapter derives a novel constraint programming approach
+    to express algorithmic program structures as constraint formulas.
+    Later sections of the chapter cover implementation decisions, algorithmic
+    complexity, and the relation to established Satisfiability Modulo Theory
+    (SMT) problems.
     This forms the methodological basis for
     {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions}}.
 
@@ -443,7 +396,7 @@
     competing approaches against which the results in this thesis are evaluated.
     Thirdly, {\em heterogeneous computing} and the corresponding challenges
     motivate many of the compiler approaches that this research implements.
-    Finally, ``{\em computational idioms}'' is an umbrella term for several
+    Finally, ``{\em computational idiom}'' is an umbrella term for several
     overlapping concepts of algorithmic patterns that capture programming models
     in different positions on the spectrum of specialisation.
 
@@ -452,29 +405,30 @@
     applications of constraint programming in compilers.
 
     {\bf\Cref{chapter:candl}} develops a full-fledged constraint programming
-    language called CAnDL, with an implementation in the LLVM compiler,
+    language called CAnDL, with an implementation in the LLVM compiler
     infrastructure that automatically generates compiler analysis passes from
     declarative specifications.
-    The chapter explores several compiler analysis challenges using CAnDL,
+    The chapter explores several compiler analysis challenges with CAnDL,
     including the rapid implementation of peephole optimisations and the
     prototyping of graphics shader optimisations.
     The chapter is based on published research in
     \citet{Ginsbach:2018:CDS:3178372.3179515}.
 
-    {\bf\Cref{chapter:reductions}} develops an auto-parallelising compiler for
-    complex reduction and histogram computations using CAnDL-powered analysis
+    {\bf\Cref{chapter:reductions}} extends CAnDL into the Idiom Detection
+    Langauge (IDL) and develops an auto-parallelising compiler for
+    complex reduction and histogram computations built on IDL-powered analysis
     functionality.
-    This covers many computations that are inaccessible to established
-    approaches based on data flow and polyhedral analysis due to indirect memory
-    accesses, demonstrating the greater flexibility of constraint programming.
+    This covers many computations with indirect memory accesses that are
+    inaccessible to established approaches based on data flow and polyhedral
+    analysis, demonstrating the flexibility of constraint programming.
     The chapter is based on published research in
     \citet{ginsbach2017discovery}.
 
-    {\bf\Cref{chapter:idioms}} extends CAnDL into the Idiom Detection Language
-    (IDL) and applies it for detecting algorithmic structures that go beyond the
-    scope of traditional compiler analysis: stencil computations, complex
-    reductions and histograms as well as sparse and dense linear algebra.
-    The resulting detection passes in LLVM enable automatic heterogeneous
+    {\bf\Cref{chapter:idioms}} applies IDL for detecting algorithmic structures
+    that go beyond the scope of traditional compiler analysis: stencils,
+    complex reductions and histograms, as well as sparse and dense forms of
+    linear algebra.
+    The detection in LLVM enables the automatic heterogeneous
     acceleration of sequential code and result in significant speedups on
     established benchmark suites.
     The chapter is based on published research in
