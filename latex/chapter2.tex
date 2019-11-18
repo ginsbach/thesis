@@ -1216,37 +1216,47 @@ private:
 
 \subsection{Additional SSA Constraint Problems}
 
-    There are a number of additional construction rules for SSA constraint
-    problems that are used in this thesis.
-    Some of them are less intuitive than the previously introduced definitions,
-    but allow for powerful compiler analysis.
-
+    Beyond \Cref{def:elementofconstr,def:conjconstr,def:constrext}, there are a
+    number of supplementary construction rules for SSA constraint problems that
+    are used in this thesis.
     Firstly, there are a number of very simple SSA constraint problems that
     operate directly on the integer values, without interpreting them as indices
     into the value list of the SSA model.
     These are listed in \Cref{def:auxconstr}.
-    $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$ are defined in the
-    obvious way, forcing equality/inequality.
-    Finally, there is $(\{a\}, C^{unused})$.
+    The first two, $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$, enforce
+    equality and inequality of the integer values respectively.
+    The third, $(\{a\}, C^{unused})$, is used to signal that no value from the
+    SSA model was assigned.
+    This is convenient within disjunctions for SSA constructions that may be
+    omitted, i.e.\ an offset that is optionally added when accessing an element
+    in a structure with a pointer to the object base.
     The value $|val|+1$ is the smallest integer that can no longer be
     interpreted as a value in the SSA model.
-    Therefore, it is used by convention to signal that no value from the SSA
-    model was assigned.
+    Therefore, the constraint enforces equality to this number.
 
     Generalised graph domination constraint problems as in \Cref{def:domconstr}
     are versatile tools for analysing SSA models.
-    The special case of $|V_1|=|V_2|=|V_2|=1$ and $V_1=\{v_1\}$,
-    with $v_1$ the control origin of the function, turns this definition into
-    the usual control flow dominance concept that is established in compiler
-    theory.
-    However, the generalisation that is used here encompasses a much larger
-    set of interesting properties.
-    Importantly, this can be applied also to data flow, which will be useful in
-    \Cref{chapter:reductions}.
+    The special case of $|Orig|=|Dom|=|Dest|=1$, with $x_v$ restricted to the
+    control origin of the function for $v\in Orig$, turns this definition
+    into the established control flow dominance concept.
+    However, the generalisation encompasses a much larger set of interesting
+    properties.
+    Importantly, this can be applied also to data flow, which
+    \Cref{chapter:reductions} makes use of for defining kernel functions with
+    restricted interfaces.
+    In this interpretation, the set $Dom$ represents an interface to the
+    computation of the values in $Dest$, when data flow can originate from all
+    the values in $Orig$.
+
     The backtracking solution of generalised graph domination constraint
-    problems is brute force, with $P_k[D_G]\equiv 1$ for all $1\leq k<n$.
-    The checking of the condition in $P_n[D_G]$ is typically preformed in
+    problems is brute force, meaning that $B_n[D_g]$ checks the condition
+    as specified, and $B_k[D_G]\equiv 1$ for all $1\leq k<n$.
+    The checking of the condition in $B_n[D_G]$ is typically preformed in
     $O(|val|)$ time, therefore this is a computationally expensive constraint.
+    The solver relies on this construction occuring only in conjunctions with
+    other, more restrictive constraints.
+    However, special cases can also be implemented as element-of constraint
+    problems using precomputated dominator trees.
 
     Finally, collect-all constraint problems are introduced in
     \Cref{def:collectconstr}.
@@ -1281,19 +1291,21 @@ private:
         \end{align*}
     \end{definition}
     \begin{definition}{Generalised Graph Domination Constraint Problems}{domconstr}
-        For a graph $G(M)\subset\mathbb N^2$ and a set $V=V_1\cup V_2\cup V_3$,
-        the {\em generalised graph domination constraint problem}
+        For a graph $G(M)\subset\mathbb N^2$, a set of variables $V$,
+        a {\it set of origins} $Orig\subset V$,
+        a {\it set of generalised dominators} $Dom\subset V$, and
+        a {\it set of destinations} $Dest\subset V$, the
+        {\em generalised graph domination constraint problem}
         $(V,D_G)$ is defined by
         \begin{align*}
-            D_G(M,x)=1\iff R_{\infty}(S_1(x),\{(a,b)\in G(M)\mid b\notin S_2(x)\}\cap S_3(x)=\emptyset,
+            D_G(M,x)=1\iff(x_v\notin R_{\infty}(M,x)\text{ for all }v\in Dest\text{ with }x_v\leq |val|),
         \end{align*}
-        where $S_k(x):=\{x_v\mid v\in V_k, x_v\neq |val|+1\}\subset\mathbb N$
-        and where $R_k(A,G)$, the set of vertices reachable from $A$ within $k$
-        steps through $G$, is defined as
+        where $R_k(A,G)\subset\mathbb N$, the {\it set of vertices reachable in $k$ steps},
+        is defined as
         \begin{align*}
-            R_0(A,G):={}&A\subset\mathbb N\\
-            R_{k+1}(A,G):={}&R_k(A,G)\cup\{b\mid a\in A, (a,b)\in G(M)\}\subset\mathbb N\\
-            R_\infty(A,G):={}&\lim_{k\rightarrow\infty}R_k(A,G)\subset\mathbb N.
+            R_0(M,x)={}&\{x_v\mid v\in Orig\}\setminus\{x_v\mid v\in Dom\}\\
+            R_{k+1}(M,x)={}&\{b\mid (a,b)\in G(M),a\in R_k(M,x)\}\setminus\{x_v\mid v\in Dom\}\\
+            R_\infty(M,x)={}&\bigcup_{k=0}^\infty R_k(A,G).
         \end{align*}
     \end{definition}
     \begin{definition}{Collect-all Constraint Problem}{collectconstr}
