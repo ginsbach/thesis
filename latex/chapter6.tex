@@ -237,8 +237,8 @@
 
     Sparse linear algebra is central to many scientific codes and increasingly
     important as a basis for graph algorithms and data analytics
-    \cite{Kepner2015GraphsMA}, but they contain indirect data access that limits
-    compiler optimisation.
+    \cite{Kepner2015GraphsMA}, but these contain indirect data access that
+    limits compiler optimisation.
     Instead, programmers rely on library implementations that are hand optimised
     and utilise accelerator hardware.
     This reliance on libraries comes at a cost, however, as it ties programs
@@ -288,8 +288,8 @@
 
     Central to this approach is the ability to detect computational idioms
     reliably.
-    The next section derives in detail the formulation of linear algebra -- both
-    sparse and dense -- and stencils in the Idiom Detection Language.
+    The next section derives in detail the formulation of stencils and
+    linear algebra -- both sparse and dense -- in the Idiom Detection Language.
 
 \begin{figure}[p]
     \input{latex/figure_spmvexample}
@@ -534,7 +534,7 @@ End
     generic access to matrices allowing strides, transposed matrices etc.
     The actual computation is encapsulated by the
     \texttt{DotProductForAlphaBeta} idiom, which extends the
-    \texttt{DotProductFor} specification to capture the the linear combination
+    \texttt{DotProductFor} specification to capture the linear combination
     with factors \texttt{alpha} and \texttt{beta} that is part of the
     generalised matrix multiplication idiom ($C\gets\alpha AB+\beta C$).
 
@@ -598,13 +598,12 @@ End
 \end{lstlisting}
 \end{figure}
 
-\section{Not Syntactic Pattern Matching}
+\section{Comparison to Syntactic Matching}
 
     The idiom descriptions may at first appear to be shallow syntactic pattern
-    matching.
-    In fact, because it operates on the IR level, the solver can detect
-    idioms that are written in superficially distinct style but are semantically
-    equivalent.
+    matching, but the approach is intrinsically more powerful.
+    Because it operates on the IR level, the solver can detect idioms that are
+    written in superficially distinct style but are semantically equivalent.
 
     For example, \Cref{fig:gemmexamples} shows two syntactically distinct
     programs, which nevertheless are both implementations of general matrix
@@ -709,18 +708,19 @@ for(int i = 0; i < 1000; i++)
     effectively used as on-demand library generators.
     The evaluation used Halide and Lift as domain-specific code generators.
 
-    \paragraph*{Halide}~\citet{Ragan-Kelley2013Halide} introduce a language and
+    \paragraph*{Halide}~\citet{Ragan-Kelley2013Halide} introduced a language and
     optimising compiler targeted at image processing applications.
     Optimised code is generated for CPUs as well as GPUs.
     Halide separates the functional description of the problem from the
     description of the implementation.
     This involves a separate execution \emph{schedule}.
-    This allows retargeting of Halide programs to different platforms.
+    This separation allows retargeting of Halide programs to different platforms
+    without touching the core program.
     Some of the stencil and linear algebra idioms were translated into Halide.
     However, stencils involving control flow in their computations are not
     easily expressible in Halide and were excluded for this backend.
 
-    \paragraph*{Lift}~\citet{steuwer15rewrite} introduce an optimising code
+    \paragraph*{Lift}~\citet{steuwer15rewrite} introduced an optimising code
     generator based on rewrite rules \citep{SteuwerRD17, HagedornSSGD18}.
     The Lift language consists of functional parallel patterns such as
     ``\emph{map}'' and ``\emph{reduce}'', which  express a range of parallel
@@ -772,7 +772,7 @@ for(int i = 0; i < 1000; i++)
     parameters as well as the kernel function or reduction operator.
 
     Numerical parameters are picked from the constraint solution in the same way
-    that was described previously for library call interfaces.
+    as previously described for library call interfaces.
     Also, from the constraint solution, the loop body that contains the kernel
     function or reduction operator is accessible, as well as the input values
     and the result value used.
