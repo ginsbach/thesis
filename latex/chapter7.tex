@@ -23,12 +23,12 @@
     Such transformations included the automatic parallelisation of programs that
     were inaccessible for previous analysis approaches.
 
-    In the final chapter, the idiom detection functionality was applied to
-    achieve the automatic heterogeneous parallelisation of sequential C/C++
-    code.
+    With all the required groundwork completed, the idiom detection
+    functionality was applied to achieve the automatic heterogeneous
+    parallelisation of sequential C/C++ code.
     Idiomatic loops in user code were automatically redirected to
-    domain-specific code generators, leveraging the domain knowledge that is
-    available for code that is formulated in restrictive idioms.
+    domain-specific code generators, which leverage the domain knowledge that
+    is available for code that is available for restrictive idioms.
     This approach was effective on 10 of the 21 benchmark programs from NPB and
     Parboil, resulting in significant speedups from 1.26$\times$  to 275$\times$
     against the sequential baseline versions.
@@ -38,7 +38,7 @@
     methodology for automatically recognising such idioms via constraint
     programming.
     Main contributions are the methodology of constraint programming on SSA
-    intermediate representation; the design and implementation of CAnDL and IDL;
+    intermediate representation, the design and implementation of CAnDL and IDL,
     and the identification of CReHCs as a significant class of benchmark
     bottlenecks.
 
@@ -58,9 +58,9 @@
     compiler analysis methods like data flow and dominance relationships.
 
     The constraint programming methodology was derived from an algebraic
-    formulation all the way to implementation considerations, applies
-    to any SSA intermediate representation, and is suitable for a wide range of
-    compiler analysis problems.
+    formulation all the way to implementation considerations.
+    It applies to any SSA intermediate representation and is suitable for a
+    wide range of compiler analysis problems.
 
 \subsection*{CAnDL and IDL}
 
@@ -104,7 +104,7 @@
     program parts to domain-specific code generators for heterogeneous
     acceleration.
     This pipeline resulted in significant parallelisation speedups on benchmark
-    programs that oreviously were mostly inaccessible to automatic compiler
+    programs that previously were mostly inaccessible to automatic compiler
     reasoning.
 
 \section{Critical Analysis}
@@ -154,7 +154,7 @@
     disproportionately higher cost on large functions and especially on code
     sections that are near misses to satisfying the specifications.
 
-\subsection*{Finite Varaiable Numbers}
+\subsection*{Finite Variable Numbers}
 
     One of the most apparent imperfections of both CAnDL and IDL is the
     limitation to a finite amount of variables in the underlying constraint
