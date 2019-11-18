@@ -179,11 +179,11 @@
 \abstract{
     The scaling limitations of multi-core processor development have led to a
     diversification of the processor cores used within individual computers.
-    Heterogeneous computing has become widespread, meaning the cooperation of
+    Heterogeneous computing has become widespread, involving the cooperation of
     several structurally different processor cores.
     Central processor (CPU) cores are most frequently complemented with graphics
     processors (GPUs), which despite their name are suitable for many highly
-    parallel computations unrelated to computer graphics.
+    parallel computations besides computer graphics.
     Furthermore, deep learning accelerators are rapidly gaining relevance.
 
     Many applications could profit from heterogeneous computing but are held
@@ -209,14 +209,16 @@
     compiler to offload code generation to these dedicated backends, which
     incorporate domain knowledge for efficient heterogeneous code generation.
 
-    The constraint programming methodology is derived in several steps,
-    eventually resulting in the design and implementation of the
-    Compiler Analysis Description Language (CAnDL), and the extended
+    The constraint programming methodology is first derived on an abstract
+    model, and then implemented as an extension of LLVM.
+    Two constraint programming langauges are desiged for this
+    extension:
+    the Compiler Analysis Description Language (CAnDL), and the extended
     Idiom Detection Language (IDL).
     These languages are evaluated on a range of different compiler problems,
     culminating in a complete heterogeneous acceleration pipeline within the
     LLVM compiler framework.
-    The pipeline is evaluated on established benchmark collections NPB and
+    The pipeline was evaluated on established benchmark collections NPB and
     Parboil.
     The approach was effective on 10 of the benchmark programs, resulting in
     significant speedups from 1.26$\times$ on ``histo'' to 275$\times$ on
