@@ -205,7 +205,7 @@
     The restricted environment also makes them intrinsically more powerful and
     able to generate better code.
 
-    Hybrid approaches, such as OpenCL, reinforce these observations.
+    Hybrid approaches, such as OpenCL, reinforce these hypotheses.
     The language is domain-specific in its expression of parallelism, but
     otherwise designed to be quite general-purpose.
     Compilers are provided for many structurally different processors.
@@ -221,25 +221,24 @@
     General-purpose programming languages, domain-specific languages and
     accelerator libraries exist on a spectrum of specialisation.
     \Cref{specialgradient} provides some intuition about this spectrum by
-    plotting popular languages and compute libraries onto their
-    potential position.
-    On the far left are versatile general-purpose languages, such as
-    C/C++ and Fortran.
+    gauging the places of popular languages and compute libraries in it.
+    On the far left are versatile general-purpose languages, such as C++ and
+    Fortran.
     Moving right, flexibility is gradually lost, with BLAS libraries at
     the end providing only fixed-function computations.
-    At the same time, however, the restricted semantics allow for increased 
-    optimisation capabilities.
+    However, the restricted semantics allow for increased optimisation
+    capabilities in return.
 
     It is necessary to clarify what is meant by optimisation potential in this
     context and how it differs from raw performance.
-    C/C++ is, of course, very suitable for manual optimisation and renowned as a
+    C++ is, of course, very suitable for manual optimisation and renowned as a
     low-overhead, high-performance language.
     However, it is difficult for compilers to apply deep structural changes to
-    C/C++ programs correctly.
+    C++ programs correctly.
     Maintaining the semantics of BLAS routines, on the other hand, is viable
     with many structurally different implementation approaches.
-    Therefore, C/C++ is fast because of its low overhead, and because
-    programmers write efficient programs to begin with.
+    Therefore, C++ is fast because of its low overhead, and because C++
+    programmers write programs with performance in mind.
     By contrast, BLAS is fast because its semantics are so constrained that
     implementations can be tuned to perfection.
 
@@ -257,8 +256,8 @@
     domain-specific kernel compilers is a consequence of operating in more
     constrained conditions than host compilers.
     While expert programmers can often apply domain knowledge themselves
-    when using versatile general-purpose languages, this potential can be
-    automatically uncovered by specialised tools.
+    when using versatile general-purpose languages, this potential can
+    automatically be uncovered by specialised tools.
     The restrictions on input programs imply domain knowledge that is leveraged
     to make stronger assumptions, use more powerful models and generate better
     code.
