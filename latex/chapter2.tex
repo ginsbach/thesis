@@ -783,9 +783,10 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \Cref{fig:derivemaths} identifies the integer values $9$ and $17$ with the
     instructions in lines 14 and 22 of the LLVM IR code shown in
     \Cref{llvmirexample} {\bf(b)}.
-    These two SSA values correspond to the loop iterator \texttt{i} of the for
-    loop in lines 4--5 of the C source code in \Cref{llvmirexample} {\bf(a)},
-    correctly identifying the only simple loop iterator.
+    These two SSA values correspond to the loop iterator \texttt{i} of the
+    for-loop at lines 4--5 of the C source code in
+    \Cref{llvmirexample} {\bf(a)}, correctly identifying the only simple loop
+    iterator.
 
     After the detailed derivation of the SSA model and some intuition about the
     nature of constraint problems, only the solver $S$ in

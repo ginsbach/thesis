@@ -815,10 +815,10 @@ Constraint LoopWithOnlyArrayAccesses
     The specification includes {\tt SESE}, and adds only a single additional
     constraint for the back edge of the loop in line~3.
     Additional extensions to this specification are added to define more
-    restricted loop structures, such for loops.
+    restricted loop structures, such for-loops.
     This involves the identification of the loop iterator, the breaking
     condition, and the corresponding iteration space boundaries.
-    In order to be a valid for loop, the end of the iteration space has to be
+    In order to be a valid for-loop, the end of the iteration space has to be
     determined before the loop is entered.
     This is expressed in \Cref{localconstant}, restricting {\tt value} to be
     either a function argument, a constant or an instruction that strictly
@@ -1357,7 +1357,7 @@ End
     This is ensured with the \texttt{collect} statement, as in
     \Cref{fig:collectexample}.
     The construct is used with the CAnDL specifications \texttt{ForLoop} and
-    \texttt{Conditional} that describe the control flow of for loops and
+    \texttt{Conditional} that describe the control flow of for-loops and
     conditionals.
     All the involved conditional jump instructions are extracted, and  another
     \texttt{collect} is then used to verify that these are indeed all
