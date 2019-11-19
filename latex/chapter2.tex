@@ -1132,7 +1132,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \begin{figure}[p]
 \begin{lstlisting}[language=MyCpp,basicstyle=\linespread{0.90}\ttfamily]
-struct Tree { vector<pair<int,Tree>> s; }
+struct Tree { vector<pair<int,Tree>> s; };
 template<int n>
 struct ElementOfShared { Tree S; array<Tree*,n> R; };
 
@@ -1182,7 +1182,7 @@ public:
     void begin() override {
         for(auto part: parts) part->begin(); }
     void fixate(unsigned c) override {
-        for(auto part: parts) part->begin(c); }
+        for(auto part: parts) part->fixate(c); }
     void resume() override {
         for(auto part: parts) part->resume(); }
 private:

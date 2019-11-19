@@ -17,12 +17,12 @@ public:
   virtual void resume();
 };
 
-void yield(const vector<int>& solution);
+void yield(const vector<unsigned>& solution);
 
 // The solver function corresponds to Algorithm 1.
 void solver(vector<BacktrackingPart*> P) {
-    int         k = 0;
-    vector<int> x(P.size(), 0);
+    unsigned         k = 0;
+    vector<unsigned> x(P.size(), 0);
     while(true) {
         SkipResult result = P[k]->skip_invalid(x[k]);
 
@@ -47,7 +47,7 @@ void solver(vector<BacktrackingPart*> P) {
                 x[k] = x[k] + 1;
             }
             else
-                return {};
+                return;
         }
     }
 }
