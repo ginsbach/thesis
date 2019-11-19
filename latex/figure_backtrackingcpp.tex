@@ -25,7 +25,7 @@ void solver(vector<BacktrackingPart*> P) {
     vector<unsigned> x(P.size(), 0);
     while(true) {
         SkipResult result = P[k]->skip_invalid(x[k]);
-
+        if(result == SkipResult::CHANGE) continue;
         if(result != SkipResult::FAIL) {
             if(k + 1 == P.size())
             {

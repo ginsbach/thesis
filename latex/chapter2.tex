@@ -1113,9 +1113,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
     shown in the lower section of \Cref{partimplementations}.
     The methods {\tt begin}, {\tt fixate}, and {\tt resume} call the
     corresponding member functions of the underlying {\tt BacktrackingPart}
-    objects (line 22), and \texttt{skip\_invalid} cycles through them
-    (lines 4--13) them until a fixpoint is reached (lines 9--10) or
-    either of them fail (lines 7--8).
+    objects (line 20), and \texttt{skip\_invalid} checks both of them with
+    short-circuit evaluation in case of a {\tt FAIL} result.
 
     \paragraph*{Disjunction constraints} again require the structures $R_k$,
     consisting of an array of booleans, with each element corresponding to one
@@ -1131,7 +1130,10 @@ define double @dot(double* %0, double* %1, i64 %2) {
     $R_k$ for appropriate bookkeeping.
 
 \begin{figure}[p]
-\begin{lstlisting}[language=MyCpp,basicstyle=\linespread{0.90}\ttfamily]
+\lstset {
+ basicstyle=\linespread{0.944}\ttfamily
+}
+\begin{lstlisting}[language=MyCpp]
 struct Tree { vector<pair<int,Tree>> t; };
 template<int n>
 struct ElementOfShared { Tree S; array<Tree*,n> R; };
@@ -1159,8 +1161,7 @@ private:
     size_t                         index;
 };
 \end{lstlisting}
-\begin{lstlisting}[language=MyCpp,basicstyle=\linespread{0.90}\ttfamily,
-                   label={partimplementations},caption=
+\begin{lstlisting}[language=MyCpp, label={partimplementations}, caption=
    {{\tt BacktrackingPart} is implemented for element-of constraints and
     conjunction constraints.
     The struct {\tt ElementOfShared} corresponds to
