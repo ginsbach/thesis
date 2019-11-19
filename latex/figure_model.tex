@@ -14,33 +14,33 @@
     \item $DFG_\mathcal{F}\subset\mathbb N^3$ and
           $CFG_\mathcal{F}\subset\mathbb N^3$ are the data flow and control
           flow graph,
-    \item $T_\mathcal F\subset Types\times\mathbb N$ is the {\it type model},
+    \item $T_\mathcal F\subset\textit{Types}\times\mathbb N$ is the {\it type model},
           defined by the property
           \begin{align*}
-              (t,k)\in T_\mathcal F\iff L_{val}\leq k\leq R_{val}
-                  \mathrel{\land}(val_k\text{ has type }t).
+              (t,k)\in T_\mathcal F\iff\left(L_{val}\leq k\leq R_{val}\right)
+                  \mathrel\land(val_k\text{ has type }t).
           \end{align*}
     \item $P_\mathcal F\subset\mathbb N$ is the {\it parameter model}, defined
           by the property
           \begin{align*}
               k\in P_\mathcal F\iff L_{par}\leq k\leq R_{par}.
           \end{align*}
-    \item $I_\mathcal F\subset Opcodes\times \mathbb N$ is the
+    \item $I_\mathcal F\subset\textit{Opcodes}\times \mathbb N$ is the
           {\it instruction model}, defined by the property
           \begin{align*}
-              (c,k)\in I_\mathcal F\iff L_{ins}\leq k\leq R_{ins}
+              (c,k)\in I_\mathcal F\iff\left(L_{ins}\leq k\leq R_{ins}\right)
                   \mathrel{\land}(ins_{k-L_{ins}+1}\text{ has opcode }c).
           \end{align*}
-    \item $G_\mathcal F\subset GlobalNames\times\mathbb N$ is the
+    \item $G_\mathcal F\subset\textit{GlobalNames}\times\mathbb N$ is the
           {\it global model}, defined by the property
           \begin{align*}
-              (n,k)\in G_\mathcal F\iff L_{gbl}\leq k\leq R_{gbl}
-                  \mathrel{\land}(glb_{k-L_{gbl}+1}\text{ has name }n).
+              (n,k)\in G_\mathcal F\iff\left(L_{glb}\leq k\leq R_{glb}\right)
+                  \mathrel{\land}(glb_{k-L_{glb}+1}\text{ has name }n).
           \end{align*}
     \item $C_\mathcal F\subset\mathbb R\times\mathbb N$ is the
           {\it constant model}, defined by the property
           \begin{align*}
-              (x,k)\in C_\mathcal F\iff L_{cst}\leq k\leq R_{cst}
+              (x,k)\in C_\mathcal F\iff\left(L_{cst}\leq k\leq R_{cst}\right)
                   \mathrel{\land}(cst_{k-L_{cst}+1}\text{ has numeric value }x).
           \end{align*}
     \end{itemize}

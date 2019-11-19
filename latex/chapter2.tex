@@ -1,7 +1,7 @@
 
-    The research contributions of this thesis are based on a novel constraint
-    programming approach on Static Single Assignment (SSA) compiler intermediate
-    representation.
+    The research contributions of the thesis are built on a new method of
+    constraint programming on Static Single Assignment (SSA) compiler
+    intermediate representation.
     This chapter derives and motivates the underlying methodology, which is
     then used as the basis for
     \Cref{chapter:candl,chapter:reductions,chapter:idioms}.
@@ -12,20 +12,20 @@
     highlighted.
     These features are then used to derive a model that captures the static
     structure of SSA programs.
-    The section uses some mathematical notation in an attempt to build a
-    reliable foundation for later parts of the thesis.
-    The {\it List of Symbols and Notation} contains many of the presumed
-    notational conventions.
     The SSA model is initially derived generically and then demonstrated in
     more detail on \mbox{LLVM IR}, a specific SSA compiler intermediate
     representation.
+    This section uses some mathematical notation to build a reliable foundation
+    for later parts of the thesis.
+    The {\it List of Symbols and Notation} contains many of the presumed
+    notational conventions.
 
     After the derivation of the SSA model, the concept of SSA constraint
     problems is defined.
     These are formulas that impose restrictions on parts of SSA code,
     formulated as constraints on the SSA model.
-    SSA constraint problems define code structures such as loops, and detecting
-    adhering code sections in SSA code is then equivalent to finding
+    SSA constraint problems define code structures, such as loops.
+    Detecting adhering code sections in SSA code is then equivalent to finding
     solutions to the constraints.
     The structure of several classes of constraint formulas is discussed,
     reflecting conventional compiler analysis methods like data flow,
@@ -41,35 +41,8 @@
     After deriving the algorithms, implementation considerations are
     discussed.
     Suitable data structures are selected, and runtime complexity is analysed.
-    To conclude the chapter, similarities and differences to standard
-    Satisfiability Modulo Theory (SMT) problems are explored.
-
-%    Constraint formulas on SSA respresentations initially appear to mimic
-%    pattern matching approaches on abstract syntax tree (AST) level.
-%    However, they quickly prove themselves to be vastly more expressive.
-%    Some consideration is necessary to handle search space explosion, but
-%    the reward are much more powerful recognition capabilities and the
-%    expression of higher level algorithmic structures, which are impossible to
-%    define syntactically on programming language level.
-%    Later chapters will explore the power of this approach in detail, by
-%    building a complete constraint programming language on top of the theory in
-%    this chapter, and by then using it to solve real compiler analysis problems.
-
-%    After defining a mathematical foundation of SSA form and introducing
-%    formalisms for the expression of basic constraint problems on top of it,
-%    several standard definitions from compiler theory are reformulated in the
-%    framework.
-%    This includes common graph properties, including the concept of domination,
-%    as well as control flow structures such as single entry single exit blocks.
-%    All of this lays the foundations for the succeeding chapter.
-
-%    Finally, for the practical application of constraint programming to compiler
-%    intermediate representation, efficient solver techniques are needed.
-%    The last section in this chapter discusses strategies for limiting
-%    compile time explosion and explores analogies of the described model to
-%    standard Satisfiability Modulo Theory (SMT) problems.
-%    This gives further insights into performance improvements and puts the
-%    work into a broader theoretical context.
+    To conclude the chapter, constraint programming on SSA intermediate
+    representation is compared with Satisfiability Modulo Theory (SMT) problems.
 
 \section{Background}
 
@@ -81,7 +54,7 @@
 
     \begin{description}[style=unboxed,leftmargin=0cm,labelindent=\parindent]
     \item[Front end representations] are close to the source program and
-    are strongly influenced by the specific grammar of the programming language.
+    strongly influenced by the specific grammar of the programming language.
     Typically, they are built around an abstract syntax tree with additional
     annotations, such as type information.
     These representations are rich in information about syntactic and stylistic
@@ -130,14 +103,14 @@
     more general {\em linear intermediate representations} as an additional
     restriction, as described in \citet{Torczon:2007:EC:1526330}.
     The following \Cref{sec:ssaf} gives an overview of the characteristic shared
-    features of SSA representations that are relevant for this work.
+    features of SSA representations that are relevant to this work.
 
 \subsection{Static Single Assignment Form}
 \label{sec:ssaf}
 
     SSA representations are linear intermediate representations, meaning that
     they represent each function as a single linear sequence of instructions.
-    These instructions operate on an unlimited amount of registers, using a well
+    These instructions operate on an unlimited number of registers, using a well
     defined -- but representation specific -- instruction set.
     Branch instructions are used to redirect the execution conditionally or
     unconditionally.
@@ -147,12 +120,12 @@
     Basic blocks may have labels or be identified simply by enumerating them.
     Instruction arguments can be registers, constants, globals or function
     parameters.
-    Branch instructions furthermore take basic block arguments as branch
+    Additionally, branch instructions take basic block arguments as branch
     targets.
     Instructions may write their result into a single output register.
 
     The SSA property stipulates that within a function, no register can be
-    written at more than a single static location.
+    written at more than one static location.
     This means that registers can be identified directly with the instructions
     that define them.
     The registers can, therefore, be made implicit, with only the data flow
@@ -220,7 +193,7 @@
 
     Finally, the Static Single Assignment property is introduced at the bottom
     left {\bf(d)}.
-    Each variable that is assigned in more than one static locations in the
+    Each variable that is assigned at more than one static location in the
     program is instead duplicated into multiple variables.
     Where necessary, these now distinct variables are bound together with
     $\Phi$-instructions.
@@ -228,7 +201,7 @@
     Instead, the behaviour is documented by comments in lines 8--13.
 
     The impact of the SSA property seems minor at first, but convenient
-    implications can be identified already within the C language.
+    implications can already be identified within the C language.
     As all local variables are written in exactly one static location, each
     variable can be declared and defined in the same place.
     This means that it is always known statically, which expression yielded the
@@ -259,7 +232,6 @@
 \end{figure}
 
 \section{Deriving an SSA Model}
-\label{sec:derivingamodel}
 
 \begin{figure}[p]
 \begin{definition}{Features of Static Single Assignment Functions}{ssa}
@@ -293,8 +265,8 @@
     \begin{align*}
         L_{par}={}&1         & R_{par}={}&|par| &
         L_{ins}={}&R_{par}+1 & R_{ins}={}&R_{par}+|ins|\\[-1.5mm]
-        L_{gbl}={}&R_{ins}+1 & R_{gbl}={}&R_{ins}+|glb| &
-        L_{cst}={}&R_{gbl}+1 & R_{cst}={}&R_{gbl}+|cst|\\[-1.5mm]
+        L_{glb}={}&R_{ins}+1 & R_{glb}={}&R_{ins}+|glb| &
+        L_{cst}={}&R_{glb}+1 & R_{cst}={}&R_{glb}+|cst|\\[-1.5mm]
         L_{val}={}&L_{par}   & R_{val}={}&R_{cst} &&&&
     \end{align*}
 \end{definition}
@@ -302,8 +274,8 @@
     The {\em data flow graph} of the SSA function $\mathcal F$ is the set
     $DFG_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (n,a,b)\in DFG_{\mathcal F}\iff{}&L_{val}\leq a\leq R_{val}
-            \mathrel{\land}L_{ins}\leq b\leq R_{ins}\\
+        (n,a,b)\in DFG_{\mathcal F}\iff{}&\left(L_{val}\leq a\leq R_{val}\right)
+            \mathrel{\land}\left(L_{ins}\leq b\leq R_{ins}\right)\\
             \mathrel{\land}{}&(val_a\text{ is the $n$th argument of }ins_{b-L_{ins}+1}).
     \end{align*}
     For $\Phi$-instructions, the incoming basic blocks are ordered according to
@@ -315,24 +287,24 @@
     The {\em control flow graph} of the SSA function $\mathcal F$ is the set
     $CFG_{\mathcal F}\subset \mathbb N^3$ such that
     \begin{align*}
-        (n,a,&{}b)\in CFG_{\mathcal F}\iff L_{ins}\leq a\leq R_{ins}\mathrel{\land}L_{ins}\leq b\leq R_{ins}\\
+        (n,a,&{}b)\in CFG_{\mathcal F}\iff\left(L_{ins}\leq a\leq R_{ins}\right)\mathrel\land\left(L_{ins}\leq b\leq R_{ins}\right)\\
                \mathrel{\land}&\left(\begin{aligned}[c]
-                                    (\neg (ins_{a-L_{ins}+1}\text{ terminates basic block})\mathrel{\land}{}&b=a+1\mathrel{\land}n=1)\\
-                      \mathrel{\lor}(\phantom{\neg}(ins_{a-L_{ins}+1}\text{ terminates basic block})\mathrel{\land}{}&ins_{b-L_{ins}+1}\text{ first instruction in}\text{ $n$th}\\[-0.5em]
-                                                   &\text{target basic block of }ins_{a-L_{ins}+1})
-        \end{aligned}\right).
+                                    (\neg (ins_{a-L_{ins}+1}\text{ terminates basic block})\mathrel\land{}&(b=a+1)\mathrel\land(n=1))\\
+                      \mathrel{\lor}(\phantom{\neg}(ins_{a-L_{ins}+1}\text{ terminates basic block})\mathrel\land{}&(ins_{b-L_{ins}+1}\text{ first instruction in}\text{ $n$th}\\[-0.5em]
+                                                   &\text{target basic block of }ins_{a-L_{ins}+1}))\hspace{4mm}.\hspace{-4mm}
+        \end{aligned}\right)
     \end{align*}
 \end{definition}
 \end{figure}
 
-    This section develops a mathematical model for programs that are in
-    SSA form.
+    This section develops a mathematical model for SSA programs.
     The focus is on precise notation to express the static structure of existing
     SSA intermediate representations.
-    The completed model will enable the generation of a program that is
-    semantically equivalent to the one from which the model was extracted.
-    Note that this is not related to an operational semantics of such programs,
-    or more generally a method for analysing their execution.
+    The model is unrelated to the operational semantics of such programs and not
+    a method for formalising their behaviour at run time.
+    However, it contains all the information required to reconstruct a program
+    that is semantically equivalent to the one from which the model was
+    extracted.
     The remainder of this section adheres to the naming conventions in
     \Cref{def:ssa}.
 
@@ -347,22 +319,23 @@
     Thirdly, the argument structure of the instructions is modelled separately.
 
 \subsection{Data Flow and Control Flow}
+\label{sec:derivingamodel}
 
     The data flow between instructions, as well as the control flow, is captured
     in graph structures.
     The Static Single Assignment property makes registers implicit, and the
     direct interaction between instructions becomes the natural model for data
     flow.
-    Instruction arguments fall into four categories: function parameters,
-    other instructions, globals, and constants.
+    Instruction arguments fall into four categories: function parameters ($par$),
+    other instructions ($ins$), globals ($glb$), and constants ($cst$).
     Branching instructions also take basic block labels as branch targets,
     but those are treated separately in the control flow graph.
     All instruction arguments are therefore taken from the named sets introduced
     in \Cref{def:ssa}.
 
-    For each function, the sequences $par$, $ins$, $gbl$, $cst$ can be
+    For each function, the sequences $par$, $ins$, $glb$, $cst$ can be
     statically determined.
-    Therefore, individual instruction arguments can be encoded by one integer
+    Individual instruction arguments can, therefore, be encoded by one integer
     each, indexing into the union of those four sequences as in
     \Cref{def:usedvalues}.
     The entire argument structure of the instructions in an SSA
@@ -376,7 +349,7 @@
     as introduced in \Cref{def:cfg}.
     The control flow graph is often defined with edges between basic blocks.
     However, in this definition, the edges are directly between instructions.
-    This is convenient in later
+    This is convenient later, in
     \Cref{sec:constraintprogramming,sec:constraintsolving}, where both graphs
     can be treated identically.
 
@@ -443,14 +416,14 @@
     although they overlap significantly.
     This chapter aims to capture commonalities of SSA representations, the study
     of instruction sets and type systems is orthogonal to this.
-    Therefore, these structures are modelled as opaque sets as in
+    These structures are, therefore, modelled as opaque sets as in
     \Cref{def:isatypes}.
 
 \begin{figure}[h]
 \begin{definition}{Representation Specific Sets}{isatypes}
-    $Opcodes_L$ is the set of all opcodes available in the SSA language $L$,
-    $Types_L$ is the set of all types in $L$,
-    and $GlobalNames_L$ is the set of all available names for global values.
+    $\textit{Opcodes}_L$ is the set of all opcodes available in the SSA language $L$,
+    $\textit{Types}_L$ is the set of all types in $L$,
+    and $\textit{GlobalNames}_L$ is the set of all available names for global values.
 \end{definition}
 \end{figure}
 
@@ -479,7 +452,7 @@
     clarifications are provided for the remaining five structures.
 
     The {\it instruction model}, {\it type model}, and {\it constant model}
-    assign additional information from different domains to the used values in
+    assign additional information from different domains to the values used in
     the program.
     Instead of attaching one opcode to each instruction, the
     {\it instruction model} allows instructions to be linked with several
@@ -491,11 +464,11 @@
     The {\it type model} can also be used to capture additional data, such as
     compiler-specific attributes and aliasing information.
     
-    Finally, the {\it parameter model} and {\it global model} are encoding which
+    Finally, the {\it parameter model} and {\it global model} encode which
     elements in the set of used values of $\mathcal F$ are parameters and
     globals, respectively.
-    Parameter names are not significant, because their positionality
-    already identifies parameters uniquely within the function signature.
+    Parameter names are not significant, because their position already
+    identifies parameters uniquely within the function signature.
     Therefore, the {\it parameter model} identifies all parameters, but attaches
     no additional data.
     For global values, on the other hand, the names are attached by the
@@ -548,11 +521,11 @@
     The name of the project was originally an acronym for
     ``Low Level Virtual Machine'', as the intermediate representation was
     conceptualised as a typed assembly-style language for a virtual machine.
-    The instruction set is roughly aligned to the semantics of C style
+    The instruction set is roughly aligned to the semantics of C-style
     programming languages, but the project has matured beyond this background.
-    It is now a widely influential framework, with compiler front ends existing
-    for a diverse set of languages including C/C++, Haskell, Julia, Objective-C,
-    Rust, Scala and CUDA.
+    It is now a widely influential framework, with compiler front ends
+    for a diverse set of languages, including C/C++, Haskell, Julia,
+    Objective-C, Rust, Scala, and CUDA.
 
     Other mainstream compilers, such as the GCC project, use very similar
     representations internally.
@@ -705,14 +678,16 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \end{definition}
 \end{figure}
 
-    Some intuition is required here.
-    The predicate function $C$ takes two arguments, firstly the model of a
-    function and secondly a tuple of integers from $\mathbb N^V$.
-    The tuple has one integer for each element in $V$ and each integer
-    corresponds to a value in the function that $M$ models via indexing
-    into the set of used values.
-    The predicate function determines whether these values are in a specific
-    relationship to each other in the SSA model.
+    The following intuition applies:
+    The first argument of $C$ is the model of a function, and the second
+    argument of $C$ is a solution candidate.
+    $\mathbb N^V$ can be understood as abstractly rendering
+    \lstinline[language=MyCpp]{map<string,unsigned>}.
+    Elements of $\mathbb N^V$ contain an integer for each variable in $V$.
+    These integers represent values in the function that $M$ models by
+    indexing into the set of used values.
+    The predicate function determines whether these values have a specific
+    relationship to each other.
     Finally, the set of constraint solutions lists all those tuples for which
     the predicate holds.
 
@@ -726,11 +701,11 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \label{fig:constraintsolution}
 \end{figure}
 
-    Consider the task of detecting in a program all simple loop iterators.
+    Consider the task of detecting all simple loop iterators in a program.
     These are variables within a loop that are incremented by a constant value
     of one in each iteration.
     \Cref{fig:constraintsolution} shows how this can be formulated as an
-    SSA constraint problem and then demonstrates the application of it on the
+    SSA constraint problem and then demonstrates its application on the
     SSA model that was derived in \Cref{fig:derivemaths}.
     The top {\bf(a)} of the figure first gives an intuition about how such a
     compiler analysis task can be translated into a constraint problem, which is
@@ -744,7 +719,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     ``phi'', ``update'', and ``step'', and a predicate $C$ to describe the
     required conditions on the variables.
     The predicate is composed with logical conjunctions (``$\land$'') from
-    several {\em element-of} relationships that have to hold simultaneously on
+    several {\em element-of} relationships that must hold simultaneously on
     the structures of the model:
     \begin{itemize}
         \item The iterator is incremented in steps of one
@@ -800,7 +775,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     The solver for SSA constraint problems should efficiently compute $S_M(V,C)$
     for some concrete $(V,C)$ and $M$.
     This is a search problem:
-    All values in $\mathbb N^V$ that satisfy $C$ in the context $M$ need to be
+    all values in $\mathbb N^V$ that satisfy $C$ in the context $M$ need to be
     identified.
 
     The search space $\mathbb N^V$ is infinitely large, but it can immediately
@@ -823,8 +798,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
         $x\mapsto(x_{v_1},\dots x_{v_k})$ is chosen.
         Then a collection $(B_k)_{k=1\dots |V|}$ of functions
         $B_k:\mathcal M\times \mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
-        is a {\em backtracking solution} of $(V,C)$ if and only if for all
-        $x\in\mathbb N^V$ the following is satisfied:
+        is a {\em backtracking solution} of $(V,C)$ if and only if the following
+        is satisfied for all $x\in\mathbb N^V$:
         \begin{align}
             C(M,x)=1\iff\left[x_{v_k}\in B_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq |V|\right].
         \end{align}
@@ -956,9 +931,9 @@ define double @dot(double* %0, double* %1, i64 %2) {
     constraint problems.
     These are constructed in an obvious way, by taking the intersection set of
     the underlying backtracking solutions at each $k$.
-    This is not possible for disjunction constraint problems, which are dicussed
-    in \Cref{theo:theo3}.
-    The additional structure $R_k$ is used to keep track whether the current
+    This is not possible for disjunction constraint problems, which are
+    discussed in \Cref{theo:theo3}.
+    The additional structure $R_k$ is used to keep track of whether the current
     partial solution satisfies $C$ or $C'$ so far
     (this was a given for conjunctions).
     The backtracking solution at $k$ is then the union only of those underlying
@@ -998,7 +973,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     that \Cref{backtrackalg} can be applied.
     The construction of one building block in the backtracking solution is
     explained in detail as follows:
-    The condition ``$(x_\text{update},x_\text{phi})\in DFG_\mathcal F^*$''
+    The condition $(x_\text{update},x_\text{phi})\in DFG_\mathcal F^*$
     corresponds to the \mbox{element-of} constraint problem $E_S$ with
     $S=\{x\in\mathbb N^{\{\text{update},\text{phi}\}}\mid (x_\text{update},x_\text{phi})\in DFG_\mathcal F^*\}$.
     Following \Cref{theo:theo1}, the enumeration of the variables gives
