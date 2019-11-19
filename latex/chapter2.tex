@@ -1132,21 +1132,21 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \begin{figure}[p]
 \begin{lstlisting}[language=MyCpp,basicstyle=\linespread{0.90}\ttfamily]
-struct Tree { vector<pair<int,Tree>> s; };
+struct Tree { vector<pair<int,Tree>> t; };
 template<int n>
 struct ElementOfShared { Tree S; array<Tree*,n> R; };
 
 template<int n, int k>
 class ElementOfPart : public BacktrackingPart {
 public:
-    SkipResult skip_invalid(unsigned& c) {
-        while(index < shared->R[k].size()
-           && c > shared->R[k][index].first) index++;
-        if(index == shared->R[k].size())
+    SkipResult skip_invalid(unsigned& c) override {
+        while(index < shared->R[k]->t.size()
+           && c > shared->R[k]->t[index].first) index++;
+        if(index == shared->R[k]->t.size())
             return SkipResult::FAIL;
-        if(shared->R[k][index].first == c)
+        if(shared->R[k]->t[index].first == c)
             return SkipResult::PASS;
-        c = shared->R[k][index].first;
+        c = shared->R[k]->t[index].first;
         return SkipResult::SUCCESS;
     }
     void begin() override { index = 0;
@@ -1168,16 +1168,14 @@ private:
 class ConjunctionPart : public BacktrackingPart {
 public:
     SkipResult skip_invalid(unsigned& c) {
-        while(true) {
-            for(size_t i = 0;;) {
-                auto result = parts[i]->skip_invalid(c);
-                if(result == SkipResult::FAIL)
-                    return SkipResult::FAIL;
-                if(i+1 == parts.size())
-                    return result;
-                i = (result == SkipResult::PASS)?(i+1):0;
-            }
-        }
+        SkipResult r1 = parts[0]->skip_invalid(c);
+        if(r1 == SkipResult::FAIL)   return r1;
+        if(r1 == SkipResult::CHANGE) return r1;
+        SkipResult r2 = parts[1]->skip_invalid(c);
+        if(r2 == SkipResult::FAIL)   return r2;
+        if(r2 != SkipResult::PASS)
+            return SkipResult::CHANGE;
+        return r1;
     }
     void begin() override {
         for(auto part: parts) part->begin(); }
@@ -1186,7 +1184,7 @@ public:
     void resume() override {
         for(auto part: parts) part->resume(); }
 private:
-    vector<shared_ptr<BacktrackingPart>> parts;
+    array<shared_ptr<BacktrackingPart>,2> parts;
 };
 \end{lstlisting}
 \end{figure}

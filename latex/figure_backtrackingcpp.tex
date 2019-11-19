@@ -11,10 +11,10 @@
 // This class corresponds to Definition 2.7.
 class BacktrackingPart {
 public:
-  virtual SkipResult skip_invalid(unsigned& c);
-  virtual void begin();
-  virtual void fixate(unsigned c);
-  virtual void resume();
+  virtual SkipResult skip_invalid(unsigned& c) = 0;
+  virtual void begin() = 0;
+  virtual void fixate(unsigned c) = 0;
+  virtual void resume() = 0;
 };
 
 void yield(const vector<unsigned>& solution);
