@@ -1037,7 +1037,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     With the explicit construction rules for backtracking solutions in
     \Cref{theo:theo1,theo:theo2,theo:theo3,theo:theo4}, suitable data structures
-    can be selected for efficiently implementing the
+    can be selected in order to efficiently implement the
     backtracking algorithm in code.
     This requires a slight rephrasing of \Cref{backtrackalg} to provide
     interfaces for computing the supporting structures $R_k$ from
@@ -1051,17 +1051,16 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     {\tt BacktrackingPart} provides the C++ interface for the individual
     functions in backtracking solutions as defined in \Cref{def:backtracking}.
-    They have to implement four member functions.
-    Most importantly, \texttt{skip\_invalid(x[k])} calculates
+    Four member functions must be implemented.
+    The most important of them, \texttt{skip\_invalid(x[k])}, calculates
     $x_k\gets min\{y\in B_k(M,p_{k-1}(x))\mid y\geq x_k\}$
     from line 4 of \Cref{backtrackalg}.
 
-    The other three member function of \texttt{BacktrackingPart} manipulate
-    state that is shared by the \texttt{BacktrackingPart} objects
+    The other three member functions of \texttt{BacktrackingPart} manipulate
+    state that is shared by \texttt{BacktrackingPart} objects
     that together comprise a backtracking solution.
-    This allows computations that otherwise would have to be performed
-    repeatedly by \texttt{skip\_invalid}, to be instead done ahead
-    of time.
+    This allows computations that would otherwise have to be performed
+    repeatedly by \texttt{skip\_invalid}, to be done ahead of time.
     More specifically, this corresponds to $R_k$ in
     \Cref{theo:theo1,theo:theo4}.
     Crucially, this distribution of the computations allows all previously
@@ -1071,7 +1070,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \subsubsection{Data Structures for Constraint Classes}
 
     \paragraph*{Element-of constraint problems} require the structures $R_k$.
-    This can be implemented with a tree, built around a sorted array of pairs,
+    These can be implemented with a tree, built around a sorted array of pairs,
     as shown in the first line of the top section of \Cref{partimplementations}.
     Each subtree in the array corresponds to a potential $R_{k+1}$.
     The {\tt BacktrackingPart} instances for this constraint keep indices
@@ -1175,8 +1174,8 @@ private:
     and the solver will search for these within any provided SSA model.
     \citet{Cook:1971:CTP:800157.805047} showed that this problem is NP-hard
     \citep{Leeuwen:1990:HTC:574797}.
-    Therefore, the computational complexity has an exponential
-    (in the number of variables) worst case when evaluated in general.
+    Therefore, the computational complexity has an exponential worst case
+    (in the number of variables) when evaluated in general.
 
     However, this is no impediment due to the particular use case of
     SSA constraint problems.
@@ -1227,7 +1226,7 @@ private:
     problems is brute force, meaning that $B_n[D_g]$ checks the condition
     as specified, and $B_k[D_G]\equiv 1$ for all $1\leq k<n$.
     The checking of the condition in $B_n[D_G]$ is typically preformed in
-    $O(|val|)$ time, therefore this is a computationally expensive constraint.
+    $O(|val|)$ time, so this is a computationally expensive constraint.
     The solver relies on this construction occuring only in conjunctions with
     other, more restrictive constraints.
     However, special cases can also be implemented as element-of constraint
@@ -1292,7 +1291,7 @@ private:
         \begin{enumerate}
         \item $((s_{1,u_1},\dots s_{1,u_m}),\dots,(s_{N,u_1},\dots s_{N,u_m}))$ is an ordered tuple of tuples in $\mathbb N^U$.
               If there are any duplicates, they have to be of the form $(|val|+1,\dots,|val|+1)\in\mathbb N^U$.
-        \item The sets $A$ and $B$ satisfy either $A=B$ or $(A=\emptyset\mathrel\land |B|>N)$, where\\
+        \item The sets $A$ and $B$ satisfy either $A=B$ or $((A=\emptyset)\mathrel\land(|B|>N))$, where\\
               $A:=\{(s_{k,u})_{u\in U}\mid 1\leq k\leq N, s_{k,u}\neq|val|+1\text{ for some }u\in U\}\subset N^U$ and\\
               $B:=\{(x_u)_{u\in U}\mid x\in S_M(V,C), x_v=z_v\text{ for all }v\in X\}\subset N^U$.
         \end{enumerate}
