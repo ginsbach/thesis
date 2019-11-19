@@ -276,30 +276,29 @@
 \section{Moving on the Spectrum of Specialisation}
 
     To combine the positive aspects of both sides of the spectrum of
-    specialisation, host compilers need methods to recognise more restrictive
-    programming models within general-purpose code automatically.
+    specialisation, host compilers need methods to automatically recognise more
+    restrictive programming models within general-purpose code.
     Reformulating the adhering program sections in domain-specific
-    representations then makes the superior domain-specific reasoning from
-    kernel compilers applicable also in the host compiler.
+    representations makes the superior domain-specific reasoning from kernel
+    compilers applicable also in the host compiler.
 
     Such an approach of detecting restricted models in general-purpose code has
-    previously been used only for specific individual domains, and this involved
-    extensive hand-implemented compiler analysis functionality.
-    For example, the Polly compiler by \citet{Lengauer2012Polly} takes as
-    input arbitrary C/C++ code and then recognises whether parts of this code
+    previously been used only for specific individual domains, and required
+    elaborate hand-implemented compiler analysis functionality.
+    For example, the Polly compiler by \citet{Lengauer2012Polly} takes
+    arbitrary C/C++ code as input and recognises whether parts of this code
     are expressible in the more restrictive polyhedral model
     \citep{Karp:1967:OCU:321406.321418,benabderrahmane2010polyhedral}.
     The compiler then reformulates the relevant code in this system, which
-    makes advanced optimisation techniques applicable that use the available
+    makes applicable advanced optimisation techniques that use the available
     domain knowledge of the restricted model for generating faster code
     \citep{Moll:2016:ISS:2892208.2892217,Doerfert2015Polly}, substantiating the
     hypotheses of \Cref{sec:hostkernel}.
 
 \subsection{Contributions of this Thesis}
 
-    This thesis derives a systematic approach for recognising constrained
-    program sections during the compilation process that is not restricted to a
-    particular model.
+    This thesis derives a systematic and configurable method for recognising
+    constrained program sections during the compilation process.
     The approach emerges from the analysis of a standard program model that host
     compilers use: Static Single Assignment (SSA) form intermediate
     representations.
