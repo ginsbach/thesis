@@ -1139,7 +1139,7 @@ struct ElementOfShared { Tree S; array<Tree*,n> R; };
 template<int n, int k>
 class ElementOfPart : public BacktrackingPart {
 public:
-    SkipResult skip_invalid(unsigned& c) const {
+    SkipResult skip_invalid(unsigned& c) {
         while(index < shared->R[k].size()
            && c > shared->R[k][index].first) index++;
         if(index == shared->R[k].size())
@@ -1167,7 +1167,7 @@ private:
     $\protect{(R_k[E_S](M,x))_{k=1\dots n}}$ in \Cref{theo:theo1}.}]
 class ConjunctionPart : public BacktrackingPart {
 public:
-    SkipResult skip_invalid(unsigned& c) const {
+    SkipResult skip_invalid(unsigned& c) {
         while(true) {
             for(size_t i = 0;;) {
                 auto result = parts[i]->skip_invalid(c);

@@ -11,7 +11,7 @@
 // This class corresponds to Definition 2.7.
 class BacktrackingPart {
 public:
-  virtual SkipResult skip_invalid(unsigned& c) const;
+  virtual SkipResult skip_invalid(unsigned& c);
   virtual void begin();
   virtual void fixate(unsigned c);
   virtual void resume();
