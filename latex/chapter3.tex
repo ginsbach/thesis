@@ -1,9 +1,9 @@
 
     Four areas of research are of particular relevance to this thesis:
-    {\bf Constraint programming} is central to the introduced methodology, with
-    the relevant literature including the research into constraint programming
-    in the context of program analysis and to a lesser extent the design of
-    constraint programming languages.
+    {\bf Constraint programming and declarative languages} are central to the
+    introduced methodology, with the relevant literature including the research
+    into constraint programming in the context of program analysis and to a
+    lesser extent the design of constraint programming languages.
     The survey of previous approaches to
     {\bf compiler analysis and auto-parallelisation}
     establishes the baselines for the later evaluation sections.
@@ -13,24 +13,31 @@
     Lastly, the diverse research landscape around concepts related to
     {\bf computational idioms} will put our idiomatic approach into context.
 
-\section{Constraint Programming}
+\section{Constraint Programming and Declarative Languages}
 
-    Constraint programming and its use for program analysis is well-documented
-    in the literature.
-    Previous work covers security and formal verification,but also more
-    compiler-centric dataflow analysis and type inference.
+    Declarative Languages, constraint programming, and the application of
+    constraints to program analysis problems are well-documented in the
+    literature.
+    Previous work covers query languages, logic programming, applications to
+    software security and formal verification, model checking and SMT,
+    but also more compiler-centric dataflow analysis and type inference
+    problems.
+    The limited scope of this section requires a focus on work that is
+    particularly relevant for this thesis.
 
     For this research, constraint programming is most interesting within the
-    context of research fields such as model checking, SMT solvers, and theorem
-    proving.
-    However, other important background material for this thesis comes from
-    the programming language design community around declarative programming
+    context of research fields such as program analysis and model checking.
+    Crucial background material for this thesis also comes from
+    the programming language design community of declarative programming
     languages.
-    The prolog community particularly stands out.
+    Prolog and its many extensions and dialects particularly stand out as
+    fully-fledged logic programming languages, but parallels can also be drawn
+    to querying languages that apply database techniques to static analysis.
 
-    The fields vary greatly in their interests and approaches, but
-    the underlying challenges are often similar, especially performance and
-    scalability issues of backtracking solvers.
+    These different fields vary significantly in their interests, motivations,
+    and approaches, but the underlying challenges are often similar.
+    Notably, the performance of backtracking solvers and the scalability to
+    complex problems are a recurring theme.
 
 \subsection{Constraint Programming for Program Analysis}
 
