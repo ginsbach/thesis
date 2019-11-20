@@ -107,6 +107,14 @@
     None of these approaches however, tackle the issue of efficiently enabling
     large-scale program transformations.
 
+    Other advanced approaches to extracting higher
+    level structures from assembly and well structured FORTRAN code
+    involve temporal logic \cite{Mendis2015Helium, Kamil2016Verified}.
+    These approaches tend to focus on a more restricted set of
+    computations (dense memory access).
+    While this allows formal reasoning about correctness, is too restrictive to
+    model sparse linear algebra.
+
 \subsection{Delarative Programming Language Design}
 
     \paragraph*{Languages for querying program properties}
@@ -184,25 +192,13 @@
 
 \section{Compiler Analysis and Auto-Parallelisation}
 
-    This work applies constraint programming approaches to compiler analysis
-    problems in a novel way.
-    In order to evaluate this, traditional compiler analysis approaches are
-    used for comparison.
+    The overarching motivation for constraint programming on SSA intermediate
+    representation in this thesis is the automatic heterogeneous
+    paralellelisation of sequential code.
+    In order to evaluate this appropriately, traditional compiler analysis
+    approaches are used for comparison.
 
-\subsection{Compiler centric linear algebra optimisation}
-
-    Compiler management of indirect memory accesses was already studied in the
-    1980s using an inspector-executor model for distributed-memory machines in
-    \citet{Baxter:1989:RPS:72935.72967}.
-    Here the location of read data was discovered at runtime and appropriate
-    communication automatically inserted.
-    Later work by \citet{pottenger1995idiom,fisher1994parallelizing,
-    rauchwerger1999lrpd,suganuma1996detection} was focused on efficient runtime
-    dependence analysis and the parallelization of more general programs.
-    However, the performance achieved by these approaches is modest due to
-    runtime overhead and falls well short of library performance.
-
-\subsection{Polyhedral compiler approaches}
+\subsection{Polyhedral Compiler Approaches}
 
     The polyhedral model is a well established approach for modeling data
     dependencies that has been used by several compilers, with relevant
@@ -223,40 +219,18 @@
     Unfortunately such restrictions prevent application to real world programs;
     none of our benchmarks or data sets have this structure.
 
-\subsection{Compiler detection}
+\subsection{Linear Algebra Compilers}
 
-    There has been previous work on
-    detecting code structures during compilation using constraint programming.
-    Early work was based on abstract computation graphs
-    \cite{pinter1994program}, but more recent approaches have used real
-    compiler intermediate code and made connections to the polyhedral
-    model \cite{Ginsbach:2018:CDS:3178372.3179515}.
-
-    In \cite{Ginsbach:2018:AML:3173162.3173182} they implement a method that
-    operates on SSA intermediate representation.
-    %It is based on the Idiom Detection Language (IDL), a domain specific
-    %constraint programming language.
-    %There are several fundamental differences to our approach:
-    %Firstly, IDL
-    It uses a  general-purpose low level constraint programming language  aimed at
-    compiler engineers. % , not library implementers.
-    %It is difficult to use and
-    % requires a deep understanding of compiler internals.
-    %Secondly,
-    The %methodology of the
-    paper focuses  on code detection, with library calls inserted by hand.
-    %the
-    %necessary replacement functionality is then implemented manually.
-    It is performed naively without the use of harnesses and the results show
-    significant performance degradation due to the redundant memory transfers that
-    have to be amended manually.
-    Other advanced approaches to extracting higher
-    level structures from assembly and well structured FORTRAN code
-    involve temporal logic \cite{Mendis2015Helium, Kamil2016Verified}.
-    These approaches tend to focus on a more restricted set of
-    computations (dense memory access).
-    While this allows formal reasoning about correctness, is too restrictive to
-    model sparse linear algebra.
+    Compiler management of indirect memory accesses was already studied in the
+    1980s using an inspector-executor model for distributed-memory machines in
+    \citet{Baxter:1989:RPS:72935.72967}.
+    Here the location of read data was discovered at runtime and appropriate
+    communication automatically inserted.
+    Later work by \citet{pottenger1995idiom,fisher1994parallelizing,
+    rauchwerger1999lrpd,suganuma1996detection} was focused on efficient runtime
+    dependence analysis and the parallelization of more general programs.
+    However, the performance achieved by these approaches is modest due to
+    runtime overhead and falls well short of library performance.
 
 \section{Heterogeneous Computing}
 
