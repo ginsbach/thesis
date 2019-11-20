@@ -102,13 +102,14 @@
     The CompCert tool by \citet{Mullen:2016:VPO:2908080.2908109} verifies
     peephole optimizations directly on x86 assembly, and LifeJacket
     \citep{Notzli:2016:LVP:2931021.2931024} proves the correctness of floating
-    point optimizations in LLVM, as does Alive-FP \citep{Menendez2016}, which
+    point optimisations in LLVM, as does Alive-FP \citep{Menendez2016}, which
     also generates C++ code.
-    None of these approaches however, tackle the issue of efficiently writing
-    arbitrary compiler analysis passes.
+    None of these approaches however, tackle the issue of efficiently enabling
+    large-scale program transformations.
 
 \subsection{Delarative Programming Language Design}
 
+    \paragraph*{Languages for querying program properties}
     From the perspective of language design, the declarative programming
     languages Prolog and SQL are perhaps most influential.
     The two languages differ fundamentally.
@@ -144,6 +145,42 @@
     programming languages such as C++ infeasible, as demonstrated in
     \Cref{sec:syntacticmatching}.
 
+    \paragraph*{Languages for generating compiler passes}
+    \citet{Martin1998} presents a specification language for program analysis
+    functionality called PAG that is based on abstract interpretation.
+    Domain specific languages for the conception of optimization passes have
+    also been studied before using tree rewrites, among them
+    \citet{Olmos:2005:CSD:2136624.2136643}.
+    \citet{Lipps1989} propose the domain specific language OPTRAN for matching
+    patterns in attributed abstract syntax trees of Pascal programs.
+    These patterns can then be automatically replaced by semantically
+    equivalent, more efficient implementations.
+    Generic programming concepts can also be used to generate optimization
+    passes, as demonstrated by \cite{Willcock:2009:RGP:1621607.1621611}.
+    These schemes however are not able to work at the IR level essential for
+    compiler implementation and do not scale beyond simple functions.
+
+    Different to code transformation techniques are based on the LLVM ASTMatcher
+    library and LibTooling \citep{be0fa11ddb194bde86a9dab8589b779c}.
+    However, these tools are not standalone languages, but implemented as C++
+    library functions that provide a sort of embedded domain-specific langauge
+    for pattern matching.
+    This method is extremely specific to the Clang compiler frontend, and
+    exposes the abstract syntax tree of C++ code.
+    For deteting complex algorithmic structures, this is an entirely impractical
+    approach.
+
+    Another language for implementing compiler optimisations from
+    declarative specifications is OPTIMIX \citep{Assmann1996,Assmann98optimix}.
+    Similarly to the presented work in \Cref{chapter:candl}, OPTIMIX emphasizes
+    developer productivity.
+    However, it is based on graph rewrite rules.
+    OPTIMIX programs are compiled into C code that performs the specified
+    transformation.
+    A domain specific language for the generation of optimisation
+    transformations was also used in the CoSy compiler \citep{Alt1994}.
+    Both OPTIMIX and the CoSy method are simple rewrite engines that have no
+    knowledge of global program constraints.
 
 \section{Compiler Analysis and Auto-Parallelisation}
 
@@ -171,7 +208,7 @@
     dependencies that has been used by several compilers, with relevant
     publications by \citet{redon1994scheduling, jouvelot1989unified,
     chi1997optimizing, gupta2006simplifying, stock2014framework}.
-    Polyhedral optimizers have been implemented in mainstream C/C++ compilers,
+    Polyhedral optimisers have been implemented in mainstream C/C++ compilers,
     notably are the Polly extensions to LLVM described in
     \cite{Doerfert2015Polly}.
     Recent work by \citet{7429301} has extended the polyhedral model beyond
@@ -643,39 +680,3 @@
     Polyhedral compilers \cite{Baskaran:2010:ACC:2175462.2175482,Verdoolaege:2013:PPC:2400682.2400713} perform advanced loop optimizations and have been used for the generation of fast GPU kernels.
     More recently, extensions to the polyhedral framework have been proposed, allowing it to capture reduction computations \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
     Such efforts are described in \cite{Doerfert2015Polly}, but they are fragile in the presence of non static control flow.
-
-
-\subsection{Scraps}
-
-    \citet{Martin1998} present a specification language for program analysis
-    functionality called PAG that is based on abstract interpretation.
-    Domain specific languages for the conception of optimization passes have
-    also been studied before using tree rewrites, among them
-    \citet{Olmos:2005:CSD:2136624.2136643}.
-    \citet{Lipps1989} propose the domain specific language OPTRAN for matching
-    patterns in attributed abstract syntax trees of Pascal programs.
-    These patterns can then be automatically replaced by semantically
-    equivalent, more efficient implementations. 
-    Generic programming
-    concepts can also be used to generate optimization passes, as
-    demonstrated by \cite{Willcock:2009:RGP:1621607.1621611}.  These
-    schemes however are not able to work at the IR level essential for
-    compiler implementation and do not scale beyond simple functions.
-
-    Different to code transformation techniques based on the LLVM ASTMatcher
-    library and LibTooling \citep{be0fa11ddb194bde86a9dab8589b779c}, this work
-    is on compiler intermediate representation and independent from
-    the compiler frontend.
-    This makes it possible integrate well with the existing optimization
-    infrastructure, allows the approach to be language independent and makes it
-    approach robust to shallow syntactic changes.
-
-    Another language for implementing optimizations that emphasizes developer
-    productivity is OPTIMIX \citep{Assmann1996,Assmann98optimix}, based on graph
-    rewrite rules.
-    OPTIMIX programs are compiled into C code that performs the specified
-    transformation.
-    A domain specific language for the generation of optimization
-    transformations was also used in the CoSy compiler \citep{Alt1994}.
-    These are simple rewrite engines and have no knowledge of global program
-    constraints.
