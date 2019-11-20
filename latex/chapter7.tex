@@ -154,20 +154,31 @@
     disproportionately higher cost on large functions and especially on code
     sections that are near misses to satisfying the specifications.
 
+\subsection*{Finite Variable Numbers}
+
+    CAnDL and IDL are limited to a finite number of variables in the underlying
+    constraint problem.
+    This results in upper bounds for the number of features many idioms:
+    CReHCs can only contain a maximum of two histograms, stencil codes can only
+    use a neighbourhood of up to 32 items, and so on.
+    In practice, this involves a tradeoff between performance and the generality
+    of the idiom specification, as each additional variable introduces a slight
+    overhead for the solver.
+
 \section{Future Work}
 
-    Future work will focus on extending the approach to pointer-intensive
-    idioms, improving the usability of specification languages, and
-    complementing the static detection approaches with dynamic and
-    machine learning techniques.
-    Furthermore, the automatic generation of constraint specifications from
-    code examples may eventually replace the necessity of writing constraint
-    specifications manually.
+    Future work will focus on extending the approach to new idioms,
+    improving the usability of specification languages, and
+    applying dynamic and machine learning techniques to complement the static
+    analysis.
+    Furthermore, constraint specifications will eventually be generated from
+    code examples automatically, removing the difficulty of writing them
+    manually.
 
 \subsection*{Complementing with Dynamic and Machine Learning Approaches}
 
-    Several shortcomings of the presented approaches could be removed with
-    dynamic approaches and machine learning.
+    The presented static methods will be complemented with dynamic approaches
+    and machine learning.
     Such methods complement the entirely static reasoning of constraint
     programming on compiler immediate representation naturally but were
     outside the scope of this thesis.
@@ -179,25 +190,14 @@
     The use of neural networks for guiding compiler optimisations has been
     successfully studied in the relevant literature
     \citep{DBLP:journals/pieee/WangO18}.
-
     Dynamic methods are also required to automate the efficient memory transfers
     that are required between heterogeneous participants, and to rule out
     pointer aliasing.
 
-\subsection*{Finite Variable Numbers}
+\subsection*{Infinite Variable Number}
 
-    One of the most apparent imperfections of both CAnDL and IDL is the
-    limitation to a finite number of variables in the underlying constraint
-    problem.
-    This results in upper bounds for the number of features many idioms:
-    CReHCs can only contain a maximum of two histograms, stencil codes can only
-    use a neighbourhood of up to 32 items, and so on.
-    In practice, this involves a tradeoff between performance and the generality
-    of the idiom specification, as each additional variable introduces a slight
-    overhead for the solver.
-
-    Similar problems are well-known in other research disciplines that involve
-    an underlying solver with similar limitations.
+    Other research disciplines worked around some limitation of underlying
+    solvers.
     For example, Bounded Model Checking \cite{Clarke:2001:BMC:510986.510987}
     uses SAT solvers and involves the complete unrolling of loops.
     In order to fit the underlying solver, this requires the introduction of a
@@ -205,14 +205,15 @@
     The entire checking process can then be repeated with larger and larger
     values of $k$, successively ruling out more possible violations.
 
-    The same approach will be applied to constraint solving on SSA:
+    The same approach could be applied to constraint solving on SSA:
     The solver is invoked repeatedly with successively increasing numbers of
     variables.
-    At the point when no \texttt{collect} statement exceeds variable
-    capacity, this process is terminated.
-    This method ensures that small solutions are found without unnecessary
+    When no \texttt{collect} statement exceeds variable capacity anymore, the
+    process is terminated.
+    This ensures that small solutions are found without unnecessary
     overhead, yet solutions that use large numbers of variables are not
     discarded entirely.
+    No upper limits for collect statements are required with this scheme.
 
 \subsection*{Pointer-chasing Idioms}
 
