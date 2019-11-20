@@ -176,60 +176,7 @@
 \title{From Constraint Programming\\to Heterogeneous Parallelism}
 \author{Philip Ginsbach}
 
-\abstract{
-    The scaling limitations of multi-core processor development have led to a
-    diversification of the processor cores used within individual computers.
-    Heterogeneous computing has become widespread, involving the cooperation of
-    several structurally different processor cores.
-    Central processor (CPU) cores are most frequently complemented with graphics
-    processors (GPUs), which despite their name are suitable for many highly
-    parallel computations besides computer graphics.
-    Furthermore, deep learning accelerators are rapidly gaining relevance.
-
-    Many applications could profit from heterogeneous computing but are held
-    back by the surrounding software ecosystems.
-    Heterogeneous systems are a challenge for compilers in particular, which
-    usually only target the homogeneous -- increasingly marginalised -- CPUs.
-    Therefore, heterogeneous acceleration is primarily accessible via libraries
-    and domain-specific languages (DSLs), requiring expensive application
-    rewrites and resulting in vendor lock-in.
-
-    This thesis presents a compiler approach to automatically target
-    heterogeneous hardware from existing sequential C/C++ source code.
-    A novel constraint programming methodology enables the declarative
-    specification and automatic detection of {\em computational idioms} within
-    compiler intermediate representation.
-    Computational idioms denote algorithmic structure that is common in
-    performance-critical loops.
-    Examples of computational idioms are stencil codes, linear algebra,
-    reductions and histogram computations.
-    Well-designed accelerator DSLs and libraries support computational idioms
-    with their programming models and function interfaces.
-    The detection of computational idioms during compilation enables the
-    compiler to offload code generation to these dedicated backends, which
-    incorporate domain knowledge for efficient heterogeneous code generation.
-
-    The constraint programming methodology is first derived on an abstract
-    model, and then implemented as an extension of LLVM.
-    Two constraint programming langauges are desiged for this
-    extension:
-    the Compiler Analysis Description Language (CAnDL), and the extended
-    Idiom Detection Language (IDL).
-    These languages are evaluated on a range of different compiler problems,
-    culminating in a complete heterogeneous acceleration pipeline within the
-    LLVM compiler framework.
-    The pipeline was evaluated on established benchmark collections NPB and
-    Parboil.
-    The approach was effective on 10 of the benchmark programs, resulting in
-    significant speedups from 1.26$\times$ on ``histo'' to 275$\times$ on
-    ``sgemm'' when starting from sequential baseline versions.
-
-    The automatic detection of computational idioms during compilation and the
-    subsequent redirection of idiomatic program parts to domain-specific code
-    generators can enable automatic heterogeneous acceleration.
-    Constraint programming on compiler intermediate representation is a suitable
-    method for formulating computational idioms that can be detected
-    automatically with a constraint solver.
+\abstract{\input{latex/abstract}
 }
 
 \begin{document}
