@@ -16,7 +16,7 @@
 \section{Constraint Programming and Declarative Languages}
 
     Declarative Languages, constraint programming, and the application of
-    constraints to program analysis problems are well-documented in the
+    constraints to program analysis problems are well-established in the
     literature.
     Previous work covers query languages, logic programming, applications to
     software security and formal verification, model checking and SMT,
@@ -41,39 +41,70 @@
 
 \subsection{Constraint Programming for Program Analysis}
 
-    Constraint systems have long been used in program analysis for classical
-    purposes such as dataflow analysis and type inference, as in
-    \citet{Aiken:1999:ISC:339853.339897}.
-    \citet{Gulwani:2008:PAC:1375581.1375616} showed how constraints can be
-    used to for some  existing analysis problems.
-    It can also be used to assist generation of programs from specifications,
-    as in \citet{Srivastava:2010:PVP:1707801.1706337}.
+    Constraint systems have long been used in program analysis.
+    \citet{Aiken:1999:ISC:339853.339897} gives a comprehensive overview of
+    earlier work.
+    The article highlights the crucial ability of constraint-based program
+    analysis to separate {\it constraint specification} from
+    {\it constraint resolution}.
+    This separation enables the scalability of compiler analysis problems also
+    in this thesis beyond what could reasonably be implemented with manual
+    recognition routines, by offloading the {\it constraint resolution} to an
+    external solver.
+    However, none of the techniques in the article capture higher-level
+    algorithmic concepts.
+    Instead, the focus is on classical purposes such as dataflow analysis and
+    type inference.
+
+    More recent work on constraint-based program analysis by
+    \citet{Gulwani:2008:PAC:1375581.1375616} leverages the advancements in
+    off-the-shelf SAT/SMT solvers.
+    The analysis problems are lowered to bit-vector formulations, and the
+    {\it constraint resolution} is entirely externalised to these separate
+    tools.
+    The motivation of the approach is mainly to verify program properties,
+    as opposed to the aim of sophisticated parallelising code transformation in
+    this thesis.
+    Furthermore, \Cref{sec:SATcomp} already showed that the limitation to
+    SMT backends is inefficient for the resolution of SSA constraint problems.
 
     There is particularly extensive work in the area of security and formal
     verification of software systems.
-    This work inxludes investigations into formally verifying existing compiler
-    transformations using SMT solvers and theorem provers that operate on IR
-    code, among them \citet{Zhao:2012:FLI:2103656.2103709}.
+    This work includes investigations into using SMT solvers and theorem provers
+    that operate on LLVM IR code, among them
+    \citet{Zhao:2012:FLI:2103656.2103709}.
+    However, the presented model of LLVM IR serves an entirely different purpose
+    to the SSA model in this thesis.
+    The model provides operational semantics, but cannot be used to detect
+    large-scale algorithmic structures in user programs, as is required for
+    automatic heterogeneous acceleration.
+    Instead, the focus is on formally verifying the correctness of existing
+    compiler transformations for all possible user functions.
 
-    Recent domain specific languages for formally verifying compiler
-    optimizations, such as Alive \citep{Lopes:2015:PCP:2737924.2737965} operate
-    on static single assignment compiler IR as well.
-    However, it has no support for control flow and is limited to simple
-    peephole optimizations.
+    Recent domain-specific languages, such as Alive
+    \citep{Lopes:2015:PCP:2737924.2737965} also operate on SSA intermediate
+    representation.
+    LLVM instructions are reformulated on bitvectors, and the
+    correctness of conditions is checked with an SMT solver.
+    However, Alive only implements a subset of LLVM's integer and pointer
+    instructions.
+    It has no support for control flow and does not scale to the real
+    applications, such as those used in this thesis for evaluation.
+    Instead, it is designed for formally verifying already existing
+    compiler optimisations that operate on only a handful of integer
+    instructions at a time.
 
-    Further approaches to generating compiler optimizations that focus on formal
+    Further approaches to generating compiler optimisations that focus on formal
     verification instead of programmer productivity include Rhodium
     \citep{Lerner:2005:ASP:1040305.1040335}, PEC
     \citep{Kundu:2009:POC:1543135.1542513} and Gospel
     \citep{Whitfield:1997:AEC:267959.267960}.
     The CompCert tool by \citet{Mullen:2016:VPO:2908080.2908109} verifies
-    peephole optimizations directly on x86 assembly code and LifeJacket
-    \cite{Notzli:2016:LVP:2931021.2931024} proves the correctness of floating
-    point optimizations in LLVM, as does Alive-FP \cite{Menendez2016}, which
+    peephole optimizations directly on x86 assembly, and LifeJacket
+    \citep{Notzli:2016:LVP:2931021.2931024} proves the correctness of floating
+    point optimizations in LLVM, as does Alive-FP \citep{Menendez2016}, which
     also generates C++ code.
-    The authors of \cite{Tate:2010:GCO:1706299.1706345} investigate the
-    automatic generation of optimization transformations from examples.
-    None of the approaches however, tackle the issue of efficiently writing
+    None of these approaches however, tackle the issue of efficiently writing
     arbitrary compiler analysis passes.
 
     \citet{Martin1998} present a specification language for program analysis
