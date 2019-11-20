@@ -107,61 +107,43 @@
     None of these approaches however, tackle the issue of efficiently writing
     arbitrary compiler analysis passes.
 
-    \citet{Martin1998} present a specification language for program analysis
-    functionality called PAG that is based on abstract interpretation.
-    Domain specific languages for the conception of optimization passes have
-    also been studied before using tree rewrites, among them
-    \citet{Olmos:2005:CSD:2136624.2136643}.
-    \citet{Lipps1989} propose the domain specific language OPTRAN for matching
-    patterns in attributed abstract syntax trees of Pascal programs.
-    These patterns can then be automatically replaced by semantically
-    equivalent, more efficient implementations. 
-    Generic programming
-    concepts can also be used to generate optimization passes, as
-    demonstrated by \cite{Willcock:2009:RGP:1621607.1621611}.  These
-    schemes however are not able to work at the IR level essential for
-    compiler implementation and do not scale beyond simple functions.
-
-    Different to code transformation techniques based on the LLVM ASTMatcher
-    library and LibTooling \citep{be0fa11ddb194bde86a9dab8589b779c}, this work
-    is on compiler intermediate representation and independent from
-    the compiler frontend.
-    This makes it possible integrate well with the existing optimization
-    infrastructure, allows the approach to be language independent and makes it
-    approach robust to shallow syntactic changes.
-
-    Another language for implementing optimizations that emphasizes developer
-    productivity is OPTIMIX \citep{Assmann1996,Assmann98optimix}, based on graph
-    rewrite rules.
-    OPTIMIX programs are compiled into C code that performs the specified
-    transformation.
-    A domain specific language for the generation of optimization
-    transformations was also used in the CoSy compiler \citep{Alt1994}.
-    These are simple rewrite engines and have no knowledge of global program
-    constraints.
-
-    Other work has investigated the use of constraint solvers for
-    detecting structure in LLMV IR.
-    \citet{ginsbach2017discovery} use a solver to detect histograms and
-    scalar reductions in order to automatically parallelize code.
-    A different important approach to detecting structure in intermediate
-    code is the polyhedral model.
-    Compilers using this model, such as
-    \citet{Lengauer2012Polly}, \citet{Baskaran:2010:ACC:2175462.2175482} and
-    \citet{Verdoolaege:2013:PPC:2400682.2400713}, capture well behaved
-    loops with affine array accesses and are able to perform advanced loop
-    optimizations.
-    Recent work has investigated performant reduction computations on GPUs with
-    the polyhedral model \citep{Reddy2016Reduction}.
-    However this approach is not easily extensible to other program structures
-    and captures only a very specific class of well behaved programs.
-
-    In \citet{Yuan:2017:TOS:3101282.3101287}, the authors propose the use of the
-    Web Ontology Language (WOL) for the description of software architectures.
-    This representation enables automatic reasoning and analysis about the
-    interoperability of software architectures.
-
 \subsection{Delarative Programming Language Design}
+
+    From the perspective of language design, the declarative programming
+    languages Prolog and SQL are perhaps most influential.
+    The two languages differ fundamentally.
+    Prolog is a logic programming language that originated in academia for
+    analysing natural language \citep{Colmerauer:1993:BP:154766.155362}.
+    By contrast, SQL was developed at IBM for managing data in
+    relational database management systems
+    \citep{Chamberlin:1974:SSE:800296.811515}.
+    Nonetheless, specification languages for structures in program code have
+    been proposed that take inspiration from both backgrounds.
+
+    The first such specification language was the Omega system by
+    \citet{Linton:CSD-83-164}.
+    It uses a relational database to store all the relevant properties of a
+    program.
+    The captured information is based on the abstract syntax tree of programs
+    that are implemented in a subset of the Ada programming language.
+    Additional edges are inserted to connect common variables of
+    successive expressions, given some indication of dataflow between
+    instructions.
+    The system then allows database-style queries formulated in QUEL
+    \citep{Stonebraker:1976:DII:320473.320476}, an SQL-style language.
+
+    The CodeQuest system \citep{Hajiyev:2006:CSS:2171327.2171331} combined the
+    approach of Omega and its database-oriented successors with the use of logic
+    programming.
+    The queries are translated into Datalog, a Prolog derivative that is
+    imlemented on top of SQL.
+    This allows CodeQuest to be fundamentally more expressive, allowing
+    recursive queries that are required for meaningful CFG inspection.
+    Nonetheless, the approach is based on querying source langauge features.
+    This makes the detection of large-scale algorithmic structures in complex
+    programming languages such as C++ infeasible, as demonstrated in
+    \Cref{sec:syntacticmatching}.
+
 
 \section{Compiler Analysis and Auto-Parallelisation}
 
@@ -661,3 +643,39 @@
     Polyhedral compilers \cite{Baskaran:2010:ACC:2175462.2175482,Verdoolaege:2013:PPC:2400682.2400713} perform advanced loop optimizations and have been used for the generation of fast GPU kernels.
     More recently, extensions to the polyhedral framework have been proposed, allowing it to capture reduction computations \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
     Such efforts are described in \cite{Doerfert2015Polly}, but they are fragile in the presence of non static control flow.
+
+
+\subsection{Scraps}
+
+    \citet{Martin1998} present a specification language for program analysis
+    functionality called PAG that is based on abstract interpretation.
+    Domain specific languages for the conception of optimization passes have
+    also been studied before using tree rewrites, among them
+    \citet{Olmos:2005:CSD:2136624.2136643}.
+    \citet{Lipps1989} propose the domain specific language OPTRAN for matching
+    patterns in attributed abstract syntax trees of Pascal programs.
+    These patterns can then be automatically replaced by semantically
+    equivalent, more efficient implementations. 
+    Generic programming
+    concepts can also be used to generate optimization passes, as
+    demonstrated by \cite{Willcock:2009:RGP:1621607.1621611}.  These
+    schemes however are not able to work at the IR level essential for
+    compiler implementation and do not scale beyond simple functions.
+
+    Different to code transformation techniques based on the LLVM ASTMatcher
+    library and LibTooling \citep{be0fa11ddb194bde86a9dab8589b779c}, this work
+    is on compiler intermediate representation and independent from
+    the compiler frontend.
+    This makes it possible integrate well with the existing optimization
+    infrastructure, allows the approach to be language independent and makes it
+    approach robust to shallow syntactic changes.
+
+    Another language for implementing optimizations that emphasizes developer
+    productivity is OPTIMIX \citep{Assmann1996,Assmann98optimix}, based on graph
+    rewrite rules.
+    OPTIMIX programs are compiled into C code that performs the specified
+    transformation.
+    A domain specific language for the generation of optimization
+    transformations was also used in the CoSy compiler \citep{Alt1994}.
+    These are simple rewrite engines and have no knowledge of global program
+    constraints.
