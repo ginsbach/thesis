@@ -154,36 +154,6 @@
     disproportionately higher cost on large functions and especially on code
     sections that are near misses to satisfying the specifications.
 
-\subsection*{Finite Variable Numbers}
-
-    One of the most apparent imperfections of both CAnDL and IDL is the
-    limitation to a finite number of variables in the underlying constraint
-    problem.
-    This results in upper bounds for the number of features many idioms:
-    CReHCs can only contain a maximum of two histograms, stencil codes can only
-    use a neighbourhood of up to 32 items, and so on.
-    In practice, this involves a tradeoff between performance and the generality
-    of the idiom specification, as each additional variable introduces a slight
-    overhead for the solver.
-
-    Similar problems are well-known in other research disciplines that involve
-    an underlying solver with similar limitations.
-    For example, Bounded Model Checking \cite{Clarke:2001:BMC:510986.510987}
-    uses SAT solvers and involves the complete unrolling of loops.
-    In order to fit the underlying solver, this requires the introduction of a
-    certain finite iteration limit $k$.
-    The entire checking process can then be repeated with larger and larger
-    values of $k$, successively ruling out more possible violations.
-
-    The same approach could be applied to constraint solving on SSA:
-    The solver is invoked repeatedly with successively increasing numbers of
-    variables.
-    At the point when no \texttt{collect} statement exceeds variable
-    capacity, this process is terminated.
-    This method ensures that small solutions are found without unnecessary
-    overhead, yet solutions that use large numbers of variables are not
-    discarded entirely.
-
 \section{Future Work}
 
     Future work will focus on extending the approach to pointer-intensive
@@ -213,6 +183,36 @@
     Dynamic methods are also required to automate the efficient memory transfers
     that are required between heterogeneous participants, and to rule out
     pointer aliasing.
+
+\subsection*{Finite Variable Numbers}
+
+    One of the most apparent imperfections of both CAnDL and IDL is the
+    limitation to a finite number of variables in the underlying constraint
+    problem.
+    This results in upper bounds for the number of features many idioms:
+    CReHCs can only contain a maximum of two histograms, stencil codes can only
+    use a neighbourhood of up to 32 items, and so on.
+    In practice, this involves a tradeoff between performance and the generality
+    of the idiom specification, as each additional variable introduces a slight
+    overhead for the solver.
+
+    Similar problems are well-known in other research disciplines that involve
+    an underlying solver with similar limitations.
+    For example, Bounded Model Checking \cite{Clarke:2001:BMC:510986.510987}
+    uses SAT solvers and involves the complete unrolling of loops.
+    In order to fit the underlying solver, this requires the introduction of a
+    certain finite iteration limit $k$.
+    The entire checking process can then be repeated with larger and larger
+    values of $k$, successively ruling out more possible violations.
+
+    The same approach will be applied to constraint solving on SSA:
+    The solver is invoked repeatedly with successively increasing numbers of
+    variables.
+    At the point when no \texttt{collect} statement exceeds variable
+    capacity, this process is terminated.
+    This method ensures that small solutions are found without unnecessary
+    overhead, yet solutions that use large numbers of variables are not
+    discarded entirely.
 
 \subsection*{Pointer-chasing Idioms}
 
