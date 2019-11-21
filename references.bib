@@ -2452,6 +2452,24 @@ month={Dec}
  address = {New York, NY, USA},
 }
 
-
-
-
+@inproceedings{CompCert-ERTS-2018,
+  author = {Daniel Kästner and
+            Ulrich Wünsche and
+            Jörg Barrho and 
+            Marc Schlickling and
+            Bernhard Schommer and
+            Michael Schmidt and
+            Christian Ferdinand and
+            Xavier Leroy and
+            Sandrine Blazy},
+  title = {{CompCert}: Practical experience on integrating and qualifying
+           a formally verified optimizing compiler},
+  booktitle = {ERTS 2018: Embedded Real Time Software and Systems},
+  publisher = {SEE},
+  year = 2018,
+  month = jan,
+  hal = {https://hal.inria.fr/hal-01643290},
+  url = {http://xavierleroy.org/publi/erts2018_compcert.pdf},
+  xtopic = {compcert},
+  abstract = {CompCert is the first commercially available optimizing compiler that is formally verified, using machine-assisted mathematical proofs, to be exempt from mis-compilation. The executable code it produces is proved to behave exactly as specified by the semantics of the source C program. This article gives an overview of the use of CompCert to gain certification credits for a highly safety-critical industry application, certified according to IEC 60880. We will briefly introduce the target application, illustrate the process of changing the existing compiler infrastructure to CompCert, and discuss performance characteristics. The main part focuses on the tool qualification strategy, in particular on how to take advantage of the formal correctness proof in the certification process.}
+}

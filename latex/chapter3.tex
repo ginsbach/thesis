@@ -96,6 +96,15 @@
     compiler optimisations that operate on only a handful of integer
     instructions at a time.
 
+    LifeJacket \citep{Notzli:2016:LVP:2931021.2931024} proves the correctness of
+    floating point optimisations in LLVM, as does Alive-FP \citep{Menendez2016}.
+    Both of these projects are extensons of the SMT-based Alive system.
+    They extend the scope of suitable inputs by modeling additional instructions
+    as bitvectors, but the fundamental limitations remain and control flow is
+    not supported.
+    Therefore, only peephole optimisations can be evaluated with these
+    approaches.
+
     \paragraph*{On other program models}
     Other advanced approaches to extracting high-level structures from assembly
     and well structured Fortran code use temporal logic as the foundation of
@@ -111,18 +120,19 @@
     While this allows formal reasoning about correctness, is too restrictive to
     model sparse linear algebra.
 
+    \citet{Mullen:2016:VPO:2908080.2908109} verify low-level program
+    transformations within the formally verified CompCert compiler
+    \citep{CompCert-ERTS-2018}, directly on x86 assembly.
+    The approach is fully verified, requiring approximately 30000 lines of
+    manually written Coq code and proof lines.
     Further approaches to generating compiler optimisations that focus on formal
     verification instead of programmer productivity include Rhodium
     \citep{Lerner:2005:ASP:1040305.1040335}, PEC
     \citep{Kundu:2009:POC:1543135.1542513} and Gospel
     \citep{Whitfield:1997:AEC:267959.267960}.
-    The CompCert tool by \citet{Mullen:2016:VPO:2908080.2908109} verifies
-    peephole optimizations directly on x86 assembly, and LifeJacket
-    \citep{Notzli:2016:LVP:2931021.2931024} proves the correctness of floating
-    point optimisations in LLVM, as does Alive-FP \citep{Menendez2016}, which
-    also generates C++ code.
     None of these approaches however, tackle the issue of efficiently enabling
     large-scale program transformations.
+    Instead, they all focus on small-scale peephole optimisations.
 
 \subsection{Delarative Programming Languages for Program Analysis}
 
