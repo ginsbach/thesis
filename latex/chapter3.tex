@@ -238,6 +238,62 @@
     Unfortunately such restrictions prevent application to real world programs;
     none of our benchmarks or data sets have this structure.
 
+\subsection{Reduction Parallelism}
+
+
+    Discovering and exploiting scalar reductions in programs has been studied
+    for many years based on dependence analysis and idiom detection
+    \cite{pottenger1995idiom,suganuma1996detection,fisher1994parallelizing}.
+    Early work focused on well structured Fortran and paid little attention to
+    compiler-based detection, a notable exception being. 
+    \cite{suganuma1996detection}. 
+    In \cite{rauchwerger1999lrpd}, the authors went beyond previous static
+    approaches and developed a dynamic test to speculatively exploit reduction
+    parallelism.
+    Alongside this data dependence based approach, there has also been a
+    large body of work exploring mapping of reductions in a polyhedral setting
+    \cite{redon1994scheduling, jouvelot1989unified}.
+
+    The treatment of more general reduction operations has received less
+    attention.
+    Work has focused on the exploitation of reductions rather than discovery
+    \cite{gutierrez2003optimization,gutierrez2008analytical, Gutierrez:2000},
+    examining trade-offs in implementation \cite{yu2006adaptive} or exploitation
+    of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
+    In \cite{das2010experiences}, they use dynamic profile analysis to guide
+    manual analysis and show there is potential for finding generalized
+    reductions.
+    In \cite{kim2012dynamic} they explore the use of dynamic analysis further,
+    but state that detecting reductions on arrays is challenging.
+
+    More recently, extensions to the polyhedral framework have been proposed,
+    allowing it to capture reduction computations
+    \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
+    Such efforts are described in \cite{Doerfert2015Polly}.
+    The authors discuss and implement a reduction-enabled scheduling approach as
+    part of Polly and use the Polybench benchmark suite to evaluate it,
+    achieving speedups of up to 2.21x.
+    However as shown in our evaluation section, such schemes are fragile in the
+    presence of non static control flow.
+
+    The difficulty in automatically detecting reductions has led to language or
+    annotation based approaches where it is the user's responsibility to mark
+    reductions in the program \cite{deitz2002high}.
+    An annotation approach is described in \cite{Reddy2016Reduction}, based on
+    the Platform-Neutral Compute Intermediate Language
+    (\cite{baghdadi2015PENCIL}).
+    This used the code generator in
+    (\cite{Verdoolaege:2013:PPC:2400682.2400713}) to generate CUDA and OpenCL
+    code for multiple compute platforms.
+
+    Work has focused on exploitation rather than discovery
+    \cite{Gutierrez:2000,gutierrez2003optimization,gutierrez2008analytical}, examining trade-offs in implementation \cite{yu2006adaptive}
+     or exploitation of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
+    Recent work \cite{ginsbach2017discovery} shows that more complex reductions can be 
+    detected, but this is tied to  an  ad~hoc non-portable code generation phase. 
+
+
+
 \subsection{Linear Algebra Compilers}
 
     Compiler management of indirect memory accesses was already studied in the
@@ -541,82 +597,8 @@
     The same is true algorithmically and particularly for performance intensive
     applications.
 
-\paragraph*{Stencils}
-    Stencil detection has been driven by the introduction of DSLs such as
-    Halide.  Helium \cite{Mendis2015Helium} tackles the challenging task
-    of detecting stencils in binary code. It relies
-    on dynamic analysis and cannot easily be extended to
-    other idioms.
-    Another closely related paper is \cite{Kamil2016Verified}, which detects stencils in FORTRAN by the
-    verified lifting of code segments to a representation that can be
-    mapped to Halide DSL.  It uses syntax guided synthesis to verify
-    translation with added constrains to ensure that it can be mapped to
-    Halide.
-    It however requires nested loops  without conditionals in well behaved FORTRAN
-    and in some cases requires user annotations.
-
-\paragraph*{Reductions}
-    Discovering and exploiting scalar reductions in programs has been
-    studied for many years based on dependence analysis and idiom detection
-     \cite{fisher1994parallelizing,pottenger1995idiom,suganuma1996detection}.
-    Alongside this data dependence based approach, there has also been a
-     large body of work exploring mapping of reductions in a
-     polyhedral setting \cite{jouvelot1989unified,redon1994scheduling}
-     The treatment of
-    more general reduction operations has received  less attention.
-    Work has focused on exploitation rather than discovery
-    \cite{Gutierrez:2000,gutierrez2003optimization,gutierrez2008analytical}, examining trade-offs in implementation \cite{yu2006adaptive}
-     or exploitation of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
-    Recent work \cite{ginsbach2017discovery} shows that more complex reductions can be 
-    detected, but this is tied to  an  ad~hoc non-portable code generation phase. 
-
-
 \section{CGO related}
 
-    Discovering and exploiting scalar reductions in programs has been studied
-    for many years based on dependence analysis and idiom detection
-    \cite{pottenger1995idiom,suganuma1996detection,fisher1994parallelizing}.
-    Early work focused on well structured Fortran and paid little attention to
-    compiler-based detection, a notable exception being. 
-    \cite{suganuma1996detection}. 
-    In \cite{rauchwerger1999lrpd}, the authors went beyond previous static
-    approaches and developed a dynamic test to speculatively exploit reduction
-    parallelism.
-    Alongside this data dependence based approach, there has also been a
-    large body of work exploring mapping of reductions in a polyhedral setting
-    \cite{redon1994scheduling, jouvelot1989unified}.
-
-    The treatment of more general reduction operations has received less
-    attention.
-    Work has focused on the exploitation of reductions rather than discovery
-    \cite{gutierrez2003optimization,gutierrez2008analytical, Gutierrez:2000},
-    examining trade-offs in implementation \cite{yu2006adaptive} or exploitation
-    of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
-    In \cite{das2010experiences}, they use dynamic profile analysis to guide
-    manual analysis and show there is potential for finding generalized
-    reductions.
-    In \cite{kim2012dynamic} they explore the use of dynamic analysis further,
-    but state that detecting reductions on arrays is challenging.
-
-    More recently, extensions to the polyhedral framework have been proposed,
-    allowing it to capture reduction computations
-    \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
-    Such efforts are described in \cite{Doerfert2015Polly}.
-    The authors discuss and implement a reduction-enabled scheduling approach as
-    part of Polly and use the Polybench benchmark suite to evaluate it,
-    achieving speedups of up to 2.21x.
-    However as shown in our evaluation section, such schemes are fragile in the
-    presence of non static control flow.
-
-    The difficulty in automatically detecting reductions has led to language or
-    annotation based approaches where it is the user's responsibility to mark
-    reductions in the program \cite{deitz2002high}.
-    An annotation approach is described in \cite{Reddy2016Reduction}, based on
-    the Platform-Neutral Compute Intermediate Language
-    (\cite{baghdadi2015PENCIL}).
-    This used the code generator in
-    (\cite{Verdoolaege:2013:PPC:2400682.2400713}) to generate CUDA and OpenCL
-    code for multiple compute platforms.
 
     There has also been recent work extending on \citet{rauchwerger1999lrpd}
     with more aggressive speculation and dynamic analysis
