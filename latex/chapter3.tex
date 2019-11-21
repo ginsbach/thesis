@@ -240,7 +240,6 @@
 
 \subsection{Reduction Parallelism}
 
-
     Discovering and exploiting scalar reductions in programs has been studied
     for many years based on dependence analysis and idiom detection
     \cite{pottenger1995idiom,suganuma1996detection,fisher1994parallelizing}.
@@ -250,9 +249,6 @@
     In \cite{rauchwerger1999lrpd}, the authors went beyond previous static
     approaches and developed a dynamic test to speculatively exploit reduction
     parallelism.
-    Alongside this data dependence based approach, there has also been a
-    large body of work exploring mapping of reductions in a polyhedral setting
-    \cite{redon1994scheduling, jouvelot1989unified}.
 
     The treatment of more general reduction operations has received less
     attention.
@@ -266,16 +262,6 @@
     In \cite{kim2012dynamic} they explore the use of dynamic analysis further,
     but state that detecting reductions on arrays is challenging.
 
-    More recently, extensions to the polyhedral framework have been proposed,
-    allowing it to capture reduction computations
-    \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
-    Such efforts are described in \cite{Doerfert2015Polly}.
-    The authors discuss and implement a reduction-enabled scheduling approach as
-    part of Polly and use the Polybench benchmark suite to evaluate it,
-    achieving speedups of up to 2.21x.
-    However as shown in our evaluation section, such schemes are fragile in the
-    presence of non static control flow.
-
     The difficulty in automatically detecting reductions has led to language or
     annotation based approaches where it is the user's responsibility to mark
     reductions in the program \cite{deitz2002high}.
@@ -286,13 +272,47 @@
     (\cite{Verdoolaege:2013:PPC:2400682.2400713}) to generate CUDA and OpenCL
     code for multiple compute platforms.
 
-    Work has focused on exploitation rather than discovery
-    \cite{Gutierrez:2000,gutierrez2003optimization,gutierrez2008analytical}, examining trade-offs in implementation \cite{yu2006adaptive}
-     or exploitation of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
-    Recent work \cite{ginsbach2017discovery} shows that more complex reductions can be 
-    detected, but this is tied to  an  ad~hoc non-portable code generation phase. 
+    There has also been recent work extending on \citet{rauchwerger1999lrpd}
+    with more aggressive speculation and dynamic analysis
+    \citep{aguilar2015unified} to exploit reduction parallelism.
+    \citet{Han2010Speculative} present an approach for the
+    parallelization of a wide class of scalar reductions.
+    They start from the observation that many reductions in real benchmark
+    programs are not detected by current static analysis approaches.
+    They propose a hardware assisted speculative parallelisation approach for
+    likely runtime reductions, denoted `partial reduction variables'.
+    Candidates for speculative parallelization are determined by searching for
+    update-chains in the data flow graph.
+    The approach is evaluated on some of the SPEC2000 benchmarks using a
+    simulator.
+    They achieve up to $46\%$ speedup by including speculative reductions.
+    This approach
+    based on update chains in the dependence graph requires hardware
+    speculation support to check dependences but is unable to detect
+    histogram reductions.
 
-
+    Privateer introduced in \cite{Johnson:2012:SSP:2254064.2254107}, is a
+    complex system featuring compiler support and a runtime to enable
+    speculative parallelization.
+    The core approach is the privatization of memory for each thread and an
+    exception mechanism with recovery routines for accesses that violate
+    parallelism.
+    The authors explicitly allow for reduction parallelism involving only a
+    single scalar associative and commutative operator.
+    The implementation approach is to first profile the program for hot loops
+    and then to classify all variables accessed in those loops into different
+    groups.
+    A transformation pass then identifies corresponding \texttt{malloc} and
+    \texttt{free} calls and replaces them by thread local allocations.
+    In a similar way all\texttt{load} and \texttt{store} instructions are
+    replaced by local accesses.
+    At runtime, the system uses manual page table switching and memory
+    protection to minimize runtime overhead.
+    The evaluation is done on a limited set of five benchmark programs, yielding
+    a geometric mean speedup of 11.4x on a 24 core machine.
+    The runtime overhead on these five programs varies between $<1\%$ and
+    $>50\%$.
+    Despite this complexity they only exploit simple scalar reductions.
 
 \subsection{Linear Algebra Compilers}
 
@@ -581,69 +601,83 @@
 
 \section{Computational Idioms}
 
-    The concept of computational idioms has been observed in different contexts
-    and remains a rather vague concept.
-    While terms such as \texttt{reduction}, \texttt{stencil} and
-    \texttt{linear algebra} are commonly used, the concrete concepts can be
-    surprisingly vague, although previous work has established several formal
-    approaches.
-    This chapter not try to create new formal definitions, but instead want to
-    give an overview of the literature that sheds different perspectives on this
-    topic.
+    The concept of computational idioms has been observed in different contexts.
+    Software design patterns are a way of understanding program code
+    strucutres as specialised implementation of a class of standard approaches
+    in the discipline of software engineering.
+    Terms such as {\em map and reduce}, {\em stencil code}, and
+    {\em linear algebra} are commonly used when designing libraries and
+    domain-specific languages.
+    Scientific computing is mostly concerned with the architectural
+    implications of specific memory access patterns that are instrinsic to
+    the choice of certain algorithmic approaches.
 
+    The concrete concepts are partially overlapping and can be surprisingly
+    vague.
+    This section tries to demarcate a meaningful conception of
+    {\it computational idioms} by comparison with the existing literature of the
+    many different domains with related concepts.
     The basic observation is that software programs don't cover the space of
     possible programs evenly, instead, they tend to be structured among certain
     design principles.
     The same is true algorithmically and particularly for performance intensive
     applications.
 
-\section{CGO related}
+\subsection{Higher Order Functions}
+
+    In functional programming languages, the natural representation of
+    common programming patterns are higher order functions.
+    Such functions take other functions as parameters.
+
+    Higher order functions can be used to describe many common computational workloads.
+    The popularity of the MapReduce framework \citep{Dean2008MapReduce} for example stems from the observation that many
+    big data workloads exhibit characteristics that can be expressed efficiently using a combination of the higher order
+    functions \texttt{map} and \texttt{reduce} (another name for \texttt{fold}).
+    It provides an idiom based approach to the development of big data applications, enabling shorter development times and
+    more predictable performance.
+    The inspiration for this framework came from the observation that much of the existing, individually programmed
+    software algorithms at Google implicitly used similar programming models already.
+
+\subsection{Parallel Dwarfs}
+
+    The so called Berkeley Dwarfs are a collection of 13 computational methods
+    that together comprise a large portion of the common parallel computing
+    workloads \citep{Asanovic06thelandscape}.
+    Each Dwarf is a computational pattern that is common in important
+    applications and has persisted more or less unchanged for many years.
+    The Dwarfs are inspired by numerical computations that arise in the
+    scientific computing community, although the authors claim that the
+    knowledge from this domain may prove useful in other areas as well.
+
+\subsection{Algorithmic Skeletons}
+\label{alg-skel-section}
+Another concept that can be considered a subset of computational idioms is the notion of ``Algorithmic Skeletons''
+\citep{Cole1991Algorithmic}.
+It was introduced as a way to classify the behaviour of parallel programs according to their organisation of workload
+distribution.
+This is mostly done with the motivation to introduce new, more higher level programming models and tools for parallel
+programming.
+One major inspiration to the concept was the lack of functionality in mainstream programming languages to equal the well
+established higher order functions of functional programming languages, such as the \textbf{map} function to express
+element wise application of a single function to an array.
+
+Among the ``Algorithmic Skeletons'' are \textbf{Fixed Degree Divide \& Conquer} and the \textbf{Task Queue}.
+The concept of ``Algorithmic Skeletons'' has been used to implement programming frameworks and libraries, including
+Skandium \citep{Leyton2010Skandium}, Eden \citep{Loogen2005Parallel}, eSkel \citep{Cole2004Bringing} and SkelCL
+\citep{Steuwer2011SkelCL}.
+Furthermore, the Intel Thread Building Blocks library \citep{Reinders2007Intel} is based on this concept.
+
+As opposed to the higher order functions used in functional programming and similarly to the Berkeley Dwarfs,
+the definitions for algorithmic skeletons are informal and not intended for automated reasoning.
+They are however heavily inspired by higher order functions and similarly describe the algorithmic structure of
+computations.
+This distinguishes them from the Berkeley Dwarfs, which are more focused on mathematical domains.
 
 
-    There has also been recent work extending on \citet{rauchwerger1999lrpd}
-    with more aggressive speculation and dynamic analysis
-    \citep{aguilar2015unified} to exploit reduction parallelism.
-    \citet{Han2010Speculative} present an approach for the
-    parallelization of a wide class of scalar reductions.
-    They start from the observation that many reductions in real benchmark
-    programs are not detected by current static analysis approaches.
-    They propose a hardware assisted speculative parallelisation approach for
-    likely runtime reductions, denoted `partial reduction variables'.
-    Candidates for speculative parallelization are determined by searching for
-    update-chains in the data flow graph.
-    The approach is evaluated on some of the SPEC2000 benchmarks using a
-    simulator.
-    They achieve up to $46\%$ speedup by including speculative reductions.
-    This approach
-    based on update chains in the dependence graph requires hardware
-    speculation support to check dependences but is unable to detect
-    histogram reductions.
-
-    Privateer introduced in \cite{Johnson:2012:SSP:2254064.2254107}, is a
-    complex system featuring compiler support and a runtime to enable
-    speculative parallelization.
-    The core approach is the privatization of memory for each thread and an
-    exception mechanism with recovery routines for accesses that violate
-    parallelism.
-    The authors explicitly allow for reduction parallelism involving only a
-    single scalar associative and commutative operator.
-    The implementation approach is to first profile the program for hot loops
-    and then to classify all variables accessed in those loops into different
-    groups.
-    A transformation pass then identifies corresponding \texttt{malloc} and
-    \texttt{free} calls and replaces them by thread local allocations.
-    In a similar way all\texttt{load} and \texttt{store} instructions are
-    replaced by local accesses.
-    At runtime, the system uses manual page table switching and memory
-    protection to minimize runtime overhead.
-    The evaluation is done on a limited set of five benchmark programs, yielding
-    a geometric mean speedup of 11.4x on a 24 core machine.
-    The runtime overhead on these five programs varies between $<1\%$ and
-    $>50\%$.
-    Despite this complexity they only exploit simple scalar reductions.
+\paragraph*{KIR}
 
     \citet{Andion2015Compilation} describes compiler based
-    parallelisation for heterogeneous computing that is based on
+    parallelisation for heterogeneous computing based on
     an idiomatic intermediate representation called KIR.
     This intermediate representation is based on the concept of
     \mbox{diKiernels}, which constitute algorithmic building blocks and are used
