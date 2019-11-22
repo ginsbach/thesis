@@ -117,13 +117,28 @@
     Alive is meant to improve compilers, not user programs.
 
     LifeJacket \citep{Notzli:2016:LVP:2931021.2931024} proves the correctness of
-    floating point optimisations in LLVM, as does Alive-FP \citep{Menendez2016}.
+    floating-point optimisations in LLVM, as does Alive-FP \citep{Menendez2016}.
     Both of these projects are extensons of the SMT-based Alive system.
-    They extend the scope of suitable inputs by modeling additional instructions
-    as bitvectors, but the fundamental limitations remain and control flow is
-    not supported.
+    They extend the scope of the system to model a much wider range of
+    additional instructions as bitvectors, enabling the verification of more
+    compiler optimisations.
+    Botth LifeJacket and Alive-FP successfuly identify invalid optimising
+    transformations in real compilers.
+    However, the fundamental limitations from Alive remain, and control
+    flow is not supported.
     Therefore, only peephole optimisations can be evaluated with these
     approaches.
+
+    The Alive-Infer approach \citep{Menendez:2017:ADP:3062341.3062372} builds on
+    Alive, but goes beyond the verification of existing optimisations.
+    The tool uses an SMT solver to automatically generate preconditions that
+    need to hold for transformations to be applied.
+    This moves the Alive system away from verifying optimisations and
+    closer to automatically detecting algorithmic structure in parts of user
+    programs.
+    However, Alive-Infer still requires the separate specification of the actual
+    transformation.
+    It just generates additional conditions and does not cover control flow.
 
     \paragraph*{On other program models}
     There are other advanced approaches to extracting high-level structures
@@ -153,7 +168,6 @@
     Some of the transformations consider rudimentary control flow constraints,
     but they cannot scale to computational idioms.
 
-\pagebreak
 \subsection{Delarative Programming Languages for Program Analysis}
 
     \paragraph*{Languages for querying program properties}
@@ -630,6 +644,7 @@
 %'C' programs.
 %
 
+\pagebreak
 \section{Computational Idioms}
 
     The concept of computational idioms has been observed in different contexts.
