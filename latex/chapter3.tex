@@ -1,19 +1,20 @@
 
     Four areas of research are of particular relevance to this thesis:
-    {\bf Constraint programming and declarative languages} are central to the
+    {\bf Constraint programming and specification languages} are central to the
     introduced methodology, with the relevant literature including the research
-    into constraint programming in the context of program analysis and to a
-    lesser extent the design of constraint programming languages.
+    into constraint programming in the context of program analysis and
+    the design of specification languages.
     The survey of previous approaches to
     {\bf compiler analysis and auto-parallelisation}
     establishes the baselines for the later evaluation sections.
     Related work on {\bf heterogeneous computing} with its many different
-    programming paradigmes to overcome the specific challenges of emerging
+    programming paradigms to overcome the specific challenges of emerging
     hardware will serve to motivate the proposed approaches.
     Lastly, the diverse research landscape around concepts related to
-    {\bf computational idioms} will put our idiomatic approach into context.
+    {\bf computational idioms} puts the detected algorithmic structures in this
+    thesis into context.
 
-\section{Constraint Programming and Declarative Languages}
+\section{Constraint Programming and Specification Languages}
 
     Declarative Languages, constraint programming, and the application of
     constraints to program analysis problems are well-established in the
@@ -76,14 +77,14 @@
     This system is built on previous work on translation validation, checking
     the validity of transformations on concrete input programs by comparing the
     semantics before and after modification.
-    PEC implements a hybrid approach, that allows some aspects of the program
+    PEC implements a hybrid approach that allows some aspects of the program
     to be underspecified, yet does not check the soundness of transformations
     in full generality, for all possible inputs.
     The checking is done via a custom solver for the generated constraint
     problems.
-    The hybrid nature allows the system to also validate program transformation
+    The hybrid nature allows the system also to validate program transformations
     that significantly modify the control flow, e.g.\ loop unswitching.
-    However, it cannot dicover transformation opportunities, only verify them
+    However, it cannot discover transformation opportunities, only verify them
     after the transformation was applied.
 
     \paragraph*{On real intermediate representations}
@@ -92,7 +93,7 @@
     and formal verification of software systems.
     This includes investigations into using SMT solvers that operate on LLVM IR
     code, which is the basis for the implementations in this thesis.
-    \citet{Zhao:2012:FLI:2103656.2103709} builds a model of LLVM IR for such
+    \citet{Zhao:2012:FLI:2103656.2103709} build a model of LLVM IR for such
     solvers.
     However, this model serves an entirely different purpose to the SSA model
     in this thesis.
@@ -103,17 +104,17 @@
     compiler transformations for all possible user functions.
 
     Recent domain-specific languages, such as Alive
-    \citep{Lopes:2015:PCP:2737924.2737965} also operate on SSA intermediate
-    representation.
-    LLVM instructions are reformulated on bitvectors, and the
+    \citep{Lopes:2015:PCP:2737924.2737965} also operate directly on LLVM IR.
+    The individual instructions are reformulated on bitvectors, and the
     correctness of conditions is checked with an SMT solver.
     However, Alive only implements a subset of LLVM's integer and pointer
-    instructions.
+    arithmetic instructions.
     It has no support for control flow and does not scale to the real
     applications, such as those used in this thesis for evaluation.
     Instead, it is designed for formally verifying already existing
     compiler optimisations that operate on only a handful of integer
     instructions at a time.
+    Alive is meant to improve compilers, not user programs.
 
     LifeJacket \citep{Notzli:2016:LVP:2931021.2931024} proves the correctness of
     floating point optimisations in LLVM, as does Alive-FP \citep{Menendez2016}.
@@ -125,19 +126,21 @@
     approaches.
 
     \paragraph*{On other program models}
-    Other advanced approaches to extracting high-level structures from assembly
-    and well structured Fortran code use temporal logic as the foundation of
-    their analysis functionality \cite{Mendis2015Helium, Kamil2016Verified}.
+    There are other advanced approaches to extracting high-level structures
+    program program using constraints and verification systems.
+    \cite{Mendis2015Helium, Kamil2016Verified} use temporal logic as the
+    foundation to formulate the conditions for reformulating well-structured
+    Fortran and assembly code in restrictive models.
     These techniques leverage counter-example guided inductive synthesis (CEGIS)
-    to find provably correct translations into a high-level description
-    language.
-    This high-level language then specialised the code again, exploring the
+    to find provably correct translations into the high-level description
+    language Halide.
+    This high-level language then specialises the code again, exploring the
     optimisation space via powerful optimisations that are enabled by its
     restrictive semantics.
     However, the focus is on a a more restricted set of computations, involving
     only dense memory access.
     While this allows formal reasoning about correctness, is too restrictive to
-    model sparse linear algebra.
+    model many interesting computational idioms, such as sparse linear algebra.
 
     \citet{Mullen:2016:VPO:2908080.2908109} verify low-level program
     transformations that are implemented for the formally verified CompCert
@@ -150,19 +153,21 @@
     Some of the transformations consider rudimentary control flow constraints,
     but they cannot scale to computational idioms.
 
+\pagebreak
 \subsection{Delarative Programming Languages for Program Analysis}
 
     \paragraph*{Languages for querying program properties}
     From the perspective of language design, the declarative programming
     languages Prolog and SQL are perhaps most influential.
     The two languages differ fundamentally.
-    Prolog is a logic programming language that originated in academia for
-    analysing natural language \citep{Colmerauer:1993:BP:154766.155362}.
-    By contrast, SQL was developed at IBM for managing data in
-    relational database management systems
+    Prolog ("programmation en logique") is a logic programming language that
+    originated in academia for analysing natural language
+    \citep{Colmerauer:1993:BP:154766.155362}.
+    By contrast, SQL ("Structured Query Language") was developed at IBM for
+    managing data in relational database management systems
     \citep{Chamberlin:1974:SSE:800296.811515}.
     Nonetheless, specification languages for structures in program code have
-    been proposed that take inspiration from both backgrounds.
+    been designed that take inspiration from both backgrounds.
 
     The first such specification language was the Omega system by
     \citet{Linton:CSD-83-164}.
@@ -371,6 +376,7 @@
     More recently, extensions to the polyhedral framework have been proposed, allowing it to capture reduction computations \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
     Such efforts are described in \cite{Doerfert2015Polly}, but they are fragile in the presence of non static control flow.
 
+\pagebreak
 \section{Heterogeneous Computing}
 
     Heterogeneous computing has been a particularly active field of research
