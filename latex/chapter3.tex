@@ -257,7 +257,6 @@
     Therefore, this is an entirely impractical approach for deteting complex
     algorithmic structures such as computational idioms.
 
-
     \citet{Willcock:2009:RGP:1621607.1621611} propsed a complex system for
     generating generic optimisation passed using concepts from generic
     programming.
@@ -265,14 +264,22 @@
     compiler frameworks, such as LLVM.
     Instead, they require program rewrites by the user.
 
-    Further approaches to generating compiler optimisations from specification
-    languages that focus on formal verification instead of programmer
-    productivity include Rhodium
-    \citep{Lerner:2005:ASP:1040305.1040335} and Gospel
-    \citep{Whitfield:1997:AEC:267959.267960}.
-    None of these approaches however, tackle the issue of efficiently enabling
-    large-scale program transformations.
-    Instead, they all focus on small-scale peephole optimisations.
+    \citet{Whitfield:1997:AEC:267959.267960} presented Gospel, a frameword and
+    specification language for the exploration of properties of code-improving
+    transformations.
+    The project furthermore includes the Genesis tool, which automatically
+    generates transformers as specified in Gospel.
+    Several standard optimisations were implemented with Gospel and Genesis,
+    such as constant folding and common subexpression elimination.
+    Similar approaches to generating compiler optimisations from specification
+    languages include Rhodium \citep{Lerner:2005:ASP:1040305.1040335}.
+    The language expresses optimisations using explicit dataflow facts, which
+    are manipulated by local propagation and transformation rules.
+    The transformations are applied to a custom intermediate language and can
+    be proven correct with a theorem prover.
+    Neither Gospel nor Rhodium provide means to tackke the issue of efficiently
+    enabling large-scale program transformations.
+
 
 \section{Compiler Analysis and Auto-Parallelisation}
 
