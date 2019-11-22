@@ -44,39 +44,58 @@
     \paragraph*{On abstract programming languages}
     Constraint systems have long been used in program analysis.
     \citet{Aiken:1999:ISC:339853.339897} gives a comprehensive overview of
-    earlier work.
-    The article highlights the crucial ability of constraint-based program
+    earlier work, highlighting the crucial ability of constraint-based program
     analysis to separate {\it constraint specification} from
     {\it constraint resolution}.
-    This separation enables the scalability of compiler analysis problems also
-    in this thesis beyond what could reasonably be implemented with manual
-    recognition routines, by offloading the {\it constraint resolution} to an
-    external solver.
+    This separation is critical also for this thesis, as it enables the
+    scalability of compiler analysis problems beyond what could reasonably be
+    implemented with manual recognition routines.
+    The constraint specification can be brief by offloading the
+    {\it constraint resolution} to an external solver.
     However, none of the techniques in the article capture higher-level
-    algorithmic concepts.
-    Instead, the focus is on classical purposes such as dataflow analysis and
-    type inference.
+    algorithmic concepts like computational idioms.
+    Instead, the focus is on more basic compiler analysis problems, such as
+    dataflow analysis and type inference.
 
     More recent work on constraint-based program analysis by
     \citet{Gulwani:2008:PAC:1375581.1375616} leverages the advancements in
-    off-the-shelf SAT/SMT solvers.
+    modern off-the-shelf SAT/SMT solvers.
     The analysis problems are lowered to bit-vector formulations, and the
     {\it constraint resolution} is entirely externalised to these separate
     tools.
     The motivation of the approach is mainly to verify program properties,
-    as opposed to the aim of sophisticated parallelising code transformation in
+    as opposed to the  sophisticated parallelising code transformation in
     this thesis.
-    Furthermore, \Cref{sec:SATcomp} already showed that the limitation to
-    SMT backends is inefficient for the resolution of SSA constraint problems.
+    Furthermore, \Cref{sec:SATcomp} showed that the confinement to
+    conventional SMT backends is inefficient for the resolution of
+    SSA constraint problems.
+
+    \citet{Kundu:2009:POC:1543135.1542513} use constraints to verify the
+    correctness of program transformations with their system for
+    Parameterized Equivalence Checking (PEC).
+    This system is built on previous work on translation validation, checking
+    the validity of transformations on concrete input programs by comparing the
+    semantics before and after modification.
+    PEC implements a hybrid approach, that allows some aspects of the program
+    to be underspecified, yet does not check the soundness of transformations
+    in full generality, for all possible inputs.
+    The checking is done via a custom solver for the generated constraint
+    problems.
+    The hybrid nature allows the system to also validate program transformation
+    that significantly modify the control flow, e.g.\ loop unswitching.
+    However, it cannot dicover transformation opportunities, only verify them
+    after the transformation was applied.
 
     \paragraph*{On real intermediate representations}
-    There is particularly extensive work in the area of security and formal
-    verification of software systems.
-    This work includes investigations into using SMT solvers and theorem provers
-    that operate on LLVM IR code, among them
-    \citet{Zhao:2012:FLI:2103656.2103709}.
-    However, the presented model of LLVM IR serves an entirely different purpose
-    to the SSA model in this thesis.
+    There is previous work on applying constraint-based program analysis on
+    real compiler intermediate representations, mostly in the area of security
+    and formal verification of software systems.
+    This includes investigations into using SMT solvers that operate on LLVM IR
+    code, which is the basis for the implementations in this thesis.
+    \citet{Zhao:2012:FLI:2103656.2103709} builds a model of LLVM IR for such
+    solvers.
+    However, this model serves an entirely different purpose to the SSA model
+    in this thesis.
     The model provides operational semantics, but cannot be used to detect
     large-scale algorithmic structures in user programs, as is required for
     automatic heterogeneous acceleration.
@@ -121,18 +140,15 @@
     model sparse linear algebra.
 
     \citet{Mullen:2016:VPO:2908080.2908109} verify low-level program
-    transformations within the formally verified CompCert compiler
-    \citep{CompCert-ERTS-2018}, directly on x86 assembly.
-    The approach is fully verified, requiring approximately 30000 lines of
-    manually written Coq code and proof lines.
-    Further approaches to generating compiler optimisations that focus on formal
-    verification instead of programmer productivity include Rhodium
-    \citep{Lerner:2005:ASP:1040305.1040335}, PEC
-    \citep{Kundu:2009:POC:1543135.1542513} and Gospel
-    \citep{Whitfield:1997:AEC:267959.267960}.
-    None of these approaches however, tackle the issue of efficiently enabling
-    large-scale program transformations.
-    Instead, they all focus on small-scale peephole optimisations.
+    transformations that are implemented for the formally verified CompCert
+    compiler \citep{CompCert-ERTS-2018}, directly on x86 assembly.
+    Instead of an automatic verification after modeling optimisations
+    as SMT problems, the presented Peek system was checked with the interactive
+    theorem prover Coq.
+    This required approximately 30000 lines of manually written Coq code and
+    proof lines.
+    Some of the transformations consider rudimentary control flow constraints,
+    but they cannot scale to computational idioms.
 
 \subsection{Delarative Programming Languages for Program Analysis}
 
@@ -208,6 +224,15 @@
     transformations was also used in the CoSy compiler \citep{Alt1994}.
     Both OPTIMIX and the CoSy method are simple rewrite engines that have no
     knowledge of global program constraints.
+
+    Further approaches to generating compiler optimisations from specification
+    languages that focus on formal verification instead of programmer
+    productivity include Rhodium
+    \citep{Lerner:2005:ASP:1040305.1040335} and Gospel
+    \citep{Whitfield:1997:AEC:267959.267960}.
+    None of these approaches however, tackle the issue of efficiently enabling
+    large-scale program transformations.
+    Instead, they all focus on small-scale peephole optimisations.
 
 \section{Compiler Analysis and Auto-Parallelisation}
 
