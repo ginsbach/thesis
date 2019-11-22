@@ -229,8 +229,9 @@
     patterns in attributed abstract syntax trees of Pascal programs.
     These patterns can then be automatically replaced by semantically
     equivalent, more efficient implementations.
-    Due to the focus on Pascal, it remain unclear how well the proposed concepts
-    translate to complex C++ code with pointer calculations.
+    With the focus on Pascal, it remains unclear how well the proposed concepts
+    translate to the complex C++ programs with pointer calculations that were
+    used for the evaluation of this thesis.
 
     Another language for implementing compiler optimisations from
     declarative specifications is OPTIMIX \citep{Assmann1996,Assmann98optimix}.
@@ -280,7 +281,6 @@
     Neither Gospel nor Rhodium provide means to tackke the issue of efficiently
     enabling large-scale program transformations.
 
-
 \section{Compiler Analysis and Auto-Parallelisation}
 
     The core motivation of the work in this thesis is the automatic
@@ -291,19 +291,42 @@
     and parallelisation approachs are used for comparison.
     This section gives an overview of the the relevant research landscape.
 
-\pagebreak
 \subsection{Compilation with the Polyhedral Model}
 
-    The polyhedral model \citep{Karp:1967:OCU:321406.321418} is a well
-    established approach for modeling and analysing data dependencies to enable
-    automatic parallelisation.
+    The polyhedral model \citep{Karp:1967:OCU:321406.321418} is an established
+    mathematical framework for modeling, analysing, and transforming
+    well-behaved loop nests.
+    Iterations in loop nests are treated as lattice points in a multidimensional
+    grid.
+    The iteration space can then be transformed with affine maps, potentially
+    new uncovering parallelisation opportunities.
+    This basic approach has been applied extensively in different compilers.
+    Furthermore, the required conditions have been relaxed in different ways,
+    allowing the application of the approach to a broader variety of input code.
 
+    \paragraph*{Polly in LLVM}
+    Polyhedral optimisers have been implemented as extensions to mainstream
+    C/C++ compilers.
+    Most notably, \citet{Lengauer2012Polly} presented the Polly extensions for
+    LLVM.
+    Polly reconises parts of LLVM IR that can be expressed in the polyhedral
+    model and transforms then into that representation.
+    Polyhedral optimisations can then be applied with PLuTo
+    \citep{Bondhugula:2008:PAP:1375581.1375595}, before the model is
+    translated back into optimised LLVM IR for further treatment by the core
+    compiler.
+    This enables the seamless application of polyhedral techniques to
+    large-scale applications without source code changes via the many
+    frontends of the LLVM infrastructure.
+    However, the impact is strictly limited to those code parts that are
+    detected as amenable to polyhedral optimisations.
+
+    \citet{Doerfert2015Polly} extended 
+
+    \paragraph*{Polly}
     It has been used by several compilers, with relevant
     publications by \citet{redon1994scheduling, jouvelot1989unified,
     chi1997optimizing, gupta2006simplifying, stock2014framework}.
-    Polyhedral optimisers have been implemented in mainstream C/C++ compilers,
-    notably are the Polly extensions to LLVM described in
-    \cite{Doerfert2015Polly}.
     Recent work by \citet{7429301} has extended the polyhedral model beyond
     affine programs to some forms of sparsity with the PENCIL extensions.
     These can be used to model important features of sparse linear algebra, such
@@ -316,6 +339,11 @@
     Unfortunately such restrictions prevent application to real world programs;
     none of our benchmarks or data sets have this structure.
 
+    Polyhedral compilers \cite{Baskaran:2010:ACC:2175462.2175482,Verdoolaege:2013:PPC:2400682.2400713} perform advanced loop optimizations and have been used for the generation of fast GPU kernels.
+    More recently, extensions to the polyhedral framework have been proposed, allowing it to capture reduction computations \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
+    Such efforts are described in \cite{Doerfert2015Polly}, but they are fragile in the presence of non static control flow.
+
+\pagebreak
 \subsection{Reduction Parallelism}
 
     Discovering and exploiting scalar reductions in programs has been studied
@@ -419,11 +447,6 @@
     diomatic intermediate representation called KIR.  
     It is not clear how such an approach would work on general C/C++ programs.
 
-\paragraph*{Polyhedral Approaches}
-    Polyhedral compilers \cite{Baskaran:2010:ACC:2175462.2175482,Verdoolaege:2013:PPC:2400682.2400713} perform advanced loop optimizations and have been used for the generation of fast GPU kernels.
-    More recently, extensions to the polyhedral framework have been proposed, allowing it to capture reduction computations \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
-    Such efforts are described in \cite{Doerfert2015Polly}, but they are fragile in the presence of non static control flow.
-
 \pagebreak
 \section{Heterogeneous Computing}
 
@@ -440,49 +463,6 @@
     are championed for programming exiting heterogeneous hardware.
     These broadly fall into three categorised: library approaches,
     domain-specific languages, and compiler-based methods.
-
-\paragraph*{Domain specific Languages}
-    Domain specific languages have received much attention in recent years,
-    ranging from SPIRAL \citep{ofenbeck13spiral}, a DSL for Fast Fourier
-    Transforms, over Lift \citep{steuwer15rewrite, SteuwerRD17,HagedornSSGD18}
-    to UFL \citep{Alnaes:2014:UFL:2594412.2566630}, a DSL for partial
-    differential equations.
-    Stencils in particular have received much attention
-    \citep{Mullapudi:2015:PAO:2694344.2694364,HagedornSSGD18}, the best known of
-    which is Halide \citep{Ragan-Kelley2013Halide}.
-    DSLs to exploit complex reductions are less studied.
-    \citet{Reddy2016Reduction} introduce a type of DSL via annotations
-    that allow expression of complex reductions.
-    This was based on the  Platform-Neutral Compute Intermediate Language by
-    \citet{baghdadi2015PENCIL}.
-    The Matrix multiplication idimos is well supported by
-    specific libraries \citep{clblas,mkl,cublas}.
-
-\paragraph*{Generation of Performance Portable Code for Heterogeneous Hardware}
-    Recent research has highlighted the challenges of generating code that
-    performs well on different heterogeneous hardware architectures.
-    PetaBricks by \citet{PhothilimthanaARA13} is one of the first languages to
-    address this performance portability challenge by encoding algorithmic
-    choices which are then empirically evaluated and automatically taken by the
-    compiler.
-    Similarly \cite{MuralidharanRHG16} explores automatic selection of code
-    variants using machine learning.
-    In a similar spirit, Lift~\cite{steuwer15rewrite} uses rewrite rules to
-    explore optimization choices automatically.
-
-\paragraph*{Functional Code Generation Approaches}
-    There exist multiple functional approaches for generating code for
-    heterogeneous hardware.
-    \citet{chakravarty11accelerating,mcdonell13optimising} propose Accelerate,
-    a domain specific language embedded in Haskell that generates efficient GPU
-    code.
-    Recently, \citet{collins14nova} introduced NOVA, a new functional language
-    targeted at code generation for GPUs, and Copperhead
-    \cite{catanzaro11copperhead}, a data parallel language embedded in Python.
-    Delite~\cite{brown11heterogeneous,chafi11domain} is a system that enables
-    the creation of domain-specific languages using functional parallel patterns
-    and targets multi-core CPUs or GPUs.
-    In contrast to these approaches, we require no rewriting of legacy programs.
 
 \subsection{Domain Specific Languages}
 
@@ -522,7 +502,6 @@
     data-parallel algorithms and operations.
     It is particularly suitable for dense linear algebra applications
     \citep{Steuwer:2016:MMB:2968455.2968521}, but extensions to sparsity exist.
-%    \citep{b5f556d505d746109608f8db3cbce4ac}
     The MILK programming model \citep{Kiriansky:2016:OIM:2967938.2967948}
     extends C++ with pragmas to annotate indirect memory accesses.
     This allows low level optimizations that are applicable to sparse linear
@@ -531,8 +510,33 @@
     to utilize the much greater potential of heterogeneous compute and requires
     detailed programmer intervention.
 
-\subsection{Libraries}
+\paragraph*{Generation of Performance Portable Code for Heterogeneous Hardware}
+    Recent research has highlighted the challenges of generating code that
+    performs well on different heterogeneous hardware architectures.
+    PetaBricks by \citet{PhothilimthanaARA13} is one of the first languages to
+    address this performance portability challenge by encoding algorithmic
+    choices which are then empirically evaluated and automatically taken by the
+    compiler.
+    Similarly \cite{MuralidharanRHG16} explores automatic selection of code
+    variants using machine learning.
+    In a similar spirit, Lift~\cite{steuwer15rewrite} uses rewrite rules to
+    explore optimization choices automatically.
 
+\paragraph*{Functional Code Generation Approaches}
+    There exist multiple functional approaches for generating code for
+    heterogeneous hardware.
+    \citet{chakravarty11accelerating,mcdonell13optimising} propose Accelerate,
+    a domain specific language embedded in Haskell that generates efficient GPU
+    code.
+    Recently, \citet{collins14nova} introduced NOVA, a new functional language
+    targeted at code generation for GPUs, and Copperhead
+    \cite{catanzaro11copperhead}, a data parallel language embedded in Python.
+    Delite~\cite{brown11heterogeneous,chafi11domain} is a system that enables
+    the creation of domain-specific languages using functional parallel patterns
+    and targets multi-core CPUs or GPUs.
+    In contrast to these approaches, we require no rewriting of legacy programs.
+
+\paragraph*{Libraries}
     The most established way of encapsulating fast linear algebra is via
     library implementations, generally based on the BLAS interface
     specification \cite{2002:USB:567806.567807}.
@@ -559,7 +563,7 @@
 %GraphBLAS attempts to define a standard set of building blocks for graph
 %algorithms that use the language of linear algebra.
 
-\subsection{CPU-GPU data transfer optimisations}
+\paragraph*{CPU-GPU data transfer optimisations}
 
     Data transfers between CPU and GPU have been studied extensively as
     important bottlenecks for parallelization efforts.
