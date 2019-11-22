@@ -42,7 +42,7 @@
 
 \subsection{Constraint Programming for Program Analysis}
 
-    \paragraph*{On abstract programming languages}
+    \paragraph*{Constraints on abstract languages}
     Constraint systems have long been used in program analysis.
     \citet{Aiken:1999:ISC:339853.339897} gives a comprehensive overview of
     earlier work, highlighting the crucial ability of constraint-based program
@@ -87,7 +87,7 @@
     However, it cannot discover transformation opportunities, only verify them
     after the transformation was applied.
 
-    \paragraph*{On real intermediate representations}
+    \paragraph*{Constraints on compiler IR code}
     There is previous work on applying constraint-based program analysis on
     real compiler intermediate representations, mostly in the area of security
     and formal verification of software systems.
@@ -140,22 +140,23 @@
     transformation.
     It just generates additional conditions and does not cover control flow.
 
-    \paragraph*{On other program models}
-    There are other advanced approaches to extracting high-level structures
-    program program using constraints and verification systems.
-    \cite{Mendis2015Helium, Kamil2016Verified} use temporal logic as the
+    \paragraph*{Constraints on other program models}
+    Other advanced approaches to extracting high-level structures
+    program program using constraints and verification systems have been
+    proposed.
+    \citet{Mendis2015Helium, Kamil2016Verified} use temporal logic as the
     foundation to formulate the conditions for reformulating well-structured
     Fortran and assembly code in restrictive models.
-    These techniques leverage counter-example guided inductive synthesis (CEGIS)
-    to find provably correct translations into the high-level description
-    language Halide.
-    This high-level language then specialises the code again, exploring the
+    These techniques leverage counter-example guided inductive synthesis to find
+    provably correct translations into the high-level description language
+    Halide.
+    The Halide compiler specialises the code again, exploring the
     optimisation space via powerful optimisations that are enabled by its
     restrictive semantics.
-    However, the focus is on a a more restricted set of computations, involving
+    However, the focus is on a a restricted class of computations, involving
     only dense memory access.
-    While this allows formal reasoning about correctness, is too restrictive to
-    model many interesting computational idioms, such as sparse linear algebra.
+    This allows formal reasoning about correctness, but is too restrictive for
+    interesting computational idioms, such as sparse linear algebra.
 
     \citet{Mullen:2016:VPO:2908080.2908109} verify low-level program
     transformations that are implemented for the formally verified CompCert
@@ -208,29 +209,28 @@
     \Cref{sec:syntacticmatching}.
 
     \paragraph*{Languages for generating compiler passes}
-    \citet{Martin1998} presents a specification language for program analysis
-    functionality called PAG that is based on abstract interpretation.
-    Domain specific languages for the conception of optimization passes have
-    also been studied before using tree rewrites, among them
-    \citet{Olmos:2005:CSD:2136624.2136643}.
-    \citet{Lipps1989} propose the domain specific language OPTRAN for matching
+    Custom specification languages for generating compiler analysis and
+    transformation passes have been presented in the literature.
+    \citet{Martin1998} presented a specification language for program analysis
+    functionality called PAG based on abstract interpretation.
+    The generated functionality was integrated into C and Fortran compilers via
+    a well-specified interface and applied succesfully to real benchmark codes.
+    However, the tool is focused on relatively simple compiler optimisations
+    such as constant propagation.
+
+    Domain-specific languages for the conception of transformation passes
+    include \citet{Olmos:2005:CSD:2136624.2136643}.
+    The proposed Stratego system uses rewrite rules that apply tree
+    transformations to the abstract syntax tree of the source program.
+    However, this was only evaluated on the obscure Octave language, and the
+    general applicability on large-scale applications remains unclear.
+
+    \citet{Lipps1989} proposed the domain specific language OPTRAN for matching
     patterns in attributed abstract syntax trees of Pascal programs.
     These patterns can then be automatically replaced by semantically
     equivalent, more efficient implementations.
-    Generic programming concepts can also be used to generate optimization
-    passes, as demonstrated by \cite{Willcock:2009:RGP:1621607.1621611}.
-    These schemes however are not able to work at the IR level essential for
-    compiler implementation and do not scale beyond simple functions.
-
-    Different to code transformation techniques are based on the LLVM ASTMatcher
-    library and LibTooling \citep{be0fa11ddb194bde86a9dab8589b779c}.
-    However, these tools are not standalone languages, but implemented as C++
-    library functions that provide a sort of embedded domain-specific langauge
-    for pattern matching.
-    This method is extremely specific to the Clang compiler frontend, and
-    exposes the abstract syntax tree of C++ code.
-    For deteting complex algorithmic structures, this is an entirely impractical
-    approach.
+    Due to the focus on Pascal, it remain unclear how well the proposed concepts
+    translate to complex C++ code with pointer calculations.
 
     Another language for implementing compiler optimisations from
     declarative specifications is OPTIMIX \citep{Assmann1996,Assmann98optimix}.
@@ -244,6 +244,27 @@
     Both OPTIMIX and the CoSy method are simple rewrite engines that have no
     knowledge of global program constraints.
 
+    Different code transformation techniques use LibASTMatchers
+    and LibTooling \citep{be0fa11ddb194bde86a9dab8589b779c} from the
+    LLVM project.
+    These tools do not provide a standalone language, but LibASTMatchers is
+    implemented in C++ as an embedded domain-specific language for pattern
+    matching.
+    The approach is very specific to the Clang compiler frontend, and exposes
+    the abstract syntax tree (AST) of the compiler frontend directly.
+    There are more than a thousand classes implementing different AST nodes in
+    Clang, introducing considerable complexity for any non-trivial pattern.
+    Therefore, this is an entirely impractical approach for deteting complex
+    algorithmic structures such as computational idioms.
+
+
+    \citet{Willcock:2009:RGP:1621607.1621611} propsed a complex system for
+    generating generic optimisation passed using concepts from generic
+    programming.
+    However, such schemes are not able to work at the IR level of established
+    compiler frameworks, such as LLVM.
+    Instead, they require program rewrites by the user.
+
     Further approaches to generating compiler optimisations from specification
     languages that focus on formal verification instead of programmer
     productivity include Rhodium
@@ -255,16 +276,22 @@
 
 \section{Compiler Analysis and Auto-Parallelisation}
 
-    The overarching motivation for constraint programming on SSA intermediate
-    representation in this thesis is the automatic heterogeneous
-    paralellelisation of sequential code.
-    In order to evaluate this appropriately, traditional compiler analysis
-    approaches are used for comparison.
+    The core motivation of the work in this thesis is the automatic
+    heterogeneous paralellelisation of sequential code.
+    The derived methods are evaluated on two metrics: how broadly they apply to
+    real code, and how big their performance impact is when applied.
+    In order to evaluate this appropriately, several other compiler analysis
+    and parallelisation approachs are used for comparison.
+    This section gives an overview of the the relevant research landscape.
 
-\subsection{Polyhedral Compiler Approaches}
+\pagebreak
+\subsection{Compilation with the Polyhedral Model}
 
-    The polyhedral model is a well established approach for modeling data
-    dependencies that has been used by several compilers, with relevant
+    The polyhedral model \citep{Karp:1967:OCU:321406.321418} is a well
+    established approach for modeling and analysing data dependencies to enable
+    automatic parallelisation.
+
+    It has been used by several compilers, with relevant
     publications by \citet{redon1994scheduling, jouvelot1989unified,
     chi1997optimizing, gupta2006simplifying, stock2014framework}.
     Polyhedral optimisers have been implemented in mainstream C/C++ compilers,
