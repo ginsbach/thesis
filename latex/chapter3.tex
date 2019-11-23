@@ -355,25 +355,40 @@
     This allowed Polly to cover 3.9$\times$ as many loops in the SPEC and NPB
     benchmarks at a negligible runtime overhead.
 
-    \paragraph*{Polly}
-    It has been used by several compilers, with relevant
-    publications by \citet{redon1994scheduling, jouvelot1989unified,
-    chi1997optimizing, gupta2006simplifying, stock2014framework}.
+    \paragraph*{Other polyhedral tools}
+    The Polyhedral Parallel Code Generator (PPCG)
+    \citep{Verdoolaege:2013:PPC:2400682.2400713} is a source-to-source compiler
+    that takes sequential C programs as input and generates optimised CUDA
+    kernels to target GPU acceleration.
+    The extraction of polyhedral code sections from the C input is based on the
+    Polyhedral Extraction Tool \citep{Verdoolaege12polyhedralextraction}.
+    The extraction method can automatically detect relevant code regions, but it
+    is implemented on syntax level and relies on purpose-built C code with all
+    arrays declared in variable-length C99 array syntax.
+    This is not robust enough to reliably cover larger programs from benchmark
+    collections such as NPB or Parboild, which are used for evaluation in this
+    thesis.
+
+    C-to-CUDA \citep{Baskaran:2010:ACC:2175462.2175482} is another compiler that
+    offers heterogneous acceleration of sequential C code by representing it in
+    the polyhedral model.
+    However, the focus is on code generation and the application of optimising
+    transformations.
+    The automatic recognition in the abstract syntax tree of parallel loops that
+    can be represented in the polyhedral model remains ad-hoc and handles only a
+    small set of benchmarks.
+
     Recent work by \citet{7429301} has extended the polyhedral model beyond
     affine programs to some forms of sparsity with the PENCIL extensions.
     These can be used to model important features of sparse linear algebra, such
     as counted loops \citep{Zhao:2018:PCF:3178372.3179509}, meaning loops with
     dynamic, memory dependent bounds but statically known strides.
     Such loops are central to sparse linear algebra.
-    It uses the PPCG compiler \citep{Verdoolaege:2013:PPC:2400682.2400713} to
-    automatically detect relevant code regions, but it relies on well behaved C
-    code with all arrays declared in variable-length C99 array syntax.
-    Unfortunately such restrictions prevent application to real world programs;
-    none of our benchmarks or data sets have this structure.
 
-    Polyhedral compilers \cite{Baskaran:2010:ACC:2175462.2175482,Verdoolaege:2013:PPC:2400682.2400713} perform advanced loop optimizations and have been used for the generation of fast GPU kernels.
-    More recently, extensions to the polyhedral framework have been proposed, allowing it to capture reduction computations \cite{chi1997optimizing, gupta2006simplifying, stock2014framework}.
-    Such efforts are described in \cite{Doerfert2015Polly}, but they are fragile in the presence of non static control flow.
+    Many approaches have been proposed for parallelising loop nests with
+    reduction variables in the polyhedral model, among them
+    \citet{jouvelot1989unified,redon1994scheduling,chi1997optimizing,
+    gupta2006simplifying,stock2014framework}.
 
 \pagebreak
 \subsection{Reduction Parallelism}
