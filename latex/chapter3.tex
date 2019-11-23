@@ -465,6 +465,22 @@
     However, the performance achieved by these approaches is modest due to
     runtime overhead and falls well short of library performance.
 
+
+\paragraph*{KIR}
+
+    \citet{Andion2015Compilation} describes compiler based
+    parallelisation for heterogeneous computing based on
+    an idiomatic intermediate representation called KIR.
+    This intermediate representation is based on the concept of
+    \mbox{diKiernels}, which constitute algorithmic building blocks and are used
+    to automatically generate OpenMP and OpenHMPP code.
+    The authors propose a system that detects diKernels in conventional compiler
+    IR and concatenates them to form contiguous sections of KIR.
+    Examples of diKernels are scalar reductions and irregular
+    assignments.
+    It is not clear how such an approach would work on general 'C' programs.
+
+
 \paragraph*{Idiom Detection}
     Idiom based optimization based on AST manipulation, as described by
     \citet{Pinter:1994:POP:177492.177494}, has fallen out of fashion.
@@ -752,8 +768,8 @@
     higher-order functions.
     For example, the popularity of the MapReduce framework
     \citep{Dean2008MapReduce} stems from the observation that many big data
-    workloads exhibit characteristics that can be expressed efficiently using a
-    combination of the higher-order functions \texttt{map} and \texttt{reduce}.
+    workloads exhibit characteristics that can be expressed efficiently with
+    combinations of {\it map} and {\it reduce}.
     The framework provides an idiomatic approach to the development of big
     data applications, enabling shorter development times and more predictable
     performance.
@@ -773,30 +789,6 @@
     and Histogram Computations, which is formulated as a computational idiom.
     This restricted class of {\it reduce} calculations shares a common
     parallelisation approach.
-
-\subsection{Algorithmic Skeletons}
-\label{alg-skel-section}
-Another concept that can be considered a subset of computational idioms is the notion of ``Algorithmic Skeletons''
-\citep{Cole1991Algorithmic}.
-It was introduced as a way to classify the behaviour of parallel programs according to their organisation of workload
-distribution.
-This is mostly done with the motivation to introduce new, more higher level programming models and tools for parallel
-programming.
-One major inspiration to the concept was the lack of functionality in mainstream programming languages to equal the well
-established higher order functions of functional programming languages, such as the \textbf{map} function to express
-element wise application of a single function to an array.
-
-Among the ``Algorithmic Skeletons'' are \textbf{Fixed Degree Divide \& Conquer} and the \textbf{Task Queue}.
-The concept of ``Algorithmic Skeletons'' has been used to implement programming frameworks and libraries, including
-Skandium \citep{Leyton2010Skandium}, Eden \citep{Loogen2005Parallel}, eSkel \citep{Cole2004Bringing} and SkelCL
-\citep{Steuwer2011SkelCL}.
-Furthermore, the Intel Thread Building Blocks library \citep{Reinders2007Intel} is based on this concept.
-
-As opposed to the higher order functions used in functional programming and similarly to the Berkeley Dwarfs,
-the definitions for algorithmic skeletons are informal and not intended for automated reasoning.
-They are however heavily inspired by higher order functions and similarly describe the algorithmic structure of
-computations.
-This distinguishes them from the Berkeley Dwarfs, which are more focused on mathematical domains.
 
 \subsection{Parallel Dwarfs}
 
@@ -819,17 +811,29 @@ This distinguishes them from the Berkeley Dwarfs, which are more focused on math
     However, dense linear algebra, sparse linear algebra, and strcutured grid
     computations (stencils) are important idioms in \Cref{chapter:idioms}.
 
+\subsection{Algorithmic Skeletons}
 
-\paragraph*{KIR}
+    Another abstraction that relates to computational idioms as used in this
+    thesis is the notion of Algorithmic Skeletons \citep{Cole1991Algorithmic}.
+    This concept was introduced to classify the behaviour of parallel programs
+    according to their organisation of workload distribution.
+    The motivation of this approach was to enable the introduction of new,
+    higher-level programming models and tools for parallel programming.
+    Higher-order functions from functional programming were a major inspiration,
+    observing a lack of similar abstractions on more mainstream programming
+    langauges.
+    Among the Algorithmic Skeletons are Fixed Degree Divide \& Conquer and the
+    Task Queue.
 
-    \citet{Andion2015Compilation} describes compiler based
-    parallelisation for heterogeneous computing based on
-    an idiomatic intermediate representation called KIR.
-    This intermediate representation is based on the concept of
-    \mbox{diKiernels}, which constitute algorithmic building blocks and are used
-    to automatically generate OpenMP and OpenHMPP code.
-    The authors propose a system that detects diKernels in conventional compiler
-    IR and concatenates them to form contiguous sections of KIR.
-    Examples of diKernels are scalar reductions and irregular
-    assignments.
-    It is not clear how such an approach would work on general 'C' programs.
+    The concept of ``Algorithmic Skeletons'' has been used to implement programming frameworks and libraries, including
+    Skandium \citep{Leyton2010Skandium}, Eden \citep{Loogen2005Parallel}, eSkel \citep{Cole2004Bringing} and SkelCL
+    \citep{Steuwer2011SkelCL}.
+    Furthermore, the Intel Thread Building Blocks library \citep{Reinders2007Intel} is based on this concept.
+
+    As opposed to the higher-order functions from functional programming, and
+    similarly to the Berkeley Dwarfs, the definitions for algorithmic skeletons
+    are informal and not intended for automated reasoning.
+    They are however heavily inspired by higher-order functions and similarly
+    describe the algorithmic structure of computations.
+    This distinguishes them from the Berkeley Dwarfs, which are more focused on
+    mathematical domains and architectural requirements.
