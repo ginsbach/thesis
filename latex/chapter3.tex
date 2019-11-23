@@ -825,15 +825,26 @@
     Among the Algorithmic Skeletons are Fixed Degree Divide \& Conquer and the
     Task Queue.
 
-    The concept of ``Algorithmic Skeletons'' has been used to implement programming frameworks and libraries, including
-    Skandium \citep{Leyton2010Skandium}, Eden \citep{Loogen2005Parallel}, eSkel \citep{Cole2004Bringing} and SkelCL
-    \citep{Steuwer2011SkelCL}.
-    Furthermore, the Intel Thread Building Blocks library \citep{Reinders2007Intel} is based on this concept.
+    The concept of Algorithmic Skeletons has been used to implement many
+    programming frameworks and libraries.
+    The eSkel library was sketched by \citet{Cole2004Bringing}, providing a
+    higher-level programming model based on skeletons on top of C and MPI.
+    Skandium \citep{Leyton2010Skandium} is a parallel skeleton library for
+    multi-core architectures.
+    Eden \citep{Loogen2005Parallel} provides skeletons for parallel programming
+    in Haskell.
+    SkelCL \citep{Steuwer2011SkelCL} provides implementations of algorithmic
+    skeletons that target GPUs via CUDA.
+    This is implemented in C++, providing templated versions of higher-order
+    functions such as {\it map}, {\it reduce}, and {\it zip}.
+    Finally, the Thread Building Blocks library
+    \citep{Reinders2007Intel} implements Slgorithmic Skeletons.
 
-    As opposed to the higher-order functions from functional programming, and
-    similarly to the Berkeley Dwarfs, the definitions for algorithmic skeletons
-    are informal and not intended for automated reasoning.
-    They are however heavily inspired by higher-order functions and similarly
-    describe the algorithmic structure of computations.
+    The definitions for Algorithmic Skeletons are not specified formally to
+    enable automated reasoning, but are drafted for human understanding and to
+    guide the design of libraries and DSLs.
+    This abstraction level is similar to the Berkley Dwarfs.
+    However, Algorithmi Skeletons were heavily inspired by higher-order
+    functions and similarly describe the algorithmic structure of computations.
     This distinguishes them from the Berkeley Dwarfs, which are more focused on
     mathematical domains and architectural requirements.
