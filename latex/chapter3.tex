@@ -318,10 +318,42 @@
     This enables the seamless application of polyhedral techniques to
     large-scale applications without source code changes via the many
     frontends of the LLVM infrastructure.
-    However, the impact is strictly limited to those code parts that are
-    detected as amenable to polyhedral optimisations.
+    However, this impacts only code that the tool can translate
+    into a polyhedral representation.
 
-    \citet{Doerfert2015Polly} extended 
+    Polly-ACC \citep{polly-acc} is an extension to the Polly compiler that
+    provides code generation for heterogeneous hardware.
+    The tool uses the recognition functionality of standard Polly to detect
+    code sections in LLVM IR that can be represented in the polyhedral model.
+    These code sections are optimised with established polyhedral
+    transformation techniques from \citet{Lengauer2012Polly}.
+    However, the optimised polyhedral code sections are then translated into
+    CUDA code to be executed on the GPU.
+    This results in significant speedups of some benchmark programs, but the
+    impact remains limited to code that fits the polyhedral model.
+
+    \citet{Doerfert2015Polly} extend the applicability of polyhedral
+    transformations within the Polly compiler to a broader set of input
+    programs.
+    Dependencies between iterations that originate from reduction variables
+    cannot be eliminated with affine transformations.
+    Therefore, they prohibit doall parallelism in a way that standard Polly is
+    unable to resolve.
+    However, the reduction-enabled scheduling approach for Polly can parallelise
+    such loop despite the reduction dependencies.
+    This significantly improved the speedup that Polly achieves on benchmark
+    programs that contain reductions.
+
+    \citet{Doerfert:2017:OLO:3049832.3049864} propose another approach to
+    extending the applicability of polyhedral code transformations.
+    The approach allows some conditions that are required for the the legal
+    application of transformations to remain unproven at compile time.
+    These conditions are then checked at runtime, providing a fall back to the
+    original code when assumptions are not met.
+    The checks that this work allows to be delayed include the absence of
+    aliasing, finite loop boundaries, and in-bounds memory accesses.
+    This allowed Polly to cover 3.9$\times$ as many loops in the SPEC and NPB
+    benchmarks at a negligible runtime overhead.
 
     \paragraph*{Polly}
     It has been used by several compilers, with relevant
@@ -696,42 +728,51 @@
     implications of specific memory access patterns that are instrinsic to
     the choice of certain algorithmic approaches.
 
-    The concrete concepts are partially overlapping and can be surprisingly
-    vague.
+    The concrete concepts are partially overlapping and can be vague.
     This section tries to demarcate a meaningful conception of
     {\it computational idioms} by comparison with the existing literature of the
-    many different domains with related concepts.
-    The basic observation is that software programs don't cover the space of
-    possible programs evenly, instead, they tend to be structured among certain
-    design principles.
-    The same is true algorithmically and particularly for performance intensive
-    applications.
+    different domains with related concepts.
+    The shared basic observation is that software programs don't cover the space
+    of possible programs evenly.
+    Instead, they tend to be structured among certain design principles.
+    This is true in particular for performance intensive programs and the
+    core bottlenecks of large applications.
 
-\subsection{Higher Order Functions}
+\subsection{Higher-Order Functions}
 
-    In functional programming languages, the natural representation of
-    common programming patterns are higher order functions.
-    Such functions take other functions as parameters.
+    Functional programming languages -- such as OCaml or Haskell -- represent
+    abstract algorithmic choices and common programming patterns as higher-order
+    functions \citep{Hughes:1989:WFP:63410.63411}.
+    These are functions that are parameterised with other functions.
+    Examples of higher-order functions are {\it map}, which applies a function
+    to each element in a data structure, and {\it fold} / {\it reduce}, which
+    accumulates the elements in a data structure with a reduction operator.
 
-    Higher order functions can be used to describe many common computational workloads.
-    The popularity of the MapReduce framework \citep{Dean2008MapReduce} for example stems from the observation that many
-    big data workloads exhibit characteristics that can be expressed efficiently using a combination of the higher order
-    functions \texttt{map} and \texttt{reduce} (another name for \texttt{fold}).
-    It provides an idiom based approach to the development of big data applications, enabling shorter development times and
-    more predictable performance.
-    The inspiration for this framework came from the observation that much of the existing, individually programmed
-    software algorithms at Google implicitly used similar programming models already.
+    Common computational workloads can be expressed as instances of
+    higher-order functions.
+    For example, the popularity of the MapReduce framework
+    \citep{Dean2008MapReduce} stems from the observation that many big data
+    workloads exhibit characteristics that can be expressed efficiently using a
+    combination of the higher-order functions \texttt{map} and \texttt{reduce}.
+    The framework provides an idiomatic approach to the development of big
+    data applications, enabling shorter development times and more predictable
+    performance.
 
-\subsection{Parallel Dwarfs}
-
-    The so called Berkeley Dwarfs are a collection of 13 computational methods
-    that together comprise a large portion of the common parallel computing
-    workloads \citep{Asanovic06thelandscape}.
-    Each Dwarf is a computational pattern that is common in important
-    applications and has persisted more or less unchanged for many years.
-    The Dwarfs are inspired by numerical computations that arise in the
-    scientific computing community, although the authors claim that the
-    knowledge from this domain may prove useful in other areas as well.
+    The use of computational idioms for automatic heterogeneous acceleration
+    requires a more restrictive view of types than what is common in
+    functional programming languages.
+    For example, the {\it reduce} operator allows the implementation of
+    the insertion sort algorithm, as well as a simple sum over an array of
+    floating-point values.
+    These two algorithms do not share parallelisation opportunities.
+    Therefore, the detection of {\it reduce} instances is insufficient for
+    enabling compiler parallelisation approaches.
+    However, more restrictive version of {\it reduce} are suitable for
+    compiler detection.
+    \Cref{chapter:reductions} studies in detail the class of Complex Reduction
+    and Histogram Computations, which is formulated as a computational idiom.
+    This restricted class of {\it reduce} calculations shares a common
+    parallelisation approach.
 
 \subsection{Algorithmic Skeletons}
 \label{alg-skel-section}
@@ -756,6 +797,27 @@ the definitions for algorithmic skeletons are informal and not intended for auto
 They are however heavily inspired by higher order functions and similarly describe the algorithmic structure of
 computations.
 This distinguishes them from the Berkeley Dwarfs, which are more focused on mathematical domains.
+
+\subsection{Parallel Dwarfs}
+
+    The {\it Berkeley Dwarfs} are a collection of 13 computational methods
+    that together comprise a large portion of the most common parallel computing
+    workloads \citep{Asanovic06thelandscape}.
+    Each Dwarf is a computational pattern that is common in important
+    applications.
+    The core observation of the authors is that the nature of the dwarfs has
+    persisted more or less identical for many years, even as concrete
+    applications changed.
+    The Dwarfs are inspired by numerical computations that arise in the
+    scientific computing community, although the authors claim that the
+    knowledge from this domain may prove useful in other areas as well.
+
+    The dwarfs are studied from the perspective of architecture requirements,
+    not with automatic compiler support in mind.
+    Therefore, some of the dwarfs are specified too broadly for use as
+    computational idioms in this paper.
+    However, dense linear algebra, sparse linear algebra, and strcutured grid
+    computations (stencils) are important idioms in \Cref{chapter:idioms}.
 
 
 \paragraph*{KIR}
