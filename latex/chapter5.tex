@@ -1322,13 +1322,13 @@ for( i=0; i<NUM_KEYS; i++ )
 
     The Intel ICC compiler is more robust and does not require SCoPs as a
     precondition for its analysis.
-    On the well structured NAS benchmarks, it performs well but fails to detect
+    On the well-structured NAS benchmarks, it performs well but fails to detect
     any reductions in IS.
     Surprisingly it also does not detect reductions in SP, while Polly does.
     On closer inspection, this is again due to a deep perfectly nested loop
     where the reduction iterator is in the middle of the loop nest.
 
-    On the less well structured Parboil benchmarks, ICC fails to detect many of
+    On the less well-structured Parboil benchmarks, ICC fails to detect many of
     the scalar reductions in ``cutcp''.
     This is because these reductions use the functions ``\texttt{fmin}'' and
     ``\texttt{fmax}'', which our system recognizes as pure, but ICC does not.
