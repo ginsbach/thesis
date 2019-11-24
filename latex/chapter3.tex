@@ -623,15 +623,18 @@
     DSLs range in complexity from onlymarginally more flexible than library
     interfaces to full-fledged programming languages such as OpenCL and CUDA.
 
-    There have been multiple domain specific libraries proposed specifically
-    for linear algebra computations.
-    Many of these contain some degree of autotuning functionality to achieve
-    good performance across different platforms.
-    The Delite langauge of \citet{Sujeeth:2014:DCA:2601432.2584665} can be used
-    as an intermediate representation to construct domain specific languages for
-    heterogeneous platforms.
-    The approach is tightly integrated with the Scala programming language
-    and does not offer a readily available end-to-end solution.
+    The Delite langauge \citep{Sujeeth:2014:DCA:2601432.2584665} was presented
+    as an intermediate representation that facilitates the rapid construction
+    of domain-specific languages.
+    The provided infrastructure enables the automatic targeting of
+    heterogeneous platforms, with backends avaliable for OpenMP, CUDA, and even
+    MPI for cluster computing.
+    Delite-based DSLs are proposed for machine learning, data querying, graph
+    analysis, and scientific computing.
+    However, the Delite approach is tightly integrated with the Scala
+    programming language, very complex, and does not offer a readily available
+    end-to-end solution.
+
     Halide, as proposed by \citet{Ragan-Kelley:2013:HLC:2499370.2462176}
     was designed for image processing, but is flexible enough to also allow the 
     formulation of matrix multiplications and other computations.
@@ -643,24 +646,44 @@
     \citet{Mullapudi:2016:ASH:2897824.2925952}, but in general the computational
     burden is put on the application programmer.
 
-    The LIFT programming language by \citet{Steuwer:2015:GPP:2858949.2784754}
+    The LIFT programming language \citep{steuwer15rewrite}
     provides composable constructs from functional programming to implement
     data-parallel algorithms and operations.
-    It is particularly suitable for dense linear algebra applications
-    \citep{Steuwer:2016:MMB:2968455.2968521}, but extensions to sparsity exist.
+    The language is especialy suitable for dense linear algebra applications
+    \citep{Steuwer:2016:MMB:2968455.2968521} and stencil codes
+    \citep{Hagedorn:2018:HPS:3179541.3168824}, but extensions to support
+    some forms of sparsity exist as well
+    \citep{Pizzuti:2019:PAA:3331553.3342614}.
+    LIFT performs optimisations by applying functional rewrite rules.
+    These allow the tool to cover a very large space of possible program
+    transformations.
+    However, selecting the best version from this large available configuration
+    space requires guidance from profiling runs.
+    The profiling runs are computationally expensive, taking approximately
+    one day to evaluate for the matrix multiplication kernel
+    \citep{Steuwer:2016:MMB:2968455.2968521}.
+    Such user effort can be prohibitive, but promises highly tuned OpenCL
+    outputs.
+
     The MILK programming model \citep{Kiriansky:2016:OIM:2967938.2967948}
-    extends C++ with pragmas to annotate indirect memory accesses.
-    This allows low level optimizations that are applicable to sparse linear
-    algebra.
+    extends C++ with a pragma-based domain-specific language to annotate
+    indirect memory accesses.
+    The approach is inspired by OpenMP, and are supported by modified versions
+    of Clang and LLVM.
+    This allows low level optimisations that are particularly applicable to
+    sparse linear algebra.
     The authors report performance gains of up to 3x, but the approach is unable
-    to utilize the much greater potential of heterogeneous compute and requires
+    to utilise the much greater potential of heterogeneous compute and requires
     detailed programmer intervention.
 
     Spatial \citet{Koeplinger:2018:SLC:3192366.3192379}
 
+    There have been multiple domain specific libraries proposed specifically
+    for linear algebra computations.
+    Many of these contain some degree of autotuning functionality to achieve
+    good performance across different platforms.
     \citet{Spampinato:2016:BLA:2854038.2854060}
 
-\paragraph*{Generation of Performance Portable Code for Heterogeneous Hardware}
     Recent research has highlighted the challenges of generating code that
     performs well on different heterogeneous hardware architectures.
     PetaBricks by \citet{PhothilimthanaARA13} is one of the first languages to
@@ -669,8 +692,6 @@
     compiler.
     Similarly \cite{MuralidharanRHG16} explores automatic selection of code
     variants using machine learning.
-    In a similar spirit, Lift~\cite{steuwer15rewrite} uses rewrite rules to
-    explore optimization choices automatically.
 
 \paragraph*{Functional Code Generation Approaches}
     There exist multiple functional approaches for generating code for
@@ -681,9 +702,6 @@
     Recently, \citet{collins14nova} introduced NOVA, a new functional language
     targeted at code generation for GPUs, and Copperhead
     \cite{catanzaro11copperhead}, a data parallel language embedded in Python.
-    Delite~\cite{brown11heterogeneous,chafi11domain} is a system that enables
-    the creation of domain-specific languages using functional parallel patterns
-    and targets multi-core CPUs or GPUs.
     In contrast to these approaches, we require no rewriting of legacy programs.
 
 %\paragraph{Graphs as sparse linear algebra}
