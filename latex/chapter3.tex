@@ -486,6 +486,10 @@
     The runtime overhead was up to $>50\%$.
     Despite this complexity, the approach only exploits simple scalar reductions.
 
+\subsection{Dynamic Analysis Approaches}
+
+
+\pagebreak
 \section{Heterogeneous Computing}
 
     Heterogeneous computing has been a particularly active field of research
@@ -497,10 +501,56 @@
     
     However, the related work in the context of this research is from
     the software perspective.
-    Therefore, this section focuses on the different programming approaches that
-    are championed for programming exiting heterogeneous hardware.
-    These broadly fall into three categorised: library approaches,
-    domain-specific languages, and compiler-based methods.
+    This section focuses on the different programming approaches that
+    have been championed for targeting existing heterogeneous accelerators.
+    These methods broadly fall into two categories: library approaches, and
+    domain-specific languages.
+
+\subsection{Libraries}
+
+    Library interfaces are often the most performant ways to exploit
+    heterogeneous performance.
+    However, they provide narrow interfaces, accelerating only very particular
+    computations.
+    The established way of encapsulating fast linear algebra is via dedicated
+    library implementations based on the BLAS interface specification
+    \cite{2002:USB:567806.567807}.
+    These are generally very fast on their specific hardware platforms, but
+    require application programmer effort and offer little performance portability.
+    Implementations of dense linear algebra are available for most suitable
+    hardware platforms, such as cuBLAS \cite{cublas} for NVIDIA GPUs, clBLAS
+    \cite{clblas} for AMD GPUs and the Intel MKL library \cite{mkl} for Intel
+    CPUs and accelerators.
+
+    Dense linear algebra is the best-supported class of calculations.
+    However, implementations of sparse linear algebra also exist for
+    the most important platforms, including cuSPARSE \cite{cusparse} for NVIDIA
+    GPUs and clSPARSE \cite{clsparse} built on top of OpenCL.
+
+    While most individual library implementations focus on a single target
+    hardware platform, some BLAS implementations attempt platform independent
+    acceleration and heterogeneous compute.
+    Among them are systems by \citet{Wang:2016:BHP:2925426.2926256,
+    10.1007/978-3-319-64203-1_33, Diego2017Multi}.
+
+    More expressive computational idioms, such as reductions and stencils, are
+    not suitable for library implementation.
+    These idioms are parameterised with kernel functions, which can be
+    implemented as callbacks, but prevent a direct execution on heterogeneous
+    hardware.
+    Instead, domain-specific languages provide the appropriate abstraction
+    level for these computations.
+
+    \paragraph*{CPU-GPU data transfer optimisations}
+    Library implementations often require the manual management of CPU-GPU
+    data transfers.
+    These transfers have been studied extensively as important bottlenecks for
+    parallelisation efforts.
+    Previous work by \citet{Jablin:2011:ACC:1993316.1993516} established a
+    method for the automatic management of CPU-GPU communication.
+    Similarly, \citet{Lee:2009:OGC:1594835.1504194} implemented a system to
+    optimising data transfers using data flow analysis, although this was in
+    the context of maving OpenMP code to GPUs.
 
 \subsection{Domain Specific Languages}
 
@@ -550,7 +600,7 @@
 
     Spatial \citet{Koeplinger:2018:SLC:3192366.3192379}
 
-    \citept{Spampinato:2016:BLA:2854038.2854060}
+    \citet{Spampinato:2016:BLA:2854038.2854060}
 
 \paragraph*{Generation of Performance Portable Code for Heterogeneous Hardware}
     Recent research has highlighted the challenges of generating code that
@@ -578,24 +628,6 @@
     and targets multi-core CPUs or GPUs.
     In contrast to these approaches, we require no rewriting of legacy programs.
 
-\paragraph*{Libraries}
-    The most established way of encapsulating fast linear algebra is via
-    dedicated library implementations, generally based on the BLAS interface
-    specification \cite{2002:USB:567806.567807}.
-    These are generally very fast on their specific hardware platforms, but
-    require application programmer effort and offer little performance portability.
-    Implementations of dense linear algebra are available for most suitable
-    hardware platforms, such as cuBLAS \cite{cublas} for NVIDIA GPUs, clBLAS
-    \cite{clblas} for AMD GPUs and the Intel MKL library \cite{mkl} for Intel
-    CPUs and accelerators.
-
-    There are fewer implementations of sparse linear algebra, but they exist for
-    the most important platforms, including cuSPARSE \cite{cusparse} for NVIDIA
-    GPUs and clSPARSE \cite{clsparse} built on top of OpenCL.
-    Several BLAS implementations attempt platform independent acceleration and
-    heterogeneous compute, among them \citet{Wang:2016:BHP:2925426.2926256,
-    10.1007/978-3-319-64203-1_33, Diego2017Multi}. 
-
 %\paragraph{Graphs as sparse linear algebra}
 %Graph processing is an important computational domain, especially in the context
 %of large social media graphs \cite{5470687, 6408680}.
@@ -604,18 +636,6 @@
 %GraphBLAS interface standard \cite{6670338,7761646}.
 %GraphBLAS attempts to define a standard set of building blocks for graph
 %algorithms that use the language of linear algebra.
-
-\paragraph*{CPU-GPU data transfer optimisations}
-
-    Data transfers between CPU and GPU have been studied extensively as
-    important bottlenecks for parallelization efforts.
-    Previous work \cite{Jablin:2011:ACC:1993316.1993516} established a system
-    for automatic management of CPU-GPU communication.
-    The authors of \cite{Lee:2009:OGC:1594835.1504194} implemented a system to
-    move OpenMP code to GPUs, optimizing data transfers using data flow
-    analysis.
-    However, this approach performs a direct translation of the code, without
-    optimizing it for the specific performance characteristics of GPUs.
 
 %% EArly scalar detection sc
 %Discovering and exploiting scalar reductions in programs has been
