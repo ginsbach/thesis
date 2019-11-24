@@ -378,8 +378,8 @@
     can be represented in the polyhedral model remains ad-hoc and handles only a
     small set of benchmarks.
 
-    Recent work by \citet{7429301} has extended the polyhedral model beyond
-    affine programs to some forms of sparsity with the
+    Recent work by \citet{baghdadi2015PENCIL} has extended the polyhedral model
+    beyond affine programs to some forms of sparsity with the
     Platform-Neutral Compute Intermediate Language (PENCIL).
     This intermediate language is intended for heterogeneous systems and
     provides backends for accelerator programming.
@@ -388,8 +388,8 @@
     \citep{Zhao:2018:PCF:3178372.3179509}, meaning loops with dynamic, memory
     dependent bounds but statically known strides.
     Such loops are central to sparse linear algebra.
-    However, the article by \citet{7429301} only proposes the language, a full
-    implementation is not provided.
+    However, the article by \citet{baghdadi2015PENCIL} only proposes the
+    language, a full implementation is not provided.
 
     Tiramisu \citep{Baghdadi:2019:TPC:3314872.3314896} is a polyhedral framework
     for targeting heterogeneous hardware, providing backends for CPUs, GPUs,
@@ -417,82 +417,72 @@
     \citet{jouvelot1989unified,redon1994scheduling,chi1997optimizing,
     gupta2006simplifying,stock2014framework}.
 
-\pagebreak
 \subsection{Reduction Parallelism}
 
     Discovering and exploiting scalar reductions in programs has been studied
-    for many years based on dependence analysis and idiom detection
-    \cite{pottenger1995idiom,suganuma1996detection,fisher1994parallelizing}.
-    Early work focused on well structured Fortran and paid little attention to
-    compiler-based detection, a notable exception being. 
-    \cite{suganuma1996detection}. 
-    In \cite{rauchwerger1999lrpd}, the authors went beyond previous static
-    approaches and developed a dynamic test to speculatively exploit reduction
-    parallelism.
+    for many years based on dependence analysis and idiom detection.
+    Early work by
+    \citet{pottenger1995idiom,suganuma1996detection,fisher1994parallelizing}.
+    focused on well structured Fortran and often paid little attention to robust
+    detection in more complex programs.
+    \citet{rauchwerger1999lrpd} went beyond previous static approaches and
+    developed a dynamic test to speculatively exploit reduction parallelism.
+    Work by
+    \citet{Gutierrez:2000,gutierrez2003optimization,gutierrez2008analytical}
+    has focused on the exploitation of reductions rather than discovery.
+    Approaches to heterogeneous acceleration examined trade-offs in
+    implementation \citep{yu2006adaptive} or exploitation of novel hardware
+    \citep{ravi2010compiler,Huo2011HiPC}.
 
     The treatment of more general reduction operations has received less
     attention.
-    Work has focused on the exploitation of reductions rather than discovery
-    \cite{gutierrez2003optimization,gutierrez2008analytical, Gutierrez:2000},
-    examining trade-offs in implementation \cite{yu2006adaptive} or exploitation
-    of novel hardware \cite{ravi2010compiler,Huo2011HiPC}.
-    In \cite{das2010experiences}, they use dynamic profile analysis to guide
-    manual analysis and show there is potential for finding generalized
+    \citet{das2010experiences} proposed dynamic profile analysis to guide
+    manual analysis and show there is potential for finding generalised
     reductions.
-    In \cite{kim2012dynamic} they explore the use of dynamic analysis further,
-    but state that detecting reductions on arrays is challenging.
+    \citet{kim2012dynamic} explored the use of dynamic analysis further,
+    but state that detecting reductions on arrays remains challenging.
 
-    The difficulty in automatically detecting reductions has led to language or
-    annotation based approaches where it is the user's responsibility to mark
-    reductions in the program \cite{deitz2002high}.
-    An annotation approach is described in \cite{Reddy2016Reduction}, based on
-    the Platform-Neutral Compute Intermediate Language
-    (\cite{baghdadi2015PENCIL}).
-    This used the code generator in
-    (\cite{Verdoolaege:2013:PPC:2400682.2400713}) to generate CUDA and OpenCL
+    The difficulty in automatically detecting reductions has led to languages
+    and annotation based approaches, where it is the responsibility of the user
+    to mark reductions in the program.
+    Such a system was proposed by \citet{deitz2002high}.
+    An annotation approach is also described by \citet{Reddy2016Reduction},
+    based on the Platform-Neutral Compute Intermediate Language (PENCIL)
+    \citep{baghdadi2015PENCIL}.
+    This used the PPCG code generator by
+    \citet{Verdoolaege:2013:PPC:2400682.2400713} to generate CUDA and OpenCL
     code for multiple compute platforms.
 
     There has also been recent work extending on \citet{rauchwerger1999lrpd}
     with more aggressive speculation and dynamic analysis
     \citep{aguilar2015unified} to exploit reduction parallelism.
     \citet{Han2010Speculative} present an approach for the
-    parallelization of a wide class of scalar reductions.
+    parallelisation of a wide class of scalar reductions.
     They start from the observation that many reductions in real benchmark
     programs are not detected by current static analysis approaches.
     They propose a hardware assisted speculative parallelisation approach for
-    likely runtime reductions, denoted `partial reduction variables'.
-    Candidates for speculative parallelization are determined by searching for
+    likely runtime reductions, denoted ``partial reduction variables''.
+    Candidates for speculative parallelisation are determined by searching for
     update-chains in the data flow graph.
     The approach is evaluated on some of the SPEC2000 benchmarks using a
     simulator.
     They achieve up to $46\%$ speedup by including speculative reductions.
-    This approach
-    based on update chains in the dependence graph requires hardware
-    speculation support to check dependences but is unable to detect
-    histogram reductions.
+    However, this approach requires hardware speculation support to check
+    dependences.
+    Despite this hardware support, it is unable to detect histogram reductions.
 
-    Privateer introduced in \cite{Johnson:2012:SSP:2254064.2254107}, is a
-    complex system featuring compiler support and a runtime to enable
-    speculative parallelization.
-    The core approach is the privatization of memory for each thread and an
+    Privateer \citep{Johnson:2012:SSP:2254064.2254107} is a complex system
+    featuring compiler support and a runtime to enable speculative
+    parallelisation.
+    The core approach is the privatisation of memory for each thread and an
     exception mechanism with recovery routines for accesses that violate
     parallelism.
     The authors explicitly allow for reduction parallelism involving only a
     single scalar associative and commutative operator.
-    The implementation approach is to first profile the program for hot loops
-    and then to classify all variables accessed in those loops into different
-    groups.
-    A transformation pass then identifies corresponding \texttt{malloc} and
-    \texttt{free} calls and replaces them by thread local allocations.
-    In a similar way all\texttt{load} and \texttt{store} instructions are
-    replaced by local accesses.
-    At runtime, the system uses manual page table switching and memory
-    protection to minimize runtime overhead.
-    The evaluation is done on a limited set of five benchmark programs, yielding
+    The evaluation only covers a set of five benchmark programs, yielding
     a geometric mean speedup of 11.4x on a 24 core machine.
-    The runtime overhead on these five programs varies between $<1\%$ and
-    $>50\%$.
-    Despite this complexity they only exploit simple scalar reductions.
+    The runtime overhead was up to $>50\%$.
+    Despite this complexity, the approach only exploits simple scalar reductions.
 
 \subsection{Linear Algebra Compilers}
 
@@ -631,7 +621,7 @@
 
 \paragraph*{Libraries}
     The most established way of encapsulating fast linear algebra is via
-    library implementations, generally based on the BLAS interface
+    dedicated library implementations, generally based on the BLAS interface
     specification \cite{2002:USB:567806.567807}.
     These are generally very fast on their specific hardware platforms, but
     require application programmer effort and offer little performance portability.
@@ -801,9 +791,9 @@
 
 \subsection{Higher-Order Functions}
 
-    Functional programming languages -- such as OCaml or Haskell -- represent
-    abstract algorithmic choices and common programming patterns as higher-order
-    functions \citep{Hughes:1989:WFP:63410.63411}.
+    Many functional programming languages, such as OCaml and Haskell,
+    encapsulate high-level algorithmic choices and common programming patterns
+    as higher-order functions \citep{Hughes:1989:WFP:63410.63411}.
     These are functions that are parameterised with other functions.
     Examples of higher-order functions are {\it map}, which applies a function
     to each element in a data structure, and {\it fold} / {\it reduce}, which
@@ -849,8 +839,8 @@
     scientific computing community, although the authors claim that the
     knowledge from this domain may prove useful in other areas as well.
 
-    The dwarfs are studied from the perspective of architecture requirements,
-    not with automatic compiler support in mind.
+    The Berkeley Dwarfs are studied from the perspective of architecture
+    requirements, not with automatic compiler support in mind.
     Therefore, some of the dwarfs are specified too broadly for use as
     computational idioms in this paper.
     However, dense linear algebra, sparse linear algebra, and strcutured grid
