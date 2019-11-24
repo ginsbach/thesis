@@ -261,8 +261,8 @@
     \citet{Willcock:2009:RGP:1621607.1621611} propsed a complex system for
     generating generic optimisation passed using concepts from generic
     programming.
-    However, such schemes are not able to work at the IR level of established
-    compiler frameworks, such as LLVM.
+    However, such schemes do not work at the IR level of established
+    compiler frameworks.
     Instead, they require program rewrites by the user.
 
     \citet{Whitfield:1997:AEC:267959.267960} presented Gospel, a frameword and
@@ -287,9 +287,11 @@
     heterogeneous paralellelisation of sequential code.
     The derived methods are evaluated on two metrics: how broadly they apply to
     real code, and how big their performance impact is when applied.
-    In order to evaluate this appropriately, several other compiler analysis
-    and parallelisation approachs are used for comparison.
-    This section gives an overview of the the relevant research landscape.
+    This is evaluated other compiler analysis and parallelisation
+    approaches.
+    This section focuses on two areas of the vast research landscape
+    that are particularly relevant for this: polyhedral compilation, and the
+    parallelisation of reductions.
 
 \subsection{Compilation with the Polyhedral Model}
 
@@ -484,51 +486,6 @@
     The runtime overhead was up to $>50\%$.
     Despite this complexity, the approach only exploits simple scalar reductions.
 
-\subsection{Linear Algebra Compilers}
-
-    Compiler management of indirect memory accesses was already studied in the
-    1980s using an inspector-executor model for distributed-memory machines in
-    \citet{Baxter:1989:RPS:72935.72967}.
-    Here the location of read data was discovered at runtime and appropriate
-    communication automatically inserted.
-    Later work by \citet{pottenger1995idiom,fisher1994parallelizing,
-    rauchwerger1999lrpd,suganuma1996detection} was focused on efficient runtime
-    dependence analysis and the parallelization of more general programs.
-    However, the performance achieved by these approaches is modest due to
-    runtime overhead and falls well short of library performance.
-
-    \citep{Spampinato:2016:BLA:2854038.2854060}
-
-\paragraph*{KIR}
-
-    \citet{Andion2015Compilation} describes compiler based
-    parallelisation for heterogeneous computing based on
-    an idiomatic intermediate representation called KIR.
-    This intermediate representation is based on the concept of
-    \mbox{diKiernels}, which constitute algorithmic building blocks and are used
-    to automatically generate OpenMP and OpenHMPP code.
-    The authors propose a system that detects diKernels in conventional compiler
-    IR and concatenates them to form contiguous sections of KIR.
-    Examples of diKernels are scalar reductions and irregular
-    assignments.
-    It is not clear how such an approach would work on general 'C' programs.
-
-
-\paragraph*{Idiom Detection}
-    Idiom based optimization based on AST manipulation, as described by
-    \citet{Pinter:1994:POP:177492.177494}, has fallen out of fashion.
-    More systematic approaches based on static single assignment representation
-    \cite{lattner2004llvm} and polyhedral representations
-    \cite{benabderrahmane2010polyhedral} however were more recently
-    investigated.
-    They were largely based on syntactic pattern matching and not robust in the
-    presence of complex control and dataflow.
-    More recently, work by \citet{Andion2015Compilation} describes a compiler
-    based parallelization approach for heterogeneous computing, based on an
-    diomatic intermediate representation called KIR.  
-    It is not clear how such an approach would work on general C/C++ programs.
-
-\pagebreak
 \section{Heterogeneous Computing}
 
     Heterogeneous computing has been a particularly active field of research
@@ -591,7 +548,9 @@
     to utilize the much greater potential of heterogeneous compute and requires
     detailed programmer intervention.
 
-    Spatial \citep{Koeplinger:2018:SLC:3192366.3192379}.
+    Spatial \citet{Koeplinger:2018:SLC:3192366.3192379}
+
+    \citept{Spampinato:2016:BLA:2854038.2854060}
 
 \paragraph*{Generation of Performance Portable Code for Heterogeneous Hardware}
     Recent research has highlighted the challenges of generating code that
