@@ -379,11 +379,38 @@
     small set of benchmarks.
 
     Recent work by \citet{7429301} has extended the polyhedral model beyond
-    affine programs to some forms of sparsity with the PENCIL extensions.
-    These can be used to model important features of sparse linear algebra, such
-    as counted loops \citep{Zhao:2018:PCF:3178372.3179509}, meaning loops with
-    dynamic, memory dependent bounds but statically known strides.
+    affine programs to some forms of sparsity with the
+    Platform-Neutral Compute Intermediate Language (PENCIL).
+    This intermediate language is intended for heterogeneous systems and
+    provides backends for accelerator programming.
+    This platforms provides extensions, which can be used to model important
+    features of sparse linear algebra, such as counted loops
+    \citep{Zhao:2018:PCF:3178372.3179509}, meaning loops with dynamic, memory
+    dependent bounds but statically known strides.
     Such loops are central to sparse linear algebra.
+    However, the article by \citet{7429301} only proposes the language, a full
+    implementation is not provided.
+
+    Tiramisu \citep{Baghdadi:2019:TPC:3314872.3314896} is a polyhedral framework
+    for targeting heterogeneous hardware, providing backends for CPUs, GPUs,
+    distributed architectures and FPGAs.
+    Optimisations are performed on four layers of intermediate representation,
+    resulting in performance that almost matches dedicated library functions.
+    However, the tool does not detect polyhedral code sections in existing
+    source code.
+    Instead, it requires the programmer to manually implement the algorithms
+    with a dedicated C++ API.
+
+    \citet{Zhang:2016:CTG:3018843.3018849} propose an extension to polyhedral
+    approaches that allows the capturing of some sparse linear algebra
+    calculations in the polyhedral model.
+    They introduce a novel non-affine split transformation for this purpose.
+    Using the inspector-executor model, the approach achieved significant
+    speedup on some benchmark programs.
+    However, the paper does not address the automatic recognition of sparse
+    linear algebra routines within existing programs.
+    Furthermore, the approach is not evaluated against state-of-the art
+    library implementations such as Intel MKL and cuSPARSE.
 
     Many approaches have been proposed for parallelising loop nests with
     reduction variables in the polyhedral model, among them
@@ -480,6 +507,7 @@
     However, the performance achieved by these approaches is modest due to
     runtime overhead and falls well short of library performance.
 
+    \citep{Spampinato:2016:BLA:2854038.2854060}
 
 \paragraph*{KIR}
 
@@ -572,6 +600,8 @@
     The authors report performance gains of up to 3x, but the approach is unable
     to utilize the much greater potential of heterogeneous compute and requires
     detailed programmer intervention.
+
+    Spatial \citep{Koeplinger:2018:SLC:3192366.3192379}.
 
 \paragraph*{Generation of Performance Portable Code for Heterogeneous Hardware}
     Recent research has highlighted the challenges of generating code that
