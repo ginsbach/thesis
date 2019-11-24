@@ -488,8 +488,65 @@
 
 \subsection{Dynamic Analysis Approaches}
 
+    There is an extensive body of work on automated decision making for
+    selecting the appropriate hardware for a given piece of code.
+    This is often under the assumption that the functional porting is trivial,
+    for example given an OpenCL implementation.
+    These approaches are often based on dynamic monitoring of programs
+    and machine learning algorithms for the selection of backends.
 
-\pagebreak
+    \citet{Wen:2017:MSM:3038228.3038235} present a system for scheduling OpenCL
+    kernels on a system with CPU and GPU processors, extending the approach
+    presented in \citet{7116910}.
+    The presented machine learning-based predictive model decides at runtime
+    whether kernels are merged or executed separately on appropriate devices.
+    However, such a system can only be applied when the functional translation
+    to accelerators is available.
+    This is not the case for the sequential C code that this thesis is evaluated
+    on.
+    Furthermore, the approach optimises OpenCL scheduling, but does not consider
+    the impact of library backends, which often significantly outperform generic
+    OpenCL implementations on appropriate tasks.
+
+    \citet{Tournavitis:2009:THA:1542476.1542496} characterised the significant
+    weaknesses of established static data dependence analysis techniques.
+    Profile-driven parallelism detection and machine-learning based mapping
+    approaches are suggested in order to improve on the state-of-art
+    parallelising compilers.
+    \citet{Wang:2014:IPP:2591460.2579561} implemented such a system that
+    automatically discovers parallelism based on profile-driven parallelism
+    detection.
+    The approach improves significantly over purely static approaches by
+    replacing the traditional target-specific and inflexible mapping heuristics
+    with a prediction mechanism that uses machine learning.
+    The model is trained via an offline supervised learning scheme, using both
+    static and dynamic features, such as cache miss rates and branch miss
+    prediction rate.
+    Dynamic approaches can eliminate spurious dependencies and profitability
+    models based on powerful machine learning techniques greatly improve on
+    simple heuristics.
+    However, such an approach cannot unlock the potential of dedicated backends
+    and requires significant manual tuning effort.
+
+    \citet{Ogilvie:2014:ALA:2628071.2628128} propose a system for performance
+    prediction on heterogeneous systems that is based on active learning.
+    This significantly reduces the tuning that is required for
+    machine learning-based scheduling algorithms on CPU/GPU systems.
+    However, this approach still requires the availability of functional mapping
+    to heterogeneous devices, and cannot work on unchanged sequencial C/C++
+    inputs.
+
+    \citet{Manilov:2018:GPI:3178372.3179511} propose a dynamic approach to
+    detecting a wide class of iterators using dynamic profiling data.
+    Such iterators describe the traversal of data structures that are difficult
+    to capture with tranditional static techniques.
+    This is an important prerequisite for implementing compiler parallelisation
+    approaches to pointer-based data structures.
+    However, the approach only captures a small, if crucial, part of the
+    calculations, and does not capture full computational idioms such
+    as sparse linear algebra.
+
+
 \section{Heterogeneous Computing}
 
     Heterogeneous computing has been a particularly active field of research
@@ -497,8 +554,9 @@
     the last decade.
     This includes research from both software and hardware perspectives.
     The hardware research investigates the most promising directions of
-    diversification for processors in heterogeneous systems.
-    
+    diversification for processors in heterogeneous systems
+    \citep{Tomusk:2016:SHC:3012405.3014165}.
+
     However, the related work in the context of this research is from
     the software perspective.
     This section focuses on the different programming approaches that
@@ -546,7 +604,7 @@
     data transfers.
     These transfers have been studied extensively as important bottlenecks for
     parallelisation efforts.
-    Previous work by \citet{Jablin:2011:ACC:1993316.1993516} established a
+    Work by \citet{Jablin:2011:ACC:1993316.1993516} established a
     method for the automatic management of CPU-GPU communication.
     Similarly, \citet{Lee:2009:OGC:1594835.1504194} implemented a system to
     optimising data transfers using data flow analysis, although this was in
