@@ -235,14 +235,14 @@
     It is necessary to clarify what is meant by compiler optimisation potential
     in this context and how it differs from raw performance.
     At the very left, C++ is renowned as a low-overhead, high-performance
-    language, but it is difficult for compilers to apply profound structural
-    changes to C++ programs.
-    At the other extreme, the semantics of BLAS routines can be maintained
-    with many structurally different implementations.
+    language, but it is difficult to apply profound structural changes to C++
+    programs in compilers.
+    At the other extreme, the semantics of BLAS can be maintained with many
+    structurally different implementations.
     The routines are so narrowly specified that they allow the library
-    implementer to effectively function as a compiler with almost
+    implementer to effectively operate as a compiler with almost
     unrestricted optimisation abilities.
-    Therefore, C++ is fast because of its low overhead, but BLAS is fast because
+    C++ is fast because of its low overhead, but BLAS is fast because
     its semantics are so constrained that implementations can be tuned to
     perfection.
 
@@ -256,82 +256,86 @@
 \label{specialgradient}
 \end{figure}
 
-    In summary, the superior optimisation potential of libraries and
-    domain-specific kernel compilers is a consequence of operating in more
-    constrained conditions than host compilers.
+    More broadly, the superior optimisation potential of libraries and
+    kernel compilers is a consequence of operating under more constrained
+    conditions than host compilers.
     While expert programmers can often apply domain knowledge themselves
     when using versatile general-purpose languages, this potential is
-    automatically uncovered by specialised tools.
+    uncovered automatically and tuned for the target hardware by specialised
+    tools.
     The restrictions on input programs imply domain knowledge that is leveraged
-    to make stronger assumptions, use more powerful models and generate better
-    code.
+    to make stronger assumptions, use more powerful reasoning and generate
+    better code.
 
-    {\bf Proposition:}\quad
+    {\bf Hypothesis:}\quad
     Restrictive program models expose additional optimisation
     opportunities and lead to increased portability.
     Compilers use program models that correspond closely to their input
     programming languages.
     This correspondence could be decoupled by recognising program parts that
-    adhere to more constrained models automatically, making the powerful
-    domain-specific optimisation techniques of kernel compilers available to
-    host compilers.
+    adhere to more constrained models, making the powerful domain-specific
+    optimisation techniques of kernel compilers available to host compilers.
 
 \section{Moving on the Spectrum of Specialisation}
 
-    Host compilers need methods to automatically recognise more
-    restrictive programming models within general-purpose code.
-    Reformulating the adhering program sections in domain-specific
-    representations makes the superior domain-specific reasoning from kernel
-    compilers applicable also in the host compiler.
-    This results in a compiler that combines the positive aspects of both sides
-    of the spectrum of specialisation.
+    Host compilers need methods to automatically recognise restrictive program
+    models within general-purpose code.
+    The term {\it program model} in this context means an internal
+    representation of program logic with corresponding reasoning and
+    assumptions about the program semantics.
+    Reformulating program sections in restrictive models would make the
+    superior domain-specific reasoning from kernel compilers applicable in
+    host compilers.
+    This would result in a compiler that can combine the positive aspects of
+    both sides of the spectrum of specialisation.
 
     Such an approach of detecting restricted models in general-purpose code has
-    previously been used only for specific individual domains, and required
-    elaborate hand-implemented compiler analysis functionality.
+    previously been used only for specific individual domains and required
+    elaborate manually implemented compiler analysis functionality.
     For example, the Polly compiler by \citet{Lengauer2012Polly} takes
     arbitrary C/C++ code as input and recognises whether parts of this code
     are expressible in the more restrictive polyhedral model
     \citep{Karp:1967:OCU:321406.321418,benabderrahmane2010polyhedral}.
-    The compiler then reformulates the relevant code in this system, which
-    makes applicable advanced optimisation techniques that use the available
-    domain knowledge of the restricted model for generating faster code
+    The compiler reformulates the relevant code in this model, enabling
+    advanced optimisation techniques that use the domain knowledge of the
+    polyhedral model for generating faster code
     \citep{Moll:2016:ISS:2892208.2892217,Doerfert2015Polly}, substantiating the
-    hypotheses of \Cref{sec:hostkernel}.
+    hypothesis.
 
 \subsection{Contributions of this Thesis}
 
     This thesis derives a systematic and configurable method for recognising
-    constrained program sections during the compilation process.
-    The approach emerges from the analysis of a standard program model that host
-    compilers use: Static Single Assignment (SSA) form intermediate
-    representations.
-    These SSA form representations are accessible to mathematical reasoning,
-    with their most relevant features based on graph and list structures.
+    constrained program sections that fit restrictive models during the
+    compilation process.
+    The approach emerges from the analysis of a standard program model for
+    host compilers: Static Single Assignment (SSA) form.
+    Intermediate representations based on SSA are accessible to mathematical
+    reasoning, with their most relevant features based on graph and list
+    structures.
     With this in mind, structural restrictions on intermediate representation
-    code -- corresponding to restricted, domain-specific models -- can be
-    precisely formulated as mathematical constraints on a model of SSA form
-    representations.
-    The use of constraint solver techniques then makes automatic detection of
-    adhering code regions feasible.
+    code -- corresponding to restricted domain-specific models -- can be
+    precisely formulated as constraints on a mathematical characterisation of
+    SSA form programs.
+    Constraint solver techniques then make the automatic recognition of
+    adhering code sections feasible.
 
-    Instead of manually implementing compiler analysis passes to recognise
-    restricted models, a flexible constraint programming language is introduced,
-    that can express many different such domain-specific models, and an
-    accompanying toolchain is developed that uses these specifications to
-    detect code sections that satisfy them automatically.
+    Instead of manually implementing sophisticated compiler analysis
+    functionality, a flexible constraint programming language is introduced
+    that can express many different such domain-specific models.
+    An accompanying toolchain is developed that uses these specifications to
+    automatically recognise code sections that satisfy them.
     This system captures the spectrum from \Cref{specialgradient}.
     On one extreme, sections of code are recognised as implementing
-    specific algorithms, like matrix multiplications, that are merely
-    parametrised with numbers.
-    Next are algorithms that allow parametrisation with an operator.
+    specific algorithms, like matrix multiplications, that are parametrised with
+    numeric values.
+    Algorithms that allow parametrisation with an operator are next.
     Stencil kernels, reduction operations or generalised histogram computations
     fall into this category.
-    More generic again are programs that merely follow specific structural
+    More generic again are programs that merely follow certain structural
     restrictions, such as code adhering to the polyhedral model.
     \Cref{chapter:candl,chapter:reductions,chapter:idioms} cover each of these
     domains, culminating in a system for the automatic heterogeneous
-    acceleration of idiomatic code.
+    acceleration of sequential C/C++ code.
 
 \section{Summary}
 
