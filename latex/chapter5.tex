@@ -789,8 +789,14 @@ End
     one reduction or histogram computation.
 
 \begin{figure}[p]
+\lstset{
+ basicstyle = \linespread{1.25}\ttfamily
+}
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
-   {Complex reductions and histograms as an IDL specification}]
+   {Complex Reduction and Histogram Computations (CReHCs) as IDL specification:
+    The idiom comprises histogram (lines 8--13) and scalar (lines 14--18) reductions contained in a for-loop (line 2).
+    These computations reduce the values from the input array (lines 3--7).
+    Additional conditions guarantee the absence of any further side-effects in the loop (lines 25--28).}]
 Constraint ComplexReductionsAndHistograms
 ( inherits For at {loop} and
   collect k 32 ( inherits VectorRead
