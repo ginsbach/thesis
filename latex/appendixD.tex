@@ -1,8 +1,13 @@
 \begin{figure}[h]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\ttfamily,
-                   captionpos=t,caption=
+\lstset{
+ basicstyle=\linespread{0.924}\ttfamily
+}
+\begin{lstlisting}[language=IDL, captionpos=t, caption=
    {Constraint specification of Complex Reduction and Histogram Computations in
-    IDL
+    IDL:
+    The complete code is displayed with all dependecies, including the relevant
+    definitions from the IDL standard library, which is derived in part from the
+    CAnDL standard library as in Appendix~\ref{appendix:CAnDLpoly}.
     \parfillskip=0pt}]
 Constraint ComplexReductionsAndHistograms
 ( inherits For at {loop} and
@@ -36,8 +41,10 @@ End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\ttfamily,
-                   firstnumber=31]
+\lstset{
+ basicstyle=\linespread{0.908}\ttfamily
+}
+\begin{lstlisting}[language=IDL, firstnumber=31]
 Constraint VectorRead
 ( {value} is load instruction and
   {address} is first argument of {value} and
@@ -94,8 +101,10 @@ End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\ttfamily,
-                   firstnumber=85]
+\lstset{
+ basicstyle=\linespread{0.891}\ttfamily
+}
+\begin{lstlisting}[language=IDL, firstnumber=85]
 Constraint HistoPart
 ( inherits ConditionalReadModifyWrite
       with {loop}              as {scope}
@@ -153,8 +162,10 @@ End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\ttfamily,
-                   firstnumber=140]
+\lstset{
+ basicstyle=\linespread{1.002}\ttfamily
+}
+\begin{lstlisting}[language=IDL, firstnumber=140]
 Constraint For
 ( inherits Loop and
   {increment} reaches phi node {iterator} from {end} and
@@ -206,8 +217,10 @@ End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=IDL,basicstyle=\linespread{0.8}\ttfamily,
-                   firstnumber=189]
+\lstset{
+ basicstyle=\linespread{1.002}\ttfamily
+}
+\begin{lstlisting}[language=IDL, firstnumber=189]
 Constraint KernelFunction
 ( collect i  4 ( {entries[i]} has control
                      flow to {scope.begin}) and

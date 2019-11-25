@@ -1,6 +1,8 @@
 \begin{figure}[h]
-\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.85}\ttfamily,
-                   captionpos=t,caption=
+\lstset{
+ basicstyle=\linespread{0.897}\ttfamily
+}
+\begin{lstlisting}[language=BNF, captionpos=t, caption=
    {Verbatim display of the grammar file that is used to generate the parser for
     IDL.
     The file is in a custom version of Backus–Naur form.
@@ -44,8 +46,10 @@ default ::= <@formula> for <s> = <@index>
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.85}\ttfamily,
-                   firstnumber=34]
+\lstset{
+ basicstyle=\linespread{0.925}\ttfamily
+}
+\begin{lstlisting}[language=BNF, firstnumber=34]
 @nested ::= '(' <@formula> ')'
 
 atom ::= <IntegerType> | <FloatType>
@@ -101,8 +105,10 @@ FourthOperand ::= <@variable> is fourth
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=BNF,basicstyle=\linespread{0.85}\ttfamily,
-                   firstnumber=87]
+\lstset{
+ basicstyle=\linespread{0.891}\ttfamily
+}
+\begin{lstlisting}[language=BNF, firstnumber=87]
 FirstSuccessor  ::= <@variable> is first
                     successor of <@variable>
 SecondSuccessor ::= <@variable> is second

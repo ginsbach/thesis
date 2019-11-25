@@ -1,6 +1,8 @@
 \begin{figure}[h]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\ttfamily,
-                   captionpos=t,caption=
+\lstset{
+ basicstyle=\linespread{0.861}\ttfamily
+}
+\begin{lstlisting}[language=CAnDL, captionpos=t, caption=
    {Constraint specification in CAnDL of Scalar Control Parts (SCoPs):
     These regular loop nests enable polyhedral transformations to be applied,
     due to their structured control flow, side effect free function calls and
@@ -44,8 +46,10 @@ End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\ttfamily,
-                   firstnumber=35]
+\lstset{
+ basicstyle=\linespread{0.925}\ttfamily
+}
+\begin{lstlisting}[language=CAnDL, firstnumber=35]
 Constraint AffineControlFlow
 ( include AffineCalc[M=10,N=1](
                            {scope}->{scope},
@@ -101,8 +105,10 @@ End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\ttfamily,
-                   firstnumber=88]
+\lstset{
+ basicstyle=\linespread{0.908}\ttfamily
+}
+\begin{lstlisting}[language=CAnDL, firstnumber=88]
 Constraint For
 ( include Loop
 ∧ {increment} -> {body.end} Φ {iterator}
@@ -159,8 +165,10 @@ End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\ttfamily,
-                   firstnumber=142]
+\lstset{
+ basicstyle=\linespread{0.925}\ttfamily
+}
+\begin{lstlisting}[language=CAnDL, firstnumber=142]
 Constraint AffineCalc
 if N=0 then
 ( ( ( include LocalConst
@@ -216,8 +224,10 @@ End
 \end{lstlisting}
 \end{figure}
 \begin{figure}[p]
-\begin{lstlisting}[language=CAnDL,basicstyle=\linespread{0.8}\ttfamily,
-                   firstnumber=195]
+\lstset{
+ basicstyle=\linespread{1.0}\ttfamily
+}
+\begin{lstlisting}[language=CAnDL, firstnumber=195]
 Constraint MemoryAccess
 ( ( ( opcode{access} = store
     ∧ {pointer} = {access}.args[1])
@@ -250,4 +260,5 @@ Constraint PotentialSESE
     ∧ {begin} = {successor})))
 End
 \end{lstlisting}
+\vspace{8.18cm}
 \end{figure}
