@@ -933,13 +933,13 @@ gemm_in_lift(A, B, C, alpha, beta) {
     The approach was evaluated in several steps.
     Firstly, the number of detected idioms and their distribution over the
     benchmark programs was established.
-    During this analysis, the run time of the IDL-enabled Clang compiler was
+    During this analysis, the runtime of the IDL-enabled Clang compiler was
     measured, and the compile-time overhead of the solver over standard
     compilation evaluated.
-    Next, the run time coverage of the idioms was determined for each
+    Next, the runtime coverage of the idioms was determined for each
     benchmark program, to see where exploitation might be beneficial.
 
-    Where run time coverage was substantial, speedups over the sequential C code
+    Where runtime coverage was substantial, speedups over the sequential C code
     are reported.
     Detailed results are given for the performance of each targeted backend
     interface.
@@ -1058,11 +1058,11 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 \subsection{Runtime Coverage}
 
     To determine if the detected idioms were impactful, \Cref{coverage-figure}
-    shows the percentage of run time spent in the detected computational idiom
+    shows the percentage of runtime spent in the detected computational idiom
     for each benchmark program.
     This data shows that either the detected idioms have a low runtime
     contribution or they dominate almost the entire execution.
-    \emph{EP} is the only exception with about 50\% run time coverage.
+    \emph{EP} is the only exception with about 50\% runtime coverage.
     Heterogeneous acceleration was evaluated on the ten programs that spend a
     significant amount of time in the detected idioms.
     Only these can reasonably expect a performance gain.
@@ -1155,7 +1155,7 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
   \bottomrule
 \end{tabular}
 \caption{Detailed performance results for each heterogeneous backend interface:
-         The run time of each benchmark program was measured in milliseconds for
+         The runtime of each benchmark program was measured in milliseconds for
          every compatible combination on each of the three platforms.
          The fastest implementations for per benchmark and target hardware are
          highlighted in {\bf bold}.}

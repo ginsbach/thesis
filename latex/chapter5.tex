@@ -1280,7 +1280,7 @@ for( i=0; i<NUM_KEYS; i++ )
     \end{tikzpicture}
     \end{minipage}
     \caption{Run time coverage of reductions in {\bf NPB} and {\bf Parboil}:
-             Five of the programs spent a significant portion of their run time
+             Five of the programs spent a significant portion of their runtime
              performing complex histogram and reduction computations.
              Four of the five histograms were performance bottlenecks,
              but only one of the scalar reductions.}
@@ -1300,7 +1300,7 @@ for( i=0; i<NUM_KEYS; i++ )
     \caption{Run time coverage of reductions in {\bf Rodinia}:
              Scalar and histogram reductions had a
              performance impact only on ``kmeans'', which spent
-             almost the entire run time on a histogram.}
+             almost the entire runtime on a histogram.}
     \label{rodinia_coverage}
     \vspace{5.5mm}
     \begin{tikzpicture}
@@ -1365,7 +1365,7 @@ for( i=0; i<NUM_KEYS; i++ )
 
     The IDL-based approach achieved $62\%$ speedup on ``EP'' over the whole
     program.
-    This is limited by the run time coverage of the histogram loop.
+    This is limited by the runtime coverage of the histogram loop.
     Following Amdahl's Law
     \citep{Amdahl:1967:VSP:1465482.1465560,Hill:2008:ALM:1449375.1449387},
     parallelisation on 48 cores has a theoretical limit of
