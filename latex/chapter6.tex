@@ -4,16 +4,15 @@
     Idiom Detection Language (IDL) enables its discovery and automatic
     parallelisation.
     This chapter takes a broader view of automatic idiom detection, and also
-    includes common sparse and dense linear algebra computations and stencil
-    codes.
-    Instead of implementing bespoke parallelisation passes, the chapter
+    includes common linear algebra computations and stencil codes.
+    Instead of implementing bespoke parallelisation passes, this chapter
     follows the vision laid out in the introduction:
     The detected idioms are translated into stronger models, and external
     code generators are then used to leverage the implied domain knowledge.
 
-    The goal of this chapter is to take abstract algorithmic concepts, which are
+    The goal of this chapter is to take abstract algorithmic concepts that are
     conventionally explored outside the context of compiler analysis --
-    computational idioms -- and to formalize them as IDL specifications,
+    computational idioms -- and formalise them as IDL specifications,
     enabling detection and manipulation in optimising compilers.
     Heterogeneous acceleration will serve as the motivation for this effort.
     As many scientific codes are structured around idiomatic performance
@@ -61,12 +60,12 @@
     This means that library or DSL based programming is likely to become far
     more common.
     The problems with this trend that arise due to the aforementioned tradeoffs
-    are evident:
+    are evident.
     Firstly, application developers have to learn multiple specialised DSLs and
     vendor-specific libraries if they want good performance.
-    Secondly, they will have to rewrite their existing applications to use them.
+    Secondly, they have to rewrite their existing applications to use them.
     Thirdly, this ties code into ecosystems that might soon become obsolete.
-    Accelerators DSLs are quickly evolving, and the adoption and long-term
+    Accelerator DSLs are quickly evolving, and the adoption and long-term
     support of academic projects remain unclear.
     This situation is a severe impediment to the wide-spread efficient
     exploitation of heterogeneous hardware.
@@ -76,7 +75,7 @@
     from the application programmer.
     While this remains an ambitious goal for the general case, this chapter
     presents a system that approximates such a general-purpose solution by
-    utilising know-how that is already available and encapsulated in existing
+    utilising expertise that is already available and encapsulated in existing
     backend interfaces.
     Instead of implementing code generation for each heterogeneous
     accelerator, the system maps user code to heterogeneous hardware via
@@ -94,17 +93,16 @@
     Some computational idioms are more widely supported than others, potentially
     pointing to gaps in the accelerator landscape, but some backend was
     available for each of them.
-    The Idiom Detection language (IDL) then enabled the automatic detection of
+    The Idiom Detection Language (IDL) then enabled the automatic detection of
     idioms.
     Once detected, the idioms are translated into the appropriate DSL or
     replaced with an available library call.
     The optimised DSL output code, or the pre-built optimised library, is then
     linked into the original program.
 
-    As backends, the libraries cuSparse, clSparse, cuBLAS, clBLAS for
-    sparse and dense linear algebra and the DSLs Halide
-    \cite{Ragan-Kelley2013Halide} and Lift \cite{SteuwerRD17} were used in the
-    evaluation.
+    The libraries cuSparse, clSparse, cuBLAS, clBLAS for sparse and dense linear
+    algebra and the DSLs Halide \cite{Ragan-Kelley2013Halide} and Lift
+    \cite{SteuwerRD17} were used as backends in the evaluation.
     The Lift language is a data-parallel functional language that supports
     generalised reductions as well as stencils and linear algebra.
     The wide range of backends allows the freedom to target many APIs per idiom
@@ -129,16 +127,16 @@
           heterogeneous systems.
     \end{itemize}
 
-    The work most similar in approach discovers stencil computations and maps to
-    the Halide DSL for acceleration.
+    The work most similar in approach discovers stencil computations and maps
+    them to the Halide DSL for acceleration.
     The Helium tool \citep{Mendis2015Helium} recovers stencils from
     image-processing binaries.
     This requires large scale dynamic analysis of binary traces and replacing
     them with Halide calls. 
     This is significantly extended by \citet{Kamil2016Verified}, detecting
     stencils in Fortran code.
-    The focus of that work is on inferring post invariants based on syntax
-    guided synthesis in translation to Halide.
+    The focus of that work is on inferring post invariants based on
+    syntax-guided synthesis in translation to Halide.
     However, it uses a narrow approach to code snippet selection and relies on
     well-structured Fortran with occasional user annotations.
     The IDL approach is distinct in its use of an external programming language
@@ -155,7 +153,7 @@
     For the programs where idioms dominate execution time, accelerator code
     was generated and evaluated on 3 platforms: a multi-core CPU, an integrated
     APU, and an external GPU.
-    Overall, 60 idioms were detected, and they dominated execution time in
+    Overall, 60 idioms were detected, which dominated execution time in
     10 programs.
     Speedup results for the accelerated code ranged from 1.26$\times$ to over
     20$\times$.
@@ -172,9 +170,9 @@
     Finally, the code generated by the LLVM compiler and the output of the idiom
     specific code generators/libraries are linked together into a binary,
     producing an optimised program.
-    LLVM was chosen as it is the best supported SSA-based compiler;
-    the methodology could easily be transferred to other infrastructures such as
-    GCC.
+    LLVM was chosen as it is the best supported SSA-based compiler.
+    The methodology could easily be transferred to other infrastructures, such
+    as GCC.
 
 \subsection{Compiler Flow}
 
@@ -212,7 +210,7 @@
     The recognised idioms and the LLVM IR code are then passed on to the
     transformation phase of the system.
     This phase extracts the idiomatic code sections from the user program and
-    reformulates then for appropriate heterogeneous backends.
+    reformulates them for appropriate heterogeneous backends.
     For libraries, this means replacing the code covered by the idiom with a
     library call. 
 
@@ -239,7 +237,7 @@
     important as a basis for graph algorithms and data analytics
     \cite{Kepner2015GraphsMA}, but these contain indirect data access that
     limits compiler optimisation.
-    Instead, programmers rely on library implementations that are hand optimised
+    Instead, programmers rely on library implementations that are hand-optimised
     and utilise accelerator hardware.
     This reliance on libraries comes at a cost, however, as it ties programs
     into vendor-specific software ecosystems and results in non-portable code.
@@ -259,13 +257,14 @@
     automatically.
 
     The structure of this sparse linear algebra computation has several features
-    that make it unsuitable for most established compiler optimisations:
-    Firstly, the iteration domain of the nested loop is memory dependent
-    (line 3), and secondly, there is indirect memory access (line~4).
-    This makes the iteration domain of the loop nest as a whole non-polyhedral
+    that make it unsuitable for most established compiler optimisations.
+    Firstly, the iteration domain of the nested loop is memory-dependent
+    (line 3).
+    Secondly, there is indirect memory access (line~4).
+    This makes the iteration domain of the loop nest non-polyhedral
     and the access structure to memory non-affine.
-    Under these conditions, simple data dependence models, but also
-    sophisticated analysis based on the polyhedral model, fail.
+    Under these conditions, not only do simple data dependence models fail,
+    but so do sophisticated analysis based on the polyhedral model.
 
     IDL can express this sparse idiom, as derived in \Cref{sec:idioms},
     \Cref{csr_lilacwhat_fig}.
@@ -284,7 +283,7 @@
     and memory transfers from and to the GPU.
     Finally, the cuSPARSE library is linked with the object code produced by the
     Clang compiler, resulting in a speedup of $17\times$ on a GPU as described
-    in more detail in\Cref{sec:idiomresults}.
+    in more detail in \Cref{sec:idiomresults}.
 
     Central to this approach is the ability to detect computational idioms
     reliably.
@@ -301,7 +300,7 @@
     The specification of computational idioms in IDL requires careful
     handling of the arising complexity, using the modularity functionality that
     IDL provides.
-    Control flow constructs, memory access patterns as well as basic data flow
+    Control flow constructs, memory access patterns, as well as basic data flow
     patterns are specified independently and then combined in order to define
     the complete constraint specifications.
     This section extends upon the previously defined building blocks from
@@ -312,8 +311,8 @@
     The most frequently used performance-critical sparse linear algebra routines
     are variations on the multiplication of a sparse matrix with a dense vector
     (SPMV).
-    Crucial for these sparse linear algebra routines is capturing the many
-    different memory access patterns.
+    Capturing the many different memory access patterns is crucial for these
+    sparse linear algebra routines.
     On the other hand, the control flow is very rigid.
 
     \Cref{spmvbase} shows the basic skeleton of the SPMV idiom:
@@ -323,9 +322,9 @@
     The outer loop is a standard for-loop (line 2), while the inner loop is a
     for-loop that also contains a generalised dot product (line 3).
     Specifically, the {\tt DotProductFor} specification requires that the
-    loop contains a scalar reduction variable that in every iteration is
-    incremented by the result of a floating-point multiplication of two values
-    {\tt src1} and {\tt src2}.
+    loop contains a scalar reduction variable that is incremented by the result
+    of a floating-point multiplication of two values {\tt src1} and {\tt src2}
+    in every iteration.
     This skeleton is completed depending on the sparse matrix format, defining
     the specific computations and data flow that yields {\tt src1} and
     {\tt src2}.
@@ -402,10 +401,10 @@ Constraint SPMV
 End
 \end{lstlisting}
 \caption{Compressed Sparse Row in IDL:
-         The top section of the figure shows the different involved arrays.
+         The top section of the figure shows the different arrays involved.
          The pseudocode in the middle row of the
          figure then directly gives a completion of \Cref{spmvbase}.
-         Walking through the expressions and emitting IDL code on-by-one is
+         Walking through the expressions and emitting IDL code one-by-one is
          sufficient.}
 \label{csr_lilacwhat_fig}
 \end{figure}
@@ -513,10 +512,10 @@ End
       and {outer_loop.iterator} as {input_index} at {read_range}
 \end{lstlisting}
 \caption{Jagged Diagonal Storage in IDL:
-         The top section of the figure shows the different involved arrays.
+         The top section of the figure shows the different arrays involved.
          The pseudocode in the middle row of the
          figure then directly gives a completion of \Cref{spmvbase}.
-         Walking through the expressions and emitting IDL code on-by-one is
+         Walking through the expressions and emitting IDL code one-by-one is
          sufficient.}
 \label{jds_lilacwhat_fig}
 \end{figure}
@@ -533,10 +532,10 @@ End
     The corresponding \texttt{MatrixRead} and \texttt{MatrixWrite} idioms model
     generic access to matrices allowing strides, transposed matrices etc.
     The actual computation is encapsulated by the
-    \texttt{DotProductForAlphaBeta} idiom, which extends the
-    \texttt{DotProductFor} specification to capture the linear combination
-    with factors \texttt{alpha} and \texttt{beta} that is part of the
-    generalised matrix multiplication idiom ($C\gets\alpha AB+\beta C$).
+    \texttt{DotProductForAlphaBeta} idiom.
+    This extends the \texttt{DotProductFor} specification with the linear
+    combination that is part of the generalised matrix multiplication idiom
+    ($C\gets\alpha AB+\beta C$).
 
 \begin{figure}[H]
 \lstset {
@@ -604,19 +603,18 @@ End
     The idiom descriptions may at first appear to be shallow syntactic pattern
     matching, but the approach is intrinsically more powerful.
     Because it operates on the IR level, the solver can detect idioms that are
-    written in superficially distinct style but are semantically equivalent.
+    written in superficially distinct style, but are semantically equivalent.
 
     For example, \Cref{fig:gemmexamples} shows two syntactically distinct
     programs, which nevertheless are both implementations of general matrix
     multiplication.
     The solver -- using \Cref{fig:gemm} -- discovers that both of these
-    loop nests are instances of GEMM and they can be replaced with the same
-    API call.
+    loop nests are instances of GEMM and can be replaced with the same API call.
 
     The reverse is also true:
     Syntactically identical but semantically distinct programs are weeded out by
     the solver.
-    The listing in \Cref{fig:gemmcounterexamples} shows such an example.
+    \Cref{fig:gemmcounterexamples} shows such an example.
     The loop nest in lines 5--9 appears to compute a standard GEMM, but in fact,
     the matrices are not stored contiguously, and acceleration with standard
     libraries is impossible.
@@ -672,8 +670,8 @@ for(int i = 0; i < 1000; i++)
 
     There are limitations to this semantic matching.
     In particular, the use of low-level manual optimisations that circumvent the
-    usual IR representation, {\em e.g.} SIMD compiler intrinsics, would
-    distort the algorithms beyond recognition.
+    usual intermediate representation, e.g.\ SIMD intrinsics, may distort the
+    algorithms beyond recognition.
     In practice, this is rarely encountered.
 
 \section{Targeting Heterogeneous Backends}
@@ -785,7 +783,7 @@ for(int i = 0; i < 1000; i++)
     It requires a syntax tree of the kernel functions that built using a class
     hierarchy.
     However, Halide does not support control flow in the kernel functions,
-    making code generation easier tan for Lift in practice.
+    making code generation easier than for Lift in practice.
     The relevant kernel functions contain only a few LLVM IR instructions, which
     are easily assembled into Halide expressions.
 
@@ -841,8 +839,8 @@ gemm_in_lift(A, B, C, alpha, beta) {
     additional overhead, as the indices of the indirect array access need to
     be monitored.
     This overhead can be amortised over multiple calls if the indirection array
-    remains unchanged, which incidentally was the case for the programs
-    involved in the evaluation.
+    remains unchanged, which was the case for the programs involved in the
+    evaluation.
 
     Such techniques to rule out aliasing are important but orthogonal to the
     detection and transformation methods that are the focus of this chapter.
@@ -896,22 +894,22 @@ gemm_in_lift(A, B, C, alpha, beta) {
     giving 21 evaluation programs in total. 
 
     \paragraph*{Platform and Evaluation}
-    The evaluation platform comprised an AMD A10-7850K APU with a Radeon R7
+    The evaluation platform used an AMD A10-7850K APU with a Radeon R7
     integrated GPU (driver version 1912.5) and an Nvidia GTX Titan X external
     GPU (driver version 375.66).
-    Run times were measured as the median over ten executions.
+    Execution times were measured as the median over ten runs.
 
     \paragraph*{Alternative detection approaches}
-    There were no readily available compilers to compare against performing idiom
-    detection.
-    Instead, two parallelising compilers were considered, and the evaluation
-    examined whether they accelerate idiomatic code as part of their
-    parallelisation approach.
+    There were no readily available compilers performing idiom detection to
+    compare against.
+    Instead, two parallelising compilers were considered.
+    The evaluation examined the ability to parallelise idiomatic code, without
+    considering whether the idioms were recognised.
     \Cref{section:competition} provided a detailed discussion of both
     competing tools: Polly and ICC.
     Therefore, they are only presented briefly here.
-    It should be borne in mind when interpreting the results that the
-    competing compilers aim for parallelisation, not idiom detection itself.
+    It should be borne in mind that the competing compilers aim for
+    parallelisation, not idiom detection itself.
 
     Polly is an LLVM-based polyhedral compiler.
     The SCoPs that Polly detected with the options
@@ -945,7 +943,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
     interface.
     Finally, the evaluation includes comparisons to the handwritten OpenMP and
     OpenCL implementations that are provided with the benchmark suites as
-    reference implementations, providing a suitable estimator for the upper
+    reference implementations, providing a suitable estimate for the upper
     bound of available performance.
 
 \subsection{Idiom Detection}
@@ -956,7 +954,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
     matrix operations and sparse matrix-vector multiplication.
     16 of the 21 programs contained computational idioms that IDL was able to
     identify.
-    The most frequently occurring idiom were scalar reductions, present in 10
+    The most frequently occurring idiom was scalar reduction, present in 10
     of the programs.
     Five of the benchmarks contained histograms; three contained stencils;
     two contained SPMV; and only a single program calculated GEMM.
@@ -1062,7 +1060,7 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
     for each benchmark program.
     This data shows that either the detected idioms have a low runtime
     contribution or they dominate almost the entire execution.
-    \emph{EP} is the only exception with about 50\% runtime coverage.
+    \emph{EP} is the only exception with ${\sim}50\%$ runtime coverage.
     Heterogeneous acceleration was evaluated on the ten programs that spend a
     significant amount of time in the detected idioms.
     Only these can reasonably expect a performance gain.
@@ -1073,13 +1071,13 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 
     \Cref{fig:speedup-figure} shows the end-to-end speedup obtained by
     accelerating idioms via heterogeneous APIs on a CPU, an integrated GPU,
-    and an external GPU.
+    an external GPU, respectively.
     All of the results include data transfer overhead to and from the GPUs,
     where required.
-    This overhead is intrinsic to the external GPU, which operate on distinct
+    This overhead is intrinsic to the external GPU, which operates on distinct
     physical memory.
-    The integrated GPU, on the other hand, only incurred this cost when APIs
-    enforced additional data copies.
+    The integrated GPU, on the other hand, only incurs this cost when APIs
+    enforce additional data copies.
     Each bar shows the best-performing API for the given platform;
     \Cref{tab:detailed-results} provides detailed results also for the other
     API backends.
@@ -1157,7 +1155,7 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 \caption{Detailed performance results for each heterogeneous backend interface:
          The runtime of each benchmark program was measured in milliseconds for
          every compatible combination on each of the three platforms.
-         The fastest implementations for per benchmark and target hardware are
+         The fastest implementations per benchmark and target hardware are
          highlighted in {\bf bold}.}
 \label{tab:detailed-results}
 \end{table}
@@ -1195,9 +1193,9 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
     Halide achieved good performance for the NPB ``\emph{IS}'' and Parboil
     ``\emph{stencil}'' benchmarks on the CPU, outperforming Lift due to its more
     advanced vectorisation capabilities.
-    In the programs where scalar reductions dominate, Lift performed well.
-    On the iGPU, clBLAS provides a better matrix-multiplication implementation
-    than either CLBlast or Lift.
+    In programs that were dominated by scalar reductions, Lift performed well.
+    On the internal GPU, clBLAS provides a better matrix-multiplication
+    implementation than either CLBlast or Lift.
     On the external GPUs, library backends provided the best linear algebra
     implementations, while Lift performed well on stencils and reductions.
 
@@ -1217,7 +1215,7 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 
     The handwritten versions of ``\emph{sgemm}'' and ``\emph{stencil}' were
     outperformed by IDL.
-    This was due to implementation flaws, a loop interchange already improved
+    This was due to implementation flaws; a loop interchange already improved
     performance by almost 20$\times$.
 
 \paragraph*{Summary}
@@ -1240,5 +1238,5 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
     The approach was evaluated on the C/C++ programs from two well-known
     benchmark suites: NAS and Parboil.
     IDL detected more stencils, sparse matrix operations and generalised
-    reduction and histogram computations than existing approaches, and it
-    generated fast code.
+    reduction and histogram computations than existing approaches, and generated
+    fast code.
