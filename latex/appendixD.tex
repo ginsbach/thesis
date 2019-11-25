@@ -128,9 +128,9 @@ End
 Constraint MaxOnceInScope
 ( inherits ScopeValue and
   {value} has control flow to {value_after} and
-  all control flow from {value_after} to
+  ([all]) control flow from {value_after} to
       {value} passes through {scope.end} and
-  all control flow from {value_after} to
+  ([all]) control flow from {value_after} to
       {value} passes through {scope.begin})
 End
 
@@ -192,9 +192,9 @@ Constraint SESE
   {end} control flow post dominates {begin} and
   {precursor} strictly control flow dominates {begin} and
   {successor} strictly control flow post dominates {end} and
-  all control flow from {begin} to {precursor}
+  ([all]) control flow from {begin} to {precursor}
          passes through {end} and
-  all control flow from {successor} to {end}
+  ([all]) control flow from {successor} to {end}
          passes through {begin})
 End
 
@@ -225,7 +225,7 @@ Constraint KernelFunction
                      from {scope.end} and
                  {scope.begin} control flow
                      dominates {loop_carried[i].value}) and
-  all flow from {loop_carried[0..8].value} ([or]) any origin
+  ([all]) flow from {loop_carried[0..8].value} ([or]) any origin
       to any of {result} passes through ([at]) least one of
       {inputs[0..32],entries[0..4],outside[0..24].value})
 End
