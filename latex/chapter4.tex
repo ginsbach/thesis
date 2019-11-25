@@ -3,7 +3,7 @@
     Static Single Assignment (SSA) compiler intermediate representation.
     This chapter develops a novel domain-specific constraint programming
     language based on that methodology and presents an implementation within the
-    production quality LLVM compiler infrastructure.
+    production-quality LLVM compiler infrastructure.
 
     In the first sections, the implementation of the Compiler Analysis
     Description Language (CAnDL) is motivated as an approach for reducing the
@@ -11,7 +11,7 @@
     Optimising compilers have to use elaborate program transformations to
     exploit increasingly complex hardware.
     Implementing the required analysis functionality for such optimisations to
-    be safely applied is a time consuming and error-prone activity.
+    be safely applied is a time-consuming and error-prone activity.
     This is a barrier to the rapid prototyping and evaluation of innovative new
     compiler optimisations.
     CAnDL automatically generates such compiler analysis functionality from
@@ -34,7 +34,7 @@
     These tasks range from the detection of peephole optimisation opportunities,
     over graphics shader optimisations, to fully capturing Static Control Parts
     (SCoPs) for polyhedral code analysis.
-    All of them can be expressed more briefly in CAnDL than with previous
+    All of them can be expressed more succinctly in CAnDL than with previous
     approaches.
 
 \section{Introduction}
@@ -45,8 +45,8 @@
     resulting in a binary program.
     In order to generate fast programs, state-of-the-art compilers rely on an
     elaborate middle end.
-    At this stage, user code is typically expressed in as SSA intermediate
-    representation, and it is improved by successively applying a wide range of
+    At this stage, the user code is typically expressed in an SSA intermediate
+    representation, and improved by successively applying a wide range of
     optimisations.
 
     Most compiler optimisations require two steps:
@@ -54,12 +54,12 @@
     First, analysis routines find sections in user programs that enable the
     application of specific transformations.
     They further verify the necessary conditions to ensure the transformation
-    can be applied legally, without changing the program semantics.
+    can be applied legally without changing the program semantics.
     It is crucial that optimisations retain the semantics of the original
     program, as otherwise the resulting binary might be corrupted.
     Transformations are then applied to the analysis results in a second step.
-    This often also involves heuristic cost models to gauge the effect on
-    runtime, code size and other metrics.
+    This often involves heuristic cost models to gauge the effect on runtime,
+    code size and other metrics.
 
     The complexity of the necessary analysis is an impediment to
     the implementation of new compiler passes, preventing the rapid
@@ -68,7 +68,7 @@
     pass contain approximately 30000 lines of complex C++ code, despite the
     transformations being simple.
     \citet{Menendez:2017:ADP:3062341.3062372} showed that {\tt instcombine} is
-    an important source of bugs, and bugs the middle end of a compiler are
+    an important source of bugs, and bugs in the middle end of a compiler are
     particularly pernicious \citep{Yang:2011:FUB:1993316.1993532}.
     They tamper with the user programs but can remain unnoticed and often only
     trigger in corner cases.
@@ -82,8 +82,8 @@
     Instead of writing compiler analysis code inside the main codebase of the
     compiler infrastructure, it lets compiler writers specify optimisation
     functionality external to the main C++ codebase.
-    The CAnDL compiler then generates C++ functions that are linked together
-    with the Clang compiler binary and that implement LLVM analysis passes.
+    The CAnDL compiler then generates C++ functions that implement LLVM analysis
+    passes, and are linked together with the Clang compiler binary.
     The formulation of optimising transformations in CAnDL is faster, simpler
     and less error-prone than writing them in C++.
     The language has a strong emphasis on modularity, which facilitates
@@ -142,14 +142,14 @@ End
     The compiler, therefore, must detect $\sqrt{a*a}$ in the LLVM IR code and
     replace it with calls to the \texttt{abs} function.
     The generation of the new function call is trivial, but the detection of
-    even this simple pattern requires some care when implementing it manually in
+    even this simple pattern requires some care when implemented manually in
     a sophisticated codebase such as LLVM.
 
     The traditional approach in the Clang compiler is to integrate such
     optimisations into the previously mentioned \texttt{instcombine} pass, which
     already applies an extensive collection of peephole optimisations.
     However, this code makes heavy use of raw pointers and dynamic type casts,
-    spans $\sim30000$ lines, and has been identified as a frequent source of
+    spans ${\sim}30000$ lines, and has been identified as a frequent source of
     bugs in
     \citet{Menendez:2017:ADP:3062341.3062372,Yang:2011:FUB:1993316.1993532}.
     This is impractical and an impediment to compiler development.
@@ -180,10 +180,10 @@ End
     floating-point multiplication, and these are then used as arguments to
     \texttt{sqrt} function invocations (lines 5 and 7).
 
-    The optimised LLVM IR representation ({\bf b}) is used as the input to the
-    generated analysis function, which detects two optimisation opportunities,
-    identified as the first ({\bf c}) and second ({\bf d}) solutions of the
-    constraint problem.
+    The optimised LLVM IR ({\bf b}) is used as the input to the generated
+    analysis function, which detects two optimisation opportunities.
+    These are identified as the first ({\bf c}) and second ({\bf d}) solution
+    of the constraint problem.
     Each of the two solutions assigns values from within the LLVM IR code to
     each of the variables in the CAnDL program in \Cref{fig:candlspec}, such
     that all the specified constraints are fulfilled.
@@ -221,7 +221,7 @@ End
     After post processing with standard dead code elimination, this results in
     the optimised code shown at the bottom of the figure ({\bf h}).
 
-    Although this is just a small example, it illustrates the main steps of the
+    Although this is a small example, it illustrates the main steps of the
     CAnDL scheme.
     In practice, the strength of the system is its ability to scale to very
     complex specifications, as demonstrated towards the end of the chapter.
@@ -239,10 +239,10 @@ End
     The Compiler Analysis Description Language is a domain-specific
     programming language for the specification of compiler analysis problems. 
     Individual CAnDL programs define specific computational structures that
-    exist in user programs and that can be exploited by applying code
+    exist in user programs and can be exploited by applying code
     transformations.
     These structures are specified as constraint programs on the LLVM IR
-    representations of user code.
+    of user code.
     CAnDL builds on generic concepts from \Cref{chapter:theory}.
     These are independent of LLVM, so the methodology translates to other SSA
     representations.
@@ -254,10 +254,10 @@ End
 
     Like traditional constraint programs, CAnDL programs have two
     fundamental features: \textbf{variables} and \textbf{constraints}.
-    The basic constraint building blocks are well established compiler analysis
+    The basic constraint building blocks are well-established compiler analysis
     tools, such as constraints on data and control flow, data types and
     instruction opcodes.
-    These are composed with logical connectors and several higher level language
+    These are composed with logical connectors and several higher-level language
     features, such as range expressions, with finally a system of modularity and
     extensibility on top.
     This section introduces the language features, starting from the overall
@@ -301,16 +301,17 @@ End
 \end{figure}
 
     \noindent
-    The basis of every CAnDL program are {\it atomic} constraints, which are
-    bound together by logical connectives ``$\land$'' and ``$\lor$''
-    ({\it conjunction} and {\it disjunction}), as well as other higher level
-    constructs.
+    The fundamental elements of every CAnDL program are {\it atomic}
+    constraints.
+    They are bound together by logical connectives ``$\land$''
+    and ``$\lor$'' ({\it conjunction} and {\it disjunction}), as well as other
+    higher-level constructs.
     These include two kinds of range structures ({\it conRange},
     {\it disRange}), and a system for modularity ({\it include}).
     Lastly, the {\it collect} construct allows for the formulation of more
     complex constraints that require quantifiers from first-order logic.
     The individual classes of atomic constraints are introduced next,
-    followed by the higher level constructs.
+    followed by the higher-level constructs.
 
 \subsection{Atomic Constraints}
 
@@ -358,7 +359,7 @@ End
 
     Based on the SSA model from \Cref{def:ssamodel} in \Cref{chapter:theory},
     CAnDL provides a wide range of atomic constraints.
-    The simplest group are those that operate on only a single variable,
+    The simplest group consists of those that operate on only a single variable,
     listed in \Cref{onevaratomics}.
     These operate immediately on the underlying mathematical structures, testing
     element-of properties between variables and the sets.
@@ -371,50 +372,24 @@ End
     In that case, the called object is necessarily a global value, and the
     function name can be identified in the global model $G_\mathcal F$.
 
-    There are additional atomic constraint that operate on pairs of variables.
+    There are additional atomic constraints that operate on pairs of variables.
     These are listed in \Cref{twovaratomics}.
-    These most importantly check for specific edges in the control flow
+    Most importantly, they check for specific edges in the control flow
     ($CFG_\mathcal F$) and data flow graphs ($DFG_\mathcal F$).
     CAnDL also provides weaker versions that do not enforce specific edge
     labels.
     Furthermore, two constraints are available for shallow comparisons of
     variables.
 
-
-%\begin{figure}[h]
-%  \centering
-%  \begin{tabular}{|c|c|}
-%    \hline
-%    syntax & SSA model formulation \\
-%    \hline
-%    \hline
-%    \multirow{2}{*}{$\text{\it variable}\ \text{\bf ->}\ \text{\it variable}\ \Phi\ \text{\it variable}$}
-%        & $(z,phi)\in I_\mathcal F\mathrel\land (y,z)\in m(CFG_\mathcal F^*)\mathrel\land$ \exists n: \\
-%        & $(x,z,n)\in DFG_\mathcal F\mathrel\land n=|\{y'\leq y\mid (y',z)\in m(CFG_\mathcal F^*)\}|$\\
-%    \hline
-%  \end{tabular}
-%  \caption{CAnDL exposes Phi nodes with a dedicated atomic constraint.
-%           The modified control flow graph $m(CFG_\mathcal F^*)$ duplicates
-%           control flow edges into basic blocks with multiple Phi nodes.}
-%  \label{phiatomic}
-%\end{figure}
-
     Besides those constraints that operate immediately on the sets of the
-    SSA model, there are several atomic constraints that enforce graph
-    properties.
-    This includes dominance relationships and the interaction of data flow and
-    control flow for $\Phi$-instructions.
-
-%    \begin{align*}
-%        \text{\bf control\_origin}&\ \text{\it variable}\\
-%        \text{\bf data\_origin}&\ \text{\it variable}
-%    \end{align*}
-%    The value is an origin of control (function entry) or data (function argument, {\tt load} instruction, inpure function call).
+    SSA model, there are atomic constraints that enforce graph properties.
+    Such graph properties include dominance relationships and the interaction of
+    data flow and control flow for $\Phi$-instructions.
 
 \subsubsection{Phi Nodes}
 
-    CAnDL provides the following syntax for expressing data flow involving
-    $\Phi$-instructions:
+    CAnDL provides the following syntax for expressing the data flow
+    of $\Phi$-instructions:
 \begin{figure}[h]
     \centering
     \begin{tabular}{|c|}
@@ -482,18 +457,6 @@ End
     This constraint is similar to a standard control flow domination, but
     instead of taking paths from the control flow origin, a third variable is
     used for parametrisation, as required for \Cref{CAnDLSESE}.
-    
-%    \begin{align*}
-%        \text{\bf calculated\_from(}\text{\it varlist}\text{\bf,}\text{\it varlist}\text{\bf,}\text{\it variable}\text{\bf)}
-%    \end{align*}
-%    {\it Varlist} is a set of one or multiple {\it variables}.
-%    Any path from one of the entries in the first {\it varlist} to the single
-%    {\it variable} argument has to pass through at least one of the entries in
-%    the second {\it varlist}.
-%    All paths in the union of the data flow and control dependence graph are
-%    considered.
-%    We will see later how this is useful to specify kernel functions for
-%    e.g.\ stencil calculations.
 
 \subsubsection{Additional Atomic Constraints}
 
@@ -501,8 +464,7 @@ End
     extended.
     Possible additions include constraints on function attributes and value
     constraints on literals.
-    This will be further explored in the later
-    \Cref{chapter:reductions,chapter:idioms}.
+    This will be further explored in \Cref{chapter:reductions,chapter:idioms}.
 
 \subsection{Range Constraints}
 
@@ -644,7 +606,7 @@ End
 
     \noindent
     In \Cref{fig:simplecollect}, the variables \texttt{arg[0],\dots,arg[N-1]}
-    are constrained to contain all of the direct data dependences of
+    are constrained to contain all of the direct data dependencies of
     \texttt{ins}.
     The first argument of \text{\it collect} specifies the name of an index
     variable that is used to detect which variables belong to the collected set.
@@ -656,7 +618,7 @@ End
 
 \begin{figure}[t]
 \begin{lstlisting}[language=CAnDL,label={fig:simplecollect},caption=
-   {Simple {\it collect} example in CAnDL: All direct data dependences of
+   {Simple {\it collect} example in CAnDL: direct data dependencies of
     {\tt ins} are collected.\leftskip=0pt\rightskip=0pt}]
 Constraint CollectArguments
 ( ir_type{ins} = instruction
@@ -689,7 +651,7 @@ End
     \Cref{fig:collectexample}.
     With the first {\it collect} statement in line 3, the set \texttt{arg} is
     constrained to be equal to $S_1$ and with the second one in lines 4-5, it
-    is constrained to be $S_1\cap S_2$ as well.
+    is constrained to be equal to $S_1\cap S_2$ as well.
 
 \begin{figure}[H]
 \begin{lstlisting}[language=CAnDL,label={fig:collectexample},caption=
@@ -796,7 +758,7 @@ Constraint LoopWithOnlyArrayAccesses
     Such regions are spanned by the variables {\tt begin} and {\tt end}, with an
     incoming control flow edge from {\tt precursor} to {\tt begin} (line 3) and
     an outgoing control flow edge from {\tt end} to {\tt successor} (line 5).
-    Graph domination constraints in lines 8 and 7 guarantee that these are the
+    Graph domination constraints in lines 8 and 9 guarantee that these are the
     only entry and exit of the region.
     Additional domination constraints in lines 6--7 and lines 10--13 make sure
     that there are no jumps from outside the region into an instruction of the
@@ -810,10 +772,10 @@ Constraint LoopWithOnlyArrayAccesses
     The specification includes {\tt SESE}, and adds only a single additional
     constraint for the back edge of the loop in line~3.
     Additional extensions to this specification are added to define more
-    restricted loop structures, such for-loops.
+    restricted loop structures, such as for-loops.
     This involves the identification of the loop iterator, the breaking
     condition, and the corresponding iteration space boundaries.
-    In order to be a valid for-loop, the end of the iteration space has to be
+    In order to be a valid for-loop, the end of the iteration space must be
     determined before the loop is entered.
     This is expressed in \Cref{localconstant}, restricting {\tt value} to be
     either a function argument, a constant or an instruction that strictly
@@ -822,7 +784,7 @@ Constraint LoopWithOnlyArrayAccesses
     It is to be included into larger CAnDL programs that also include
     {\tt Loop}.
 
-    Another class of important building blocks are different categories of
+    Another class of important building blocks is different categories of
     memory access.
     These form a hierarchy of restrictiveness and include multidimensional array
     access and array access that is affine in some loop iterators.
@@ -858,14 +820,14 @@ Constraint LoopWithOnlyArrayAccesses
     It also makes the results available to ensuing transformation passes in the
     form of C++ structures.
 
-    \subsection{Normalisation of LLVM IR}
+\subsection{Normalisation of LLVM IR}
 
     For reliable detection of code structures, the normalisation of LLVM IR via
     optimisation passes is critical.
-    Loop independent code motion, constant folding memory-to-register
-    transformation, loop normalisations, and many other standard
+    The promotion of memory to registers, loop-independent code motion,
+    constant folding, loop normalisations, and many other standard
     tools, result in predictable code structures that simplify the formulation
-    of CAnDL specifications significantly.
+    of CAnDL specifications.
     The CAnDL-enabled Clang compiler invokes the detection functionality
     directly after optimisations and expects the flags
     {\tt -Os -fno-unroll-loops -fno-vectorize -fno-slp-vectorize -ffast-math}.
@@ -886,7 +848,7 @@ Constraint LoopWithOnlyArrayAccesses
               an offset to a raw pointer.
               The index calculations are then performed entirely as integer
               arithmetic on the indices.
-              This also applied to multi-dimensional array accesses, effectively
+              This also applies to multi-dimensional array accesses, effectively
               flattening them.
               Chains of {\tt getelementptr} instructions are merged, again
               resulting in integer arithmetic instead.
@@ -920,10 +882,9 @@ Constraint LoopWithOnlyArrayAccesses
     order constructs of CAnDL.
     The {\it inheritance} clauses are inlined and contained variables
     transformed accordingly.
-    Also, {\it conRange} and {\it disRange} statements are lowered to
+    Furthermore, {\it conRange} and {\it disRange} are lowered to
     conjunction and disjunction constructs by duplicating the contained
-    constraint code and then renaming its variables appropriately
-    for each iteration.
+    constraint code and renaming its variables appropriately for each iteration.
     The remaining core language now consists only of atomics, conjunctions,
     disjunctions and collections.
 
@@ -979,17 +940,17 @@ result[2] = make_pair("right",    select<1>(constr2));
     \texttt{AddInstruction}, \texttt{FirstArgument} and \texttt{SecondArgument}.
     These objects are instantiated as shared pointers.
 
-    The compiler then generates similar objects for the
-    \texttt{conjunction}, \texttt{disjunction} and the \texttt{collect} structures.
+    The compiler then generates analogous objects for the
+    \texttt{conjunction}, \texttt{disjunction} and \texttt{collect} structures.
     In our example, this only affects the variable \texttt{addition}, which is
     part of a \texttt{conjunction} clause.
     This results in an additional object construction that instantiates the
     \texttt{Conjunction} class corresponding to the ``$\land$'' operator
     in CAnDL.
 
-    Those constraint classes that implement constraints on a single variable
-    directly implement the \texttt{BacktrackingPart} interface introduced in
-    \Cref{cppsolver}.
+    Constraint classes that implement constraints operating on a single
+    variable directly expose the \texttt{BacktrackingPart} interface introduced
+    in \Cref{cppsolver}.
     In the example, this applies to \texttt{AddInstruction} and
     \texttt{Conjunction}.
     For more complex constraints, the \texttt{select<n>} template is used to
@@ -1019,7 +980,7 @@ result[2] = make_pair("right",    select<1>(constr2));
     reasoning about the semantics of compiler intermediate representation
     remains difficult.
     The solver detects whatever the programmer specifies, without any additional
-    effort, but it is difficult to ascertain that the CAnDL code actually
+    effort, but it is difficult to ensure that the CAnDL code actually
     specifies the structures that the programmer intended.
     Generally, the accuracy of CAnDL programs can only be ensured with
     thorough testing, and it is important to keep in mind that CAnDL is targeted
@@ -1062,7 +1023,7 @@ result[2] = make_pair("right",    select<1>(constr2));
     Finally, the detection of Static Control Parts (SCoPs) that are
     amenable for polyhedral code transformations was implemented in CAnDL.
     Where possible, the evaluation compares the number of lines of CAnDL code,
-    the achieved program coverage and performance against prior approaches.
+    the program coverage achieved and performance against prior approaches.
 
 \subsection{Case Study 1: Simple Optimisations}
 
@@ -1103,12 +1064,11 @@ Constraint ComplexFactorisation
     Crucially, in lines 5,7,9,11, the specification makes use of
     \texttt{SumChain} and \texttt{MulChain}, which allows the CAnDL program
     to capture a large, generalised class of opportunities for factorisation.
-    The \texttt{instcombine} pass only has limited support for this, and
-    requires to first apply associative and commutative laws to reorder the
-    values.
-    For example, this is needed for the constellation in
-    \Cref{fig:factorization2}, and only partially supported by LLVM with the
-    additional \texttt{reassociate} pass.
+    The \texttt{instcombine} pass has limited support for this, and
+    first requires the application of associative and commutative laws to
+    reorder the values.
+    For example, this is needed for \Cref{fig:factorization2}, and only
+    partially supported by LLVM with the additional \texttt{reassociate} pass.
     \begin{align}
         a*b+c+d*a*e->a*(b+d*e)+c
         \label{fig:factorization2}
@@ -1140,8 +1100,8 @@ Constraint ComplexFactorisation
     The same application programs were compiled with the same version of Clang
     and identical compiler options, reporting the number of factorisations
     found, and again measuring the total compilation time.
-    This timing includes all the other passes within LLVM plus the CAnDL
-    code path.
+    This timing includes all the other passes within LLVM, plus the CAnDL code
+    path.
 
 \subsubsection{Results}
 
@@ -1175,11 +1135,11 @@ Constraint ComplexFactorisation
     In all three benchmarks suites, the CAnDL system found all the factorisation
     opportunities that the \texttt{instcombine} pass identified.
     In addition, it detected an additional 7 cases across all programs.
-    Only 12 lines of CAnDL code were able to capture more factorisation
+    Just 12 lines of CAnDL code were able to capture more factorisation
     opportunities than 200 lines of C++ code in LLVM.
 
     Using CAnDL on large benchmark suites only increased total compilation time
-    by \mbox{$\sim5\%$}.
+    by ${\sim}5\%$.
     Given the generally small impact of individual peephole optimisations, an
     evaluation of the performance or code size impact vs {\tt instcombine} is
     unlikely to yield significant results.
@@ -1308,7 +1268,7 @@ End
     The resulting performance impact is shown in \Cref{fig:qualcommspeedup}.
     Evidently, there are opportunities for such associative reordering that
     the default graphics stack misses.
-    Although the performance impact was moderate with 1--4\% speedup on eight
+    Although the performance impact was moderate with 1--4\% speedup on 8
     of the fragment shaders, it shows how new analysis can be rapidly prototyped
     and evaluated with only a few lines of code.
 
@@ -1343,7 +1303,7 @@ End
 
     \paragraph*{Structured Control Flow}
     SCoPs require well-structured control flow.
-    Technically speaking, this means that each conditional jump within the
+    This means that each conditional jump within the
     corresponding piece of LLVM IR is accounted for by for-loops and
     conditionals.
     This is ensured with the \texttt{collect} statement, as in
@@ -1363,7 +1323,7 @@ End
     well-behaved, i.e.\ the boundaries are affine in the loop iterators.
 
     \paragraph*{Affine Memory Access}
-    All memory access in the SCoP has to be affine.
+    All memory accesses in the SCoP must be affine.
     For this to be true, it needs to be verified that for each {\tt load} and
     {\tt store} instruction, the base pointer is loop invariant and the index is
     calculated affinely.
@@ -1460,11 +1420,12 @@ End
     This is because the CAnDL results are not in the JSCoP format that Polly
     generates, but contain instead the raw constraint solution represented
     as a JSON file.
-    Also, the CAnDL implementation does not merge consecutive outer level loops
-    into a single SCoP of maximum size.
-    Therefore, the detected loops from the CAnDL solver were extracted and then
-    grouped together, after which it was verified whether they precisely cover
-    the SCoPs detected by Polly with a Python script.
+    Additionally, the CAnDL implementation does not merge consecutive
+    outer level loops into a single SCoP of maximum size.
+    Therefore, the detected loops from the CAnDL solver were extracted and
+    grouped together.
+    A Python script was then used to verify that they precisely covered the
+    SCoPs detected by Polly.
 
 \subsubsection{Results}
 
@@ -1478,7 +1439,7 @@ End
     PolyBench.
     Note that the line count that is given for the CAnDL program does not
     include all the CAnDL code involved in the detection of polyhedral regions.
-    Code that is not specific to this idiom (such as loop structures) are
+    Code that is not specific to this idiom (such as loop structures) is
     considered as part of the CAnDL standard library.
     In the same way, the line count for Polly does not account for additional
     code that Polly relies on when detecting SCoPS, e.g.\ the expansive
@@ -1525,7 +1486,7 @@ End
     \paragraph*{Outlook}
     The third case study showed that CAnDL can express the algorithmic structure
     of complex loop nests, not just peephole optimisation opportunities.
-    This enables the capturing of entire hot loops at a time.
+    This enables the capturing of entire loops at a time.
     The following chapters expand on this observation by investigating how the
     recognition of computational idioms in loops can be leveraged for
     performance.

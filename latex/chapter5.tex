@@ -629,7 +629,7 @@ for(i = 0; i < n; i++) {
     \Cref{kernelexample} demonstrates the significance of this definition.
     At the top is an SSA pseudocode representation of the complex reduction and
     histogram calculation from \Cref{complex-reduction-figure}, annotated in the
-    right column with all the dependences described above.
+    right column with all the dependencies described above.
     It is now possible to check the validity of the kernel function that is used
     within the loop for the reduction on \textit{sx} as follows:
     
@@ -730,7 +730,7 @@ for(i = 0; i < n; i++) {
     The value of $sx''$ is calculated in the SESE region spanning lines 2--27
     as a pure function of only \mbox{$sx$, $t_2$, and $t_5$}.
     This is determined by starting from $sx''$
-    (\textcolor{color_keywords}{\bf blue}) and following the dependences on the
+    (\textcolor{color_keywords}{\bf blue}) and following the dependencies on the
     right, checking that all paths end in the predetermined function arguments
     \mbox{$sx$, $t_1$ and $t_5$ (\textcolor{color_types}{\bf red})}.
     The kernel function can then be extracted and valid SSA
