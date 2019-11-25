@@ -158,31 +158,30 @@
 \section{Host Compilers and Kernel Compilers}
 \label{sec:hostkernel}
 
-    While mainstream compilers for languages such as C/C++, Fortran or Java
+    While mainstream compilers for languages such as C, C++, Fortran or Java
     generally fail to exploit the full performance of heterogeneous systems, a
     specific class of compilers already plays an essential role in
     targeting heterogeneous hardware.
     Many of the kernel programs that remain opaque to the application compilers
     are themselves products of other, specialised compilers.
     This necessitates a distinction between {\em host compilers} and {\em kernel
-    compilers}.
-    This distinction is mirrored by the differences between {\em host languages}
-    and {\em kernel languages}.
-    Host compilers translate full programs written in host languages -- such as
-    the previously mentioned C/C++, Fortran and Java -- while kernel
-    compilers handle small computational kernels that are expressed in dedicated
-    domain-specific programming languages.
-    The two classes of compilers have developed differently.
-    Kernel compilers successfully apply many of the techniques that are severely
-    limited on host compilers
+    compilers}, which is mirrored by the differences between
+    {\em host languages} and {\em kernel languages}.
+    Host compilers translate full applications written in host languages -- such
+    as C, C++, Fortran and Java -- while kernel compilers handle only succinct
+    computational kernels that are expressed in dedicated domain-specific
+    programming languages.
+    These two classes of compilers have developed differently.
+    Kernel compilers successfully apply many advanced techniques that are
+    severely limited on host compilers
     \citep{Murphy2014LimitsOD,Maleki:2011:EVC:2120965.2121464}.
     They reason automatically about parallelism
     \citep{Steuwer:2017:LFD:3049832.3049841}, are more successful at accurately
-    modelling data dependencies, and incorporate iterative compilation
-    techniques \citep{Ansel:2014:OEF:2628071.2628092}.
+    modelling data dependencies \cite{Ragan-Kelley2013Halide}, and incorporate
+    autotuning techniques \citep{Ansel:2014:OEF:2628071.2628092}.
 
     This is made possible by a combination of factors that uniquely apply to
-    kernel compilers:
+    kernel compilers.
     Smaller programs allow for more expensive compilation techniques;
     more restrictive languages and intermediate representations allow for
     stronger reasoning;
@@ -194,42 +193,44 @@
     Furthermore, kernel compilers often run in more controlled environments,
     with less need for predictability, reproducibility, and stability.
     The range of input programs might even be small enough to ship them in an
-    already compiled form, making the compiler merely a tool in a
-    library-implementation process.
+    already compiled form, making the compiler a behind-the-scenes tool in the
+    library implementation process.
 
     As host compilers operate under less forgiving conditions, it is
     unsurprising that they have lagged behind these developments.
     Because they cannot rely on such a restricted environment, host compilers
-    are unable to match the optimisation capabilities of kernel compilers.
-    Domain-specific compilers and languages, as well as libraries, have
-    therefore not been championed only because their restricted program
-    spaces match the capabilities of particular heterogeneous accelerators.
-    The restricted environment also makes them intrinsically more powerful and
-    able to generate better code.
+    are unable to match the optimisation capabilities of kernel compilers, even
+    when the functional translation is possible.
+    Straightforward approaches to targeting heterogeneous accelerators from host
+    compilers, therefore, have intrinsic disadvantages when compared to
+    domain-specific compilers.
+    Host compilers that translate suitable program parts to accelerators without
+    matching domain-specific performance are undesirable.
 
-    Hybrid approaches, such as OpenCL, reinforce these hypotheses.
-    The language is domain-specific in its expression of parallelism, but
-    otherwise designed to be quite general-purpose.
-    Compilers are provided for many structurally different processors.
+    Hybrid approaches, such as OpenCL, reinforce this hypothesis.
+    OpenCL is domain-specific in its expression of parallelism but otherwise
+    designed to be general-purpose.
+    Compilers are provided for many structurally different computing
+    architectures.
     However, as a consequence of being a relatively unrestricted language, the
-    compilers often underperform and the language is notoriously lacking in
+    compilers often underperform, and OpenCL programs are notoriously lacking in
     performance portability \citep{Falch:2015:MLB:2863697.2864570}.
-    Partial compilers that require the same compromises as OpenCL -- being
-    unable to utilise the restricted nature of input programs -- would surely
-    suffer the same shortcomings.
+    Host compilers that require the same compromises as the OpenCL toolchain,
+    being unable to leverage the restricted nature of input programs, would
+    surely suffer the same shortcomings when targeting accelerators.
 
 \subsection{The Spectrum of Specialisation}
 
     General-purpose programming languages, domain-specific languages and
     accelerator libraries exist on a spectrum of specialisation.
     \Cref{specialgradient} provides some intuition about this spectrum by
-    estimating the positions of popular languages and compute libraries in it.
+    estimating the positions of popular languages and libraries in it.
     On the far left are versatile general-purpose languages, such as C++ and
     Fortran.
     Moving right, flexibility is gradually lost, with BLAS libraries at
     the end providing only fixed-function computations.
-    However, the reduced scope allows for increased optimisation
-    capabilities in return.
+    However, the reduced scope allows for increased optimisation capabilities in
+    return.
 
     It is necessary to clarify what is meant by optimisation potential in this
     context and how it differs from raw performance.
@@ -247,9 +248,9 @@
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/DSLgradient}
-\caption{Domain specific languages on a spectrum between general purpose
-         languages and libraries.
-         Decreasing flexibility allows for stronger reasoning and greater
+\caption{Domain-specific languages on a spectrum between general-purpose
+         languages and libraries:
+         Less flexibility allows for stronger reasoning and greater
          optimisation potential.}
 \label{specialgradient}
 \end{figure}
