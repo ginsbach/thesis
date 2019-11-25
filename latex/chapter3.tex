@@ -605,7 +605,7 @@
     method for the automatic management of CPU-GPU communication.
     Similarly, \citet{Lee:2009:OGC:1594835.1504194} implemented a system to
     optimising data transfers using data flow analysis, although this was in
-    the context of maving OpenMP code to GPUs.
+    the context of moving OpenMP code to GPUs.
 
 \subsection{Domain-Specific Languages}
 
@@ -617,7 +617,7 @@
     Domain specific languages can be stand alone with an entire tool chain and
     runtime ecosystem of be embedded in existing languages, such as C++ or
     Scala.
-    DSLs range in complexity from onlymarginally more flexible than library
+    DSLs range in complexity from only marginally more flexible than library
     interfaces to full-fledged programming languages such as OpenCL and CUDA.
 
     \paragraph*{Functional languages}
@@ -740,7 +740,15 @@
 
 \section{Computational Idioms}
 
-    The concept of computational idioms has been observed in different contexts.
+    The ideas behind the concept of {\it computational idioms} have been
+    observed in different contexts.
+    The basic observation is that software programs do not cover the
+    space of possible programs evenly.
+    Instead, they tend to be structured among certain design principles.
+    This is true in particular for performance intensive programs and the
+    core bottlenecks of large applications.
+
+    The concrete concepts are partially overlapping and can be vague.
     Software design patterns are a way of understanding program code
     strucutres as specialised implementation of a class of standard approaches
     in the discipline of software engineering.
@@ -750,16 +758,9 @@
     Scientific computing is mostly concerned with the architectural
     implications of specific memory access patterns that are instrinsic to
     the choice of certain algorithmic approaches.
-
-    The concrete concepts are partially overlapping and can be vague.
-    This section tries to demarcate a meaningful conception of
-    {\it computational idioms} by comparison with the existing literature of the
-    different domains with related concepts.
-    The shared basic observation is that software programs don't cover the space
-    of possible programs evenly.
-    Instead, they tend to be structured among certain design principles.
-    This is true in particular for performance intensive programs and the
-    core bottlenecks of large applications.
+    This section apptempts to demarcate a meaningful conception of
+    {\it computational idioms} by comparison with the existing literature of
+    these different domains with related concepts.
 
 \subsection{Higher-Order Functions}
 
@@ -790,7 +791,7 @@
     These two algorithms do not share parallelisation opportunities.
     Therefore, the detection of {\it reduce} instances is insufficient for
     enabling compiler parallelisation approaches.
-    However, more restrictive version of {\it reduce} are suitable for
+    However, more restrictive versions of {\it reduce} are suitable for
     compiler detection.
     \Cref{chapter:reductions} studies in detail the class of Complex Reduction
     and Histogram Computations, which is formulated as a computational idiom.
