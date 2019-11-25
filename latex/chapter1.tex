@@ -143,8 +143,9 @@
     be provided for a typical graphics processor.
     After all, most graphics processors have hardware limitations that prevent
     them from implementing the entire language standard.
-    Indeed, many accelerators are even further from Turing complete.
-    However, this should not prevent a partial compiler.
+    Indeed, many accelerators are even further from Turing complete
+    \citep{jouppi2017datacenter}.
+    However, this should not prevent a {\it partial compiler}.
     Such a partial compiler would compile fitting program parts for accelerators
     and utilise a fallback system for the remainder of the program.
     After all, that is precisely the result achieved with libraries and
@@ -220,12 +221,12 @@
     General-purpose programming languages, domain-specific languages and
     accelerator libraries exist on a spectrum of specialisation.
     \Cref{specialgradient} provides some intuition about this spectrum by
-    gauging the places of popular languages and compute libraries in it.
+    estimating the positions of popular languages and compute libraries in it.
     On the far left are versatile general-purpose languages, such as C++ and
     Fortran.
     Moving right, flexibility is gradually lost, with BLAS libraries at
     the end providing only fixed-function computations.
-    However, the restricted semantics allow for increased optimisation
+    However, the reduced scope allows for increased optimisation
     capabilities in return.
 
     It is necessary to clarify what is meant by optimisation potential in this
@@ -261,25 +262,24 @@
     to make stronger assumptions, use more powerful models and generate better
     code.
 
-    {\bf
-    More restrictive program models result in additional optimisation
-    opportunities and increased portability.
+    More restrictive program models expose additional optimisation
+    opportunities and lead to increased portability.
     Compilers use program models that correspond closely to their input
     programming languages.
-    This correspondence could be decoupled by automatically recognising program
-    parts that adhere to more constrained models, making the powerful
+    This correspondence could be decoupled by recognising program parts that
+    adhere to more constrained models automatically, making the powerful
     domain-specific optimisation techniques of kernel compilers available to
     host compilers.
-    }
 
 \section{Moving on the Spectrum of Specialisation}
 
-    To combine the positive aspects of both sides of the spectrum of
-    specialisation, host compilers need methods to automatically recognise more
+    Host compilers need methods to automatically recognise more
     restrictive programming models within general-purpose code.
     Reformulating the adhering program sections in domain-specific
     representations makes the superior domain-specific reasoning from kernel
     compilers applicable also in the host compiler.
+    This results in a compiler that combines the positive aspects of both sides
+    of the spectrum of specialisation.
 
     Such an approach of detecting restricted models in general-purpose code has
     previously been used only for specific individual domains, and required
@@ -403,10 +403,10 @@
 
     {\bf\Cref{chapter:candl}} develops a constraint programming language called
     CAnDL and presents an implementation in the LLVM compiler infrastructure.
-    CAnDL that automatically generates compiler analysis passes from
-    declarative specifications.
+    CAnDL specifications generate compiler analysis
+    passes from declarative descriptions automatically via the CAnDL compiler.
     The chapter explores several compiler analysis tasks with CAnDL,
-    including the rapid implementation of peephole optimisations and the
+    including the implementation of peephole optimisations and the
     prototyping of graphics shader optimisations.
     This chapter is based on published research in
     \citet{Ginsbach:2018:CDS:3178372.3179515}.
