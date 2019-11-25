@@ -22,7 +22,7 @@
     which still retains backward compatibility with its initial version from
     1978, and dominates desktop processors to this day.
     Therefore, software developers and users could rely on ever-increasing
-    performance from hardware progress alone, without any intervention.
+    performance from hardware progress alone without any intervention.
 
 \subsection{Via Multi-Processing to Heterogeneity}
 
@@ -42,32 +42,34 @@
     In response to the breakdown of both Dennard Scaling and Moore's Law, the
     hardware industry has turned toward architectural innovation
     \citep{7878935}.
-    In particular, there is a trend toward specialised processor cores that work
-    in tandem as a heterogeneous system.
-    Such dedicated processor cores outperform general-purpose cores on
+    In particular, there is a trend toward specialised processors that work
+    in tandem as heterogeneous systems.
+    Specialised processor cores outperform general-purpose cores on
     specific tasks.
     Furthermore, as heat dissipation has become a major challenge,
-    simultaneously powering all transistors is often unviable, meaning that
-    different processor cores have to be masked out dynamically at runtime
-    (``dark silicon'') \citep{6307773}.
-    Disabling a subset of a homogeneous multi-core system renders some of its
-    cores redundant.
-    However, specialised cores can improve the system performance overall even
-    if they are disabled most of the time and only used for the specific tasks
-    at which they excel.
+    simultaneously powering all transistors is often unviable.
+    This means that different processor cores have to be masked out
+    dynamically at runtime (``dark silicon'') \citep{6307773}.
+    This situation favours specialised cores, which can improve the overall
+    system performance even if they are disabled most of the time and only used
+    for the specific tasks at which they excel.
+    By contrast, disabling a subset of a homogeneous multi-core system renders
+    some of its cores redundant.
 
 \section{The Diminished Role of Traditional Compilers}
 
     Heterogeneous computing can help overcome the scaling limitations of
     homogeneous, general-purpose processors.
-    However, it also poses a challenge to the associated software ecosystem,
-    putting into question many of the achievements in portability and longevity
-    of programs that are taken for granted in modern computing \citep{8719512}.
+    However, it also poses a challenge to the associated software ecosystems.
     Existing software does not automatically benefit from entirely new
     accelerator designs in the way that it profited from the continuous
     improvements of established architectures.
     Where programs previously performed better on each succeeding hardware
-    generation, new accelerators arrive with novel and incompatible interfaces.
+    generation, heterogeneous accelerators arrive with novel and incompatible
+    interfaces.
+    This puts into question many of the achievements in portability and
+    longevity of programs that are taken for granted in modern computing
+    \citep{8719512}.
 
     In particular, this new hardware landscape greatly diminishes the scope of
     responsibilities and impact that traditional compilers for languages such as
@@ -80,7 +82,7 @@
 \subsection{Libraries and Domain-Specific Languages}
 
     In order to reach peak performance on rapidly evolving and highly parallel
-    hardware, novel programming paradigms built around libraries and
+    hardware, new programming paradigms built around libraries and
     domain-specific languages have emerged.
     They succeed in utilising heterogeneous hardware in situations where
     traditional compilers fail.
@@ -89,7 +91,7 @@
     Firstly, \citet{Ragan-Kelley2013Halide} developed the domain-specific
     language Halide for image processing.
     The Halide toolchain is able to generate fast code for heterogeneous
-    platforms by focusing on a well-understood class of computations and by
+    platforms by focusing on a well-understood class of computations, and by
     using a restrictive program representation.
     After tuning programs for particular platforms, it outperforms
     hand-optimised code, demonstrating the advantage of domain-specific compiler
@@ -97,7 +99,7 @@
 
     Secondly, Basic Linear Algebra Subprograms (BLAS)
     \citep{2002:USB:567806.567807}, a standard for library function interfaces
-    going back to \citet{Lawson:1979:BLA:355841.355847} in the 1970s, have been
+    going back to \citet{Lawson:1979:BLA:355841.355847} in the 1970s, has been
     implemented for most accelerators.
     These implementations are widely used and offer unrivalled performance.
     Some versions are provided directly by hardware vendors to support
@@ -105,14 +107,15 @@
     academic projects \citep{Wang:2013:AAG:2503210.2503219}.
     These competing implementations use a plethora of approaches to achieve as
     close to peak performance as possible.
-    These includes manually written assembly code, but also highly advanced
-    code generation techniques, custom program representations and many more.
+    These methods include manually written assembly code but also highly
+    advanced code generation techniques, custom program representations and
+    many more.
 
 \subsection{The Consequences of the Decline of Compilers}
 
     Domain-specific languages and library interfaces make the full performance
     of heterogeneous systems accessible to programs.
-    These success stories, however, leave significant problems unaddressed.
+    However, these success stories also leave significant problems unaddressed.
     The adoption costs are high, requiring application rewrites for
     accelerators.
     This coincides with often uncertain long-term prospects and minimal
@@ -130,16 +133,15 @@
     For example, even decades-old C++ source code compiles into efficient
     programs for the newest generation of x86 processors.
     Libraries and domain-specific languages are useful on homogeneous systems
-    for achieving absolute maximum performance, but they become essential only
-    in the context of heterogeneity.
+    for achieving absolute maximum performance, but only in the context of
+    heterogeneous computing do they become essential.
     Therefore, the pervasive requirement for domain-specific languages and
     libraries only arises because compilers are unable to map programs onto
     specialised cores.
     Instead, compilers are increasingly downgraded to merely coordinating the
-    launch of core workloads in the form of computational kernels, which are
-    then executed as separate and opaque programs.
+    execution of core workloads as separate and opaque programs.
 
-    It may appear that, for example, a C++ or Java compiler cannot
+    It may appear apparent that, for example, a C++ or Java compiler cannot
     be provided for a typical graphics processor.
     After all, most graphics processors have hardware limitations that prevent
     them from implementing the entire language standard.
@@ -151,7 +153,7 @@
     After all, that is precisely the result achieved with libraries and
     domain-specific languages, and likely the desirable outcome.
     Despite the apparent convenience of such an approach, the next section gives
-    reasons why such a scheme has not been championed so far.
+    reasons why such a scheme has not become widespread so far.
 
 \section{Host Compilers and Kernel Compilers}
 \label{sec:hostkernel}
