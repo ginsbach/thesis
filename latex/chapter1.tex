@@ -337,74 +337,33 @@
     domains, culminating in a system for the automatic heterogeneous
     acceleration of sequential C/C++ code.
 
-\section{Summary}
-
-    The end of Moore's Law and Dennard Scaling has resulted in a shift away from
-    homogeneous multi-processing, toward architectural innovation and
-    specialised processor cores.
-    The rising heterogeneity of computing resources poses a challenge to
-    established compiler toolchains, which often only access the increasingly
-    marginal homogeneous fraction of processing power.
-    Therefore, programmers depend on domain-specific languages and libraries,
-    which leverage domain knowledge from their restricted operating domains, to
-    generate efficient code for this new hardware landscape.
-
-    This domain knowledge can be made available to host compilers with
-    approaches that automatically specialise general-purpose code and
-    reformulate it in more restrictive program models.
-    Previous work has established this on individual models, but this thesis
-    develops a framework to formulate a wide range of restricted program models
-    using a systematic approach based on constraint solving.
-    To this purpose, a custom constraint programming language was developed
-    and successively extended.
-    Starting from a discussion of the underlying assumptions and features of
-    Single Static Assignment code, the methodology is developed into a complete
-    system, implemented as part of the mature Clang C/C++ compiler.
-
-    In the later chapters, this core system is then applied in combination
-    with other techniques in a range of different contexts.
-    This includes the rapid prototyping of compiler optimisations, the
-    automatic parallelisation of some program structures with indirect memory
-    accesses, a new formulation of the polyhedral model and the detection of
-    computational structures that cover important bottlenecks in typical
-    scientific programs.
-
-    Eventually, the techniques are combined into a fully integrated, extensible
-    compiler tool for efficiently mapping sequential programs onto heterogeneous
-    systems.
-    This develops the thesis all the way from theoretical discussions of
-    constraint programming approaches in compilers, to the experimental
-    evaluation of real performance improvements on established benchmark suites
-    and scientific applications.
-
-\newpage
 \section{Structure of the Thesis}
 
-    This thesis is divided into six chapters.
-    Following the introduction, the underlying methodology of this work is
-    established in {\bf\Cref{chapter:theory}} and put in the context of
-    conventional compiler analysis.
-    Based on a model of Static Single Assignment (SSA) intermediate
-    representations, the chapter derives a novel constraint programming approach
-    to express algorithmic program structures as constraint formulas.
-    Later sections of the chapter cover implementation decisions, algorithmic
-    complexity, and a comparison to established Satisfiability Modulo Theory
-    (SMT) problems.
-    This forms the methodological basis for
-    {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions}}.
+    This thesis is divided into seven chapters.
 
-    {\bf\Cref{chapter:literature}} gives a broad overview of the related work.
-    This literature survey covers the four main areas of research in which this
-    work is placed.
+    Following the introduction, {\bf\Cref{chapter:theory}} derives the
+    underlying methodology of this thesis in the context of conventional
+    compiler analysis.
+    Based on a mathematical characterisation of programs in Static Single
+    Assignment form, the chapter presents a new constraint programming method
+    for expressing algorithmic program structures as constraint formulas.
+    Later sections of the chapter discuss implementation decisions,
+    the algorithmic complexity of the approach, and differences to established
+    Satisfiability Modulo Theory (SMT) problems.
+
+    {\bf\Cref{chapter:literature}} gives an overview of the related work.
+    This literature survey covers the four main areas of research relevant to
+    this thesis.
     Firstly, {\em constraint programming} underpins the methodology of this
     thesis.
-    Secondly, {\em compiler analysis and auto-parallelisation} provide
-    competing approaches against which the results in this thesis are evaluated.
+    Secondly, previous {\em compiler analysis and auto-parallelisation}
+    approaches are used used to evaluate the results of this work.
     Thirdly, {\em heterogeneous computing} and the corresponding challenges
-    motivate many of the compiler approaches that this research implements.
-    Finally, ``{\em computational idiom}'' is an umbrella term for several
-    overlapping concepts of algorithmic patterns that capture programming models
-    in different positions on the spectrum of specialisation.
+    motivate many of the compiler approaches that this thesis implements.
+    Finally, the term ``{\em computational idiom}'' is used in this thesis to
+    denote shared computational structures of performance bottlenecks.
+    This term is established by comparison with literature on several
+    overlapping concepts from different research disciplines.
 
     {\bf\Cref{chapter:candl,chapter:idioms,chapter:reductions}}
     are each based on a published research article and elaborate on different
@@ -414,30 +373,74 @@
     CAnDL and presents an implementation in the LLVM compiler infrastructure.
     CAnDL specifications generate compiler analysis
     passes from declarative descriptions automatically via the CAnDL compiler.
-    The chapter explores several compiler analysis tasks with CAnDL,
+    This chapter explores several compiler analysis tasks with CAnDL,
     including the implementation of peephole optimisations and the
     prototyping of graphics shader optimisations.
-    This chapter is based on published research in
-    \citet{Ginsbach:2018:CDS:3178372.3179515}.
+    This chapter is based on published research
+    \citep{Ginsbach:2018:CDS:3178372.3179515}.
 
     {\bf\Cref{chapter:reductions}} extends CAnDL into the Idiom Detection
     Langauge (IDL) and develops an auto-parallelising compiler for
-    complex reduction and histogram computations built on IDL-powered analysis
-    functionality.
-    These computations cover many loops with indirect data access that are
+    Complex Reduction and Histogram Computations (CReHCs) built on
+    IDL-powered analysis functionality.
+    CReHCs cover loops with indirect data accesses that are
     inaccessible to established approaches based on data flow and polyhedral
     analysis.
-    The flexibility of constraint programming allows it to still capture such
+    The flexibility of constraint programming allows it to capture such
     irregular computations.
-    This chapter is based on published research in
-    \citet{ginsbach2017discovery}.
+    This chapter is based on published research
+    \citep{ginsbach2017discovery}.
 
     {\bf\Cref{chapter:idioms}} applies IDL to the detection of algorithmic
     structures that go beyond the scope of traditional compiler analysis:
     stencils, complex reductions and histograms, as well as sparse and dense
     forms of linear algebra.
     The detection in LLVM enables the automatic heterogeneous
-    acceleration of sequential code and result in significant speedups on
-    established benchmark suites.
-    This chapter is based on published research in
-    \citet{Ginsbach:2018:AML:3173162.3173182}.
+    acceleration of sequential code, resulting in significant speedups on the
+    established benchmark suites NPB and Parboil.
+    This chapter is based on published research
+    \citep{Ginsbach:2018:AML:3173162.3173182}.
+
+    Finally, {\bf\Cref{chapter:conclusion}} concludes the thesis with a summary
+    of the main contributions, a critical analysing the approaches, and a
+    discussion of future work.
+
+\section{Summary}
+
+    The end of Moore's Law and Dennard Scaling has resulted in a shift away from
+    homogeneous multi-processing, toward architectural innovation and
+    specialised processor cores.
+    The rising heterogeneity of computing resources poses a challenge to
+    established compiler toolchains, which often only access the increasingly
+    marginal homogeneous fraction of processing power.
+    Therefore, application programmers depend on domain-specific languages and
+    libraries that leverage domain knowledge from their restricted operating
+    domains to generate efficient code for the modern hardware landscape.
+
+    This domain knowledge can be made available to host compilers with
+    approaches that automatically specialise general-purpose code and
+    reformulate it in more restrictive program models.
+    Previous work has established this on individual models, but this thesis
+    develops a framework to formulate a wide range of restricted program models
+    using a systematic approach based on constraint solving.
+    To this purpose, a custom constraint programming language is developed
+    and successively extended.
+    Starting from a discussion of the underlying assumptions and features of
+    SSA code, the methodology is developed into a complete system, implemented
+    as part of the mature Clang C/C++ compiler.
+
+    In the later chapters, this core system is applied in combination with other
+    techniques on a range of different compiler challenges.
+    These include the rapid prototyping of compiler optimisations, the
+    automatic parallelisation of programs with indirect memory accesses, a new
+    formulation of the polyhedral model, and the detection of computational
+    structures that occur widely in important bottlenecks of scientific
+    programs.
+
+    Eventually, the techniques are combined into a fully integrated, extensible
+    compiler tool for efficiently mapping sequential programs onto heterogeneous
+    systems.
+    This develops the thesis all the way from theoretical discussions of
+    constraint programming approaches in compilers, to the experimental
+    evaluation of real performance improvements on established benchmark suites
+    and scientific applications.
