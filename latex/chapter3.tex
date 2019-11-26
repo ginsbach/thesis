@@ -105,13 +105,13 @@
     compiler transformations for all possible user input.
 
     Recent domain-specific languages, such as Alive
-    \citep{Lopes:2015:PCP:2737924.2737965} also operate directly on LLVM IR.
+    \citep{Lopes:2015:PCP:2737924.2737965}, operate on subsets of LLVM IR.
     The individual instructions are reformulated on bit-vectors, and the
     correctness of conditions is checked with an SMT solver.
     However, Alive only implements a subset of LLVM's integer and pointer
     arithmetic instructions.
-    It has no support for control flow and does not scale to the real
-    applications, such as those used in this thesis for evaluation.
+    It has no support for control flow and does not scale to the applications
+    that are used in this thesis for evaluation.
     Instead, it is designed for formally verifying already existing
     compiler optimisations that operate on only a handful of integer
     instructions at a time.
@@ -125,13 +125,13 @@
     optimisations.
     LifeJacket and Alive-FP were successfully used to identify incorrectly
     implemented  optimising transformations in compilers.
-    However, the fundamental limitations from Alive remain, and control flow is
+    However, the fundamental limitations of Alive remain, and control flow is
     not supported.
-    Therefore, only peephole optimisations can be evaluated with these
-    approaches.
+    Therefore, only peephole optimisations can be evaluated by these approaches.
 
-    The Alive-Infer approach \citep{Menendez:2017:ADP:3062341.3062372} builds on
-    Alive but goes beyond the verification of existing compiler optimisations.
+    The Alive-Infer system \citep{Menendez:2017:ADP:3062341.3062372} also builds
+    on Alive but goes beyond the verification of existing compiler
+    optimisations.
     The tool uses an SMT solver to automatically generate preconditions that
     need to hold for transformations to be applied.
     This moves the Alive system away from verifying optimisations and
@@ -139,27 +139,26 @@
     programs.
     However, Alive-Infer still requires the separate specification of the actual
     transformation.
-    It just generates additional conditions and does not cover control flow.
+    It only generates additional conditions and does not handle control flow.
 
-    \paragraph*{Constraints on other program models}
+    \paragraph*{Constraint analysis on other program models}
     Other advanced approaches to extracting high-level code structures
-    in programs using constraints and verification systems have been
+    from programs that use constraints and verification systems have been
     proposed.
-    \citet{Mendis2015Helium, Kamil2016Verified} use temporal logic as the
-    foundation to formulate the conditions for reformulating well-structured
-    Fortran and assembly code in restrictive models.
+    \citet{Mendis2015Helium, Kamil2016Verified} suggest temporal logic as the
+    foundation to formulate the necessary conditions for rephrasing
+    well-structured Fortran and assembly code in restrictive models.
     These techniques leverage counter-example guided inductive synthesis to find
-    provably correct translations into the high-level description language
-    Halide.
+    provably correct translations into the high-level Halide language.
     The Halide compiler specialises the code again, exploring the
-    optimisation space via powerful optimisations that are enabled by its
+    optimisation space via powerful transformations that are enabled by its
     restrictive semantics.
-    However, the focus is on a restricted class of computations, involving only
+    However, the focus is on a small class of computations, involving only
     dense memory access.
     This allows formal reasoning about correctness but is too restrictive for
     interesting computational idioms, such as sparse linear algebra.
 
-    \citet{Mullen:2016:VPO:2908080.2908109} verify low-level program
+    \citet{Mullen:2016:VPO:2908080.2908109} study low-level program
     transformations that are implemented for the formally verified CompCert
     compiler \citep{CompCert-ERTS-2018}, directly on x86 assembly.
     Instead of an automatic verification after modelling optimisations
