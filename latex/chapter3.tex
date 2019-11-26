@@ -302,29 +302,28 @@
     Iterations in loop nests are treated as lattice points in a
     multi-dimensional grid.
     The iteration space can then be transformed with affine maps, potentially
-    new uncovering parallelisation opportunities.
-    This basic approach has been applied extensively in different compilers.
+    uncovering new parallelisation opportunities.
+    This basic approach has been applied extensively in compilers.
     Furthermore, the required conditions have been relaxed in different ways,
     allowing the application of the approach to more input code.
 
     \paragraph*{Polly in LLVM}
-    Polyhedral optimisers have been implemented as extensions to mainstream
-    C/C++ compilers.
-    Most notably, \citet{Lengauer2012Polly} presented the Polly extensions for
+    Polyhedral optimisers have been integrated into mainstream C/C++ compilers.
+    Most notably, \citet{Lengauer2012Polly} implemented the Polly extensions for
     LLVM.
     Polly recognises parts of LLVM IR that are expressible in the polyhedral
-    model and transforms then into that representation.
+    model and transforms them into that representation.
     Polyhedral optimisations can then be applied with PLuTo
     \citep{Bondhugula:2008:PAP:1375581.1375595} before the model is
     translated back into optimised LLVM IR for further treatment by the core
     compiler.
-    This enables the seamless application of polyhedral techniques to
+    This enables the seamless application of polyhedral techniques on
     large-scale applications without source code changes via the many
     frontends of the LLVM infrastructure.
     However, this impacts only code that the tool can translate
     into a polyhedral representation.
 
-    Polly-ACC \citep{polly-acc} is an extension to the Polly compiler that
+    Polly-ACC \citep{polly-acc} is an extension of the Polly compiler that
     provides code generation for heterogeneous hardware.
     The tool uses the recognition functionality of standard Polly to detect
     code sections in LLVM IR that can be represented in the polyhedral model.
@@ -335,7 +334,7 @@
     This results in significant speedups of some benchmark programs, but the
     impact remains limited to code that fits the polyhedral model.
 
-    \citet{Doerfert2015Polly} extend the applicability of polyhedral
+    \citet{Doerfert2015Polly} extended the applicability of polyhedral
     transformations within the Polly compiler to a broader set of input
     programs.
     Dependencies between iterations that originate from reduction variables
@@ -344,18 +343,18 @@
     unable to resolve.
     However, the reduction-enabled scheduling approach for Polly can parallelise
     such loop despite the reduction dependencies.
-    This significantly improved the speedup that Polly achieves on benchmark
-    programs that contain reductions.
+    This ability significantly improved the achieved speedup of Polly on
+    benchmark programs that contain reductions.
 
-    \citet{Doerfert:2017:OLO:3049832.3049864} propose another approach to
-    extending the applicability of polyhedral code transformations.
-    The approach allows some conditions that are required for the legal
+    \citet{Doerfert:2017:OLO:3049832.3049864} also investigated another method
+    for widening the scope of polyhedral code transformations.
+    This approach allows some conditions that are required for the legal
     application of transformations to remain unproven at compile time.
-    These conditions are then checked at runtime, providing a fall back to the
+    These conditions are then checked at runtime, providing a fallback to the
     original code when assumptions are not met.
     The checks that this work allows to be delayed include the absence of
     aliasing, finite loop boundaries, and in-bounds memory accesses.
-    This allowed Polly to cover 3.9$\times$ as many loops in the SPEC and NPB
+    This enabled Polly to cover 3.9$\times$ as many loops in the SPEC and NPB
     benchmarks at a negligible runtime overhead.
 
     \paragraph*{Other tools with automatic detection}
