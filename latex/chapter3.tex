@@ -438,27 +438,26 @@
 
     The treatment of more general reduction operations has received less
     attention.
-    \citet{das2010experiences} proposed dynamic profile analysis to guide
+    \citet{das2010experiences} used dynamic profile analysis to guide
     manual analysis and show there is potential for finding generalised
     reductions.
-    \citet{kim2012dynamic} explored the use of dynamic analysis further,
-    but state that detecting reductions on arrays remains challenging.
+    \citet{kim2012dynamic} explored the use of dynamic analysis further
+    but states in the article that detecting reductions on arrays remains
+    challenging.
 
     The difficulty in automatically detecting reductions has led to languages
     and annotation-based approaches, where it is the responsibility of the user
     to mark reductions in the program.
     Such a system was proposed by \citet{deitz2002high}.
-    An annotation approach is also described by \citet{Reddy2016Reduction},
-    based on the Platform-Neutral Compute Intermediate Language (PENCIL)
-    \citep{baghdadi2015PENCIL}.
-    This used the PPCG code generator by
-    \citet{Verdoolaege:2013:PPC:2400682.2400713} to generate CUDA and OpenCL
-    code for multiple computing platforms.
+    \citet{Reddy2016Reduction} also describe an annotation approach,
+    based on the Platform-Neutral Compute Intermediate Language
+    \citep{baghdadi2015PENCIL}, incorporating the PPCG code generator to
+    generate CUDA and OpenCL code for multiple computing platforms.
 
     There has also been recent work extending on \citet{rauchwerger1999lrpd}
     with more aggressive speculation and dynamic analysis
     \citep{aguilar2015unified} to exploit reduction parallelism.
-    \citet{Han2010Speculative} present an approach for the
+    \citet{Han2010Speculative} explain an approach for the
     parallelisation of a wide class of scalar reductions.
     They start from the observation that many reductions in real benchmark
     programs are not detected by current static analysis approaches.
@@ -466,11 +465,12 @@
     likely runtime reductions, denoted ``partial reduction variables''.
     Candidates for speculative parallelisation are determined by searching for
     update-chains in the data flow graph.
-    The approach was evaluated on some of the SPEC2000 benchmarks using a
+    The approach was evaluated on some of the SPEC2000 benchmarks with a
     simulator.
-    They achieve up to $46\%$ speedup by including speculative reductions.
-    However, this approach requires hardware speculation support.
-    Despite this hardware support, it is unable to detect histogram reductions.
+    They achieve up to $46\%$ speedup by including speculative reductions, but
+    this approach requires hardware speculation support.
+    Despite the hardware support, the system is unable to detect histogram
+    reductions.
 
     Privateer \citep{Johnson:2012:SSP:2254064.2254107} is a complex system
     featuring compiler support and a runtime to enable speculative
@@ -480,10 +480,11 @@
     parallelism.
     The authors explicitly allow for reduction parallelism involving only a
     single scalar associative and commutative operator.
-    The evaluation only covers a set of five benchmark programs, yielding
-    a geometric mean speedup of 11.4x on a 24 core machine.
+    The evaluation only covered a set of five benchmark programs but yielded
+    a geometric mean speedup of $11.4\times$ on a 24-core machine.
     The runtime overhead was up to $>50\%$.
-    Despite this complexity, the approach only exploits simple scalar reductions.
+    Despite this complexity, the approach only exploits simple scalar
+    reductions.
 
 \subsection{Dynamic Analysis Approaches}
 
