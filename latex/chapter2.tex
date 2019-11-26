@@ -777,36 +777,36 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \label{sec:constraintsolving}
 
     The solver for SSA constraint problems should efficiently compute $S_M(V,C)$
-    for some concrete $(V,C)$ and $M$.
+    for some concrete SSA constraint problem $(V,C)$ and SSA model $M$.
     This is a search problem:
     all values in $\mathbb N^V$ that satisfy $C$ in the context $M$ need to be
     identified.
 
     The search space $\mathbb N^V$ is infinitely large, but it can immediately
-    be trimmed to only tuples that have all values $\leq|vals|$.
+    be trimmed to only tuples that have all values $\leq|val|$.
     The case \mbox{$|V|>50$} is common in
     \Cref{chapter:candl,chapter:reductions,chapter:idioms}, and interesting
-    functions often have \mbox{$|vals|>100$}.
+    functions often have \mbox{$|val|>100$}.
     The remaining search space therefore has $>100^{50}=10^{100}$ elements.
-    Brute force search is unfeasible on such a large search space, even when assuming
-    that the direct evaluation of the predicate for any potential solution can
-    be performed efficiently.
-    However, backtracking can be used to find partial solutions, which are
+    Brute-force search is unfeasible on such a large search space, even when
+    assuming that the direct evaluation of the predicate for any potential
+    solution can be performed efficiently.
+    However, backtracking can be used to find partial solutions that are
     incrementally extended.
 
 \begin{figure}[h]
     \begin{definition}{Backtracking Solution of Constraint Problems}{backtracking}
-        For a constraint problem $(V,C)$, an enumeration
-        $V=\{v_1,\dots,v_{|V|}\}$ with corresponding projections
-        $p_k\colon\mathbb N^V\rightarrow\mathbb N^k$,
-        $x\mapsto(x_{v_1},\dots x_{v_k})$ is chosen.
-        Then a collection $(B_k)_{k=1\dots |V|}$ of functions
+        Given an SSA constraint problem $(V,C)$ and an enumeration of
+        $V=\{v_1,\dots,v_{|V|}\}$, any collection $(B_k)_{k=1\dots |V|}$
+        of functions
         $B_k:\mathcal M\times \mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
-        is a {\em backtracking solution} of $(V,C)$ if and only if the following
-        is satisfied for all $x\in\mathbb N^V$:
+        is denoted a {\em backtracking solution} of $(V,C)$ if and only if the
+        following is satisfied for all $M\in\mathcal M,x\in\mathbb N^V$:
         \begin{align}
-            C(M,x)=1\iff\left[x_{v_k}\in B_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq |V|\right].
+            C(M,x)=1\iff\left[x_{v_k}\in B_k(M,p_{k-1}(x))\text{ for all }1\leq k\leq |V|\right],
         \end{align}
+        where the projections $p_k\colon\mathbb N^V\rightarrow\mathbb N^k$ are
+        defined by $x\mapsto(x_{v_1},\dots x_{v_k})$ for all $0\leq k\leq |V|$.
     \end{definition}
 \end{figure}
 
@@ -816,18 +816,18 @@ define double @dot(double* %0, double* %1, i64 %2) {
     The concept is introduced in order to allow the definition of the
     backtracking search \Cref{backtrackalg}, which works as follows:
     The variable $x$ iterates over $\mathbb N^n$
-    ($n=|V|$, identified with $\mathbb N^V$ in line~7), the variable $k$
-    tracks the number of currently considered dimensions of this partial
-    solution.
-    After the initialisation assignments in line 2, a single loop spans the
+    ($n=|V|$, identified with $\mathbb N^V$ at line 7).
+    The variable $k$ tracks the number of currently considered dimensions of
+    this partial solution.
+    After the initialisation assignments at line 2, a single loop spans the
     remainder of the algorithm.
     In each iteration, the algorithm tries to assign a valid value to the latest
     considered element in the partial solution $x$ (line 4).
     By convention, the minimum of the empty set is the
     \mbox{symbol ``$\infty$''}.
-    If this case occurs, the algorithm backtracks in lines 12--17.
+    If this case occurs, the algorithm backtracks at lines 12--17.
     Otherwise, the solution is either complete (lines 6--8), or the dimension
-    $k$ of the partial solution is increased in \mbox{line 10}, and the
+    $k$ of the partial solution is increased at line 10, and the
     algorithm continues by searching for the next element of $x$ in the
     following iteration.
 
@@ -862,9 +862,9 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \subsection{The Structure of SSA Constraint Problems}
 
-    Basic construction rules for SSA constraint problems are the element-of
-    constraint problem in \Cref{def:elementofconstr},
-    and the conjunction and disjunction constraint problems in
+    Basic construction rules for SSA constraint problems are the {\it element-of
+    constraint problem} in \Cref{def:elementofconstr},
+    and the {\it conjunction and disjunction constraint problems} in
     \Cref{def:conjconstr}.
     \Cref{def:constrext} enables the composition of constraint problems that are
     not defined on the same set of variables.
@@ -1048,10 +1048,10 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \Cref{theo:theo1,theo:theo3}.
     \Cref{cppsolver} shows how the backtracking algorithm with those hooks is
     implemented as a C++ function.
-    Most of the \texttt{solver} function in lines 12--43 maps directly onto
+    Most of the \texttt{solver} function at lines 12--43 maps directly onto
     \Cref{backtrackalg}, and needs no further explanation.
     However, some crucial details need elaboration, mostly relating to the
-    iteration over the backtracking solution in line 4 of \Cref{backtrackalg}.
+    iteration over the backtracking solution at line 4 of \Cref{backtrackalg}.
 
     {\tt BacktrackingPart} provides the C++ interface for the individual
     functions in backtracking solutions as defined in \Cref{def:backtracking}.
