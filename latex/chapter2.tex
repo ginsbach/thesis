@@ -1147,8 +1147,8 @@ private:
 \begin{lstlisting}[language=MyCpp, label={partimplementations}, caption=
    {``{\tt BacktrackingPart}'' is implemented for element-of constraints and
     conjunction constraints.
-    The struct ``{\tt ElementOfShared}'' matches
-    $\protect{(R_k[E_S](M,x))_{k=1\dots n}}$ from \Cref{theo:theo1}.}]
+    The array ``{\tt R}'' in ``{\tt ElementOfShared}'' matches
+    $\protect{(R_k(M,x))_{k=1\dots n}}$ from \Cref{theo:theo1}.}]
 class ConjunctionPart : public BacktrackingPart {
 public:
     SkipResult skip_invalid(unsigned& c) {
@@ -1210,56 +1210,59 @@ private:
     equality and inequality of the integer values respectively.
     The third, $(\{a\}, C^{unused})$, is used to signal that no value from the
     SSA model was assigned.
-    This is convenient within disjunctions for SSA constructions that may be
-    omitted, i.e.\ an offset that is optionally added when accessing an element
-    in a structure with a pointer to the object base.
-    The value $|val|+1$ is the smallest integer that can no longer be
-    interpreted as a value in the SSA model.
-    Therefore, the constraint enforces equality to this number.
+    This is convenient only in disjunctions, for solution components that may be
+    omitted.
+    For example, an offset may be optionally added when accessing an element
+    in a structure.
+    If the offset is not present, the corresponding variable is {\it unused} in
+    that constraint solution.
+    The value $ R_{val}+1$ is chosen as it is the smallest integer that can
+    not be used as an index into the list of used values.
 
-    Generalised graph domination constraint problems as in \Cref{def:domconstr}
-    are versatile tools for analysing SSA models.
+    {\it Generalised graph domination constraint problems} as in
+    \Cref{def:domconstr} are versatile tools for analysing SSA models.
     The special case of $|Orig|=|Dom|=|Dest|=1$, with $x_v$ restricted to the
     control origin of the function for $v\in Orig$, turns this definition
     into the established control flow dominance concept.
     However, the generalisation encompasses a much larger set of interesting
     properties.
     Importantly, this can be applied also to data flow, which
-    \Cref{chapter:reductions} makes use of for defining kernel functions with
+    \Cref{chapter:reductions} uses for defining kernel functions with
     restricted interfaces.
     In this interpretation, the set $Dom$ represents an interface to the
     computation of the values in $Dest$, when data flow can originate from all
     the values in $Orig$.
 
     The backtracking solution of generalised graph domination constraint
-    problems is brute force, meaning that $B_n[D_g]$ checks the condition
-    as specified, and $B_k[D_G]\equiv 1$ for all $1\leq k<n$.
+    problems is brute-force, meaning that $B_n[D_G]$ checks the condition
+    as specified, and $B_k[D_G]\equiv\mathbb N$ for all $1\leq k<n$.
     The checking of the condition in $B_n[D_G]$ is typically preformed in
-    $O(|val|)$ time, so this is a computationally expensive constraint.
+    $O(|val|)$ time, making this a computationally expensive constraint.
     The solver relies on this construction occuring only in conjunctions with
     other, more restrictive constraints.
     However, special cases can also be implemented as element-of constraint
     problems using precomputated dominator trees.
 
-    Finally, collect-all constraint problems are introduced in
+    Finally, {\it collect-all constraint problems} are introduced in
     \Cref{def:collectconstr}.
     Given a constraint problem $(V,C)$, the variables $V$ are divided into
     two subsets.
     The collect-all constraint problem identifies all possible solutions over
     one of the variable subsets, given that the other variable subset is fixed.
-    The parameter $N$ gives an upper limit to the number of these solutions.
-    Collect-all constraint problems are used to approximate logical quantifiers.
+    The parameter $n$ gives an upper limit to the number of these solutions.
+    Such collect-all constraint problems are used to approximate logical
+    quantifiers.
     This is discussed in more detail in \Cref{chapter:candl}.
 
-    In order to calculate a backtracking solution of collect-all constraint
-    problems, the order on $W$ needs to satisfy the property
+    In order to efficiently calculate a backtracking solution of collect-all
+    constraint problems, the enumeration of $W$ must satisfy the property
     $w_a\in U,w_b\notin U\implies a<b$.
     For values in $U$, the backtracking solution simply passes through to the
     underlying constraint.
-    Whenever a partial solution is determined over all values in $U$, a nested
-    call to the solver is performed in order to identify all possible partial
-    solutions over $V\setminus U$.
-    The remaining steps of the backtracking solution then simply enforce this
+    Whenever a partial solution is determined over all values in $U$, an
+    invokation to the full solver is performed that identifies all possible
+    partial solutions over $V\setminus U$.
+    The remaining steps of the backtracking solution then merely enforce this
     precomputed list of solutions.
 
 
@@ -1268,42 +1271,59 @@ private:
         The SSA constraint problems $(\{a,b\}, C^=)$, $(\{a,b\}, C^{\neq})$
         and $(\{a\}, C^{unused})$ are given by
         \begin{align*}
-        C^=(M,x)=1\iff{}&x_a=x_b\\
-        C^{\neq}(M,x)=1\iff{}&x_a\neq x_b\\
-        C^{unused}(M,x)=1\iff{}&x_a=|val|+1.
+        C^=(M,x)=1\iff{}&x_a=x_b\\[-0.73mm]
+        C^{\neq}(M,x)=1\iff{}&x_a\neq x_b\\[-0.73mm]
+        C^{unused}(M,x)=1\iff{}&x_a= R_{val}+1.
         \end{align*}
     \end{definition}
-    \begin{definition}{Generalised Graph Domination Constraint Problems}{domconstr}
-        For a graph $G(M)\subset\mathbb N^2$, a set of variables $V$,
+    \begin{definition}{Generalised Graph Domination Constraint Problem}{domconstr}
+        Given a graph $G(M)\subset\mathbb N^2$, a set of variables $V$,
         a {\it set of origins} $Orig\subset V$,
         a {\it set of generalised dominators} $Dom\subset V$, and
         a {\it set of destinations} $Dest\subset V$, the
         {\em generalised graph domination constraint problem}
         $(V,D_G)$ is defined by
         \begin{align*}
-            D_G(M,x)=1\iff(x_v\notin R_{\infty}(M,x)\text{ for all }v\in Dest\text{ with }x_v\leq |val|),
+            D_G(M,x)=1\iff(x_v\notin R_{\infty}(M,x)\text{ for all }v\in Dest\text{ with }L_{val}\leq x_v\leq R_{val}),
         \end{align*}
-        where $R_k(A,G)\subset\mathbb N$, the {\it set of vertices reachable in $k$ steps},
+        where $R_k(M,x)\subset\mathbb N$, the {\it set of vertices reachable in $k$ steps},
         is defined as
         \begin{align*}
-            R_0(M,x)={}&\{x_v\mid v\in Orig\}\setminus\{x_v\mid v\in Dom\}\\
-            R_{k+1}(M,x)={}&\{b\mid (a,b)\in G(M),a\in R_k(M,x)\}\setminus\{x_v\mid v\in Dom\}\\
-            R_\infty(M,x)={}&\bigcup_{k=0}^\infty R_k(A,G).
+            R_0(M,x)={}&\{x_v\mid v\in Orig\}\setminus\{x_v\mid v\in Dom\}\\[-0.73mm]
+            R_{k+1}(M,x)={}&\{b\mid (a,b)\in G(M),a\in R_k(M,x)\}\setminus\{x_v\mid v\in Dom\}\\[-0.73mm]
+            R_\infty(M,x)={}&\textstyle\bigcup_{k=0}^\infty R_k(M,x).
         \end{align*}
     \end{definition}
     \begin{definition}{Collect-all Constraint Problem}{collectconstr}
-        For a constraint problem $(V,C)$, a subset $U\subset V$ with
-        $U=\{u_1,\dots,u_m\}$, and some $N>1$, the
-        {\em collect-all constraint problem} $(W, C^{N[U]})$, where
-        $W:=V\setminus U\cup\{1,\dots,N\}\times U$, is uniquely defined
-        as satisfying for all $s\in S_M(W,C^{N[U]})$ the following conditions
-        \begin{enumerate}
-        \item $((s_{1,u_1},\dots s_{1,u_m}),\dots,(s_{N,u_1},\dots s_{N,u_m}))$ is an ordered tuple of tuples in $\mathbb N^U$.
-              If there are any duplicates, they have to be of the form $(|val|+1,\dots,|val|+1)\in\mathbb N^U$.
-        \item The sets $A$ and $B$ satisfy either $A=B$ or $((A=\emptyset)\mathrel\land(|B|>N))$, where\\
-              $A:=\{(s_{k,u})_{u\in U}\mid 1\leq k\leq N, s_{k,u}\neq|val|+1\text{ for some }u\in U\}\subset N^U$ and\\
-              $B:=\{(x_u)_{u\in U}\mid x\in S_M(V,C), x_v=z_v\text{ for all }v\in X\}\subset N^U$.
-        \end{enumerate}
+        Given a set of variables $V$, a subset $U\subset V$, and some $n\geq1$,
+        the set containing one copy of each variable in $U$ and $n$ copies of
+        each value in $V\setminus U$ is defined as
+        \begin{align*}
+            V^{\left<U,n\right>}=U\cup(\{1,\dots,n\}\times (V\setminus U)).
+        \end{align*}
+
+        For any $x\in\mathbb N^U$, the set of constraint solutions restricted to
+        $x$ in $U$ is defined as
+        \begin{align*}
+            S_M(V,C)|_{x}=\{y\in S_M(V,C)\mid y_u=x_u\text{ for all }u\in U\}.
+        \end{align*}
+
+        The functions
+        $f_k\colon\mathbb N^{V^{\left<U,n\right>}}\rightarrow\mathbb N^V$ and
+        $g\colon\mathbb N^{V^{\left<U,n\right>}}\rightarrow\mathbb N^U$ are
+        defined as selecting the values for the $k$-th copy of
+        variables in $V\setminus U$ and directly projecting on $\mathbb N^U$.
+
+        For an SSA constraint problem $(V,C)$, the
+        {\em collect-all constraint problem}
+        $(V^{\left<U,n\right>}, C^{\left<U,n\right>})$ is uniquely defined by
+        the following conditions:
+        \begin{align*}
+            C^{\left<U,n\right>}(M,x)=1\iff{}&\left|S_M(V,C)|_{g(x)}\right|\leq n\\[-0.73mm]
+                              \mathrel\land{}&\left\{f_k(x)\mid 1\leq k\leq\left|S_M(V,C)|_{g(x)}\right|\right\} = S_M(V,C)|_{g(x)}\\[-0.73mm]
+                              \mathrel\land{}&f_k(x)\equiv R_{ins}+1\text{ for all }k>\left|S_M(V,C)|_{g(x)}\right|\\[-0.73mm]
+                              \mathrel\land{}&f_1(x),\dots,f_n(x)\text{ are in lexicographical order}.
+        \end{align*}
     \end{definition}
 \end{figure}
 
