@@ -510,23 +510,23 @@
 
     The previously introduced SSA model is generic and applies to all SSA
     compiler intermediate representations.
-    However, the model needs to be specialised to a specific representation in
+    However, it needs to be specialised to a specific representation in
     order to use it on real compiler problems.
-    LLVM IR is one of the most common languages in that class, as it is
-    used as the foundation of the popular LLVM compiler framework by
-    \citet{lattner2004llvm}.
-    It will be used throughout the thesis for demonstration and evaluation
-    purposes.
+    LLVM intermediate representation (LLVM IR) is one of the most common
+    languages in that class, because of its use in the popular LLVM
+    framework started by \citet{lattner2004llvm}.
+    It will be used throughout the thesis for demonstration and evaluation.
 
-    LLVM is a comprehensive compiler infrastructure project, using the LLVM
-    intermediate representation as its central abstraction.
-    The name of the project was originally an acronym for
-    ``Low Level Virtual Machine'', as the intermediate representation was
-    conceptualised as a typed assembly-style language for a virtual machine.
-    The instruction set is roughly aligned to the semantics of C-style
-    programming languages, but the project has matured beyond this background.
-    It is now a widely influential framework, with compiler front ends
-    for a diverse set of languages, including C/C++, Haskell, Julia,
+    LLVM is a comprehensive compiler infrastructure project, using LLVM IR as
+    its central abstraction.
+    The LLVM project was formerly named ``Low Level Virtual Machine'', as the
+    intermediate representation was conceptualised as a typed assembly-style
+    language for a virtual machine.
+    The instruction set of LLVM IR is roughly aligned to the semantics of
+    C-style programming languages, but the project has matured beyond this
+    background.
+    It is now a widely influential framework with compiler front ends
+    for a diverse set of languages, including C, C++, Haskell, Julia,
     Objective-C, Rust, Scala, and CUDA.
 
     Other mainstream compilers, such as the GCC project, use very similar
@@ -536,43 +536,44 @@
     toolchain, as opposed to an obscure internal abstraction.
     This makes it very suitable for research implementations.
 
-\subsection{LLVM Example}
+\subsection{LLVM IR Example}
 
-    Some crucial features of LLVM IR for the context of this thesis are
+    Some crucial features of LLVM IR in the context of this thesis are
     demonstrated on an example in \Cref{llvmirexample}.
     At the top {\bf (a)} of the figure, a dot product is implemented as a
     function in C.
-    This function takes as arguments two pointers {\tt a,b} to arrays of
-    double-precision floating-point values, representing the input vectors, and
-    an unsigned integer $n$, giving the size of the arrays.
-    Within a single loop in lines $4$--$5$, the dot product is accumulated in
-    the variable {\tt d}, which is eventually returned as the result of the
-    function in the penultimate line $6$.
+    This function takes as arguments two pointers ``{\tt a}'', ``{\tt b}'' to
+    arrays of double-precision floating-point values representing the input
+    vectors, and an unsigned integer ``{\tt n}'' giving the size of the arrays.
+    Within a single loop at lines 4--5, the dot product is accumulated in
+    the variable ``{\tt d}'', which is eventually returned as the result of the
+    function.
 
-    At the bottom {\bf (b)} of the figure is the corresponding LLVM intermediate
-    code, captured after optimisations from the middle end of the LLVM-based
-    Clang compiler.
+    At the bottom {\bf (b)} of the figure is the corresponding LLVM IR code,
+    captured from the middle end of the LLVM-based Clang compiler after
+    optimisations.
     Additional comments were inserted manually.
     Lines 2--4 are the result of an optimisation called ``loop inversion''.
     If the arrays are empty, the loop is skipped entirely, and the program
     returns zero via lines 6--8.
-    Otherwise, the loop in lines 13--24 is entered via the basic block in lines
+    Otherwise, the loop at lines 13--24 is entered via the basic block at lines
     10--11, which exists for normalisation purposes as the dedicated loop entry
     block.
 
     Memory access in LLVM is expressed separately from index calculations.
-    This is visible in lines 16--19.
-    The {\tt getelementptr} instruction is used to calculate the memory
+    This is visible at lines 16--19.
+    The ``{\tt getelementptr}'' instruction is used to calculate the memory
     addresses of the array elements {\tt a[i]} and {\tt b[i]}.
-    The {\tt load} instruction then reads the memory at the calculated
+    The ``{\tt load}'' instruction then reads the memory at the calculated
     addresses.
     This scheme simplifies the effectful memory access instructions, pushing the
-    complexity of index calculations into the {\tt getelementptr} instruction.
+    complexity of index calculations into the ``{\tt getelementptr}''
+    instruction.
 
 \begin{figure}[p]
 \vspace{-0.09cm}
 \begin{lstlisting}[language=MyCpp,captionpos=t,title=
-   {{\bf(a)} {} C source code of a {\tt dot} product function implementation:
+   {{\bf(a)} {} C source code of a dot product function implementation:
     \leftskip=0pt}]
 double dot(double* a, double *b, size_t n)
 {
@@ -584,7 +585,7 @@ double dot(double* a, double *b, size_t n)
 \end{lstlisting}
 \vspace{-0.09cm}
 \begin{lstlisting}[language=LLVM,breaklines=true,captionpos=t,title=
-   {{\bf(b)} {} LLVM IR representation of the same {\tt dot} product function:
+   {{\bf(b)} {} LLVM IR of the same dot product function:
     \leftskip=0pt}]
 define double @dot(double* %0, double* %1, i64 %2) {
 ; <label>:3:
@@ -601,7 +602,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 ; <label>:8:
   %9 = phi i64 [ %17, %8 ], [ 0, %7 ]
   %10 = phi double [ %16, %8 ], [ 0.0, %7 ]
-  %11 = getelementptr double, double* %0, i64 %9 ; getelementpointer calculates memory addresses, here it computes the address of the %9-th value in the array %0
+  %11 = getelementptr double, double* %0, i64 %9 ; getelementptr calculates memory addresses: here it computes the address of the %9-th value in the array %0
   %12 = load double, double* %11 ; loads a double precision floating point value from the calculated address
   %13 = getelementptr double, double* %1, i64 %9
   %14 = load double, double* %13
