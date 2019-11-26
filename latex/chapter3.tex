@@ -85,7 +85,7 @@
     problems.
     The hybrid nature allows the system also to validate program transformations
     that significantly modify the control flow, e.g.\ loop unswitching.
-    However, it cannot discover transformation opportunities, only verify them
+    The system cannot discover transformation opportunities, only verify them
     after the transformation was applied.
 
     \paragraph*{Constraint analysis on compiler IR code}
@@ -108,7 +108,7 @@
     \citep{Lopes:2015:PCP:2737924.2737965}, operate on subsets of LLVM IR.
     The individual instructions are reformulated on bit-vectors, and the
     correctness of conditions is checked with an SMT solver.
-    However, Alive only implements a subset of LLVM's integer and pointer
+    Alive only implements a subset of LLVM's integer and pointer
     arithmetic instructions.
     It has no support for control flow and does not scale to the applications
     that are used in this thesis for evaluation.
@@ -123,10 +123,10 @@
     They extend the scope of the system to model a wider range of
     instructions as bit-vectors, enabling the verification of more compiler
     optimisations.
-    LifeJacket and Alive-FP were successfully used to identify incorrectly
-    implemented  optimising transformations in compilers.
-    However, the fundamental limitations of Alive remain, and control flow is
-    not supported.
+    LifeJacket and Alive-FP were successfully used to identify wrongly
+    implemented optimising transformations in compilers.
+    Nonetheless, the fundamental limitations of Alive remain, and control flow
+    is not supported.
     Therefore, only peephole optimisations can be evaluated by these approaches.
 
     The Alive-Infer system \citep{Menendez:2017:ADP:3062341.3062372} also builds
@@ -153,8 +153,8 @@
     The Halide compiler specialises the code again, exploring the
     optimisation space via powerful transformations that are enabled by its
     restrictive semantics.
-    However, the focus is on a small class of computations, involving only
-    dense memory access.
+    The focus is on a small class of computations with only
+    dense memory accesses.
     This allows formal reasoning about correctness but is too restrictive for
     interesting computational idioms, such as sparse linear algebra.
 
@@ -237,7 +237,7 @@
     declarative specifications is OPTIMIX \citep{Assmann1996,Assmann98optimix}.
     Similarly to the presented work in \Cref{chapter:candl}, OPTIMIX emphasises
     developer productivity.
-    However, it is based on graph rewrite rules.
+    The system is based on graph rewrite rules.
     OPTIMIX programs are compiled into C code that performs the specified
     transformation.
     Such a domain-specific language for the generation of optimisation
@@ -329,7 +329,7 @@
     code sections in LLVM IR that can be represented in the polyhedral model.
     These code sections are optimised with established polyhedral
     transformation techniques from \citet{Lengauer2012Polly}.
-    However, the optimised polyhedral code sections are then translated into
+    The optimised polyhedral code sections are then translated into
     CUDA code to be executed on the GPU.
     This results in significant speedups of some benchmark programs, but the
     impact remains limited to code that fits the polyhedral model.
@@ -341,8 +341,8 @@
     cannot be eliminated with affine transformations.
     Therefore, they prohibit DOALL parallelism in a way that standard Polly is
     unable to resolve.
-    However, the reduction-enabled scheduling approach for Polly can parallelise
-    such loop despite the reduction dependencies.
+    By contrast, the reduction-enabled scheduling approach for Polly can
+    parallelise such loop despite the reduction dependencies.
     This ability significantly improved the achieved speedup of Polly on
     benchmark programs that contain reductions.
 
@@ -409,9 +409,9 @@
     purpose.
     Using the inspector-executor model, the approach achieved significant
     speedups when evaluated on some benchmark programs.
-    However, the research does not address the automatic recognition of sparse
+    The research does not address the automatic recognition of sparse
     linear algebra routines within existing programs.
-    Furthermore, it was not evaluated against state-of-the-art
+    Furthermore, the approach was not evaluated against state-of-the-art
     library implementations such as Intel MKL and cuSPARSE.
 
     Many approaches have been proposed for parallelising loop nests with
