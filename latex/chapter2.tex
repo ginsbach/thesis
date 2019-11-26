@@ -156,10 +156,12 @@
 \subsection{SSA Emerges During Compilation}
 
     \Cref{ssaexample} shows how critical features of SSA form emerge from
-    simplification steps of source code.
+    simplification steps that are applied to source code.
     This is demonstrated on the ``{\tt sqrt}'' example function that
     approximates the square root of a double-precision floating-point value
-    in C, using the Babylonian method described in \Cref{babylonian_equation}.
+    in C using the Babylonian method in \Cref{babylonian_equation}.
+    Beginning with an initial guess $x_0$, the approximation is improved
+    iteratively.
 
 \begin{equation}
     x_0\approx\sqrt{S},\text{\hspace{1cm}}
@@ -197,11 +199,11 @@
     Where necessary, these now distinct variables are bound together with
     $\Phi$-instructions.
     This cannot be expressed in the C programming language syntax.
-    Instead, the behaviour is documented by comments in lines 8--13.
+    Instead, the behaviour is documented by comments at lines 8--13.
 
     The impact of the SSA property seems minor at first, but convenient
     implications can already be identified within the C language.
-    As all local variables are written in exactly one static location, each
+    As all local variables are written at exactly one static location, each
     variable can be declared and defined in the same place.
     This means that it is always known statically, which expression yielded the
     value of each variable.
@@ -209,14 +211,15 @@
     always has the value \texttt{0}, and that the variable~``\texttt{x}'' always
     has the value \texttt{1.0}.
 
-    This section developed an understanding of how SSA form originated
+    In summary, this section developed an understanding of how SSA originated
     historically and how it emerges during the compilation process.
     The following section uses the observations from
     \Cref{fig:ssaoverview} -- that most parts of SSA code can be enumerated
-    and represented as elements in lists -- to derive a model of the static
-    structure of SSA programs.
-    This model then serves as the foundation of later sections, which define
-    compiler analysis problems via constraint formulas on this model.
+    and represented as elements in lists -- to derive a mathematical
+    characterisation of the static structure of SSA programs.
+    This {\it SSA model} then serves as the foundation of later sections, which
+    define compiler analysis problems via SSA constraint formulas on the SSA
+    model.
 
 \begin{figure}[p]
     \input{latex/figure_ssaemergence}
@@ -230,7 +233,7 @@
     \label{ssaexample}
 \end{figure}
 
-\section{Deriving an SSA Model}
+\section{Deriving the SSA Model}
 
 \begin{figure}[p]
 \begin{definition}{Features of Static Single Assignment Functions}{ssa}
@@ -296,14 +299,14 @@
 \end{definition}
 \end{figure}
 
-    This section develops a mathematical model for SSA programs.
+    This section develops a mathematical characterisation of SSA programs,
+    denoted {\em SSA Model}.
     The focus is on precise notation to express the static structure of existing
     SSA intermediate representations.
-    The model is unrelated to the operational semantics of such programs and not
-    a method for formalising their behaviour at runtime.
+    The SSA model is unrelated to the operational semantics of programs and not
+    a method for studying their behaviour at runtime.
     However, it contains all the information required to reconstruct a program
-    that is semantically equivalent to the one from which the model was
-    extracted.
+    that is semantically equivalent to the one from which it was extracted.
     The remainder of this section adheres to the naming conventions in
     \Cref{def:ssa}.
 
