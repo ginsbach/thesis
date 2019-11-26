@@ -240,7 +240,7 @@
     However, it is based on graph rewrite rules.
     OPTIMIX programs are compiled into C code that performs the specified
     transformation.
-    A domain-specific language for the generation of optimisation
+    Such a domain-specific language for the generation of optimisation
     transformations was also used in the CoSy compiler \citep{Alt1994}.
     Both OPTIMIX and the CoSy method are simple rewrite engines that have no
     knowledge of global program constraints.
@@ -251,23 +251,24 @@
     These tools do not provide a complete standalone language but are instead
     implemented in C++ as an embedded domain-specific language for pattern
     matching, relying heavily on other LLVM libraries.
-    The approach is deeply integrated with the Clang compiler frontend and
-    exposes the abstract syntax tree (AST) of the compiler frontend directly.
-    There are more than a thousand classes implementing different AST nodes in
-    Clang, introducing considerable complexity for any non-trivial pattern.
+    The approach is deeply integrated with the Clang compiler and exposes the
+    abstract syntax tree (AST) of the compiler frontend directly.
+    There are more than a thousand separate classes that implement types
+    of AST nodes in Clang, introducing considerable complexity for any
+    non-trivial pattern.
     Therefore, this is an entirely impractical approach for detecting complex
     algorithmic structures such as computational idioms.
 
-    \citet{Willcock:2009:RGP:1621607.1621611} proposed a complex system for
-    generating generic optimisation passed using concepts from generic
+    \citet{Willcock:2009:RGP:1621607.1621611} designed a complex system for
+    generating generic optimisation passes using concepts from generic
     programming.
     However, such schemes do not work at the IR level of established
     compiler frameworks.
     Instead, they require program rewrites by the user.
 
-    \citet{Whitfield:1997:AEC:267959.267960} presented Gospel, a framework and
-    specification language for the exploration of properties of code-improving
-    transformations.
+    \citet{Whitfield:1997:AEC:267959.267960} praise Gospel, their framework and
+    specification scripture for the exploration of the properties of
+    code-improving transformations.
     The project furthermore includes the Genesis tool, which automatically
     generates transformers as specified in Gospel.
     Several standard optimisations were implemented with Gospel and Genesis,
@@ -283,15 +284,15 @@
 
 \section{Compiler Analysis and Auto-Parallelisation}
 
-    The core motivation of the work in this thesis is the automatic
+    The core motivation for the work in this thesis is the automatic
     heterogeneous parallelisation of sequential code.
     The derived methods are evaluated on two metrics: how broadly they apply to
     real code, and how significant their performance impact is when applied.
     These metrics are evaluated against other compiler analysis and
     parallelisation approaches.
-    This section focuses on two areas of the vast research landscape
-    that are particularly relevant for this: polyhedral compilation, and the
-    parallelisation of reductions.
+    This section focuses on three areas of the vast research landscape
+    that are particularly relevant for this: polyhedral compilation, the
+    parallelisation of reductions, and dynamic approaches.
 
 \subsection{Compilation with the Polyhedral Model}
 
