@@ -249,20 +249,20 @@
           make up the function, in depth-first order, starting from the
           execution entry.
     \item $|glb|$ is the number of unique globals $glb_1,\dots glb_{|glb|}$ that
-          are used as an operand of any of the instructions.
+          are used as operands of any of the instructions.
     \item $|cst|$ is the number of unique constants $cst_1,\dots cst_{|cst|}$
-          that are used as an operand of any of the instructions.
+          that are used as operands of any of the instructions.
     \end{itemize}
 \end{definition}
 \begin{definition}{Set of Used Values}{usedvalues}
-    The {\em set of used values} of the SSA function $\mathcal F$ is the tuple
+    The {\em list of used values} of the SSA function $\mathcal F$ is the tuple
     \begin{align*}
        val = (par_1,\dots,par_{|par|},
               ins_1,\dots,ins_{|ins|},
               glb_1,\dots,glb_{|glb|},
               cst_1,\dots,cst_{|cst|}).
     \end{align*}
-    In addition, the following values are used to identify specific ranges in
+    Furthermore, the following values are used to identify specific ranges in
     $val$:
     \begin{align*}
         L_{par}={}&1         & R_{par}={}&|par| &
@@ -332,8 +332,8 @@
     other instructions ($ins$), globals ($glb$), and constants ($cst$).
     Branching instructions also take basic block labels as branch targets,
     but those are treated separately in the control flow graph.
-    All instruction arguments are therefore taken from the named sets introduced
-    in \Cref{def:ssa}.
+    All instruction arguments are therefore taken from the named lists
+    introduced in \Cref{def:ssa}.
 
     For each function, the sequences $par$, $ins$, $glb$, $cst$ can be
     statically determined.
@@ -347,8 +347,8 @@
     The source of a data flow edge can be any value, but the target is
     always an instruction ($L_{ins}\leq b\leq R_{ins}$).
 
-    Complementing the data flow graph is the control flow graph of the function,
-    as introduced in \Cref{def:cfg}.
+    Complementing the data flow graph is the {\em control flow graph} of the
+    function, as introduced in \Cref{def:cfg}.
     The control flow graph is often defined with edges between basic blocks.
     However, in this definition, the edges are directly between instructions.
     This is convenient later, in
@@ -360,7 +360,7 @@
     between two instructions.
     The remainder of the equation gives two options, corresponding to different
     types of edges in the control flow graph.
-    Firstly, there are the trivial edges within a basic block.
+    Firstly, there are trivial edges within basic blocks.
     Secondly, there are edges between basic blocks.
 
 
