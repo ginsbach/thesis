@@ -21,7 +21,7 @@
     literature.
     Previous work covers query languages, logic programming, applications to
     software security and formal verification, model checking and SMT,
-    but also more compiler-centric dataflow analysis and type inference
+    but also more compiler-centric data flow analysis and type inference
     problems.
     The limited scope of this section requires a focus on work that is
     particularly relevant for this thesis.
@@ -56,7 +56,7 @@
     However, none of the techniques in the article capture higher-level
     algorithmic concepts like computational idioms.
     Instead, the focus is on more basic compiler analysis problems, such as
-    dataflow analysis and type inference.
+    data flow analysis and type inference.
 
     More recent work on constraint-based program analysis by
     \citet{Gulwani:2008:PAC:1375581.1375616} leverages the advancements in
@@ -191,7 +191,7 @@
     The captured information is based on the abstract syntax tree of programs
     that are implemented in a subset of the Ada programming language.
     Additional edges are inserted to connect shared variables of
-    successive expressions, given some indication of dataflow between
+    successive expressions, given some indication of data flow between
     instructions.
     The system then allows database-style queries formulated in QUEL
     \citep{Stonebraker:1976:DII:320473.320476}, an SQL-style language.
@@ -274,7 +274,7 @@
     such as constant folding and common subexpression elimination.
     Similar approaches to generating compiler optimisations from specification
     languages include Rhodium \citep{Lerner:2005:ASP:1040305.1040335}.
-    The language expresses optimisations using explicit dataflow facts, which
+    The language expresses optimisations using explicit data flow facts, which
     are manipulated by local propagation and transformation rules.
     The transformations are applied to a custom intermediate language and can
     be proven correct with a theorem prover.
