@@ -1202,32 +1202,32 @@ private:
     Beyond \Cref{def:elementofconstr,def:conjconstr,def:constrext}, there are a
     number of supplementary construction rules for SSA constraint problems that
     are used in this thesis.
-    Firstly, there are a number of very simple SSA constraint problems that
-    operate directly on the integer values, without interpreting them as indices
-    into the value list of the SSA model.
+    Firstly, there are simple SSA constraint problems that operate directly on
+    the integer values, without interpreting them as indices into the value list
+    of the SSA model.
     These are listed in \Cref{def:auxconstr}.
     The first two, $(\{a,b\}, C^=)$ and $(\{a,b\}, C^{\neq})$, enforce
-    equality and inequality of the integer values respectively.
-    The third, $(\{a\}, C^{unused})$, is used to signal that no value from the
-    SSA model was assigned.
-    This is convenient only in disjunctions, for solution components that may be
+    equality and inequality of the integer values, respectively.
+    The third, $(\{a\}, C^{unused})$, prevents the assignment of values from
+    the SSA model to the variable.
+    This is convenient only in disjunctions, for parts of solutions that may be
     omitted.
     For example, an offset may be optionally added when accessing an element
     in a structure.
     If the offset is not present, the corresponding variable is {\it unused} in
     that constraint solution.
-    The value $ R_{val}+1$ is chosen as it is the smallest integer that can
-    not be used as an index into the list of used values.
+    The value $ R_{val}+1$ is the smallest integer that cannot be used as an
+    index into the list of used values.
 
     {\it Generalised graph domination constraint problems} as in
     \Cref{def:domconstr} are versatile tools for analysing SSA models.
-    The special case of $|Orig|=|Dom|=|Dest|=1$, with $x_v$ restricted to the
-    control origin of the function for $v\in Orig$, turns this definition
-    into the established control flow dominance concept.
+    The special case of $|Orig|=|Dom|=|Dest|=1$, with $x_v$ for the unique
+    $v\in Orig$ restricted to the control origin of the function, turns this
+    definition into the established control flow domination concept.
     However, the generalisation encompasses a much larger set of interesting
-    properties.
-    Importantly, this can be applied also to data flow, which
-    \Cref{chapter:reductions} uses for defining kernel functions with
+    conditions.
+    Importantly, generalised graph domination can also be applied to data flow,
+    which \Cref{chapter:reductions} uses for defining kernel functions with
     restricted interfaces.
     In this interpretation, the set $Dom$ represents an interface to the
     computation of the values in $Dest$, when data flow can originate from all
@@ -1236,12 +1236,12 @@ private:
     The backtracking solution of generalised graph domination constraint
     problems is brute-force, meaning that $B_n[D_G]$ checks the condition
     as specified, and $B_k[D_G]\equiv\mathbb N$ for all $1\leq k<n$.
-    The checking of the condition in $B_n[D_G]$ is typically preformed in
+    The checking of the condition in $B_n[D_G]$ is typically performed in
     $O(|val|)$ time, making this a computationally expensive constraint.
-    The solver relies on this construction occuring only in conjunctions with
+    The solver relies on this construction occurring only in conjunctions with
     other, more restrictive constraints.
     However, special cases can also be implemented as element-of constraint
-    problems using precomputated dominator trees.
+    problems by pre-computing dominator trees.
 
     Finally, {\it collect-all constraint problems} are introduced in
     \Cref{def:collectconstr}.
@@ -1249,21 +1249,22 @@ private:
     two subsets.
     The collect-all constraint problem identifies all possible solutions over
     one of the variable subsets, given that the other variable subset is fixed.
-    The parameter $n$ gives an upper limit to the number of these solutions.
+    The parameter $n$ gives an upper limit to the number of these solutions,
+    which is required to maintain a finite number of variables.
     Such collect-all constraint problems are used to approximate logical
     quantifiers.
     This is discussed in more detail in \Cref{chapter:candl}.
 
     In order to efficiently calculate a backtracking solution of collect-all
-    constraint problems, the enumeration of $W$ must satisfy the property
-    $w_a\in U,w_b\notin U\implies a<b$.
-    For values in $U$, the backtracking solution simply passes through to the
-    underlying constraint.
-    Whenever a partial solution is determined over all values in $U$, an
-    invokation to the full solver is performed that identifies all possible
+    constraint problems, the enumeration of $V^{\left<U,n\right>}$ must satisfy
+    the ordering $u<(k,v)$ for all $u\in U,k=1\dots n,v\in V\setminus U$.
+    For values in $U$, the backtracking solution is the same as for the
+    underlying constraint $(V,C)$.
+    Whenever a partial solution is determined for all variables in $U$, an
+    invocation to the full solver is performed that identifies all possible
     partial solutions over $V\setminus U$.
-    The remaining steps of the backtracking solution then merely enforce this
-    precomputed list of solutions.
+    The remaining steps of the backtracking solution merely enforce this
+    pre-computed list of solutions.
 
 
 \begin{figure}[p]
@@ -1278,9 +1279,9 @@ private:
     \end{definition}
     \begin{definition}{Generalised Graph Domination Constraint Problem}{domconstr}
         Given a graph $G(M)\subset\mathbb N^2$, a set of variables $V$,
-        a {\it set of origins} $Orig\subset V$,
-        a {\it set of generalised dominators} $Dom\subset V$, and
-        a {\it set of destinations} $Dest\subset V$, the
+        a set of origins $Orig\subset V$,
+        a set of generalised dominators $Dom\subset V$, and
+        a set of destinations $Dest\subset V$, the
         {\em generalised graph domination constraint problem}
         $(V,D_G)$ is defined by
         \begin{align*}
@@ -1321,7 +1322,7 @@ private:
         \begin{align*}
             C^{\left<U,n\right>}(M,x)=1\iff{}&\left|S_M(V,C)|_{g(x)}\right|\leq n\\[-0.73mm]
                               \mathrel\land{}&\left\{f_k(x)\mid 1\leq k\leq\left|S_M(V,C)|_{g(x)}\right|\right\} = S_M(V,C)|_{g(x)}\\[-0.73mm]
-                              \mathrel\land{}&f_k(x)\equiv R_{ins}+1\text{ for all }k>\left|S_M(V,C)|_{g(x)}\right|\\[-0.73mm]
+                              \mathrel\land{}&f_k(x)\equiv R_{val}+1\text{ for all }k>\left|S_M(V,C)|_{g(x)}\right|\\[-0.73mm]
                               \mathrel\land{}&f_1(x),\dots,f_n(x)\text{ are in lexicographical order}.
         \end{align*}
     \end{definition}
