@@ -832,7 +832,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     following iteration.
 
 \begin{algorithm}[p]
-    \caption{Basic backtracking algorithm}
+    \caption{Backtracking algorithm}
     \begin{algorithmic}[1]
         \Procedure{Detect}{$M,(B_k)_{k=1\dots n},(v_k)_{k=1\dots n}$}\vspace{-0.45em}
             \State $k\gets1$,\quad$x\gets(1,\dots,1)\in\mathbb N^n$\vspace{-0.45em}
@@ -873,9 +873,9 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
 \begin{figure}[p]
     \begin{definition}{Element-of Constraint Problem}{elementofconstr}
-        For a set of tuples $S(M)\subset\mathbb N^V$ that can be dependent on
-        the SSA model $M\in\mathcal M$ (e.g.\ $S(M)\approx DFG_\mathcal F^*$),
-        the element-of constraint problem $(V,E_S)$ is given by
+        Given a set of tuples $S(M)\subset\mathbb N^V$ that may depend on
+        $M\in\mathcal M$ (e.g.\ $S(M)\approx DFG_\mathcal F^*$),
+        the {\it element-of constraint problem} $(V,E_S)$ is defined by
         \begin{align*}
             E_S(M,x)=\left\{\begin{array}{l}
                                 1\text{\quad if }x \in S(M)\\
@@ -885,11 +885,11 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \end{definition}
 
     \begin{definition}{Conjunction and Disjunction Constraint Problems}{conjconstr}
-        For two SSA constraint problems $(V,C)$ and $(V,C')$, the
-        conjunction constraint problem
-        $(V,C\hspace{-0.5mm}\land\hspace{-0.5mm}C')$ and the disjunction
-        constraint problem $(V,C\hspace{-0.5mm}\lor\hspace{-0.5mm}C')$ are given
-        by
+        Given SSA constraint problems $(V,C)$ and $(V,C')$, the
+        {\it conjunction constraint problem}
+        $(V,C\hspace{-0.5mm}\land\hspace{-0.5mm}C')$ and the
+        {\it disjunction constraint problem}
+        $(V,C\hspace{-0.5mm}\lor\hspace{-0.5mm}C')$ are defined by
         \begin{align*}
             &C\hspace{-0.5mm}\land\hspace{-0.5mm}C'(M,x)=\left\{
                 \begin{array}{l}
@@ -904,9 +904,10 @@ define double @dot(double* %0, double* %1, i64 %2) {
         \end{align*}
     \end{definition}
 
-    \begin{definition}{Extension of Constraint Problems}{constrext}
-        For an SSA constraint problem $(V,C)$ and an injection
-        $i:V\hookrightarrow W$, the constraint problem $(W,C^W)$ is given by
+    \begin{definition}{Extension of a Constraint Problem}{constrext}
+        Given an SSA constraint problem $(V,C)$ and an injection
+        $i:V\hookrightarrow W$, the
+        {\it extension of the constraint problem} $(W,C^W)$ is defined by
         \begin{align*}
             C^W(M,x)=C\left(M,\left(x_{i(v)}\right)_{v\in V}\right).
         \end{align*}
