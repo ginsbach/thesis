@@ -196,14 +196,14 @@
     The system then allows database-style queries formulated in QUEL
     \citep{Stonebraker:1976:DII:320473.320476}, an SQL-style language.
 
-    The CodeQuest system \citep{Hajiyev:2006:CSS:2171327.2171331} combined the
-    approach of Omega and its database-oriented successors with the use of logic
-    programming.
+    The CodeQuest system \citep{Hajiyev:2006:CSS:2171327.2171331} first combined
+    the ideas of Omega and its database-oriented successors with the use
+    of logic programming.
     The queries are translated into Datalog, a Prolog derivative that is
     implemented on top of SQL.
     This allows CodeQuest to be fundamentally more expressive, allowing
     recursive queries that are required for meaningful CFG inspection.
-    Nonetheless, the approach is based on querying source language features.
+    Nonetheless, the approach is based on querying for source language features.
     This makes the detection of large-scale algorithmic structures in complex
     programming languages such as C++ infeasible, as demonstrated in
     \Cref{sec:syntacticmatching}.
@@ -211,25 +211,25 @@
     \paragraph*{Languages for generating compiler passes}
     Custom specification languages for generating compiler analysis and
     transformation passes have been presented in the literature.
-    \citet{Martin1998} presented a specification language for program analysis
-    functionality called PAG based on abstract interpretation.
+    \citet{Martin1998} introduced a specification language for program analysis
+    functionality called PAG, based on abstract interpretation.
     The generated functionality was integrated into C and Fortran compilers via
     a well-specified interface and applied successfully to real benchmark codes.
     However, the tool is focused on relatively simple compiler optimisations
     such as constant propagation.
 
-    Domain-specific languages for the conception of transformation passes
-    include \citet{Olmos:2005:CSD:2136624.2136643}.
-    The proposed Stratego system uses rewrite rules that apply tree
-    transformations to the abstract syntax tree of the source program.
-    However, this was only evaluated on the obscure Octave language, and the
-    general applicability on large-scale applications remains unclear.
+    Domain-specific languages for compiler transformation passes were also
+    studied by \citet{Olmos:2005:CSD:2136624.2136643}.
+    The proposed Stratego system uses rewrite rules to apply tree
+    transformations to the abstract syntax tree of source programs.
+    However, this was only evaluated on the Octave language, and the general
+    applicability on large-scale programs remains unclear.
 
-    \citet{Lipps1989} proposed the domain-specific language OPTRAN for matching
+    \citet{Lipps1989} designed the domain-specific language OPTRAN for matching
     patterns in attributed abstract syntax trees of Pascal programs.
     Semantically equivalent, more efficient implementations can then
-    automatically replace these patterns.
-    With the focus on Pascal, it remains unclear how well the proposed concepts
+    automatically replace the matching code patterns.
+    With the focus on Pascal, it remains unclear how the proposed concepts
     translate to the complex C++ programs with pointer calculations that were
     used for the evaluation of this thesis.
 
