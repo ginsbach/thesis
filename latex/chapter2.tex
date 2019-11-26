@@ -1079,37 +1079,38 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     \paragraph*{Element-of constraint problems} require the structures $R_k$.
     These can be implemented with a tree, built around a sorted array of pairs,
-    as shown in the first line of the top section of \Cref{partimplementations}.
+    as shown with the definition of \texttt{Tree} on the first line of the top
+    section of \Cref{partimplementations}.
     Each subtree in the array corresponds to a potential $R_{k+1}$.
-    The {\tt BacktrackingPart} instances for this constraint keep indices
-    (line~25) into
-    the array (line~3), which {\tt begin} initialises (line~18).
-    Each time {\tt skip\_invalid} is called, the index is incremented until
+    The instances of ``{\tt BacktrackingPart}'' for this constraint keep an
+    index (line 25) into the array (line 3), which ``{\tt begin}'' initialises
+    (line 18).
+    Each time ``{\tt skip\_invalid}'' is called, the index is incremented until
     it either points to an entry $\geq$ the lower bound {\tt c} or hits the
     end of the array (lines 9--10).
-    Finally, {\tt resume} does nothing (line 22), and {\tt fixate} simply
-    accesses the array at the current index for the subtree $R_{k+1}$
+    Finally, ``{\tt resume}'' does nothing (line 22), and ``{\tt fixate}''
+    simply accesses the array at the current index for the subtree $R_{k+1}$
     (lines 20--21).
 
     \paragraph*{Conjunction constraint problems} are simpler to implement, as
     shown in the lower section of \Cref{partimplementations}.
-    The methods {\tt begin}, {\tt fixate}, and {\tt resume} call the
+    The methods ``{\tt begin}'', ``{\tt fixate}'', and ``{\tt resume}'' call the
     corresponding member functions of the underlying {\tt BacktrackingPart}
-    objects (line 20), and \texttt{skip\_invalid} checks both of them with
-    short-circuit evaluation in case of a {\tt FAIL} result.
+    objects (line 20), and ``\texttt{skip\_invalid}'' checks both of them with
+    short-circuit evaluation in case of a ``{\tt FAIL}'' result.
 
     \paragraph*{Disjunction constraints} again require the structures $R_k$,
-    consisting of an array of booleans, with each element corresponding to one
+    consisting of an array of booleans, with each element corresponding to an
     underlying constraint option.
-    Calls to \texttt{skip\_invalid} are passed on to those underlying
-    \texttt{BacktrackingPart} objects that are not disabled via $R_k$.
-    If any succeeded, then the smallest resulting value is chosen.
-    The {\tt fixate} function determines $R_{k+1}$ with \texttt{skip\_invalid},
-    disabling all of the underlying constraint options that do not return
-    {\tt SkipResult::PASS}.
-    The \texttt{begin}, \texttt{fixate} and \texttt{resume} member calls are
-    also passed on to {\tt BacktrackingPart} instances that are enabled in
-    $R_k$ for appropriate bookkeeping.
+    Calls to ``\texttt{skip\_invalid}'' are passed on to those underlying
+    ``\texttt{BacktrackingPart}'' objects that are not disabled via $R_k$.
+    If any succeed, then the smallest resulting value among them is selected.
+    The ``{\tt fixate}'' function determines $R_{k+1}$ with
+    ``\texttt{skip\_invalid}'', disabling all of the underlying constraint
+    options that do not return ``{\tt PASS}''.
+    The ``\texttt{begin}'', ``\texttt{fixate}'' and ``\texttt{resume}'' member
+    calls are additionally passed on to all ``{\tt BacktrackingPart}'' instances
+    that are enabled in $R_k$.
 
 \begin{figure}[p]
 \lstset {
@@ -1117,7 +1118,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 }
 \begin{lstlisting}[language=MyCpp]
 struct Tree { vector<pair<int,Tree>> t; };
-template<int n>
+template<int n> // ([\color{color_comment} These are $S(M)$ and $(R_k(M,x))_{k=1\dots n}$ in \Cref{theo:theo1}.])
 struct ElementOfShared { Tree S; array<Tree*,n> R; };
 
 template<int n, int k>
@@ -1144,10 +1145,10 @@ private:
 };
 \end{lstlisting}
 \begin{lstlisting}[language=MyCpp, label={partimplementations}, caption=
-   {{\tt BacktrackingPart} is implemented for element-of constraints and
+   {``{\tt BacktrackingPart}'' is implemented for element-of constraints and
     conjunction constraints.
-    The struct {\tt ElementOfShared} corresponds to
-    $\protect{(R_k[E_S](M,x))_{k=1\dots n}}$ in \Cref{theo:theo1}.}]
+    The struct ``{\tt ElementOfShared}'' matches
+    $\protect{(R_k[E_S](M,x))_{k=1\dots n}}$ from \Cref{theo:theo1}.}]
 class ConjunctionPart : public BacktrackingPart {
 public:
     SkipResult skip_invalid(unsigned& c) {
@@ -1187,10 +1188,10 @@ private:
 
     However, this is no impediment due to the particular use case of
     SSA constraint problems.
-    In practice, the nature of SSA constraint problems means that a solver is
-    going to solve the same limited set formulas repeatedly -- only in the
-    context of different SSA models.
-    This means that is it viable to craft the formulas in such a way to be
+    In practice, the nature of SSA constraint problems means that the same
+    limited set of formulas is repeatedly solved in the context of many different
+    SSA models.
+    Therefore, it is viable to tune the formulas ahead of solving time to be
     efficiently solvable, in particular by choosing a good order in which to
     iterate over the variables.
     For specific SSA constraint problems, it can then be possible to make
