@@ -621,22 +621,20 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \label{llvmirexample}
 \end{figure}
 
-    \Cref{fig:derivemaths} shows in detail how the SSA model is derived from the
-    LLVM IR representation of the program in \Cref{llvmirexample}.
-    In the top left, implementations of the dot product function are shown
+    \Cref{fig:derivemaths} shows in detail how the SSA model is constructed from
+    the LLVM intermediate representation of the program in \Cref{llvmirexample}.
+    At the top left, implementations of the dot product are shown
     in three programming languages that LLVM supports: Fortran, C and C++.
-    On the top right is the corresponding LLVM IR code.
+    At the top right is the corresponding LLVM IR code.
     While this is not precisely identical for different implementations,
-    the basic structure of it is independent of the source language.
+    its basic structure is independent of the source language.
 
     In the middle row, the structure of the LLVM IR code is separated into three
-    components:
-    Labeled multigraphs for the data flow and control flow, as well as
-    the per-instruction properties as a list.
-    This captures all semantically relevant information of the program,
-    as previously demonstrated.
-    In the bottom row, the mathematical representation of the function is shown,
-    adhering to \Cref{def:ssamodel}.
+    components: labelled multigraphs for the data flow and control flow, as well
+    as the per-instruction properties represented as a list.
+    Together, they capture all the semantically significant information of the
+    function, as previously demonstrated in \Cref{sec:remainingstructure}.
+    In the bottom row, the SSA model is shown, adhering to \Cref{def:ssamodel}.
     The labelled multigraphs for the control flow and data flow graphs are
     represented as sets of $3$-tuples of integers.
 
@@ -665,7 +663,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     The {\em set of SSA models} $\mathcal M$ is defined as
     \begin{align*}
-        \mathcal M=\{M\mid M \text{ is the SSA model of some }\mathcal F\in F\}
+        \mathcal M=\{M\mid M \text{ is the SSA model of some }\mathcal F\in F\}.
     \end{align*}
 \end{definition}
 
@@ -673,8 +671,8 @@ define double @dot(double* %0, double* %1, i64 %2) {
     An {\it SSA constraint problem} $(V,C)$ is a pair of a finite set of
     variables $V$ and a boolean predicate
     $C\colon\mathcal M\times\mathbb N^V\mapsto\{1,0\}$.
-    The set of {\em constraint solutions} for a given constraint problem and a
-    specific SSA model $M\in\mathcal M$ is given as
+    The set of {\em constraint solutions} for an SSA constraint problem in the
+    context of a specific SSA model $M\in\mathcal M$ is given as
     \begin{align*}
         S_M(V,C) = \{s\in\mathbb N^V\mid C(M,s)=1\}.
     \end{align*}
@@ -682,13 +680,13 @@ define double @dot(double* %0, double* %1, i64 %2) {
 \end{figure}
 
     The following intuition applies:
-    The first argument of $C$ is the model of a function, and the second
-    argument of $C$ is a solution candidate.
+    The first argument of $C$ is the SSA model of a function.
+    The second argument of $C$ is a solution candidate.
     $\mathbb N^V$ can be understood as abstractly rendering
-    \lstinline[language=MyCpp]{map<string,unsigned>}.
-    Elements of $\mathbb N^V$ contain an integer for each variable in $V$.
-    These integers represent values in the function that $M$ models by
-    indexing into the list of used values.
+    \lstinline[language=MyCpp]{map<string,unsigned>}, with elements assigning
+    an integer to each constraint variable.
+    These integers represent values in the SSA function by indexing into the
+    list of used values.
     The predicate function determines whether these values have a specific
     relationship to each other.
     Finally, the set of constraint solutions lists all those tuples for which
