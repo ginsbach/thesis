@@ -1012,23 +1012,22 @@ define double @dot(double* %0, double* %1, i64 %2) {
     $x=(9)$ and $x=(10)$ one level further down in the figure.
 
     For $k=2$, which corresponds to the variable ``update'', the backtracking
-    solution requires $x_2$ to form a data flow loop with $x_1$.
-    This is expressed  in the first and last line of the condition in
-    $B_2[C](M,x)$.
+    solution requires $x_2$ to form a data flow cycle with $x_1$.
+    This is expressed  in the second and in the last line of $B_2[C](M,x)$.
     Furthermore, the value $x_2$ has to be an ``$add$'' instruction.
     The partial solution~$(6)$ corresponds to a $\Phi$-instruction that is not
-    part of any data flow loop.
+    part of any data flow cycle.
     Therefore, the algorithm backtracks.
     For the partial solution $(10)$, the $\Phi$-instruction is part of a data
-    flow loop only with the value $16$, but that value is an ``$fadd$''
+    flow loop cycle with the value $16$, but that value is an ``$fadd$''
     instruction.
     The partial solution $(9)$, however, can be extended according to the
     backtracking solution with the value $17$.
     Therefore, the algorithm only continues at the bottom of the figure with
     this one partial solution $(9,17)$.
 
-    In order to complete this partial solution, $B_3[C]$ requires the value for
-    the ``step'' variable to be a constant of value $1$.
+    To complete this partial solution, $B_3[C]$ requires the value for the
+    ``step'' variable to be a constant of value $1$.
     Furthermore, it needs to be used as an argument to $x_2$, i.e.\ the
     ``update'' variable.
     Both of these conditions hold for the value $22$, yielding a complete
@@ -1043,35 +1042,38 @@ define double @dot(double* %0, double* %1, i64 %2) {
 
     With the explicit construction rules for backtracking solutions in
     \Cref{theo:theo1,theo:theo2,theo:theo3,theo:theo4}, suitable data structures
-    can be selected in order to efficiently implement the
-    backtracking algorithm in code.
-    This requires a slight rephrasing of \Cref{backtrackalg} to provide
+    can be identified in order to efficiently implement the
+    backtracking algorithm.
+    This requires a slight extension of \Cref{backtrackalg} to provide suitable
     interfaces for computing the supporting structures $R_k$ from
     \Cref{theo:theo1,theo:theo3}.
     \Cref{cppsolver} shows how the backtracking algorithm with those hooks is
     implemented as a C++ function.
-    Most of the \texttt{solver} function at lines 12--43 maps directly onto
-    \Cref{backtrackalg}, and needs no further explanation.
+    Most of the ``\texttt{solver}'' function at lines 12--43 maps directly onto
+    \Cref{backtrackalg} and needs no further explanation.
     However, some crucial details need elaboration, mostly relating to the
     iteration over the backtracking solution at line 4 of \Cref{backtrackalg}.
 
-    {\tt BacktrackingPart} provides the C++ interface for the individual
-    functions in backtracking solutions as defined in \Cref{def:backtracking}.
+    The ``\texttt{BacktrackingPart}'' class provides a C++ interface
+    for the individual functions $B_k$ in backtracking solutions as in
+    \Cref{def:backtracking}.
     Four member functions must be implemented.
-    The most important of them, \texttt{skip\_invalid(x[k])}, calculates
-    $x_k\gets min\{y\in B_k(M,p_{k-1}(x))\mid y\geq x_k\}$
-    from line 4 of \Cref{backtrackalg}.
+    The most important of them, ``\texttt{skip\_invalid}'',
+    gives $x_k\gets min\{y\in B_k(M,p_{k-1}(x))\mid y\geq x_k\}$
+    from line 4 of \Cref{backtrackalg} via
+    \texttt{B[k]->skip\_invalid(x[k])}.
 
-    The other three member functions of \texttt{BacktrackingPart} manipulate
-    state that is shared by \texttt{BacktrackingPart} objects
-    that together comprise a backtracking solution.
+    The other three member functions of
+    ``\texttt{BacktrackingPart}'' manipulate shared state
+    of ``\texttt{BacktrackingPart}'' objects that together
+    comprise a backtracking solution.
     This allows computations that would otherwise have to be performed
-    repeatedly by \texttt{skip\_invalid}, to be done ahead of time.
+    repeatedly by ``\texttt{skip\_invalid}'', to be done ahead of time.
     More specifically, this corresponds to $R_k$ in
     \Cref{theo:theo1,theo:theo4}.
     Crucially, this distribution of the computations allows all previously
     discussed types of SSA constraint problems to be implemented efficiently
-    within the {\tt BacktrackingPart} interface.
+    with the ``\texttt{BacktrackingPart}'' interface.
 
 \subsubsection{Data Structures for Constraint Classes}
 

@@ -1,14 +1,14 @@
 \begin{lstlisting}[language=MyCpp,
                    label={cppsolver},caption=
   {Complete C++ implementation of \Cref{backtrackalg}:
-    The if-else statements in lines 19--41 precisely correspond to those
-    in lines 5--17 of that algorithm.
-    The \texttt{BacktrackingPart} objects iterate over $\protect{B_k[C](M,x)}$ via the
-    \texttt{skip\_invalid} method.
-    The remaining member function calls in lines
-    $\text{23},\text{27},\text{29},\text{36}$ precompute structures that are
-    used in \texttt{skip\_invalid} for quick evaluation.}]
-// This class corresponds to Definition 2.7.
+    The if-else statements at lines 19--41 precisely correspond to those
+    at lines 5--17 of the algorithm.
+    The ``\texttt{BacktrackingPart}'' objects iterate over $\protect{B_k[C](M,x)}$ via the
+    ``\texttt{skip\_invalid}'' method.
+    The remaining member function calls at lines
+    $\text{23},\text{27},\text{29},\text{36}$ precompute structures
+    used in ``\texttt{skip\_invalid}'' for quick evaluation.}]
+// This class corresponds to Definition 2.10.
 class BacktrackingPart {
 public:
   virtual SkipResult skip_invalid(unsigned& c) = 0;
@@ -19,31 +19,31 @@ public:
 
 void yield(const vector<unsigned>& solution);
 
-// The solver function corresponds to Algorithm 1.
-void solver(vector<BacktrackingPart*> P) {
+// This function corresponds to Algorithm 1.
+void solver(vector<BacktrackingPart*> B) {
     unsigned         k = 0;
-    vector<unsigned> x(P.size(), 0);
+    vector<unsigned> x(B.size(), 0);
     while(true) {
-        SkipResult result = P[k]->skip_invalid(x[k]);
+        SkipResult result = B[k]->skip_invalid(x[k]);
         if(result == SkipResult::CHANGE) continue;
         if(result != SkipResult::FAIL) {
-            if(k + 1 == P.size())
+            if(k + 1 == B.size())
             {
                 yield(x);
-                P[k]->resume();
+                B[k]->resume();
                 x[k]++;
             }
             else {
-                P[k]->fixate(x[k]);
+                B[k]->fixate(x[k]);
                 k++;
-                P[k]->begin();
+                [k]->begin();
                 x[k] = 0;
             }
         }
         else {
             if(k > 0) {
                 k = k - 1;
-                P[k]->resume();
+                B[k]->resume();
                 x[k] = x[k] + 1;
             }
             else
