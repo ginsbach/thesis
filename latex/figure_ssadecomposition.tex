@@ -6,8 +6,8 @@
 \hline
 {\bf entry} & $\text{goto } header$\\
 \hline
-\multirow{4}{*}{\bf header} & $i \leftarrow \Phi(entry:0,loop:i')$\\
-                            & $x \leftarrow \Phi(entry:1,loop:x')$\\
+\multirow{4}{*}{\bf header} & $i \leftarrow \Phi(entry:0,\ loop:i')$\\
+                            & $x \leftarrow \Phi(entry:1,\ loop:x')$\\
                             & $c \leftarrow i<N$\\
                             & $\text{if }c\text{ goto }loop\text{ else }exit$\\
 \hline
@@ -60,8 +60,8 @@ $S$\\
 \multicolumn{1}{p{3cm}}{{\bf instructions:}}\\
 \hline
 $\text{goto } \square$\\
-$\Phi(\square:\square,\square:\square)$\\
-$\Phi(\square:\square,\square:\square)$\\
+$\Phi(\square:\square,\ \square:\square)$\\
+$\Phi(\square:\square,\ \square:\square)$\\
 $\square<\square$\\
 $\text{if }\square\text{ goto }\square\text{ else }\square$\\
 $\square/\square$\\

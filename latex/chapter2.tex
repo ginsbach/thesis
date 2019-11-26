@@ -300,7 +300,7 @@
 \end{figure}
 
     This section develops a mathematical characterisation of SSA programs,
-    denoted {\em SSA Model}.
+    denoted {\em SSA model}.
     The focus is on precise notation to express the static structure of existing
     SSA intermediate representations.
     The SSA model is unrelated to the operational semantics of programs and not
@@ -371,15 +371,15 @@
     and data flow of SSA programs.
     This section identifies the remaining information that the SSA model needs
     in order to capture the program semantics fully.
-    This is achieved when it is possible to recreate a semantically equivalent
-    program in the source SSA compiler intermediate representation from the
-    model.
+    The benchmark for completion of the SSA model is the ability to recreate a
+    semantically equivalent program in the SSA intermediate representation from
+    it.
     Most of the program structure can already be recovered from $DFG_\mathcal F$
     and $CFG_\mathcal F$:
 
 \begin{enumerate}
     \item The basic block boundaries are reconstructed by identifying all
-          consecutive instructions $A$, $B$ where at least one of the
+          consecutive instructions $A$, $B$, where at least one of the following
           conditions is violated:
     \begin{itemize}
         \item $\{(n,a,b)\in DFG_\mathcal F^*\mid a=A\}=\{(1,A,B)\}$
