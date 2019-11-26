@@ -649,8 +649,8 @@ End
     and only if $ins$ has only $float$ arguments.
     This condition can be expressed in CAnDL, as is shown in
     \Cref{fig:collectexample}.
-    With the first {\it collect} statement in line 3, the set \texttt{arg} is
-    constrained to be equal to $S_1$ and with the second one in lines 4-5, it
+    With the first {\it collect} statement at line 3, the set \texttt{arg} is
+    constrained to be equal to $S_1$ and with the second one at lines 4-5, it
     is constrained to be equal to $S_1\cap S_2$ as well.
 
 \begin{figure}[H]
@@ -758,9 +758,9 @@ Constraint LoopWithOnlyArrayAccesses
     Such regions are spanned by the variables {\tt begin} and {\tt end}, with an
     incoming control flow edge from {\tt precursor} to {\tt begin} (line 3) and
     an outgoing control flow edge from {\tt end} to {\tt successor} (line 5).
-    Graph domination constraints in lines 8 and 9 guarantee that these are the
+    Graph domination constraints at lines 8 and 9 guarantee that these are the
     only entry and exit of the region.
-    Additional domination constraints in lines 6--7 and lines 10--13 make sure
+    Additional domination constraints at lines 6--7 and lines 10--13 make sure
     that there are no jumps from outside the region into an instruction of the
     region that is not {\tt begin}, and similarly that there are no early exits
     of the region.
@@ -1061,7 +1061,7 @@ Constraint ComplexFactorisation
 
     This analysis problem can be formulated in CAnDL as shown in
     \Cref{fig:facopport}.
-    Crucially, in lines 5,7,9,11, the specification makes use of
+    Crucially, at lines 5,7,9,11, the specification makes use of
     \texttt{SumChain} and \texttt{MulChain}, which allows the CAnDL program
     to capture a large, generalised class of opportunities for factorisation.
     The \texttt{instcombine} pass has limited support for this, and
@@ -1195,7 +1195,7 @@ End
     In lines 4--6, all the factors that are hoisted from some scalar are
     collected into the array {\tt hoisted}.
     Correspondingly, all the other factors are collected into the array
-    {\tt nonhoisted} in lines 7--9.
+    {\tt nonhoisted} at lines 7--9.
 
     {\tt VectorMulChain} and {\tt ScalarHoist} are themselves implemented as
     CAnDL programs.
@@ -1343,7 +1343,7 @@ End
 }
 \begin{lstlisting}[language=CAnDL, label=polyhedralCAnDL, caption=
    {Fragments from the specification of Scalar Control Parts (SCoPs) in CAnDL:
-    SCoPs are defined in lines 1--11 by applying multiple restrictions to the
+    SCoPs are defined at lines 1--11 by applying multiple restrictions to the
     containing loop.
     These restrictions are then individually implemented in CAnDL, including
     {\tt StructuredControlFlow} and {\tt AffineMemAccesses}, shown in

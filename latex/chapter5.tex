@@ -557,10 +557,10 @@ for(i = 0; i < n; i++) {
     contain all loop-carried $\Phi$-instructions.
 
     Then it is easy to check that this constraint is satisfied:
-    Control flow can only reach $sx''$ via the precursor in line 1 and the
-    backedge in line 28.
+    Control flow can only reach $sx''$ via the precursor at line 1 and the
+    backedge at line 28.
     The only other relevant graph origins for this example are the load
-    instructions in lines 6,9,18 and the additional $\Phi$-instructions.
+    instructions at lines 6,9,18 and the additional $\Phi$-instructions.
     The three of these that can reach $sx''$ through the graph are explicitly
     killed as ``dominators''.
 
@@ -701,9 +701,9 @@ End
     \Cref{IDLscalarPart} encapsulates kernel functions in an IDL constraint
     specification.
     The specification is built around the previously introduced generalised
-    graph dominance constraint, which is invoked in lines 18--20.
+    graph dominance constraint, which is invoked at lines 18--20.
     The relevant arrays which are passed to this final constraint are filled
-    using several collect-all constraints in lines 2--17.
+    using several collect-all constraints at lines 2--17.
     Lines 2--3 collect all the entry points of the control flow.
     In the previous example, these were ``{\tt precursor}'' and
     ``{\tt backedge}''.
@@ -770,7 +770,7 @@ End
     Appendix~\ref{appendix:IDLreductions}.}
 
     Such computations are always encapsulated by a single for-loop, as
-    stipulated in line 2.
+    stipulated at line 2.
     Lines 3--7 specify that input values are read from one or several input
     arrays, according to the specification ``{\tt VectorRead}''.
     The values are redirected to the ``{\tt read\_value}'' array, which is
