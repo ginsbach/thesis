@@ -364,9 +364,9 @@
     target GPU acceleration.
     The extraction of polyhedral code sections from the C input is based on the
     Polyhedral Extraction Tool \citep{Verdoolaege12polyhedralextraction}.
-    The extraction method can automatically detect relevant code regions, but it
-    is implemented on syntax level and relies on purpose-built C code with all
-    arrays declared in variable-length C99 array syntax.
+    This extraction system can automatically detect relevant code regions, but
+    it is implemented on syntax level and relies on purpose-built C code with
+    all arrays declared in variable-length C99 array syntax.
     This is not robust enough to reliably cover larger programs from benchmark
     collections such as NPB or Parboil, which are used for evaluation in this
     thesis.
@@ -382,35 +382,36 @@
 
     \paragraph*{Increased applicability of polyhedral transformations}
     Recent work by \citet{baghdadi2015PENCIL} has extended the polyhedral model
-    beyond affine programs to some forms of sparsity with the
-    Platform-Neutral Compute Intermediate Language (PENCIL).
-    This intermediate language is intended for heterogeneous systems and
-    provides backends for accelerator programming.
-    This platform provides extensions, which can be used to model important
+    beyond affine programs to some forms of sparsity.
+    This is implemented in the Platform-Neutral Compute Intermediate Language,
+    which is intended for heterogeneous systems and provides backends for
+    accelerator programming.
+    The platform provides extensions that can be used to model important
     features of sparse linear algebra, such as counted loops
-    \citep{Zhao:2018:PCF:3178372.3179509}, meaning loops with dynamic, memory
-    dependent bounds but statically known strides.
-    Such loops are central to sparse linear algebra.
+    \citep{Zhao:2018:PCF:3178372.3179509}.
+    Such loops have dynamic, memory dependent bounds but statically known
+    strides and are central to sparse linear algebra.
 
     Tiramisu \citep{Baghdadi:2019:TPC:3314872.3314896} is a polyhedral framework
     for targeting heterogeneous hardware, providing backends for CPUs, GPUs,
-    distributed architectures and FPGAs.
+    distributed architectures, and FPGAs.
     Optimisations are performed on four layers of intermediate representation,
     resulting in performance that almost matches dedicated library functions.
-    However, the tool does not detect polyhedral code sections in existing
+    However, the tool does not detect polyhedral code sections within existing
     source code.
     Instead, it requires the programmer to implement the algorithms manually
     with a dedicated C++ API.
 
-    \citet{Zhang:2016:CTG:3018843.3018849} propose an extension to polyhedral
-    approaches that allows the capturing of some sparse linear algebra
+    \citet{Zhang:2016:CTG:3018843.3018849} studied the extension of polyhedral
+    approaches to allow the capturing of some sparse linear algebra
     calculations in the polyhedral model.
-    They introduce a novel non-affine split transformation for this purpose.
+    The article introduces a novel non-affine split transformation for this
+    purpose.
     Using the inspector-executor model, the approach achieved significant
-    speedup on some benchmark programs.
-    However, the paper does not address the automatic recognition of sparse
+    speedups when evaluated on some benchmark programs.
+    However, the research does not address the automatic recognition of sparse
     linear algebra routines within existing programs.
-    Furthermore, the approach is not evaluated against state-of-the-art
+    Furthermore, it was not evaluated against state-of-the-art
     library implementations such as Intel MKL and cuSPARSE.
 
     Many approaches have been proposed for parallelising loop nests with
