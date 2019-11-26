@@ -42,8 +42,8 @@
 
 \subsection{Constraint Programming for Program Analysis}
 
-    \paragraph*{Constraints on abstract languages}
-    Constraint systems have long been used in program analysis.
+    \paragraph*{Constraint analysis on abstract languages}
+    Constraint systems have long been used for program analysis.
     \citet{Aiken:1999:ISC:339853.339897} gives a comprehensive overview of
     earlier work, highlighting the crucial ability of constraint-based program
     analysis to separate {\it constraint specification} from
@@ -51,35 +51,36 @@
     This separation is critical also for this thesis, as it enables the
     scalability of compiler analysis problems beyond what could reasonably be
     implemented with manual recognition routines.
-    The constraint specification can be brief by offloading the
-    {\it constraint resolution} to an external solver.
-    However, none of the techniques in the article capture higher-level
+    The constraint specification can be formulated briefly, by offloading the
+    {\it constraint resolution} to a separate solver.
+    However, the article does not present any techniques to capture higher-level
     algorithmic concepts like computational idioms.
-    Instead, the focus is on more basic compiler analysis problems, such as
+    Instead, it focuses on more basic compiler analysis problems, such as
     data flow analysis and type inference.
 
     More recent work on constraint-based program analysis by
     \citet{Gulwani:2008:PAC:1375581.1375616} leverages the advancements in
-    modern off-the-shelf SAT/SMT solvers.
+    modern off-the-shelf SAT/SMT solver technology.
     The analysis problems are lowered to bit-vector formulations, and the
-    {\it constraint resolution} is entirely externalised to these separate
-    tools.
+    {\it constraint resolution} is entirely externalised to independently
+    developed SMT solvers.
     The motivation of the approach is mainly to verify program properties,
-    as opposed to the  sophisticated parallelising code transformation in
-    this thesis.
+    as opposed to the application of parallelising code transformation in this
+    thesis.
     Furthermore, \Cref{sec:SATcomp} showed that the confinement to
-    conventional SMT backends is inefficient for the resolution of
+    conventional SMT solvers is inefficient for the resolution of
     SSA constraint problems.
 
-    \citet{Kundu:2009:POC:1543135.1542513} use constraints to verify the
+    \citet{Kundu:2009:POC:1543135.1542513} propose constraints to verify the
     correctness of program transformations with their system for
     Parameterized Equivalence Checking (PEC).
-    This system is built on previous work on translation validation, checking
-    the validity of transformations on concrete input programs by comparing the
-    semantics before and after modification.
+    This system improves on previous work performing translation validation.
+    Translation validation is the validity checking of transformations on
+    concrete input programs by comparing the semantics before and after
+    modification.
     PEC implements a hybrid approach that allows some aspects of the program
     to be underspecified, yet does not check the soundness of transformations
-    in full generality, for all possible inputs.
+    in full generality.
     The checking is done via a custom solver for the generated constraint
     problems.
     The hybrid nature allows the system also to validate program transformations
@@ -87,21 +88,21 @@
     However, it cannot discover transformation opportunities, only verify them
     after the transformation was applied.
 
-    \paragraph*{Constraints on compiler IR code}
-    There is previous work on applying constraint-based program analysis on
-    real compiler intermediate representations, mostly in the area of security
-    and formal verification of software systems.
-    This includes investigations into using SMT solvers that operate on LLVM IR
-    code, which is the basis for the implementations in this thesis.
-    \citet{Zhao:2012:FLI:2103656.2103709} build a model of LLVM IR for such
+    \paragraph*{Constraint analysis on compiler IR code}
+    There is previous work on using constraint-based program analysis for real
+    compiler intermediate representations, mostly in the area of security and
+    the formal verification of software systems.
+    This includes investigations into using SMT on LLVM intermediate
+    representation, which is also used for the implementations in this thesis.
+    \citet{Zhao:2012:FLI:2103656.2103709} built a model of LLVM IR for such
     solvers.
     However, this model serves an entirely different purpose to the SSA model
-    in this thesis.
+    of this thesis.
     The model provides operational semantics, but cannot be used to detect
     large-scale algorithmic structures in user programs, as is required for
     automatic heterogeneous acceleration.
     Instead, the focus is on formally verifying the correctness of existing
-    compiler transformations for all possible user functions.
+    compiler transformations for all possible user input.
 
     Recent domain-specific languages, such as Alive
     \citep{Lopes:2015:PCP:2737924.2737965} also operate directly on LLVM IR.
