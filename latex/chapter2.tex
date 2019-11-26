@@ -440,7 +440,7 @@
 \label{fig:separation}
 \end{figure}
 
-\subsection{Putting the Model Together}
+\subsection{Putting the SSA Model Together}
 
 \begin{figure}[p]
     \input{latex/figure_model}
@@ -448,61 +448,62 @@
 
     With separate mathematical structures in place to capture all the relevant
     information contained in SSA programs, the SSA model can now be assembled.
-    \Cref{def:ssamodel} shows this completed model.
+    \Cref{def:ssamodel} shows the completed SSA model.
     The data flow graph $DFG_\mathcal F$ and the control flow graph
     $CFG_\mathcal F$ were discussed in detail previously, but some
     clarifications are provided for the remaining five structures.
 
-    The {\it instruction model}, {\it type model}, and {\it constant model}
+    The {\it type model}, {\it instruction model}, and {\it constant model}
     assign additional information from different domains to the values used in
-    the program.
-    Instead of attaching one opcode to each instruction, the
-    {\it instruction model} allows instructions to be linked with several
-    elements in the set {\it Opcodes}.
-    This is convenient to model opcode categories, where an instruction might be
-    an ``arithmetic'' operation and a ``subtraction'' in particular.
-    The same is true for the {\it type model}, which enables it to express
-    subtyping, e.g.\ an ``integer pointer'' value can also be a ``pointer''.
-    The {\it type model} can also be used to capture additional data, such as
-    compiler-specific attributes and aliasing information.
+    the function.
+    Instead of attaching a single type to each value, the type model
+    allows values to be linked with several elements in the set {\it Types}.
+    This is convenient to model subtyping hierarchies where, for example, an
+    ``integer pointer'' value can also be a ``pointer''.
+    The same is true for the instruction model, which enables it to express
+    opcode categories, e.g.\ an ``arithmetic'' operation might be a
+    ``subtraction'' in particular.
+    The constant model is defined likewise as a subset of
+    $\mathbb R\times\mathbb N$ but makes no use of the ability to assign
+    multiple numeric values to the same constant.
     
     Finally, the {\it parameter model} and {\it global model} encode which
-    elements in the set of used values of $\mathcal F$ are parameters and
+    elements in the list of used values of $\mathcal F$ are parameters and
     globals, respectively.
     Parameter names are not significant, because their position already
     identifies parameters uniquely within the function signature.
-    Therefore, the {\it parameter model} identifies all parameters, but attaches
+    Therefore, the parameter model identifies all parameters but attaches
     no additional data.
     For global values, on the other hand, the names are attached by the
-    {\it global model} as elements from the set $GlobalNames$.
+    global model as elements from the set $GlobalNames$.
 
 \subsection{Additional Notation}
 
     The seven basic components of the SSA model are each expressed as a set of
     tuples.
-    In order to conveniently manipulate these structures, 
+    In order to conveniently manipulate these structures in later sections, 
     \Cref{def:convenience} introduces several functions and shorthand notation.
 
-    For a set of tuples, the function $heads$ returns the set of all the first
-    elements of the tuples.
+    For a set of tuples, the function ``$heads$'' returns the set of all the
+    first elements of the tuples.
     For example, $heads(I_\mathcal F)$ yields all the opcodes that are used in
     the function $\mathcal F$.
-    Likewise, the function $tails$ removes the first element of all
+    In contrast, the function ``$tails$'' removes the first element of all
     tuples within a set.
     For example, $tails(I_\mathcal F)$ identifies the indices of all the
-    instructions within the set of used values of $\mathcal F$, but removes the
+    instructions within the list of used values of $\mathcal F$ but removes the
     information about their opcodes.
-    Finally, the $select$ function is used to filter a set for only those tuples
-    with a specific first element, and then returns the tails of all these
-    tuples.
-    For example, $select(add,I_\mathcal F)$ gives the indices of all $add$
-    instructions within the set of used values of the function $\mathcal F$.
+    Finally, the ``$select$'' function is used to filter a set for only those
+    tuples with a specific first element, and then returns the tails of all
+    these tuples.
+    For example, $select(add,I_\mathcal F)$ gives the indices of all additions
+    within the list of used values of the function $\mathcal F$.
 
-    The representation of data flow and control flow using labelled multigraphs
-    contains more information than is required for some tasks.
+    The representation of data flow and control flow as labelled multigraphs
+    contains more information than is required for many tasks.
     The simplified versions $DFG_\mathcal F^*$ and $CFG_\mathcal F^*$ are
-    constructed with the $tails$ function, effectively removing the labels and
-    resulting in ordinary graph structures.
+    constructed with the ``$tails$'' function, effectively removing the labels
+    and resulting in ordinary graph structures.
     Similarly, the sets $I_\mathcal F^*$ and $C_\mathcal F^*$ are used for
     shorter notation.
 
@@ -687,7 +688,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \lstinline[language=MyCpp]{map<string,unsigned>}.
     Elements of $\mathbb N^V$ contain an integer for each variable in $V$.
     These integers represent values in the function that $M$ models by
-    indexing into the set of used values.
+    indexing into the list of used values.
     The predicate function determines whether these values have a specific
     relationship to each other.
     Finally, the set of constraint solutions lists all those tuples for which

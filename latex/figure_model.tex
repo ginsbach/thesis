@@ -1,4 +1,4 @@
-\begin{definition}{Mathematical Model of SSA programs}{ssamodel}
+\begin{definition}{Mathematical Characterisation of SSA Functions}{ssamodel}
     The {\em SSA model} of the function $\mathcal F$ is the tuple
     \begin{align*}
         (DFG_\mathcal{F},
@@ -13,29 +13,29 @@
     \begin{itemize}
     \item $DFG_\mathcal{F}\subset\mathbb N^3$ and
           $CFG_\mathcal{F}\subset\mathbb N^3$ are the data flow and control
-          flow graph,
+          flow graph;
     \item $T_\mathcal F\subset\textit{Types}\times\mathbb N$ is the {\it type model},
           defined by the property
           \begin{align*}
               (t,k)\in T_\mathcal F\iff\left(L_{val}\leq k\leq R_{val}\right)
-                  \mathrel\land(val_k\text{ has type }t).
+                  \mathrel\land(val_k\text{ has type }t);
           \end{align*}
     \item $P_\mathcal F\subset\mathbb N$ is the {\it parameter model}, defined
           by the property
           \begin{align*}
-              k\in P_\mathcal F\iff L_{par}\leq k\leq R_{par}.
+              k\in P_\mathcal F\iff L_{par}\leq k\leq R_{par};
           \end{align*}
     \item $I_\mathcal F\subset\textit{Opcodes}\times \mathbb N$ is the
           {\it instruction model}, defined by the property
           \begin{align*}
               (c,k)\in I_\mathcal F\iff\left(L_{ins}\leq k\leq R_{ins}\right)
-                  \mathrel{\land}(ins_{k-L_{ins}+1}\text{ has opcode }c).
+                  \mathrel{\land}(ins_{k-L_{ins}+1}\text{ has opcode }c);
           \end{align*}
     \item $G_\mathcal F\subset\textit{GlobalNames}\times\mathbb N$ is the
           {\it global model}, defined by the property
           \begin{align*}
               (n,k)\in G_\mathcal F\iff\left(L_{glb}\leq k\leq R_{glb}\right)
-                  \mathrel{\land}(glb_{k-L_{glb}+1}\text{ has name }n).
+                  \mathrel{\land}(glb_{k-L_{glb}+1}\text{ has name }n);
           \end{align*}
     \item $C_\mathcal F\subset\mathbb R\times\mathbb N$ is the
           {\it constant model}, defined by the property
@@ -46,7 +46,7 @@
     \end{itemize}
 \end{definition}
 
-\begin{definition}{Notations for Reducing Dimensionality}{convenience}
+\begin{definition}{Notation for Reducing Dimensionality}{convenience}
     For a set $A$, any $a\in A$ and $S\subset A\times\mathbb N^k$ for some $k>0$, the
     following sets are defined
     \begin{align*}
