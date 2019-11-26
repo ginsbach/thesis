@@ -315,8 +315,8 @@
     Secondly, basic blocks are not explicitly encoded.
     Instead, all instructions of the function are enumerated sequentially in
     depth-first order, starting from the function entry.
-    Basic blocks can, however, be reconstructed from the control flow, as
-    discussed in \Cref{sec:remainingstructure}.
+    Despite not being explicitly encoded, basic blocks can be reconstructed from
+    the control flow, as discussed in \Cref{sec:remainingstructure}.
     Thirdly, the argument structure of the instructions is modelled separately.
 
 \subsection{Data Flow and Control Flow}
@@ -349,7 +349,8 @@
     Complementing the data flow graph is the {\em control flow graph} of the
     function, as introduced in \Cref{def:cfg}.
     The control flow graph is often defined with edges between basic blocks.
-    However, in this definition, the edges are directly between instructions.
+    By contrast, in this definition, the edges are directly between
+    instructions.
     This is convenient later, in
     \Cref{sec:constraintprogramming,sec:constraintsolving}, where both graphs
     can be treated identically.
@@ -531,7 +532,7 @@
 
     Other mainstream compilers, such as the GCC project, use very similar
     representations internally.
-    However, LLVM is particular in understanding the intermediate
+    Despite this, LLVM is unique in understanding the intermediate
     representation as an advertised and documented interface within the
     toolchain, as opposed to an obscure internal abstraction.
     This makes it very suitable for research implementations.
@@ -1186,9 +1187,9 @@ private:
     Therefore, the computational complexity has an exponential worst case
     (in the number of variables) when evaluated in general.
 
-    However, this is no impediment due to the particular use case of
-    SSA constraint problems.
-    In practice, the nature of SSA constraint problems means that the same
+    The exponential worst case is no impediment in practice due to the
+    particular use case of SSA constraint problems.
+    The nature of SSA constraint problems means that the same
     limited set of formulas is repeatedly solved in the context of many different
     SSA models.
     Therefore, it is viable to tune the formulas ahead of solving time to be
@@ -1240,7 +1241,7 @@ private:
     $O(|val|)$ time, making this a computationally expensive constraint.
     The solver relies on this construction occurring only in conjunctions with
     other, more restrictive constraints.
-    However, special cases can also be implemented as element-of constraint
+    Furthermore, special cases can also be implemented as element-of constraint
     problems by pre-computing dominator trees.
 
     Finally, {\it collect-all constraint problems} are introduced in

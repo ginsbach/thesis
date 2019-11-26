@@ -145,9 +145,9 @@
     be provided for a typical graphics processor.
     After all, most graphics processors have hardware limitations that prevent
     them from implementing the entire language standard.
-    Indeed, many accelerators are even further from Turing complete
+    Indeed, many accelerators are further from Turing complete
     \citep{jouppi2017datacenter}.
-    However, this should not prevent a {\it partial compiler}.
+    Nonetheless, this should not prevent a {\it partial compiler}.
     Such a partial compiler would compile fitting program parts for accelerators
     and utilise a fallback system for the remainder of the program.
     After all, that is precisely the result achieved with libraries and
@@ -211,10 +211,10 @@
     OpenCL is domain-specific in its expression of parallelism but otherwise
     designed to be general-purpose.
     Compilers are provided for many structurally different computing
-    architectures.
-    However, as a consequence of being a relatively unrestricted language, the
-    compilers often underperform, and OpenCL programs are notoriously lacking in
-    performance portability \citep{Falch:2015:MLB:2863697.2864570}.
+    architectures, but as a consequence of being a relatively unrestricted
+    language, the compilers often underperform, and OpenCL programs are
+    notoriously lacking in performance portability
+    \citep{Falch:2015:MLB:2863697.2864570}.
     Host compilers that require the same compromises as the OpenCL toolchain,
     being unable to leverage the restricted nature of input programs, would
     surely suffer the same shortcomings when targeting accelerators.
