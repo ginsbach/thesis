@@ -1,5 +1,5 @@
 
-    The research contributions of the thesis are built on a new method of
+    The research contributions of the thesis are built on a new method for
     constraint programming on Static Single Assignment (SSA) compiler
     intermediate representation.
     This chapter derives and motivates the underlying methodology, which is
@@ -12,8 +12,8 @@
     highlighted.
     These features are then used to derive a model that captures the static
     structure of SSA programs.
-    The SSA model is initially derived generically and then demonstrated in
-    more detail on \mbox{LLVM IR}, a specific SSA compiler intermediate
+    This {\it SSA model} is initially derived generically and then demonstrated
+    in more detail on \mbox{LLVM IR}, a specific SSA compiler intermediate
     representation.
     This section uses some mathematical notation to build a reliable foundation
     for later parts of the thesis.
@@ -24,14 +24,14 @@
     problems is defined.
     These are formulas that impose restrictions on parts of SSA code,
     formulated as constraints on the SSA model.
-    SSA constraint problems define code structures, such as loops.
+    SSA constraint problems can define code structures such as loops.
     Detecting adhering code sections in SSA code is then equivalent to finding
     solutions to the constraints.
     The structure of several classes of constraint formulas is discussed,
     reflecting conventional compiler analysis methods like data flow,
     dominance relationships, and data type restrictions.
 
-    Finally, efficient algorithms for SSA solving constraint problems are
+    Finally, efficient algorithms for solving SSA constraint problems are
     derived.
     Backtracking is used to find solutions quickly by incrementally extending
     partial solutions.
@@ -62,12 +62,11 @@
     language.
     Some advanced language features, such as overloaded operators, are not
     resolved in this class of representations.
-    Therefore, the semantics of program parts in these representations
-    is highly dependent on context.
+    Therefore, the semantics of program parts is highly dependent on context.
 
     \item[\bf Back end representations] are based on a model of the target
     hardware.
-    They typically approach an assembly style format and expose the instruction
+    They typically approach an assembly-style format and expose the instruction
     set architecture of the hardware, making them platform-specific.
     Back end representations also encode decisions for problems that are removed
     from the algorithmic content of the user program, such as instruction
@@ -79,14 +78,14 @@
     common choice for the middle end in leading compilers.
     SSA abstracts away the complexities of the source language and the
     target architecture, focusing on a relatively simple description of the
-    semantics of the user program.
+    user program semantics.
     This enables reliable analysis and platform-independent reasoning.
     \end{description}
 
     Static Single Assignment was first proposed by
     \citet{Rosen:1988:GVN:73560.73562}, and there are now many different
     compiler intermediate representations that implement the concept.
-    Instruction set, type system and syntax
+    Instruction sets, type systems and syntax
     (if a textual representation is even specified) of these representations
     vary considerably, depending on the requirements of the source languages
     (static or dynamic) and the operating constraints
@@ -99,8 +98,8 @@
 
     SSA form was developed as an improvement over previously used
     compiler intermediate representations.
-    Specifically, the eponymous static single assignment property applies to
-    more general {\em linear intermediate representations} as an additional
+    Specifically, the eponymous Static Single Assignment property applies to the
+    more general Linear Intermediate Representations as an additional
     restriction, as described in \citet{Torczon:2007:EC:1526330}.
     The following \Cref{sec:ssaf} gives an overview of the characteristic shared
     features of SSA representations that are relevant to this work.
@@ -108,7 +107,7 @@
 \subsection{Static Single Assignment Form}
 \label{sec:ssaf}
 
-    SSA representations are linear intermediate representations, meaning that
+    SSA representations are Linear Intermediate Representations, meaning that
     they represent each function as a single linear sequence of instructions.
     These instructions operate on an unlimited number of registers, using a well
     defined -- but representation specific -- instruction set.
@@ -134,7 +133,7 @@
     required to uphold the SSA property.
     These \mbox{$\Phi$-instructions} are placed at the beginning of a basic
     block, and select one of several values dynamically, depending on the origin
-    of incoming branches, i.e.\ depending on the previously visited
+    of incoming branches, i.e.\ depending on the previously executed
     basic block.
 
     \Cref{fig:ssaoverview} shows how SSA programs can be represented as a
@@ -142,8 +141,8 @@
     Programs are lists of functions, which are lists of basic blocks, which are
     lists of instructions, which take lists of arguments.
     The ability to enumerate all these entities in linear sequences enables the
-    identification of integers with SSA values in the later sections of this
-    chapter.
+    identification of SSA values with integer indices in the later sections of
+    this chapter.
 
 \begin{figure}[h]
 \centering
