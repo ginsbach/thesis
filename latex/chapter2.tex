@@ -10,15 +10,15 @@
     First, an overview of program representations during different compilation
     stages is given, and the particular features of SSA representations are
     highlighted.
-    These features are then used to derive a model that captures the static
-    structure of SSA programs.
-    This {\it SSA model} is initially derived generically and then demonstrated
-    in more detail on \mbox{LLVM IR}, a specific SSA compiler intermediate
+    These features are used to derive a mathematical characterisation of
+    the static structure of SSA programs, the {\it SSA model}.
+    This is first derived generically and then demonstrated
+    in more detail on \mbox{LLVM IR}, a specific SSA intermediate
     representation.
-    This section uses some mathematical notation to build a reliable foundation
-    for later parts of the thesis.
-    The {\it List of Symbols and Notation} contains many of the presumed
-    notational conventions.
+    Some mathematical notation is used in this section to build a reliable
+    foundation for later parts of the thesis.
+    The List of Symbols and Notation contains some of the presumed notational
+    conventions.
 
     After the derivation of the SSA model, the concept of SSA constraint
     problems is defined.
@@ -217,9 +217,8 @@
     \Cref{fig:ssaoverview} -- that most parts of SSA code can be enumerated
     and represented as elements in lists -- to derive a mathematical
     characterisation of the static structure of SSA programs.
-    This {\it SSA model} then serves as the foundation of later sections, which
-    define compiler analysis problems via SSA constraint formulas on the SSA
-    model.
+    This characterisation then serves as the foundation of later sections, which
+    define compiler analysis problems on it via constraints.
 
 \begin{figure}[p]
     \input{latex/figure_ssaemergence}
