@@ -1015,8 +1015,9 @@ End
 
     This section first presents the number of reductions found by the various
     different schemes.
-    This is followed by an analysis of how significant each reduction is.
-    Finally, the performance impact of the IDL-based approach is evaluated.
+    This is followed by an analysis of how significant each reduction was.
+    Finally, the performance impact of the IDL-based parallelisation method was
+    evaluated.
        
 \subsection{Discovery}
 
@@ -1040,20 +1041,20 @@ End
     Every reduction captured by the other two competing approaches was also
     identified by the IDL solver.
     However, there were some regions that could be classified as reductions
-    manually, but that did not adhere to the used IDL specification and thus
+    manually, but that did not adhere to the used IDL specification, and thus
     remained unrecognised.
     This was generally the case when the reduction loop was not the innermost
     loop, as is the case for the example in \autoref{missedscalar}.
-    The outer three loops of this code section from the ``SP'' benchmark are
+    The three outer loops of this code section from the ``SP'' benchmark are
     reduction loops, but this is obfuscated by the innermost loop.
     None of the competing approaches were able to detect this reduction either.
 
 \begin{figure}[H]
 \begin{lstlisting}[language=MyCpp, label={missedscalar}, caption=
-   {Some reductions were missed by all detection approaches:
-    In this loop from ``SP'', the outer loops are reduction loops,
-    accumulating into the scalar variables
-    \texttt{rms[0]},\dots,\texttt{rms[4]},
+   {Some reductions were missed by all detection approaches.
+    In this loop from ``SP'', the outer loops are reduction loops, accumulating
+    into scalar variables
+    ``\texttt{rms[0]}'',\dots,``\texttt{rms[4]}'',
     but the innermost loop is not a reduction, and it is therefore not captured
     by the IDL specification.}]
 for (k = 1; k <= nz2; k++) {
@@ -1109,9 +1110,8 @@ for (k = 1; k <= nz2; k++) {
     \end{tikzpicture}
     \caption{Reductions and histograms detected by the three competing
              methods in {\bf Parboil}:
-             No reductions were detected by any scheme in half of the benchmark
-             components.
-             However, IDL identified histograms in ``histo'' and ``tpacf'', and
+             In half of the benchmark components, no scheme detected any reductions.
+             Nonetheless, IDL identified two histograms in ``histo'' and ``tpacf'', and
              was not outperformed on scalar reductions.}
     \label{parboil_spotted}
     \vspace{2.7mm}
@@ -1132,7 +1132,7 @@ for (k = 1; k <= nz2; k++) {
   \caption{Reductions and histograms detected by the 3 competing approaches
            in {\bf Rodinia}:
            Most programs contained scalar reductions.
-           IDL was matched by ICC on ``heartwall'' and ``srad''.}
+           ICC matched by IDL only on ``heartwall'' and ``srad''.}
     \label{rodinia_spotted}
 \end{figure}
 
