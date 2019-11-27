@@ -248,12 +248,12 @@ End
     These are independent of LLVM, so the methodology translates to other SSA
     representations.
 
-    The expressed structures can scale from simple instruction patterns that are
-    suited for peephole optimisations, over control flow structures such
-    as loops, to complex algorithmic concepts such as code regions that are
-    suitable for polyhedral code transformations.
+    The expressed structures can scale from simple instruction patterns that
+    enable peephole optimisations, over control flow structures such as loops,
+    to complex algorithmic concepts such as code regions that are suitable for
+    polyhedral code transformations.
 
-    Like traditional constraint programs, CAnDL programs have two
+    Like traditional constraint programs, CAnDL specifications have two
     fundamental features: \textbf{variables} and \textbf{constraints}.
     The basic constraint building blocks are well-established compiler analysis
     tools, such as constraints on data and control flow, data types and
@@ -266,12 +266,12 @@ End
     generate the parser of the CAnDL compiler is in Appendix
     \ref{appendix:CAnDLgrammar}.}
 
-\subsection{High-Level Structure of CAnDL Programs}
+\subsection{Top-Level Structure of CAnDL Programs}
 
     The following notational conventions are used for the description of CAnDL
     syntax in this section:
     terminal symbols are {\bf bold}, non-terminals are {\it italic},
-    $\left<\text{\bf s}\right>$ is an identifier (alphanumeric string) and
+    $\left<\text{\bf s}\right>$ is an identifier (alphanumeric string), and
     $\left<\text{\bf n}\right>$ is an integer literal.
     CAnDL uses Unicode characters such as ``$\land$'', ``$\in$'', ``$\Phi$'' and
     is encoded as UTF-8.
