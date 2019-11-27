@@ -503,18 +503,18 @@ for(i = 0; i < n; i++) {
 
 \subsubsection{Kernel Functions as Generalised Domination}
 
-    Complex reduction and histogram computations can be expressed as a
+    Complex Reduction and Histogram Computations can be expressed as a
     higher-order function.
     This means that the computational idiom is not just parameterised with
     numerical values, such as array dimensions, but contains kernel functions
     as parameters.
-    To enable the capture of higher-order functions in IDL, additional
-    constraint building blocks are required that go beyond what CAnDL
+    To enable the capture of such higher-order functions in IDL, additional
+    constraint expressions are required that go beyond what CAnDL
     provided.
 
-    Specifically, IDL provides an additional atomic constraint based on
-    generalised graph domination constraints, as previously described in
-    \Cref{def:domconstr}, using the following syntax:
+    Specifically, IDL adds another atomic constraint based on generalised graph
+    domination, as previously described in \Cref{def:domconstr}, using the
+    following syntax:
 \begin{figure}[h]
     \centering
     \begin{tabular}{|c|}
@@ -537,41 +537,43 @@ for(i = 0; i < n; i++) {
     Secondly, as opposed to the control flow graph that is typically considered
     for dominance relationships, the resulting graph has no distinguished single
     ``origin''.
-    Aside from the control entry, all non-pure function calls and all load
-    operations are considered as origins of the graph.
+    Aside from the control entry, all non-pure function calls and reads from
+    memory are considered graph origins.
 
     \Cref{kernelexample} demonstrates the significance of this definition.
     At the top is an SSA pseudocode representation of the complex reduction and
     histogram calculation from \Cref{complex-reduction-figure}, annotated in the
     right column with all the dependencies described above.
     It is now possible to check the validity of the kernel function that is used
-    within the loop for the reduction on \textit{sx} as follows:
+    within the loop for the reduction on ``{\tt sx}'' as follows:
     
 \begin{figure}[h]
     \centering
     \begin{lstlisting}[language=IDL]
-([all]) flow from {loop_carried[1..3]} ([or]) any origin
+([all]) flow from {loop_carried[0..3]} ([or]) any origin
     to any of {sx''} passes through ([at]) least one of
     {sx,t2,t5,precursor,backedge,ouside[0..N]}}
     \end{lstlisting}
 \end{figure}
 
     \noindent
-    This assumes that other constraints make sure that
-    the ``\texttt{precursor}'' and ``\texttt{backedge}'' are determined and
-    ``\texttt{outside[0..N]}'' contains
-    all origins that lie outside the SESE region within which the kernel
-    functions is considered.
+    This use of the new atomic constraint requires several additional
+    conditions:
+    ``\texttt{precursor}'' and ``\texttt{backedge}'' should be determined
+    and ``\texttt{outside[0..N]}'' should contain all origins that lie outside
+    the SESE region within which the kernel functions is considered.
     Furthermore, the array ``\texttt{loop\_carried}'' needs to be constrained to
     contain all loop-carried $\Phi$-instructions.
 
-    Then it is easy to check that this constraint is satisfied:
+    With this setup, it is straightforward to check that the constraint is
+    satisfied.
     Control flow can only reach $sx''$ via the precursor at line 1 and the
-    backedge at line 28.
-    The only other relevant graph origins for this example are the load
-    instructions at lines 6,9,18 and the additional $\Phi$-instructions.
+    back edge at line 28.
+    The other relevant graph origins for this example are the load
+    instructions at lines 6,9,18 and the explicitly added $\Phi$-instructions.
     The three of these that can reach $sx''$ through the graph are explicitly
-    killed as ``dominators''.
+    killed as generalised dominators ``{\tt sx}'', ``{\tt t2}'', and
+    ``{\tt t5}''.
 
 \begin{figure}[p]
 \centering
