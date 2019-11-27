@@ -291,23 +291,23 @@ for(i = 0; i < NK; i++) {
     Instead, it also captures intrinsically sequential scalar reductions.
 
     \paragraph*{Example}
-    Both variables \texttt{sx} and \texttt{sy} in
+    Both ``\texttt{sx}'' and ``\texttt{sy}'' in
     \Cref{complex-reduction-figure} satisfy the conditions.
-    Firstly, the iteration space of the loop is bounded by \texttt{NK}, which is
-    constant.
-    Secondly, within the SSA representation, both \texttt{sx} and \texttt{sy}
-    are unconditionally updated via $\Phi$-instructions, shown previously in
-    \Cref{nice-picture2}.
+    Firstly, the iteration space of the loop is bounded by ``\texttt{NK}'',
+    which is constant.
+    Secondly, within the SSA representation, both ``\texttt{sx}'' and
+    ``\texttt{sy}'' are unconditionally updated via $\Phi$-instructions, shown
+    in \Cref{nice-picture2}.
     This is despite the conditional statement in the original C representation
     of the program.
-    Thirdly, exactly two values are read from the single input array \texttt{x}
-    in every iteration, and the indices \texttt{2*i} and \texttt{2*i+1} are
-    affine in \texttt{i}.
+    Thirdly, two values are read from the single input array ``\texttt{x[]}''
+    in every iteration, and the indices ``\texttt{2*i}'' and
+    ``\texttt{2*i+1}'' are affine in ``\texttt{i}''.
     Finally, the updated values depend only on their respective old values,
-    the two values read from \texttt{x} and the constants \texttt{1.0} and
-    \texttt{2.0}.
-    This is due to the fact that all functions used in the computation are pure
-    functions.
+    the two values read from ``\texttt{x[]}'', and the constants
+    ``\texttt{1.0}'' and ``\texttt{2.0}''.
+    This also relies on the fact that all functions used in the computation are
+    pure functions.
 
 \begin{figure}[t]
 \begin{lstlisting}[language=MyCpp]
@@ -350,13 +350,14 @@ for(i = 0; i < n; i++) {
     that could be privatised.
     The loop could still be computed in parallel -- but not as a scalar
     reduction.
-    The third example uses index calculations that are not affine in \texttt{i}.
+    The third example uses index calculations that are not affine in
+    ``\texttt{i}''.
     This prevents a straightforward distribution of the input array across
     threads.
     In this particular case, the index calculation also involves values other
-    than \texttt{i}, preventing the computation of partial results entirely.
-    The final example is equivalent to the first, but breaks the fourth
-    condition instead of the first.
+    than ``\texttt{i}'', preventing the computation of partial results entirely.
+    The final example is equivalent to the first but breaks the fourth condition
+    instead of the first.
 
 \subsubsection{Histogram Reductions}
 \label{section:histocond}
