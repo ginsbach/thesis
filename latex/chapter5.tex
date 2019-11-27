@@ -886,25 +886,26 @@ End
 
     The prototype idiom detection pass was applied to C versions of the
     NAS Parallel Benchmarks (NPB) \citep{Bailey1991NPB}, which were developed
-    by the NASA Advanced Supercomputing (NAS) Division.
-    Specifically, the Seoul National University (SNU) NPB implementation from
+    by the NASA Advanced Supercomputing Division (NAS).
+    Specifically, the Seoul National University (SNU) NPB implementation by
     \citet{seo2011performance} was used, containing the original 8 NAS
-    benchmarks plus two of the more recent unstructured components UA and DC.
+    benchmarks plus 2 of the more recent unstructured components ``UA'' and
+    ``DC''.
 
     The approach was also evaluated on all of the Parboil \citep{Stratton2018}
     and Rodinia \citep{Che2009Rodinia} benchmark programs.
     In total, this constitutes 40 programs of varying complexity, shown in
     \Cref{allbenchmarklist}.
-    The Embarrassingly Parallel (EP) program in NPB, for instance, is a single
-    file of 324 lines in length.
-    By contrast, the source code of Leukocyte in Rodinia is distributed over
+    The ``Embarrassingly Parallel'' program in NPB, for instance, is a single
+    file of 324 lines of code.
+    By contrast, the source code of ``Leukocyte'' in Rodinia is distributed over
     more than 50 files.
     For each of the individual benchmark programs, the total number of scalar
-    and histogram reductions found was collected.
+    and histogram reductions found was captured.
 
     To determine runtime coverage and performance, all of the benchmarks were
     evaluated on the same platform.
-    This was a 64-core machine with four AMD Opteron 6376 processors and one
+    This was a 64-core machine with 4 AMD Opteron 6376 processors and one
     terabyte of RAM.
 
 \subsection{Competing Approaches}
@@ -921,19 +922,19 @@ End
     tool that detects reductions within code captured by the polyhedral model.
     This system augments Polly, an LLVM-based polyhedral compiler
     \citep{Lengauer2012Polly}.
-    The polyhedral model is extremely powerful when applicable, and Polly being
-    based on LLVM IR allows for comparison of IDL against another approach that
-    uses the same compiler infrastructure.
+    The polyhedral model is powerful when applicable, and Polly being based on
+    LLVM IR allows for comparison of IDL against another approach that uses the
+    same compiler infrastructure.
 
-    The sequential versions of the benchmark programs were compiled using
-    version 3.9 of the Clang compiler with Polly built in.
-    The SCoPs that Polly detected with the compiler options \texttt{-O3
-    -mllvm -polly -mllvm -polly-export} were gathered during compilation.
-    As any Polly based approach only works within these SCoPs, this gives an
-    upper bound for the Polly-Reduction method.
+    The sequential benchmark programs were compiled by version 3.9 of the
+    Clang compiler, built with the Polly-enabled LLVM.
+    The SCoPs that Polly detected with the compiler options
+    ``\texttt{-O3 -mllvm -polly -mllvm -polly-export}'' were considered.
+    Any Polly-based method only works within these SCoPs.
+    Therefore, this gives an upper bound for the ``Polly-Reduction'' method.
     Reductions within the SCoPS were then manually identified.
-    Any reduction within a SCoP was counted as a hit for Polly-Reduction.
-    This gives an optimistic estimate as to what coverage a polyhedral based
+    Any reduction within a SCoP was counted as a hit for ``Polly-Reduction''.
+    This gives an optimistic estimate as to what coverage a polyhedral-based
     approach to reduction operations, such as the one presented in
     \citet{Doerfert2015Polly}, can achieve.
 
