@@ -1137,7 +1137,7 @@ for (k = 1; k <= nz2; k++) {
 \end{figure}
 
     Histogram reductions were rarer than scalar reductions.
-    However, the IDL solver was able to detect 3 in NAS, 2 in Parboil and 1 in
+    However, the IDL solver was able to detect 3 in NAS, 2 in Parboil, and 1 in
     Rodinia.
     All of them eventually updated the bin value with an addition, but some
     contained complex expressions in the kernel function to compute the addend,
@@ -1147,7 +1147,7 @@ for (k = 1; k <= nz2; k++) {
     In this histogram reduction, the histogram index kernel function contained a
     binary search.
     At the other extreme, the performance bottleneck of ``IS'' was a plain
-    histogram without any complications.
+    histogram without any complications:
 \begin{lstlisting}[language=MyCpp]
 for( i=0; i<NUM_KEYS; i++ )
   key_buff_ptr[key_buff_ptr2[i]]++;
@@ -1210,21 +1210,20 @@ for( i=0; i<NUM_KEYS; i++ )
 \end{figure}
 
     \paragraph*{Polly-Reduction}
-    The Polly compiler captured only four code regions across all benchmark
-    programs that contained a single scalar reduction each.
+    The Polly compiler captured only four relevant code regions across all
+    benchmark programs that contained a single scalar reduction each.
     These are in ``BT'' and ``SP'' from the NAS Parallel Benchmarks,
     ``sgemm'' from the Parboil Benchmarks, and ``leukocte'' from Rodinia.
-    As expected, all of the loops that contain histogram computations were
-    unsuitable for polyhedral analysis.
-    This is due to the indirect memory access that forms an integral part of any
-    histogram computation.
+    As expected, all loops that contain histogram computations were unsuitable
+    for polyhedral analysis with Polly.
+    Indirect memory access forms an integral part of any histogram computation
+    but violates assumptions of the polyhedral model.
 
     Aside from the fundamental limitation for histogram computations, Polly
-    struggled with the more complex codebases of the Rodinia and Parboil
-    benchmarks.
+    struggled with the more complex codebases of Rodinia and Parboil.
     This was not always due to fundamental limitations of the polyhedral model.
-    Instead, it was often the result of iteration spaces that are not statically
-    known and the use of flat array structures.
+    Instead, it was often because of loop iteration boundaries that Polly
+    could not statically determine and the use of flat array structures.
 
     \Cref{npb_scops,parboil_scops,rodinia_scops} show the number of Static
     Control Parts (SCoPs) that Polly finds across the 40 individual programs.
@@ -1235,9 +1234,8 @@ for( i=0; i<NUM_KEYS; i++ )
     SCoPs at all.  This corresponded to $40\%$ of NPB, $63.6\%$ of the
     Parboil Benchmarks and $63.2\%$ of Rodinia.
 
-    The vast majority of the SCoPs that Polly detected were in stencil
-    computations.
-    The stencil based programs ``LU'', ``BT'', ``SP'' and ``MG'' in the NAS
+    The majority of the SCoPs that Polly detected were in stencil computations.
+    The stencil-based programs ``LU'', ``BT'', ``SP'' and ``MG'' in the NAS
     Parallel Benchmarks alone accounted for 37 of the 62 SCoPs that were found
     across all benchmarks ($59.6\%$). 
 
@@ -1246,13 +1244,13 @@ for( i=0; i<NUM_KEYS; i++ )
     reductions.
     It detected 25 out of 37 reductions in NPB, 3 out of 9 in Parboil and
     23 out of 38 in Rodinia.
-    However, these were all scalar reductions; no histograms were detected.
+    However, these were all scalar reductions; no histograms were identified.
 
-    ICC is more robust and does not require SCoPs as a precondition for its
+    ICC was more robust and did not require SCoPs as a precondition for its
     analysis.
     On the well-structured NAS benchmarks, it performed well but failed to
     detect any reductions in ``IS''.
-    Surprisingly it also did not detect reductions in ``SP'', while Polly did.
+    Surprisingly, it also did not detect reductions in ``SP'', while Polly did.
     On closer inspection, this is again due to a deep perfectly nested loop
     where the reduction iterator is in the middle of the loop nest.
 
