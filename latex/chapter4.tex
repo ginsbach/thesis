@@ -171,38 +171,38 @@ End
     of the analysis function generated from the CAnDL specification in
     \Cref{fig:candlspec} to a user program.
     The input program ({\bf a}) is a simple C function that calls the
-    \texttt{sqrt} function twice with squares of floating-point values.
+    ``\texttt{sqrt}'' function twice with squares of floating-point values.
     This is translated using the Clang compiler into LLVM IR code ({\bf b}),
     using standard optimisation passes during the compilation.
     The expression from the user program is here represented as a list of
-    individual instructions and register assignments, with the two occurrences
-    of \texttt{SqrtOfSquare} clearly visible:
-    The two \texttt{fmul} instructions (lines 4 and 6) compute squares via a
-    floating-point multiplication, and these are then used as arguments to
-    \texttt{sqrt} function invocations (lines 5 and 7).
+    individual instructions and register assignments, with the occurrences
+    of ``\texttt{SqrtOfSquare}'' clearly visible: the two ``\texttt{fmul}''
+    instructions (lines 4 and 6) compute squares via a floating-point
+    multiplication, and these are then used as arguments to ``\texttt{sqrt}''
+    function invocations (lines 5 and 7).
 
     The optimised LLVM IR ({\bf b}) is used as the input to the generated
     analysis function, which detects two optimisation opportunities.
     These are identified as the first ({\bf c}) and second ({\bf d}) solution
     of the constraint problem.
-    Each of the two solutions assigns values from within the LLVM IR code to
-    each of the variables in the CAnDL program in \Cref{fig:candlspec}, such
-    that all the specified constraints are fulfilled.
+    Each of the solutions assigns values from within the LLVM IR code to
+    all the CAnDL variables in \Cref{fig:candlspec}, such
+    that all constraints are satisfied.
     The validity of these solutions is demonstrated in the middle row of the
     figure ({\bf e}-{\bf f}).
     Substituting the variables in the CAnDL program with the concrete instances
     from the solutions, the individual atomic constraints can be checked
     individually:
     \begin{itemize}
-    \item \texttt{\%4} and \texttt{\%6} are function calls and their first
+    \item \texttt{\%4} and \texttt{\%6} are function calls, and their first
           argument (the function to be called) is \texttt{@sqrt}.
     \item \texttt{@sqrt} is the square root function.
           Note that it is identified by name.
     \item The second arguments of the function call instructions (the first
-          function arguments) are \texttt{\%3} and \texttt{\%5}
+          function arguments) are \texttt{\%3} and \texttt{\%5},
           respectively.
-    \item \texttt{\%3} and \texttt{\%5} are square values, i.e.\ a floating
-          point multiplication of a value with itself.
+    \item \texttt{\%3} and \texttt{\%5} are square values, i.e.\ 
+          floating-point multiplications of a value with itself.
     \end{itemize}
 
     
@@ -212,23 +212,23 @@ End
     The solutions to the constraint problem are internally provided as C++
     dictionaries of the form \texttt{map<std::string,llvm::Value*>},
     containing all the information required to apply code transformations.
-    A new function call to \texttt{abs} is generated, with the solution for
+    A new function call to ``\texttt{abs}'' is generated, with the solution for
     ``\texttt{a}'' in \Cref{fig:candlspec} as the only argument (line 6).
     This instruction replaces (line 4) the call instruction that was captured
     in ``\texttt{sqrt\_call}'' (line 5).
     Conveniently, the LLVM infrastructure already provides all the necessary
     functions to create and replace instructions in the intermediate
     representation.
-    After post processing with standard dead code elimination, this results in
+    After post-processing with standard dead code elimination, this results in
     the optimised code shown at the bottom of the figure ({\bf h}).
 
     Although this is a small example, it illustrates the main steps of the
     CAnDL scheme.
     In practice, the strength of the system is its ability to scale to very
-    complex specifications, as demonstrated towards the end of the chapter.
-    The next sections give a specification of the CAnDL language and outline
+    complex specifications, as demonstrated toward the end of the chapter.
+    The following sections describe the CAnDL language in detail and outline
     how it is implemented on top of the constraint programming methodology
-    devised in \Cref{chapter:theory}.
+    from \Cref{chapter:theory}.
 
 \begin{figure}[p]
     \input{latex/figure_candlexample}
