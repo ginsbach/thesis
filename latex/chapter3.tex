@@ -680,7 +680,7 @@
     intermediate representation that facilitates the rapid construction of
     domain-specific languages.
     The provided infrastructure targets heterogeneous
-    platforms, with backends avaliable for OpenMP, CUDA, and even MPI for
+    platforms, with backends available for OpenMP, CUDA, and even MPI for
     cluster computing.
     Delite-based DSLs are proposed for machine learning, data querying, graph
     analysis, and scientific computing.
@@ -688,22 +688,22 @@
     language and does not offer a readily available end-to-end solution.
 
     Halide, as proposed by \citet{Ragan-Kelley:2013:HLC:2499370.2462176}
-    was designed for image processing, but is flexible enough to also allow the 
-    formulation of matrix multiplications and other computations.
-    \citet{Suriana:2017:PAR:3049832.3049863} demonstrates that this can extend
+    was designed for image processing, but is flexible enough also to allow the 
+    formulation of matrix multiplication and other computations.
+    \citet{Suriana:2017:PAR:3049832.3049863} demonstrated that this extends
     to reduction computations as well.
-    Its core design decision is the scheduling model that allows the separation
-    of the computation schedule and the actual computation.
+    Halide's core design decision is the scheduling model, which allows the
+    separation of the computation schedule and the actual computation.
     There has been follow-up work on automatically tuning the schedules, e.g.\ 
-    \citet{Mullapudi:2016:ASH:2897824.2925952}, but by default the burden of
+    \citet{Mullapudi:2016:ASH:2897824.2925952}, but by default, the burden of
     implementing efficient schedules is put on the application programmer.
 
     \paragraph*{Embedded languages}
-    MILK \citep{Kiriansky:2016:OIM:2967938.2967948} is a pragma-based
+    Milk \citep{Kiriansky:2016:OIM:2967938.2967948} is a pragma-based
     domain-specific language to annotate indirect memory accesses in C++.
-    The approach is inspired by OpenMP, and are supported by modified versions
+    The approach is inspired by OpenMP and supported by modified versions
     of Clang and LLVM.
-    This allows low level optimisations that are particularly applicable to
+    This allows low-level optimisations that are particularly applicable to
     sparse linear algebra.
     The authors report performance gains of up to 3x, but the approach is unable
     to utilise the much greater potential of heterogeneous compute and requires
@@ -711,36 +711,36 @@
 
     \paragraph*{Other approaches}
     Spatial \citep{Koeplinger:2018:SLC:3192366.3192379} is a domain-specific
-    language for higher-level descriptions of application accelerators.
-    The language provides hardware-centric abstractions, but also takes
-    programmer productivity into consideration.
-    However, the language does not target the most established heterogeneous
-    CPU-GPU systems.
-    Instead, the focus is on on Field Programmable Gate Arrays (FPGA) and
-    Coarse Grain Reconfigurable Architectures (CGRA).
+    language for high-level descriptions of application accelerators.
+    It provides hardware-centric abstractions but also takes programmer
+    productivity into consideration.
+    The language does not target the established heterogeneous CPU-GPU
+    systems.
+    Instead, the focus is on  Field Programmable Gate Arrays (FPGAs) and
+    Coarse Grain Reconfigurable Architectures (CGRAs).
     This makes it unsuitable for comparative evaluation with the methods
     proposed in this thesis.
 
     There have been multiple domain-specific libraries proposed specifically
     for linear algebra computations.
     \citet{Spampinato:2014:BLA:2581122.2544155,
-    Spampinato:2016:BLA:2854038.2854060} propose and extend the high-level
-    language LGen for linear algebra, based on standard mathematical notation.
+    Spampinato:2016:BLA:2854038.2854060} introduced and extended the high-level
+    LGen language, based on standard mathematical notation.
     The implemented routines are optimised with an autotuning compiler,
     exploring many transformations such as tiling, loop fusion, and
     vectorisation.
-    The tool improves over Intel MKL on specific small-scale matrices, but is
+    The tool improves over Intel MKL on specific small-scale matrices but is
     unable to generate code for GPUs.
 
-    Recent research has highlighted the challenges of generating code that
-    performs well on different heterogeneous hardware architectures.
-    PetaBricks \citep{Ansel:2009:PLC:1542476.1542481,PhothilimthanaARA13} was
-    one of the first languages to address this performance portability challenge
-    by encoding algorithmic choices which are then empirically evaluated and
-    automatically taken by the
-    compiler.
-    Similarly, \citet{MuralidharanRHG16} explored automatic selection of code
-    variants using machine learning.
+    Recent research has highlighted the challenge of generating code that
+    performs well across different heterogeneous hardware architectures.
+    The PetaBricks language
+    \citep{Ansel:2009:PLC:1542476.1542481,PhothilimthanaARA13} was
+    one of the first to address this performance portability challenge
+    by encoding algorithmic choices, which are empirically evaluated and decided
+    on by the compiler.
+    Similarly, \citet{MuralidharanRHG16} explored the automatic selection of
+    code variants using machine learning.
 
 \section{Computational Idioms}
 
