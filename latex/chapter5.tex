@@ -778,28 +778,30 @@ End
 \label{sec:IDLCReHCs}
 
     \Cref{IDLcomplexred} shows how the previously described IDL specifications
-    can be assembled to define the class of complex reduction and histogram
-    computations.\footnote{The complete IDL code for this section is in
+    can be assembled to define the class of Complex Reduction and Histogram
+    Computations.\footnote{The complete IDL code for this section is in
     Appendix~\ref{appendix:IDLreductions}.}
 
     Such computations are always encapsulated by a single for-loop, as
     stipulated at line 2.
-    Lines 3--7 specify that input values are read from one or several input
-    arrays, according to the specification ``{\tt VectorRead}''.
-    The values are redirected to the ``{\tt read\_value}'' array, which is
-    passed in lines 12,17 to the individual ``{\tt HistoPart}'' and
-    ``{\tt ScalarPart}'' invocations.
+    Lines 3--7 specify that input values ``{\tt read\_values}'' are read from
+    one or several input arrays, according to the specification
+    ``{\tt VectorRead}''.
+    These values are then passed at lines 12,17 to the ``{\tt HistoPart}''
+    and ``{\tt ScalarPart}'' invocations.
+    Note that the seemingly redundant variable name assignments prevent
+    prefixing with ``{\tt histo[k]}'' and ``{\tt scalar[k]}'', respectively.
 
     Lines 19--24 make sure that there are no array writes aside from the
     histogram updates.
     Furthermore, lines 27--28 eliminate the possibility of effectful function
     calls within the loop.
-    Together, these constraints rule out unwanted side effects of the loop.
+    Together, these constraints rule out any unwanted side effects of the loop.
 
-    Lines 23--24 implement a trick: the two compared variables can only be the
-    same, if they are both {\tt unused}.
-    Therefore, these lines simply enforce that the loop has to contain at least
-    one reduction or histogram computation.
+    Lines 25--26 enforce that the loop contains at least one reduction or
+    histogram computation.
+    This is guaranteed indirectly because the two compared variables can only be
+    the same if they are both {\tt unused}.
 
 \begin{figure}[p]
 \lstset{
@@ -808,8 +810,8 @@ End
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
    {Complex Reduction and Histogram Computations (CReHCs) as IDL specification:
     The idiom comprises histogram (lines 8--13) and scalar (lines 14--18) reductions contained in a for-loop (line 2).
-    These computations reduce the values from the input array (lines 3--7).
-    Additional conditions guarantee the absence of any further side-effects in the loop (lines 19--28).}]
+    These computations accumulate the values from the input array (lines 3--7).
+    Additional conditions guarantee the absence of any further side effects in the loop (lines 19--28).}]
 Constraint ComplexReductionsAndHistograms
 ( inherits For at {loop} and
   collect k 32 ( inherits VectorRead
@@ -847,35 +849,36 @@ End
     Parallel code generation immediately follows the CAnDL-generated detection
     pass.
     It uses the detected constraint solutions to reimplement the corresponding
-    loops using divide-and-conquer parallelism.
+    loops with divide-and-conquer parallelism based on POSIX Threads.
 
-    For each complex reduction and histogram loop that is found, the relevant
-    input arrays and closure variables are taken from the solution and packed
-    into a structure, together with any histogram arrays and the iteration
-    space boundaries.
+    For each Complex Reduction and Histogram Computation loop that is found, the
+    relevant input arrays and closure variables are taken from the solution.
+    They are packed into a data structure together with any histogram arrays
+    and the iteration space boundaries.
 
-    A new function is generated that takes this structure as its only parameter.
-    Depending on the amount of processors in the system and the recursion
-    depth, the function makes a decision about whether to bisect its workload
-    recursively.
+    A new function is generated that takes this data structure as its only
+    parameter.
+    Depending on the number of processors and recursion depth, the function
+    decides whether to bisect its workload recursively.
     If not, the loop is executed as before, using the arguments in the
     structure.
-    Otherwise the function uses \texttt{pthread\_create} to offload half of its
-    workload into another thread.
-    For this, it copies its parameter array but replaces the histogram arrays
-    with a newly allocated copy.
-    After both threads finish their work, the copy is merged with the original
-    histogram element-wise and the copy is deallocated.
+    Otherwise, the function uses ``\texttt{pthread\_create}'' to offload half of
+    its workload onto another thread.
+    For this, it copies its parameter array, replacing histogram arrays with
+    newly allocated copies.
+    After both threads finished their work, the copy is merged with the original
+    histogram element-wise and then deallocated.
 
     In general, determining the size of the histogram at compile time is not
     possible with static methods.
     All the branched-off threads, therefore, use dynamic boundary checking and
     reallocate the histogram array when necessary.
-    This on-demand enlargement introduces some overhead but proved acceptable in
-    many benchmark programs.
+    This on-demand enlargement introduces some overhead but proved acceptable
+    for many benchmark programs.
 
     Optimal code generation was not the main focus of this research, and more
-    sophisticated methods for the parallelisation of reductions could be added.
+    sophisticated methods for the parallelisation of reductions could be
+    incorporated for better speedup results.
 
 \section{Experimental Setup}
 
