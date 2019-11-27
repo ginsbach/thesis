@@ -943,49 +943,49 @@ End
 \begin{tabular}{lrl}
 \toprule
 \multirow{7}{*}{\bf NPB}
- & BT & Block Tridiagonal Solver\\[-2.3mm]
- & CG & Conjugate Gradient\\[-2.3mm]
- & DC & Data Cube Operator\\[-2.3mm]
- & EP & Embarrassingly Parallel Marsaglia Polar Method\\[-2.3mm]
- & FT & Fast Fourier Transform\\[-2.3mm]
- & IS & Small Integer Bucket Sort \\[-2.3mm]
- & LU & Lower-Upper Symmetric Gauss-Seidel Solver\\[-2.3mm]
- & MG & MultiGrid Approximation\\[-2.3mm]
- & SP & Scalar Pentadiagonal Solver\\[-2.3mm]
+ & BT & Block Tridiagonal Solver\\[-2.12mm]
+ & CG & Conjugate Gradient\\[-2.12mm]
+ & DC & Data Cube Operator\\[-2.12mm]
+ & EP & Embarrassingly Parallel Marsaglia Polar Method\\[-2.12mm]
+ & FT & Fast Fourier Transform\\[-2.12mm]
+ & IS & Small Integer Bucket Sort \\[-2.12mm]
+ & LU & Lower-Upper Symmetric Gauss-Seidel Solver\\[-2.12mm]
+ & MG & MultiGrid Approximation\\[-2.12mm]
+ & SP & Scalar Pentadiagonal Solver\\[-2.12mm]
  & UA & Unstructured Adaptive Mesh\\
 \specialrule{\lightrulewidth}{0pt}{0pt}
 \multirow{7}{*}{\bf Parboil}
- & bfs          & Breadth-First Search\\[-2.3mm]
- & cutcp        & Distance-Cutoff Coulombic Potential\\[-2.3mm]
- & histo        & Saturating Histogram\\[-2.3mm]
- & lbm          & Lattice-Boltzmann Method Fluid Dynamics\\[-2.3mm]
- & mri-gridding & Magnetic Resonance Imaging - Gridding\\[-2.3mm]
- & mri-q        & Magnetic Resonance Imaging - Q\\[-2.3mm]
- & sad          & Sum of Absolute Differences (part of MPEG encoding)\\[-2.3mm]
- & sgemm        & Dense Matrix-Matrix Multiply\\[-2.3mm]
- & spmv         & Sparse-Matrix Dense-Vector Multiplication\\[-2.3mm]
- & stencil      & Iterative 3D Jacobi Stencil\\[-2.3mm]
+ & bfs          & Breadth-First Search\\[-2.12mm]
+ & cutcp        & Distance-Cutoff Coulombic Potential\\[-2.12mm]
+ & histo        & Saturating Histogram\\[-2.12mm]
+ & lbm          & Lattice-Boltzmann Method Fluid Dynamics\\[-2.12mm]
+ & mri-gridding & Magnetic Resonance Imaging - Gridding\\[-2.12mm]
+ & mri-q        & Magnetic Resonance Imaging - Q\\[-2.12mm]
+ & sad          & Sum of Absolute Differences (part of MPEG encoding)\\[-2.12mm]
+ & sgemm        & Dense Matrix-Matrix Multiply\\[-2.12mm]
+ & spmv         & Sparse-Matrix Dense-Vector Multiplication\\[-2.12mm]
+ & stencil      & Iterative 3D Jacobi Stencil\\[-2.12mm]
  & tpacf        & Two Point Angular Correlation Function\\
 \specialrule{\lightrulewidth}{0pt}{0pt}
 \multirow{12}{*}{\bf Rodinia}
- & backprop       & Back Propagation\\[-2.3mm]
- & bfs            & Breadth-First Search\\[-2.3mm]
- & b+tree         & Database B+Tree Search\\[-2.3mm]
- & cfd            & Computational Fluid Dynamics Solver\\[-2.3mm]
- & heartwall      & Mouse Heart Tracking on Ultrasound Images\\[-2.3mm]
- & hotspot        & 2D Transient Thermal Differential Equation Solver\\[-2.3mm]
- & hotspot3D      & 3D Transient Thermal Differential Equation Solver\\[-2.3mm]
- & kmeans         & K-Means Clustering Algorithm\\[-2.3mm]
- & lavaMD         & N-Body Simulation of Particles in 3D Space\\[-2.3mm]
- & leukocyte      & In Vivo Video Microscopy Leukocyte Tracking\\[-2.3mm]
- & lud            & Lower-Upper Matrix Decomposition\\[-2.3mm]
- & mummergpu      & Local DNA Sequence Alignment\\[-2.3mm]
- & myocyte        & Heart Muscle Cell Simulation\\[-2.3mm]
- & nn             & K-Nearest Neighbors from an Unstructured Data Set \\[-2.3mm]
- & nw             & Needleman-Wunsch Optimization for DNA Alignments\\[-2.3mm]
- & particlefilter & Object Location Estimator for Noisy Measurements\\[-2.3mm]
- & pathfinder     & Find Minimal Cost Path through 2D Graph\\[-2.3mm]
- & srad           & Speckle Reducing Anisotropic Diffusion\\[-2.3mm]
+ & backprop       & Back Propagation\\[-2.12mm]
+ & bfs            & Breadth-First Search\\[-2.12mm]
+ & b+tree         & Database B+Tree Search\\[-2.12mm]
+ & cfd            & Computational Fluid Dynamics Solver\\[-2.12mm]
+ & heartwall      & Mouse Heart Tracking on Ultrasound Images\\[-2.12mm]
+ & hotspot        & 2D Transient Thermal Differential Equation Solver\\[-2.12mm]
+ & hotspot3D      & 3D Transient Thermal Differential Equation Solver\\[-2.12mm]
+ & kmeans         & K-Means Clustering Algorithm\\[-2.12mm]
+ & lavaMD         & N-Body Simulation of Particles in 3D Space\\[-2.12mm]
+ & leukocyte      & In Vivo Video Microscopy Leukocyte Tracking\\[-2.12mm]
+ & lud            & Lower-Upper Matrix Decomposition\\[-2.12mm]
+ & mummergpu      & Local DNA Sequence Alignment\\[-2.12mm]
+ & myocyte        & Heart Muscle Cell Simulation\\[-2.12mm]
+ & nn             & K-Nearest Neighbors from an Unstructured Data Set \\[-2.12mm]
+ & nw             & Needleman-Wunsch Optimization for DNA Alignments\\[-2.12mm]
+ & particlefilter & Object Location Estimator for Noisy Measurements\\[-2.12mm]
+ & pathfinder     & Find Minimal Cost Path through 2D Graph\\[-2.12mm]
+ & srad           & Speckle Reducing Anisotropic Diffusion\\[-2.12mm]
  & streamcluster  & Clustering Algorithm from Parsec\\
 \bottomrule
 \end{tabular}
@@ -998,12 +998,12 @@ End
 
     The Intel C/C++ compiler is a mature tool that incorporates
     auto-parallelisation and vectorisation.
-    It uses simpler data dependence analysis as its fundamental analysis method
-    rather than the polyhedral model.
+    Rather than the polyhedral model, it uses simpler data dependence models as
+    its fundamental analysis method.
     However, it is a very mature product with industry support.
 
     For this evaluation, the benchmarks were compiled with the
-    \texttt{-parallel -qopt-report} options.
+    ``\texttt{-parallel -qopt-report}'' options.
     This generated optimisation reports.
     ICC does not explicitly report reductions, but any reduction that was
     within a loop that ICC considered to be parallelisable was counted.
