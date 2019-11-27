@@ -1186,7 +1186,7 @@ End
         ={}&\text{vec3}(c*e)*\vec a*_v\vec b*_v\vec d
     \end{align*}
 
-    For general purpose code, such reordering can be problematic.
+    For general-purpose code, such reordering can be problematic.
     This is due to computation artefacts in floating-point arithmetic.
     However, this is generally no problem in the domain of graphics processing.
     Instead, associative reordering can result in performance improvements
@@ -1194,30 +1194,30 @@ End
 
     The required analysis functionality for this optimisation was implemented
     with CAnDL, as shown in \Cref{fig:Lewis}.
-    Firstly, the specification includes \texttt{VectorMulChain} to detect 
-    chains of floating point vector multiplications.
-    In lines 4--6, all the factors that are hoisted from some scalar are
-    collected into the array {\tt hoisted}.
+    Firstly, the specification uses ``\texttt{VectorMulChain}'' to detect 
+    chains of floating-point vector multiplications.
+    At lines 4--6, all the factors that are hoisted from some scalar are
+    collected into the array ``{\tt hoisted}''.
     Correspondingly, all the other factors are collected into the array
-    {\tt nonhoisted} at lines 7--9.
+    ``{\tt nonhoisted}'' at lines 7--9.
 
-    {\tt VectorMulChain} and {\tt ScalarHoist} are themselves implemented as
-    CAnDL programs.
-    {\tt VectorMulChain} discovers chains of floating point vector
+    ``{\tt VectorMulChain}'' and ``{\tt ScalarHoist}'' are in turn implemented
+    as CAnDL programs.
+    ``{\tt VectorMulChain}'' discovers chains of floating-point vector
     multiplications in the IR code.
-    It is defined very similarly to {\tt SumChain} and {\tt MulChain}, which
-    were used in the previous case study.
+    It is defined very similarly to ``{\tt SumChain}'' and ``{\tt MulChain}'',
+    which were used in the previous case study.
     It guarantees chains of maximal length by checking that neither of the first
-    two factors is a multiplication itself, and that the last factor is not used
+    two factors is a multiplication itself and that the last factor is not used
     in any multiplication.
 
-    \texttt{ScalarHoist} operates on the variables {\tt in} and {\tt out}, as
-    well as some internals.
-    It specifies that {\tt out} is a vector generated from {\tt in} by setting
-    all vector dimensions to the value of {\tt in}.
+    ``\texttt{ScalarHoist}'' operates on the variables ``{\tt in}'' and
+    ``{\tt out}'', as well as some internals.
+    It specifies that ``{\tt out}'' is a vector generated from ``{\tt in}'' by
+    setting all vector dimensions to the value of ``{\tt in}''.
     The implementation of this is very specific to LLVM and involves
-    combinations of the LLVM IR instruction {\tt insertelement} and
-    {\tt shufflevector}
+    combinations of the LLVM IR instruction ``{\tt insertelement}'' and
+    ``{\tt shufflevector}''.
 
 \subsubsection{Experimental Setup}
 
