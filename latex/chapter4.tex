@@ -1286,58 +1286,58 @@ End
     The specification of SCoPs is significantly more complex than the required
     CAnDL code for the previous case studies.
     However, it can be broken into several components, with some of them shown
-    in \Cref{polyhedralCAnDL}
-    \footnote{The complete CAnDL code for this section is in
-    Appendix~\ref{appendix:CAnDLpoly}.}.
+    in \Cref{polyhedralCAnDL}.\footnote{The complete CAnDL code for this section
+    is in Appendix~\ref{appendix:CAnDLpoly}.}
 
     \paragraph*{Structured Control Flow}
     SCoPs require well-structured control flow.
     This means that each conditional jump within the
     corresponding piece of LLVM IR is accounted for by for-loops and
     conditionals.
-    This is ensured with the \texttt{collect} statement, as in
+    This is ensured with the {\it collect} constraints, as in
     \Cref{fig:collectexample}.
-    The construct is used with the CAnDL specifications \texttt{ForLoop} and
-    \texttt{Conditional} that describe the control flow of for-loops and
-    conditionals.
-    All the involved conditional jump instructions are extracted, and  another
-    \texttt{collect} is then used to verify that these are indeed all
-    conditional jumps within the potential SCoP.
+    The construct is used with the CAnDL specifications ``\texttt{For}''
+    (lines 21--25) and ``\texttt{IfBlock}'' (lines 26--30) that describe the
+    control flow of for-loops and conditionals.
+    All the involved conditional jump instructions are extracted, and it is
+    checked that verify that these are indeed all conditional jumps within the
+    potential SCoP (lines 14--24 and lines 31-33).
 
-    Once the control flow has been established, the iterators that are
-    involved in the loops are used to define affine integer computations in the
-    loop.
-    This is done in a brute-force fashion with a recursive constraint program.
-    It is then checked that the iteration domain of all the for-loops is
+    Once the control flow has been established, the iterators of the loops
+    (lines 4--5) are used to define affine integer computations in the loop
+    (lines 6--9).
+    This is done in a brute-force fashion with a recursive constraint program
+    ``{\tt AffineCalc}'' (line 50).
+    It is checked that the iteration domain of all the for-loops is
     well-behaved, i.e.\ the boundaries are affine in the loop iterators.
 
     \paragraph*{Affine Memory Access}
     All memory accesses in the SCoP must be affine.
-    For this to be true, it needs to be verified that for each {\tt load} and
-    {\tt store} instruction, the base pointer is loop invariant and the index is
-    calculated affinely.
-    The loop invariant base pointer is easily guaranteed using the
-    \texttt{LocalConst} program from \Cref{localconstant}.
+    For this to be true, it needs to be verified that for each ``{\tt load}''
+    and ``{\tt store}'' instruction, the base pointer is loop-invariant, and the
+    index is calculated affinely.
+    The loop-invariant base pointer is easily checked in ``{\tt MemoryAccess}
+    with the ``\texttt{LocalConst}'' program from \Cref{localconstant}.
 
     Checking the index calculations is more involved and is again based on the
-    {\tt collect} method that was demonstrated in \Cref{fig:collectexample}.
-    The {\tt collect} construct is used to find all of the affine memory
-    accesses in all the loop nests.
-    Then another {\tt collect} gathers all \texttt{load} and \texttt{store}
-    instructions, and it is verified that both collections are identical.
+    method that was demonstrated in \Cref{fig:collectexample}.
+    The {\it collect} construct is used to find all of the affine memory
+    accesses in all the loop nests (lines 43--54).
+    Another {\it collect} gathers all ``\texttt{load}'' and ``\texttt{store}''
+    instructions (36--42), guaranteeing that both collections are identical.
 
 \begin{figure}[p]
 \lstset {
  basicstyle=\linespread{0.915}\small\ttfamily
 }
 \begin{lstlisting}[language=CAnDL, label=polyhedralCAnDL, caption=
-   {Fragments from the specification of Scalar Control Parts (SCoPs) in CAnDL:
+   {Fragments of the specification of Scalar Control Parts (SCoPs) using CAnDL:
     SCoPs are defined at lines 1--11 by applying multiple restrictions to the
     containing loop.
-    These restrictions are then individually implemented in CAnDL, including
-    {\tt StructuredControlFlow} and {\tt AffineMemAccesses}, shown in
-    lines 13--33 and lines 35--54 respectively
-    (cf.\ Appendix \ref{appendix:CAnDLpoly}).}]
+    These restrictions are then individually implemented in CAnDL, using
+    ``{\tt StructuredControlFlow}'' and ``{\tt AffineMemAccesses}'', shown in
+    lines 13--33 and lines 35--54, respectively
+    (cf.\ Appendix~\ref{appendix:CAnDLpoly}).}]
 Constraint SCoP
 ( include For @ {loop}
 ∧ include StructuredControlFlow({loop}->{scope}) @ {control}
@@ -1482,5 +1482,3 @@ End
     Where SCoPs were reported without informing additional compiler
     transformations, \Cref{chapter:reductions} applies auto-parallelisation
     techniques to a broad generalisation of reduction computations.
-    
-    
