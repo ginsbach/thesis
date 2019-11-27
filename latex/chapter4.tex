@@ -353,8 +353,8 @@ End
     \bottomrule
   \end{tabular}
   \caption{The second class of atomic constraints operate on pairs of variables.
-           The constraints check for graph edges in the
-           data flow and control low graphs, or simply for shallow equivalence.}
+           The constraints check for graph edges in the data flow or control
+           flow graphs, or directly for shallow equivalence.}
   \label{twovaratomics}
 \end{table}
 
@@ -369,7 +369,7 @@ End
     restrict variables to constant literals ($C_\mathcal{F}^*$), function
     parameters ($P_\mathcal{F}^*$), and instructions ($I_\mathcal{F}^*$).
     At the bottom of the list is the {\bf function\_name} constraint.
-    Function names can only be statically determined for direct function calls.
+    Function names can be statically determined only for direct function calls.
     In that case, the called object is necessarily a global value, and the
     function name can be identified in the global model $G_\mathcal F$.
 
