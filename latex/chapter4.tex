@@ -1018,7 +1018,7 @@ result[2] = make_pair("right",    select<1>(constr2));
 \section{Case Studies}
 \label{sec:casestudies}
 
-    The effectiveness of CAnDL was evaluated with three different use cases.
+    The effectiveness of CAnDL was evaluated in three different use cases.
     Firstly, it was used for detecting opportunities to apply a simple peephole
     optimisation.
     Secondly, CAnDL was applied to graphics shader code optimisation.
@@ -1032,8 +1032,8 @@ result[2] = make_pair("right",    select<1>(constr2));
 \begin{figure}[t]
 \begin{lstlisting}[language=CAnDL,label={fig:facopport},caption=
    {Factorisation opportunities in CAnDL: This captures some opportunities that
-    LLVM {\tt instcombine} misses. {\tt SumChain} and {\tt MulChain} are
-    themselves specified in CAnDL (16 LoC).}]
+    LLVM ``{\tt instcombine}'' misses. ``{\tt SumChain}'', ``{\tt MulChain}''
+    are themselves specified in CAnDL (16 LoC).}]
 Constraint ComplexFactorisation
 ( opcode{value} = add
 ∧ {sum1.value} = {value}.args[0]
@@ -1049,11 +1049,11 @@ Constraint ComplexFactorisation
 \end{figure}
 
     Arithmetic simplifications in LLVM are implemented in the
-    \texttt{instcombine} pass.
-    One example of this is the standard factorisation optimisation that uses the
-    law of distributivity to simplify integer calculations as shown in
+    ``\texttt{instcombine}'' pass.
+    An example of this is the standard factorisation optimisation that uses the
+    law of distributivity to simplify integer calculations, as shown in
     \Cref{fig:factorization1}.
-    Within {\tt instcombine}, this is implemented in 203 lines of code, and
+    Within ``{\tt instcombine}'', this is implemented in 203 lines of code, and
     furthermore uses supporting functionality that is shared with other peephole
     optimisations.
     \begin{align}
@@ -1061,16 +1061,18 @@ Constraint ComplexFactorisation
         \label{fig:factorization1}
     \end{align}
 
-    This analysis problem can be formulated in CAnDL as shown in
+    This analysis problem can be formulated in CAnDL, as shown in
     \Cref{fig:facopport}.
     Crucially, at lines 5,7,9,11, the specification makes use of
-    \texttt{SumChain} and \texttt{MulChain}, which allows the CAnDL program
-    to capture a large, generalised class of opportunities for factorisation.
-    The \texttt{instcombine} pass has limited support for this, and
-    first requires the application of associative and commutative laws to
+    ``\texttt{SumChain}'' and ``\texttt{MulChain}'', which allows the CAnDL
+    program to capture a large, generalised class of opportunities for
+    factorisation.
+    The ``\texttt{instcombine}'' pass has limited support for this, and first
+    requires the application of associative and commutative laws to
     reorder the values.
     For example, this is needed for \Cref{fig:factorization2}, and only
-    partially supported by LLVM with the additional \texttt{reassociate} pass.
+    partially supported by LLVM with the additional ``\texttt{reassociate}''
+    pass.
     \begin{align}
         a*b+c+d*a*e->a*(b+d*e)+c
         \label{fig:factorization2}
@@ -1079,29 +1081,29 @@ Constraint ComplexFactorisation
 \subsubsection{Experimental Setup}
 
     The specification in \Cref{fig:facopport} was evaluated against the default
-    factorisation optimisation in \texttt{instcombine} on three different
+    factorisation optimisation in ``\texttt{instcombine}'' on three different
     benchmark collections:
-    The sequential C versions of the NAS Parallel Benchmarks
+    the sequential C versions of the NAS Parallel Benchmarks
     \citep{Bailey1991NPB}, as provided by \citet{seo2011performance};
-    the C/C++ Parboil benchmarks from \citet{stratton2012parboil};
+    the C/C++ Parboil programs by \citet{stratton2012parboil};
     and the OpenMP C/C++ programs of the Rodinia benchmark suite
     \citep{Che2009Rodinia}.
-    The existing LLVM \texttt{instcombine} pass was extended, so that it
-    automatically reports every time that it successfully applies the
-    \texttt{tryFactorization} function.  
+    The existing LLVM ``\texttt{instcombine}'' pass was extended, so that it
+    automatically logs every time that it successfully applied the
+    ``\texttt{tryFactorization}'' function.  
 
     % NPB:     29047 loc
     % Parboil:  7358 loc
     % Rodinia: 58510 loc
     The individual benchmark programs in the three benchmark
     suites consist of 94915 lines of code in total.
-    For each benchmark suite, the total number of reported factorisations as
-    well as the total compilation time were measured.
+    For each benchmark suite, the total number of reported factorisations, as
+    well as the total compilation time, were measured.
     The standard LLVM optimisation was then disabled, and the CAnDL-generated
-    detection functionality was used.
+    detection functionality was used instead.
     The same application programs were compiled with the same version of Clang
     and identical compiler options, reporting the number of factorisations
-    found, and again measuring the total compilation time.
+    found and measuring the total compilation time again.
     This timing includes all the other passes within LLVM, plus the CAnDL code
     path.
 
@@ -1132,10 +1134,10 @@ Constraint ComplexFactorisation
     only a limited number of factorisation opportunities.
     LLVM was unable to perform any factorisation in the entire Parboil suite.
     However, the Rodinia suite contains more opportunities, mostly in the
-    Particlefilter and Mummergpu programs.
+    ``Particlefilter'' and ``MUMmerGPU'' programs.
 
-    In all three benchmarks suites, the CAnDL system found all the factorisation
-    opportunities that the \texttt{instcombine} pass identified.
+    In all three benchmarks suites, the CAnDL system found all factorisation
+    opportunities that the ``\texttt{instcombine}'' pass identified.
     In addition, it detected an additional 7 cases across all programs.
     Just 12 lines of CAnDL code were able to capture more factorisation
     opportunities than 200 lines of C++ code in LLVM.
@@ -1143,8 +1145,8 @@ Constraint ComplexFactorisation
     Using CAnDL on large benchmark suites only increased total compilation time
     by ${\sim}5\%$.
     Given the generally small impact of individual peephole optimisations, an
-    evaluation of the performance or code size impact vs {\tt instcombine} is
-    unlikely to yield significant results.
+    evaluation of the performance or code size impact vs ``{\tt instcombine}''
+    is unlikely to yield significant results.
 
 \subsection{Case Study 2: Graphics Shader Optimisations}
 
