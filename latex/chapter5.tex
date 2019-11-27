@@ -236,33 +236,32 @@ for(i = 0; i < NK; i++) {
 
 \section{Approach}
 
-    There are three fundamental issues to address in exploiting reductions:
+    There are three fundamental issues to address in exploiting CReHCs:
     detection, replacement, and profitability.
     This chapter focuses on the reliable detection of reductions.
     For evaluation purposes, a preliminary code generation phase that generates
-    parallel pthread code was also implemented.
-    Profitability heuristics are important in practice to determine whether or
-    not to apply parallelising code transformations.
-    A simple profile-based approach was used for this work to determine whether
-    or not to apply our optimisation.
+    parallel code was implemented targeting the POSIX Threads interfaces.
+    Smart profitability heuristics are essential in practice to determine
+    whether or not to apply parallelising code transformations.
+    For this work, a simple profile-based approach was used.
 
-    In the following sub-sections, the constraint-based specification approach
-    with CAnDL is first motivated and described.
-    The reduction idiom is then specified in this system and the CAnDL context
-    is given.
-    This is followed by a brief outline of how this is integrated in the
-    LLVM compiler infrastructure.
-    Finally, in the following section, an overview of the parallel code
-    generation approach is given.
+    In the following sub-sections, the properties that loops need to satisfy
+    to be interpreted as CReHCs are derived.
+    Conditions for sound CReHCs are established and demonstrated on
+    counterexamples.
+    These observations then motivate extensions to CAnDL that culminate in the
+    Idiom Detection Language (IDL).
+    This language eventually enables the constraint-based specification of
+    CReHCs for automatic compiler detection.
 
 \subsection{Constraint-Based Formulation}
 
-    The motivation section described how reductions could be parallelised and
-    suggested that the same basic technique could be applied to a wide range of
-    generalised reductions.
+    The motivation section described how CReHCs could be parallelised as
+    reduction operations.
     For compilers to apply this parallelisation automatically, a precise
-    specification of the suitable program loops is needed.
-    This section formulates scalar and generalised reductions with constraints.
+    specification of the suitable program loops is required.
+    This section gives an overview of the necessary conditions for CReHCs, which
+    are then precisely formulated in \Cref{sec:IDLkernels,sec:IDLCReHCs}.
 
 \subsubsection{Scalar Reductions}
 \label{section:scalarcond}
@@ -271,8 +270,9 @@ for(i = 0; i < NK; i++) {
     source code for it to contain a computation that can be parallelised like a
     scalar reduction:
     \begin{enumerate}
-        \item The code is contained in a for-loop and the iteration space of the
-              loop is known in advance (not necessarily at compile time).
+        \item The code is contained in a for-loop, and the iteration space of
+              the loop is known ahead of time
+              (but not necessarily at compile time).
         \item There is a scalar value $x$ that is updated in every iteration.
         \item One or multiple values $a_1,\dots,a_n$ are read from arrays, and
               the access indices are affine in the loop iterator.
@@ -284,10 +284,10 @@ for(i = 0; i < NK; i++) {
     This definition is broader than usual.
     In particular, it allows the reduction to encompass multiple input arrays.
     Furthermore, complex computations inside the reduction are possible, not
-    just scalar binary operators.
+    just binary scalar operators.
     Note that condition 2 is enforced only at SSA level.
     Finally, this definition does not yet contain a commutativity condition that
-    would be neccesarry to allow the parallelisation to work.
+    would be necessary to allow the parallelisation to work.
     Instead, it also captures intrinsically sequential scalar reductions.
 
     \paragraph*{Example}
@@ -704,6 +704,7 @@ End
 \end{figure}
 
 \subsection{Encapsulating Kernel Functions in IDL}
+\label{sec:IDLkernels}
 
     \Cref{IDLscalarPart} encapsulates kernel functions in an IDL constraint
     specification.
@@ -770,6 +771,7 @@ End
 \end{figure}
 
 \subsection{Complex Reductions and Histograms in IDL}
+\label{sec:IDLCReHCs}
 
     \Cref{IDLcomplexred} shows how the previously described IDL specifications
     can be assembled to define the class of complex reduction and histogram
