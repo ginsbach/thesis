@@ -99,32 +99,33 @@
 \section{Motivation}
 
     \Cref{sum-figure} shows a standard scalar reduction.
-    Inside a single loop, the elements of the array \texttt{a} are successively
-    accumulated in the variable \texttt{sum} using the ``\texttt{+=}'' operator.
+    Inside a single loop, the elements of the array ``\texttt{a}'' are
+    successively accumulated in the variable ``\texttt{sum}'' using the
+    ``\texttt{+=}'' operator.
     This accumulation creates dependencies between successive loop iterations.
     However, those are easy to break.
-    Rather than sequentially accumulating {\tt a} into {\tt sum}, it is possible
-    to calculate several partial sums into thread-private copies of
-    \texttt{sum} in parallel, which are then added to form the final value.
+    Rather than sequentially accumulating ``{\tt a}'' into ``{\tt sum}'', it is
+    possible to accumulate partial sums into thread-private copies of
+    ``\texttt{sum}'' in parallel, which are then added to form the final value.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=MyCpp,label={sum-figure},caption=
+\begin{lstlisting}[language=MyCpp, label={sum-figure}, caption=
     {The most conventional example of a reduction is the adding up of values
      in an array:
-     The reduction operator ``{\tt+}'' {\it reduces} the array \texttt{a} to a
-     single element -- the reduction variable {\tt sum}.}]
+     The reduction operator ``{\tt+}'' {\it reduces} the array ``\texttt{a}'' to
+     a single value -- the reduction variable ``{\tt sum}''.}]
 sum = 0;
 for(i = 0; i < n; i++)
   sum += a[i];
 \end{lstlisting}
 \end{figure}
 
-    Simple reductions like this frequently occur, and existing compilers readily
+    Simple scalar reductions frequently occur, and existing compilers readily
     exploit them.
-    However, such scalar reductions rarely dominate execution time,
-    and when they do, they are often part of more prominent algorithms such as
+    Despite their abundance, scalar reductions rarely dominate execution time,
+    and when they do, they are often part of more prominent algorithms, such as
     matrix multiplication.
-    This often makes outer scope parallelism more profitable to exploit.
+    This often makes outer-scope parallelism more profitable to exploit.
     Therefore, the parallelisation of simple reductions alone has only a
     limited impact on program performance.
 
@@ -139,11 +140,11 @@ for(i = 0; i < n; i++)
     critical step.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=MyCpp,label={complex-reduction-figure},caption=
+\begin{lstlisting}[language=MyCpp, label={complex-reduction-figure}, caption=
    {Example of a Complex Reduction and Histogram Computation:
-    The bottleneck from NAS Parallel Benchmarks can be parallelised as a
-    reduction by privatising variables \texttt{sx}, \texttt{sy},
-    \texttt{q[]}.}]
+    The bottleneck from the NAS Parallel Benchmarks can be parallelised as a
+    reduction by privatising ``\texttt{sx}'', ``\texttt{sy}'',
+    ``\texttt{q[]}''.}]
 for(i = 0; i < NK; i++) {
   x1 = 2.0 * x[2*i] - 1.0;
   x2 = 2.0 * x[2*i+1] - 1.0;
@@ -161,18 +162,19 @@ for(i = 0; i < NK; i++) {
 \end{lstlisting}
 \end{figure}
 
-    The loop in \ref{complex-reduction-figure} is considered as a
-    CReHC due to the following features:
-    Firstly, there is an input array \texttt{x[]}, from which values are read
-    successively in each iteration.
-    Secondly, the values \texttt{sx} and \texttt{sy} are scalar reduction
-    variables, as is evident from lines 11-12.
+    The loop in \Cref{complex-reduction-figure} is considered a CReHC for the
+    following reasons:
+    Firstly, there is an input array ``\texttt{x[]}'', from which values are
+    read successively in each iteration.
+    Secondly, the values ``\texttt{sx}'' and ``\texttt{sy}'' are scalar
+    reduction variables, as is evident from lines 11--12.
     They are incremented conditionally, and the added value is not merely
-    \texttt{x[i]} but the result of a complex calculation with control flow.
-    However, the calculation and the branching condition only depend on the
-    input values \texttt{x[2*i]} and \texttt{x[2*i+1]}.
-    Thirdly, the array \texttt{q[]} is updated as a histogram array at line 10.
-    The index \texttt{l} is not directly read from an input array as in a
+    ``\texttt{x[i]}'' but the result of a complex calculation with control flow.
+    Nonetheless, the calculation and the branching condition only depend on the
+    input values ``\texttt{x[2*i]}'' and ``\texttt{x[2*i+1]}''.
+    Thirdly, the array ``\texttt{q[]}'' is updated as a histogram array at
+    line 10.
+    The index ``\texttt{l}'' is not directly read from an input array, as in a
     conventional histogram, but again the calculation only depends on the input
     values.
 
@@ -182,21 +184,23 @@ for(i = 0; i < NK; i++) {
     The whole process is illustrated in Figure \ref{nice-picture}, with
     different colours on the right showing the distribution of the program
     over two threads.
-    The scalar variables \texttt{sx}, \texttt{sy} and the array \texttt{q[]} are
-    privatised.
+    The scalar variables ``\texttt{sx}'', ``\texttt{sy}'' and the array
+    ``\texttt{q[]}'' are privatised.
     Partial results are then accumulated in the local copies by partitioning the
-    input array across the two threads. 
+    input array equally across the two threads. 
     Finally, the threads are synchronised, and partial results merged.
-    This is done by adding the local copies of \texttt{sx}, \texttt{sy}
-    and performing an element-wise addition of the local copies of \texttt{q[]}. 
+    This is done by adding the local copies of ``\texttt{sx}'', ``\texttt{sy}''
+    and performing an element-wise addition of the local copies of
+    ``\texttt{q[]}''. 
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/parallelisereduction.pdf}
 \caption{Parallelisation of \Cref{complex-reduction-figure}:
-         The input array \texttt{x} is split over two threads (red/blue)
-         that operate on private copies of \texttt{sx}, \texttt{sy}, \texttt{q[]}.
-         The copies are merged after a synchronisation barrier.}
+         The input ``\texttt{x[]}'' is split over two threads (red/blue)
+         that operate on private copies of ``\texttt{sx}'', ``\texttt{sy}'',
+         ``\texttt{q[]}''.
+         These are merged after a synchronisation barrier.}
 \label{nice-picture}
 \end{figure}
 
@@ -212,19 +216,19 @@ for(i = 0; i < NK; i++) {
     detect such reductions by showing the compiler representation of this 
     program.
     The histogram update occurs in the third basic block with the ``load'',
-    assignment and ``store'' operation, but it is by no means obvious that this
+    assignment and ``store'' operations, but it is by no means obvious that this
     is a safe reduction.
     In fact, accurately detecting reductions is non-trivial.
     If in the original program, shown in \Cref{complex-reduction-figure}, the
-    condition on line 5 was changed to {\tt t1<=sx}, this would be no longer a
-    legal reduction as there would now be a control dependence on an
-    intermediate result.
-    This in turn would manifest itself as an additional data dependence edge
-    from block 3 to block 2 in \Cref{nice-picture2}.
+    condition on line 5 was changed to ``{\tt t1 <= sx}'', this would be no
+    longer be a sound reduction, as there would now be a control dependence on
+    an intermediate result.
+    This, in turn, would itself as an additional data dependence edge from
+    block 3 to block 2 in \Cref{nice-picture2}.
     Furthermore, the code segment can only be classified as a reduction because
     all the function calls that are present are pure.
     Such details have to be checked to ensure correctness.
-    What is needed is a way to specify these conditions exactly and to then
+    What is needed is a way to specify these conditions precisely and to then
     automatically identify code regions that satisfy the constraints.
 
 \section{Approach}
