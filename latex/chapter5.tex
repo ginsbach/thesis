@@ -1301,7 +1301,7 @@ for( i=0; i<NUM_KEYS; i++ )
     \end{minipage}
     \caption{Runtime coverage of reductions in {\bf NPB} and {\bf Parboil}:
              Five of the programs spent a significant portion of their runtime
-             performing complex histogram and reduction computations.
+             performing Complex Reduction and Histogram Computations.
              Four of the five histograms were performance bottlenecks,
              but only one of the scalar reductions.}
     \label{npb_parboil_coverage}
@@ -1337,8 +1337,8 @@ for( i=0; i<NUM_KEYS; i++ )
       \legend{manual parallel version, reduction parallelism}
     \end{axis}
     \end{tikzpicture}
-    \caption{Speedup Achieved with Histogram Parallelism on a Logarithmic Scale:
-             Only ``histo'' does not profit from IDL-based parallelisation
+    \caption{Speedup achieved with histogram parallelism on a logarithmic scale:
+             Only ``histo'' did not profit from IDL-based parallelisation
              due to large data size and low arithmetic intensity.}
     \label{speedup-figure}
 \end{figure}
