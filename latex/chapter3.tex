@@ -32,7 +32,7 @@
     the programming language design community of declarative programming
     languages.
     Prolog and its many extensions and dialects particularly stand out as
-    fully-fledged logic programming languages, but parallels can also be drawn
+    fully fledged logic programming languages, but parallels can also be drawn
     to querying languages that apply database techniques to static analysis.
 
     These different fields vary significantly in their interests, motivations,
@@ -617,31 +617,31 @@
     Many domain-specific languages have been proposed for the efficient and
     easy programming of heterogeneous systems.
     They allow implementers to restrict the compiler and runtime away from
-    general purpose programming concepts that are difficult to support on
+    general-purpose programming concepts that are difficult to support on
     specific hardware.
-    Domain specific languages can be stand alone with an entire tool chain and
-    runtime ecosystem of be embedded in existing languages, such as C++ or
-    Scala.
+    Domain-specific languages can be standalone with an entire toolchain and
+    runtime ecosystem or be embedded in existing languages.
+    Python and Scala are popular host languages for DSLs.
     DSLs range in complexity from only marginally more flexible than library
-    interfaces to full-fledged programming languages such as OpenCL and CUDA.
+    interfaces to fully fledged programming languages such as OpenCL and CUDA.
 
     \paragraph*{Functional languages}
     Lift \citep{steuwer15rewrite} provides composable constructs that enable the
-    functional implementaion of data-parallel algorithms and operations.
-    The language is especialy suitable for dense linear algebra applications
+    functional implementation of data-parallel algorithms and operations.
+    The language is especially suitable for dense linear algebra applications
     \citep{Steuwer:2016:MMB:2968455.2968521} and stencil codes
     \citep{Hagedorn:2018:HPS:3179541.3168824}, but extensions to support
     some forms of sparsity exist as well
     \citep{Pizzuti:2019:PAA:3331553.3342614}.
     Lift performs optimisations by applying functional rewrite rules.
-    This extensible set of rewrite rules allows the tool to cover a very large
+    This extensible set of rewrite rules allows the compiler to explore a vast
     space of possible program transformations.
-    However, selecting the best version from this large available configuration
-    space requires guidance from profiling runs.
-    Profiling runs can be computationally expensive, taking approximately
-    one day to evaluate a sufficient number of variants for tuning the matrix
-    multiplication kernel \citep{Steuwer:2016:MMB:2968455.2968521}.
-    Such user effort can be prohibitive, but promises highly tuned OpenCL
+    However, selecting the best of these many versions requires guidance
+    from profiling runs.
+    These profiling runs can be computationally expensive, taking approximately
+    one day for the evaluation of a sufficient number of variants for tuning the
+    matrix multiplication kernel \citep{Steuwer:2016:MMB:2968455.2968521}.
+    Such user effort can be prohibitive but promises highly tuned OpenCL
     outputs.
 
     There exist multiple other functional approaches to generating code for
@@ -650,22 +650,21 @@
     Accelerate, a domain-specific language that is embedded in Haskell.
     Accelerate applies sharing recovery and loop fusion optimisations to
     generates efficient GPU code.
-    However, many of these techniques target particular challenges that arise
+    Many of these techniques target particular challenges that arise
     from the untypical nature of Haskell, especially the methods for interfacing
     heterogeneous accelerators from a lazily evaluated environment.
     This makes Accelerate unsuitable for evaluation in this thesis, which
-    focuses of benchmarks that are provided as C/C++ programs.
+    focuses on benchmarks that are provided as C/C++ programs.
 
-
-    Copperhead \citep{catanzaro11copperhead}, is a data parallel language
+    Copperhead \citep{catanzaro11copperhead}, is a data-parallel language
     embedded in Python.
     It exposes parallelism via higher-order functions such as {\it map},
     {\it gather}, and {\it reduce}.
     However, Copperhead is unable to compile the formulated programs into
-    standalone binaries, leaving the programs tightly integrated in a Python
+    standalone binaries, leaving the programs integrated tightly with the Python
     environment.
-    This makes the interface with C/C++ code nontrivial and is unsuitable for
-    the acceleration of existing benchmarks in the evaluation of this thesis.
+    This integration makes interfacing with C/C++ nontrivial and is unsuitable
+    for the acceleration of existing benchmarks.
 
     \citet{collins14nova} introduced NOVA, a functional language targeted at
     code generation for GPUs.
