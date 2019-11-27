@@ -915,8 +915,8 @@ Constraint SimpleAddition
 \end{lstlisting}
 \begin{lstlisting}[language=MyCpp,label={fig:codegen},caption=
    {C++ code generation: The code is generated to first instantiate atomic
-    constraints, then compose higher-level constructs and finally assemble a
-    backtracking solution for the solver.}]
+    constraints, then compose higher-level constructs, and finally assemble a
+    backtracking solution for solving.}]
 // Step 1: Instantiate Atomic Constraints
 auto constr0 = make_shared<AddInstruction>(model);
 auto constr1 = make_shared<FirstArgument> (model);
@@ -938,27 +938,28 @@ result[2] = make_pair("right",    select<1>(constr2));
     \Cref{fig:codegen}.
     Every atomic constraint in CAnDL results in a line of C++ code that
     constructs an object of a corresponding class:
-    In this case, the three involved atomic constraints are implemented by
-    \texttt{AddInstruction}, \texttt{FirstArgument} and \texttt{SecondArgument}.
+    In this case, the involved atomic constraints are implemented by
+    ``\texttt{AddInstruction}'', ``\texttt{FirstArgument}'' and
+    \texttt{SecondArgument}''.
     These objects are instantiated as shared pointers.
 
-    The compiler then generates analogous objects for the
-    \texttt{conjunction}, \texttt{disjunction} and \texttt{collect} structures.
-    In our example, this only affects the variable \texttt{addition}, which is
-    part of a \texttt{conjunction} clause.
+    The compiler then generates analogous objects for the conjunction,
+    disjunction and collect structures.
+    In our example, this only affects the ``\texttt{addition}'', which is part
+    of a conjunction clause.
     This results in an additional object construction that instantiates the
-    \texttt{Conjunction} class corresponding to the ``$\land$'' operator
+    ``\texttt{Conjunction}'' class corresponding to the ``$\land$'' operator
     in CAnDL.
 
     Constraint classes that implement constraints operating on a single
-    variable directly expose the \texttt{BacktrackingPart} interface introduced
-    in \Cref{cppsolver}.
-    In the example, this applies to \texttt{AddInstruction} and
-    \texttt{Conjunction}.
-    For more complex constraints, the \texttt{select<n>} template is used to
+    variable directly expose the ``\texttt{BacktrackingPart}'' interface
+    introduced in \Cref{cppsolver}.
+    In the example, this applies to ``\texttt{AddInstruction}'' and
+    ``\texttt{Conjunction}''.
+    For more complex constraints, the ``\texttt{select<>}'' template is used to
     specify which variable of a constraint is being considered.
-    In lines 6--7, this is used to extract the parts of backtracking solutions
-    referring to the \texttt{addition} variable, and to then pass them as
+    At lines 8--9, this is used to extract the parts of backtracking solutions
+    referring to the ``\texttt{addition}'' variable, and to then pass them as
     arguments to the conjunction.
 
     Finally, the generated objects are inserted into a vector, together with the
