@@ -1211,12 +1211,12 @@ End
     two factors is a multiplication itself and that the last factor is not used
     in any multiplication.
 
-    ``\texttt{ScalarHoist}'' operates on the variables ``{\tt in}'' and
-    ``{\tt out}'', as well as some internals.
+    ``\texttt{ScalarHoist}'' operates on ``{\tt in}'' and ``{\tt out}'', as well
+    as some hidden internal variables.
     It specifies that ``{\tt out}'' is a vector generated from ``{\tt in}'' by
-    setting all vector dimensions to the value of ``{\tt in}''.
-    The implementation of this is very specific to LLVM and involves
-    combinations of the LLVM IR instruction ``{\tt insertelement}'' and
+    setting all vector dimensions equal to ``{\tt in}''.
+    The precise implementation of this is highly specific to LLVM and involves
+    combinations of the LLVM IR instructions ``{\tt insertelement}'' and
     ``{\tt shufflevector}''.
 
 \subsubsection{Experimental Setup}
@@ -1224,12 +1224,12 @@ End
     The LunarGLASS project \citep{lunarglass} was used in this work to
     transform shaders into LLVM IR and back after optimisation.
     The CAnDL specification was applied to all fragment shaders in the
-    GFXBench 4.0 suite from \citet{gfxbench}.
+    GFXBench 4.0 suite taken from \citet{gfxbench}.
     A corresponding transformation pass was added to LLVM, which uses the
     detected solutions to implement the described optimisation.
-    This is done by constructing the appropriate scalar and vector
-    multiplications from the arrays {\tt hoisted} and {\tt nonhoisted}, and then
-    replacing the result of the original vector multiplication chain with the
+    This was done by constructing the appropriate scalar and vector
+    multiplications from the arrays ``{\tt hoisted}'' and ``{\tt nonhoisted}'',
+    and then replacing the result of the original multiplication chain with the
     final multiplication in these newly generated instructions.
     Standard dead code elimination automatically removes the remnants of the
     original calculation.
@@ -1239,8 +1239,8 @@ End
     compiled with the default Qualcomm graphics stack.
     They were then compiled with LunarGLASS into LLVM, CAnDL was applied, and
     they were transformed back into GLSL code \citep{Rost:2009:OSL:1696393}.
-    To evaluate the impact, the result was again passed through the default
-    graphics stack and the performance of the shaders measured.
+    To evaluate the impact, the result was passed through the default graphics
+    stack again, and the performance measured.
 
 \subsubsection{Results}
 
@@ -1251,21 +1251,6 @@ End
          \leftskip=0pt\rightskip=0pt}
 \label{fig:qualcommspeedup}
 \end{figure}
-
-%\begin{figure}[b]
-%\centering
-%\begin{tabular}{|l||l|l|}
-%\hline
-%         & LLVM  &CAnDL \\
-%\hline
-%\hline
-%Lines of Code & Not implemented& 10 \\ \hline
-%Detected in GFX 4.0 & - & 19 \\ \hline
-%\hline
-%\end{tabular}
-%\caption{Shader optimization LLVM vs CAnDL}
-%\label{fig:candlshader}
-%\end{figure}
 
     There were 19 solutions to the specification across the benchmarks, and
     the transformation had an impact on the performance of 8 fragment shaders.
