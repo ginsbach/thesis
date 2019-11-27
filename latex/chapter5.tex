@@ -234,7 +234,7 @@ for(i = 0; i < NK; i++) {
     What is needed is a way to specify these conditions precisely and to then
     automatically identify code regions that satisfy the constraints.
 
-\section{Approach}
+\section{Recognising CReHCs}
 
     There are three fundamental issues to address in exploiting CReHCs:
     detection, replacement, and profitability.
@@ -261,7 +261,7 @@ for(i = 0; i < NK; i++) {
     For compilers to apply this parallelisation automatically, a precise
     specification of the suitable program loops is required.
     This section gives an overview of the necessary conditions for CReHCs, which
-    are then precisely formulated in \Cref{sec:IDLkernels,sec:IDLCReHCs}.
+    are then precisely formulated in \Cref{sec:IDLdefinition,sec:IDLCReHCs}.
 
 \subsubsection{Scalar Reductions}
 \label{section:scalarcond}
@@ -448,6 +448,7 @@ for(i = 0; i < n; i++) {
 \end{figure}
 
 \subsection{The Idiom Detection Language}
+\label{sec:IDLdefinition}
 
     For automatic detection during compilation, the conditions from
     \Cref{section:histocond,section:scalarcond} are specified formally in
@@ -500,7 +501,7 @@ for(i = 0; i < n; i++) {
     \label{CanDLtoIDL}
 \end{table}
 
-\subsection{Kernel Functions as Generalised Domination}
+\subsubsection{Kernel Functions as Generalised Domination}
 
     Complex reduction and histogram computations can be expressed as a
     higher-order function.
@@ -704,8 +705,7 @@ End
 \end{lstlisting}
 \end{figure}
 
-\subsection{Encapsulating Kernel Functions in IDL}
-\label{sec:IDLkernels}
+\subsubsection{Encapsulating Kernel Functions in IDL}
 
     \Cref{IDLscalarPart} encapsulates kernel functions in an IDL constraint
     specification.
@@ -771,7 +771,7 @@ End
 \end{lstlisting}
 \end{figure}
 
-\subsection{Complex Reductions and Histograms in IDL}
+\subsection{Specification of CReHCs in IDL}
 \label{sec:IDLCReHCs}
 
     \Cref{IDLcomplexred} shows how the previously described IDL specifications
@@ -839,7 +839,7 @@ End
 \end{lstlisting}
 \end{figure}
 
-\section{Code Generation}
+\section{Code Generation for CReHCs}
 
     Parallel code generation immediately follows the CAnDL-generated detection
     pass.
