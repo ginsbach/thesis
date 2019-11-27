@@ -682,18 +682,18 @@ Constraint KernelFunction
 End
 \end{lstlisting}
 \begin{lstlisting}[language=IDL,label={IDLscalarPart},caption=
-   {IDL specification of a scalar reduction within a complex reduction and
-    histogram computation:
-    The kernel function operates within a loop.
-    Its input \texttt{kernel.inputs} is composed of \texttt{read\_values} and
-    the reduction value of the previous iteration, concatenated with
-    \texttt{Concat}.}]
+   {IDL specifications of a kernel function and a scalar reduction within a
+    CReHC:
+    In ``{\tt ScalarPart}'', the kernel function operates in a loop.
+    Its input ``\texttt{kernel.inputs}'' is composed of
+    ``\texttt{read\_values}'' and the reduction value of the previous iteration,
+    concatenated with ``\texttt{Concat}''.}]
 Constraint ScalarPart
 ( {kernel.result} reaches phi node
       {old_value} from {loop.end} and
   inherits ScopeValue
       with {loop}      as {scope}
-       and {old_value} as {value} and 
+       and {old_value} as {value} and
   {kernel.result} has data flow to {final_value} and
   {loop.end} strictly control flow
       dominates {final_value} and
@@ -707,19 +707,19 @@ End
 \end{lstlisting}
 \end{figure}
 
-\subsubsection{Encapsulating Kernel Functions in IDL}
+\subsubsection{Expressing Kernel Functions in IDL}
 
-    \Cref{IDLscalarPart} encapsulates kernel functions in an IDL constraint
-    specification.
+    \Cref{IDLscalarPart} encapsulates kernel functions as an IDL constraint
+    specification in the top half.
     The specification is built around the previously introduced generalised
-    graph dominance constraint, which is invoked at lines 18--20.
-    The relevant arrays which are passed to this final constraint are filled
-    using several collect-all constraints at lines 2--17.
+    graph domination constraint, which is invoked at lines 18--20.
+    The arrays that are used in these final lines of the specification are
+    filled with several collect-all statements at lines 2--17.
     Lines 2--3 collect all the entry points of the control flow.
     In the previous example, these were ``{\tt precursor}'' and
     ``{\tt backedge}''.
-    Lines 4--12 collect all values from outside the scope that are used inside
-    the scope.
+    All values from outside the scope that are used within the scope are
+    collected at lines 4--12.
     These values can be considered the closure of the kernel function.
     Finally, lines 13--17 collect all the loop-carried $\Phi$-instructions,
     which only exist in case the scope is a loop.
@@ -727,11 +727,11 @@ End
     The bottom of \Cref{IDLscalarPart} shows the IDL specification of a
     scalar reduction component within a CReHC loop.
     This IDL specification is built around a kernel function, incorporating the
-    specification in lines 10--11.
-    The arguments to this kernel function are set using the ``{\tt Concat}''
-    specification in lines 12--15.
-    This kernel function is connected with a loop-carried $\Phi$-instruction in
-    lines 2--6.
+    specification at lines 10--11.
+    The arguments to this kernel are set using the ``{\tt Concat}''
+    specification at lines 12--15.
+    This kernel function is connected with a loop-carried $\Phi$-instruction
+    at lines 2--6.
     Finally, lines 7--9 make sure that the reduction value eventually leaves the
     loop, excluding loop-carried iterators that are only used within the loop.
 
@@ -749,10 +749,11 @@ End
  basicstyle = \linespread{1.062}\ttfamily
 }
 \begin{lstlisting}[language=IDL,label={IDLhistoPart},caption=
-   {IDL specification of a histogram reduction within a complex reduction and
-    histogram computation:
-    Two kernel functions are present: lines 7--9 calculate the index into the
-    histogram array, lines 10--11 generate the updated value.
+   {IDL specification of a histogram reduction in a Complex Reduction and
+    Histogram Computation:
+    Two kernel functions are present.
+    Lines 7--9 calculate the index into the histogram array, lines 10--11
+    generate the updated value.
     The read-modify-write step may be conditional.}]
 Constraint HistoPart
 ( inherits ConditionalReadModifyWrite
