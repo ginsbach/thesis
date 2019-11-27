@@ -1256,13 +1256,12 @@ for( i=0; i<NUM_KEYS; i++ )
 
     On the less well-structured Parboil benchmarks, ICC failed to detect many of
     the scalar reductions in ``cutcp''.
-    This is because these reductions use the functions ``\texttt{fmin}'' and
-    ``\texttt{fmax}'', which our system recognizes as pure, but ICC does not.
-    Finally, ICC recognised many of the scalar reductions in Rodinia, but was
-    slightly outperformed by IDL on six of the programs by one scalar reduction
-    in each of them.
-
-    It is clear that ICC does not attempt to detect histograms, as it missed all
+    This was because these reductions use the functions ``\texttt{fmin}'' and
+    ``\texttt{fmax}'', which our system recognised as pure, but ICC did not.
+    Finally, ICC recognised many of the scalar reductions in Rodinia but was
+    outperformed on six of the programs, with IDL finding one additional
+    reduction in each of them.
+    It is clear that ICC did not attempt to detect histograms, as it missed all
     instances of them.
 
 \subsection{Runtime Coverage}
@@ -1344,18 +1343,18 @@ for( i=0; i<NUM_KEYS; i++ )
     \label{speedup-figure}
 \end{figure}
 
-    Detecting large numbers of reductions is encouraging, but does not address
+    Detecting large numbers of reductions is encouraging but does not address
     whether or not such detection is useful.
-    To measure this, each program was profiled, and it was examined how much
-    time it spent in the different types of reduction loops.
-    These measurements are shown in
+    To measure the potential impact, each program was profiled, examining the
+    time spent in the different types of reduction loops.
+    These measurements from these profiling runs are shown in
     \Cref{npb_parboil_coverage,rodinia_coverage}.
 
     The two different classes of reductions behaved very differently.
-    While there were many more scalar reductions than histogram reductions,
-    histogram reductions were  more likely to constitute performance
+    While there were many more scalar reductions than histogram reductions in
+    total, histogram reductions were much more likely to constitute performance
     bottlenecks.
-    In those benchmark programs that contained histogram reductions,
+    In the benchmark programs that contained histogram reductions,
     they accounted for an average of $68\%$ of the runtime.
 
     Scalar reductions, on the other hand, were generally irrelevant to program
@@ -1366,33 +1365,33 @@ for( i=0; i<NUM_KEYS; i++ )
     \Cref{rodinia_coverage}.
 
     It is evident that exploiting reduction parallelism for performance gains
-    is only promising for histogram reductions.
+    was promising only for histogram reductions.
     While the ``sgemm'' program was bottlenecked by a scalar reduction -- the
     dot product inside the matrix multiplication -- treating this loop as an
-    arbitrary reduction is unlikely to yield optimal results.
-    Instead, \Cref{chapter:idioms} demonstrates how to accelerate this in a more
+    arbitrary reduction was unlikely to yield optimal results.
+    Instead, \Cref{chapter:idioms} shows how to accelerate this with a more
     targeted approach.
 
 \subsection{Performance}
 
     The speedup that was achieved by exploiting reduction parallelism on
-    histograms is detailed in figure \ref{speedup-figure}.
+    histograms is detailed in \Cref{speedup-figure}.
     This was only evaluated for benchmarks with significant runtime coverage of
     reductions.
     The speedup from the IDL-based exploiting of reduction parallelism
     is compared against the manually optimised parallel benchmark versions that
     were shipped by the original implementors.
-    The baseline is the sequential version of the benchmark programs.
+    The baseline is the sequential version of the respective benchmark program.
 
     The IDL-based approach achieved $62\%$ speedup on ``EP'' over the whole
     program.
-    This is limited by the runtime coverage of the histogram loop.
+    This was limited by the runtime coverage of the histogram.
     Following Amdahl's Law
     \citep{Amdahl:1967:VSP:1465482.1465560,Hill:2008:ALM:1449375.1449387},
     parallelisation on 48 cores has a theoretical limit of
     $1/((1-46\%)+46\%/48)-1=82\%$ speedup.
-    The manually implemented parallel version, on the other hand, uses coarser
-    parallelism and outperforms the reduction-based parallelisation.
+    The manually implemented parallel version, on the other hand, exploits
+    outer-loop parallelism and outperforms the reduction-based method.
 
     On the ``IS'' benchmark, the IDL-based parallelisation results in
     $2.9\times$ speedup, compared to $6.3\times$ speedup of the manual parallel
