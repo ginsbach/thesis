@@ -387,7 +387,7 @@ End
     Such graph properties include dominance relationships and the interaction of
     data flow and control flow for $\Phi$-instructions.
 
-\subsubsection{Phi Nodes}
+\subsubsection{Constraining $\Phi$-Instructions}
 
     CAnDL provides the following syntax for expressing the data flow
     of $\Phi$-instructions:
@@ -421,7 +421,7 @@ End
     Thirdly, $A$ is the $n$th argument of $C$, where $n$ is the index of $B$ in
     the list of jump instructions that target $h(C)$.
 
-\subsubsection{Graph Domination}
+\subsubsection{Identifying Graph Dominators}
 
     In order to express domination in the control flow graph
     \citep{Cytron:1989:AGD:73141.74823}, the following syntax is used:
@@ -438,13 +438,13 @@ End
     \noindent
     For both these constraints, the values are implicitly limited to
     instructions.
-    The expression ``{\bf domination}(\{A\},\{B\})'' means that $A$ is a
+    The expression {\bf domination}(\{A\},\{B\}) means that $A$ is a
     dominator of $B$, i.e.\ any path through the control flow graph from the
     entry node to $B$ must go through $A$.
     Strict domination additionally requires that $A$ and $B$ are distinct.
     Complementing these constructs, there are post-dominator versions
-    {\bf post\_domination} and {\bf strict\_post\_domination}, as well as a
-    generalisation:
+    ``{\bf post\_domination}'' and ``{\bf strict\_post\_domination}'', as well
+    as the following generalisation:
 \begin{figure}[h]
     \centering
     \begin{tabular}{|c|}
