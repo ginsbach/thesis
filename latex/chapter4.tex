@@ -556,16 +556,16 @@ End
     \end{figure}
 
     \noindent
-    Note that the syntax in square brackets ``[]'' is optional and the syntax in
-    curly brackets ``\{\}'' may be repeated.
-    The basic version of \texttt{\it include}, using none of the optional
+    Note that the syntax in square brackets  is optional and the syntax in curly
+    brackets may be repeated.
+    The basic version of \texttt{\it include}, using neither of the two optional
     structures, is simple.
     It copies the formula that corresponds to the identifier verbatim into
     the current specification.
-    If ``$[\text{\bf @}\ \text{\it variable}]$'' is specified, then all the
+    If $[\text{\bf @}\ \text{\it variable}]$ is specified, then all the
     variable names of the inserted constraint formula are prefixed with the
     given variable name, separated by a dot.
-    This encapsulates the inserted formula and prevents unwanted
+    This namespaces the inserted formula and prevents unwanted
     interactions with surrounding constraints.
     The other optional syntax is used to rename variables in the included
     formula.
@@ -579,8 +579,9 @@ End
     Both programs specify an addition of four values, first adding pairwise and
     then adding the intermediate results.
     In the code at the top, a formula for the addition of two values is
-    bound to the name {\tt Sum}.
-    This is then included three times in another formula named {\tt SumOfSums}.
+    bound to the name ``{\tt Sum}''.
+    This is then included three times in another formula named
+    ``{\tt SumOfSums}''.
     Using the optional grammatical constructs, the formula operates on a
     different set of variables each time, such that the third addition
     takes the results of the previous two as input.
@@ -589,13 +590,10 @@ End
 \input{latex/figure_candlinheritance}
 \end{figure}
 
-\subsubsection{Collect}
+\subsubsection{Collect-all Constraints}
 
     The \text{\it collect} construct captures all possible solutions of a given
     formula, as in \Cref{def:collectconstr}.
-%    For example, it can guarantee that all memory accesses in a loop use affine
-%    index computations.
-%    The grammar is simple but the semantics require some elaboration.
 \begin{figure}[H]
     \centering
     \begin{tabular}{|c|}
@@ -606,21 +604,22 @@ End
 \end{figure}
 
     \noindent
-    In \Cref{fig:simplecollect}, the variables \texttt{arg[0],\dots,arg[N-1]}
-    are constrained to contain all of the direct data dependencies of
-    \texttt{ins}.
+    In \Cref{fig:simplecollect}, the variables ``\texttt{arg[0]}'',\dots,``\texttt{arg[N-1]}''
+    are specified to contain all of the direct data dependencies of
+    ``\texttt{ins}''.
     The first argument of \text{\it collect} specifies the name of an index
     variable that is used to detect which variables belong to the collected set.
-    In this example, solutions of \texttt{arg[i]} for a given value
-    of \texttt{ins} are identified.
-    The second argument gives an upper bound to the amount of collected
+    In this example, solutions of ``\texttt{arg[i]}'' for a given value
+    of ``\texttt{ins}'' are identified.
+    The second argument gives an upper limit to the number of collected
     variables.
-    It is left unspecified in this case by using the symbol \texttt{N}.
+    This upper bound is left unspecified in this case by using the symbol
+    ``\texttt{N}''.
 
 \begin{figure}[t]
 \begin{lstlisting}[language=CAnDL,label={fig:simplecollect},caption=
-   {Simple {\it collect} example in CAnDL: direct data dependencies of
-    {\tt ins} are collected.\leftskip=0pt\rightskip=0pt}]
+   {Simple {\it collect} example in CAnDL: Direct data dependencies of
+    ``{\tt ins}'' are collected.\leftskip=0pt\rightskip=0pt}]
 Constraint CollectArguments
 ( ir_type{ins} = instruction
 ∧ collect i N ({arg[i]} ∈ {ins}.args))
@@ -632,32 +631,32 @@ End
     implement quantifiers.
     Consider the task of detecting instructions with only floating-point
     arguments.
-    This involves the $\forall$ quantifier, as it is equivalent to
+    This involves the ``$\forall$'' quantifier, as it is equivalent to
     the following equation:
     \begin{align}
-        ins\text{ has only }float\text{ arguments}\iff
-        \left[\forall x\colon\ (x,ins)\in DFG_\mathcal F^*\implies(float,x)\in I_\mathcal F\right]
+        \texttt{ins}\text{ has only }\textit{float}\text{ arguments}\iff
+        \left[\forall x\colon\ (x,\texttt{ins})\in DFG_\mathcal F^*\implies(\textit{float},x)\in I_\mathcal F\right]
         \label{fig:implication}
     \end{align}
     This can be rewritten to an equivalent formulation on sets:
     \begin{align*}
-        S_1= select(ins,rev(DFG_\mathcal F^*))\subset select(float,T_\mathcal F)= S_2.
+        S_1= select(\texttt{ins},rev(DFG_\mathcal F^*))\subset select(\textit{float},T_\mathcal F)= S_2.
     \end{align*}
     
     Elementary set theory gives  $S_1\subset S_2\iff S_1 = S_1\cap S_2$.
     Therefore, if a set $S$ is constrained to be equal to both $S_1$ and
     $S_1\cap S_2$, then \Cref{fig:implication} gives that this is satisfiable if
-    and only if $ins$ has only $float$ arguments.
+    and only if ``{\tt ins}'' has only floating-point arguments.
     This condition can be expressed in CAnDL, as is shown in
     \Cref{fig:collectexample}.
-    With the first {\it collect} statement at line 3, the set \texttt{arg} is
-    constrained to be equal to $S_1$ and with the second one at lines 4-5, it
+    With the first {\it collect} statement at line 3, the set ``\texttt{arg}''
+    is constrained to be equal to $S_1$ and with the second one at lines 4-5, it
     is constrained to be equal to $S_1\cap S_2$ as well.
 
 \begin{figure}[H]
 \begin{lstlisting}[language=CAnDL,label={fig:collectexample},caption=
-   {{\it Collect} is used to restrict {\tt ins} to be calculated exclusively
-    from floating point values.\leftskip=0pt\rightskip=0pt}]
+   {{\it Collect} restricts ``{\tt ins}'' to be an instruction with only
+    from floating-point operands.\leftskip=0pt\rightskip=0pt}]
 Constraint FloatingPointInstruction
 ( ir_type{ins} = instruction
 ∧ collect i N ( {ins} ∈ {arg[i]}.args)
@@ -670,11 +669,11 @@ End
     The exact same approach can be used for much more complex analysis tasks.
     For example, the final case study at the end of this chapter uses
     {\it collect} statements to restrict all array accesses within a
-    loop to be affine in the loop iterators:
-    First {\it collect} all memory accesses in the loop
-    (i.e.\ all \texttt{load} and \texttt{store} instructions), and then use a
-    second {\it collect} statement to enforce affine calculations of the access
-    indices that are used by the address calculations for these instructions.
+    loop to be affine in the loop iterators.
+    First, {\it collect} all memory accesses in the loop
+    (i.e.\ all ``\texttt{load}'' and ``\texttt{store}'' instructions), and then
+    use a second {\it collect} statement to enforce affine calculations of the
+    access indices that are used for these instructions.
 
 \subsection{Expressing Larger Structures}
 
@@ -750,40 +749,41 @@ Constraint LoopWithOnlyArrayAccesses
     This includes classic control flow structures, such as single-entry
     single-exit (SESE) regions and different classes of loops, as well as memory
     access patterns.
-    They form a standard library that enables higher-level programming
-    within CAnDL.
+    These definitions a standard library that enables higher-level programming
+    with CAnDL.
     This section gives an overview of how some of these standard building
     blocks are defined.
 
     \Cref{CAnDLSESE} gives the specification of SESE regions in CAnDL.
-    Such regions are spanned by the variables {\tt begin} and {\tt end}, with an
-    incoming control flow edge from {\tt precursor} to {\tt begin} (line 3) and
-    an outgoing control flow edge from {\tt end} to {\tt successor} (line 5).
+    Such regions are spanned by the variables ``{\tt begin}'' and ``{\tt end}'',
+    with an incoming control flow edge from ``{\tt precursor}'' to
+    ``{\tt begin}'' (line 3) and
+    an outgoing control flow edge from ``{\tt end}'' to ``{\tt successor}''
+    (line 5).
     Graph domination constraints at lines 8 and 9 guarantee that these are the
     only entry and exit of the region.
     Additional domination constraints at lines 6--7 and lines 10--13 make sure
     that there are no jumps from outside the region into an instruction of the
-    region that is not {\tt begin}, and similarly that there are no early exits
-    of the region.
+    region that is not ``{\tt begin}'', and similarly that there are no early
+    exits of the region.
     Finally, regions are restricted to align with basic block boundaries in
     lines 2 and 4.
 
-    Natural loops are easily defined in CAnDL, as is visible in
-    \Cref{CAnDLLoop}.
-    The specification includes {\tt SESE}, and adds only a single additional
-    constraint for the back edge of the loop in line~3.
+    Natural loops are easily defined in CAnDL, as shown in \Cref{CAnDLLoop}.
+    The specification includes ``{\tt SESE}'' and adds only a single additional
+    constraint for the back edge of the loop at line 3.
     Additional extensions to this specification are added to define more
     restricted loop structures, such as for-loops.
     This involves the identification of the loop iterator, the breaking
     condition, and the corresponding iteration space boundaries.
     In order to be a valid for-loop, the end of the iteration space must be
     determined before the loop is entered.
-    This is expressed in \Cref{localconstant}, restricting {\tt value} to be
-    either a function argument, a constant or an instruction that strictly
+    This is expressed in \Cref{localconstant}, restricting ``{\tt value}'' to be
+    either a function argument, a constant, or an instruction that strictly
     dominates the loop entry.
     Note that this formula is underspecified on its own.
     It is to be included into larger CAnDL programs that also include
-    {\tt Loop}.
+    ``{\tt Loop}''.
 
     Another class of important building blocks is different categories of
     memory access.
@@ -792,8 +792,8 @@ Constraint LoopWithOnlyArrayAccesses
     \Cref{fig:arrayloop} combines several of the introduced building blocks to
     specify a loop in which all memory access locations are calculated as
     offsets from base pointers that are constant within the loop.
-    This for example excludes loops with pointer chasing.
-    The {\tt ArrayAccess} specification can be extended with more restrictive
+    This, for example, excludes loops with pointer-chasing.
+    The ``{\tt ArrayAccess}'' specification can be extended with more restrictive
     memory access patterns as previously mentioned.
     This is crucial to define advanced compiler analysis passes, such as the
     detection of regions suitable for polyhedral code analysis.
