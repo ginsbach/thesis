@@ -1003,18 +1003,17 @@ result[2] = make_pair("right",    select<1>(constr2));
     described later.
     The user has clicked the ``analyze'' button, which triggered the analysis to
     run by invoking the modified Clang compiler.
-    The GUI then read the report file, and printed the results in the right
-    hand part of the figure.
+    The GUI then read the report file and printed the results in the right-hand
+    part of the figure.
 
     The solver found a SCoP in the IR code (corresponding to lines 459--468 of
     the C program).
     The text on the right shows the hierarchical structure of the solution, with
     IR values assigned to every variable.
-    The corresponding C entities can be recovered using the debug
-    information that is contained in the generated LLVM IR code.
-    By modifying the C code, the developer can now test the detection and
-    e.g.\ verify that no SCoP is detected if irregular control flow is
-    introduced.
+    The corresponding C entities can be recovered using the debug information
+    that is contained in the generated LLVM IR code.
+    By modifying the C code, the developer can test the detection and verify
+    that no SCoP is detected if irregular control flow is introduced.
 
 \section{Case Studies}
 \label{sec:casestudies}
