@@ -237,27 +237,14 @@
 \end{declaration}
 \tableofcontents
 \end{preliminary}
-\chapter{Introduction}
-    \label{chapter:introduction}
-    \input{latex/chapter1}
 
-\makeatletter
-\@openrightfalse
-\makeatother
-\chapter*{}
-\makeatletter
-\@openrighttrue
-\makeatother
-
-\makeatletter
-\@openrightfalse
-\makeatother
 \chapter*{List of Symbols and Notation}
 \addcontentsline{toc}{chapter}{List of Symbols and Notation}  
     \input{latex/notation}
-\makeatletter
-\@openrighttrue
-\makeatother
+
+\chapter{Introduction}
+    \label{chapter:introduction}
+    \input{latex/chapter1}
 
 \chapter{Constraint Programming on Static Single Assignment Code}
     \label{chapter:theory}
