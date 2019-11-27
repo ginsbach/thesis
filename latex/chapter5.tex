@@ -397,7 +397,7 @@ for(i = 0; i < n; i++) {
     In the first example, the index of the histogram is not computed from an
     input aray, but instead read from an input stream.
     This makes parallelisation as a histogram impossible, as the stream is only
-    avaliable sequentially.
+    available sequentially.
     In the second and third examples, the computation is effectively stopped as
     soon as an index beyond a certain size occurs.
     Again, this can only be detected by sequentially going through the array,
@@ -1210,7 +1210,7 @@ for( i=0; i<NUM_KEYS; i++ )
     known and the use of flat array structures.
 
     \Cref{npb_scops,parboil_scops,rodinia_scops} show the number of Static
-    Control Parts (SCoPs) that Polly finds accross the 40 individual programs.
+    Control Parts (SCoPs) that Polly finds across the 40 individual programs.
     Detecting such SCoPs is the first part of any polyhedral analysis.
     As program code outside of SCoPs is left untouched by Polly, this provides
     an upper bound for the detection of reductions.
