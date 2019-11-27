@@ -551,9 +551,9 @@
 \section{Heterogeneous Computing}
 
     Heterogeneous computing has been a particularly active field of research
-    since the widespread adoption of GPUs for general purpose computations in
-    the last decade.
-    This includes research from both software and hardware perspectives.
+    since the widespread adoption of GPUs for general-purpose computations
+    during the last decade.
+    This field includes research from both software and hardware perspectives.
     The hardware research investigates the most promising directions of
     diversification for processors in heterogeneous systems
     \citep{Tomusk:2016:SHC:3012405.3014165}.
@@ -562,40 +562,41 @@
     the software perspective.
     This section focuses on the different programming approaches that
     have been championed for targeting existing heterogeneous accelerators.
-    These methods broadly fall into two categories: library approaches, and
+    These methods broadly fall into two categories: library approaches and
     domain-specific languages.
 
 \subsection{Libraries}
 
-    Library interfaces are often the most performant ways to exploit
-    heterogeneous performance.
+    Library interfaces are often the most performant path to exploiting
+    heterogeneous computing.
     However, they provide narrow interfaces, accelerating only very particular
     computations.
     The established way of encapsulating fast linear algebra is via dedicated
-    library implementations based on the BLAS interface specification
+    library implementations based on the BLAS interfaces
     \cite{2002:USB:567806.567807}.
-    These are generally very fast on their specific hardware platforms, but
-    require application programmer effort and offer little performance portability.
-    Implementations of dense linear algebra are available for most suitable
+    Leading BLAS implementations are unmatched in speed on their
+    target hardware platforms, but require application programmer effort and
+    offer little portability.
+    Implementations of dense linear algebra are available for many
     hardware platforms, such as cuBLAS \cite{cublas} for NVIDIA GPUs, clBLAS
-    \cite{clblas} for AMD GPUs and the Intel MKL library \cite{mkl} for Intel
+    \cite{clblas} for AMD GPUs, and MKL \cite{mkl} for Intel
     CPUs and accelerators.
 
-    Dense linear algebra is the best-supported class of calculations.
-    However, implementations of sparse linear algebra also exist for
-    the most important platforms, including cuSPARSE \cite{cusparse} for NVIDIA
-    GPUs and clSPARSE \cite{clsparse} built on top of OpenCL.
-
     While most individual library implementations focus on a single target
-    hardware platform, some BLAS implementations attempt platform independent
-    acceleration and heterogeneous compute.
+    hardware platform, some BLAS implementations attempt cross-platform
+    acceleration and heterogeneity.
     Among them are systems by \citet{Wang:2016:BHP:2925426.2926256,
     10.1007/978-3-319-64203-1_33, Diego2017Multi}.
 
+    Dense linear algebra is the best-supported class of calculations.
+    Besides, implementations of sparse linear algebra also exist for
+    the most important platforms, including cuSPARSE \cite{cusparse} for NVIDIA
+    GPUs and clSPARSE \cite{clsparse} built on top of OpenCL.
+
     More expressive computational idioms, such as reductions and stencils, are
     not suitable for library implementation.
-    These idioms are parameterised with kernel functions, which can be
-    implemented as callbacks, but prevent a direct execution on heterogeneous
+    These idioms are parameterised with kernel functions, which could be
+    implemented as callbacks but prevent a direct execution on heterogeneous
     hardware.
     Instead, domain-specific languages provide the appropriate abstraction
     level for these computations.
@@ -603,7 +604,7 @@
     \paragraph*{CPU-GPU data transfer optimisations}
     Library implementations often require the manual management of CPU-GPU
     data transfers.
-    These transfers have been studied extensively as important bottlenecks for
+    These transfers have been studied extensively as bottlenecks for
     parallelisation efforts.
     Work by \citet{Jablin:2011:ACC:1993316.1993516} established a
     method for the automatic management of CPU-GPU communication.
