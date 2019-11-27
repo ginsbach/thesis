@@ -277,7 +277,7 @@ for(i = 0; i < NK; i++) {
         \item One or multiple values $a_1,\dots,a_n$ are read from arrays, and
               the access indices are affine in the loop iterator.
         \item The updated value $x'$ is computed as a term only of $x$, the
-              array values $a_1,\dots,a_n$ and of values that are constant
+              array values $a_1,\dots,a_n$, and of values that are constant
               within the loop.
     \end{enumerate}
 
@@ -362,22 +362,23 @@ for(i = 0; i < n; i++) {
 \subsubsection{Histogram Reductions}
 \label{section:histocond}
 
-    Histogram reductions are defined in the context of this work very similiarly
-    to the previous definition of scalar reductions, with some additional
-    conditions:
+    The conditions that apply to histogram reductions are similar to those for
+    scalar reductions.
+    However, instead of one function parameter, there are two:
     \begin{enumerate}
-        \item The code is contained in a for-loop and the iteration space of the
-              loop is known in advance (not necessarily at compile time).
+        \item The code is contained in a for-loop, and the iteration space of
+              the loop is known ahead of time
+              (but not necessarily at compile time).
         \item One or multiple values $a_1,\dots,a_n$ are read from arrays, and
               the access indices are affine in the loop iterator.
-        \item A value {\tt idx} is computed as a term only of the array values
-              $a_1,\dots,a_n$ and of values that are constant within the loop.
-        \item A value $x$ is read from an array at index {\tt idx} and a
+        \item An integer $k$ is computed as a term only of the array values
+              $a_1,\dots,a_n$, and of values that are constant within the loop.
+        \item A value $x$ is read from an array at index $k$ and a
               modified value $x'$ is written at the same index.
               The writing may be control-dependent only on $a_1,\dots,a_n$ and
               it may not be in a nested loop.
         \item The updated value $x'$ is computed as a term only of $x$, the
-              array values $a_1,\dots,a_n$ and of values that are constant
+              array values $a_1,\dots,a_n$, and of values that are constant
               within the loop.
     \end{enumerate}
 
@@ -385,34 +386,34 @@ for(i = 0; i < n; i++) {
     commutative, just as is the case for scalar reductions.
     However, checking this condition requires a post-processing step,
     which is independent of the detection of the algorithmic structure.
-    For the purposes of this research, checking commutativity is considered the
-    responsibility of code generation.
+    For this research, checking commutativity was considered the responsibility
+    of code generation.
 
     \paragraph*{Example}
     The first two conditions are the same as those in the previous discussion of
     scalar reductions and were shown to hold for the loop in
     \Cref{complex-reduction-figure}.
-    The array \texttt{q[]} also satisfies the remaining conditions:
-    Firstly, the variable \texttt{l} corresponds to the value \texttt{idx}.
-    Secondly, the element \texttt{q[l]} is read, modified and written.
-    Lastly, the updated value is computed in a legal way, as it is obtained by
-    merely adding a constant \texttt{1.0} to the previous value.
+    The array ``\texttt{q[]}'' also satisfies the remaining conditions.
+    Firstly, the variable ``\texttt{l}'' corresponds to the index $k$.
+    Secondly, the element ``\texttt{q[l]}'' is read, modified and written.
+    Lastly, the updated value is computed in an allowed fashion, as it is
+    obtained by merely adding a constant ``\texttt{1.0}'' to the previous value.
 
     \paragraph*{Counterexamples}
-    Again, counterexamples are given in \Cref{counterexamples2} to give an
-    intuition about the significance of conditions 3-5.
+    Again, counterexamples are given in \Cref{counterexamples2} to develop an
+    intuition about the significance of conditions 3--5.
 
     In the first example, the index of the histogram is not computed from an
-    input aray, but instead read from an input stream.
+    input array but instead read from an input stream.
     This makes parallelisation as a histogram impossible, as the stream is only
     available sequentially.
-    In the second and third examples, the computation is effectively stopped as
-    soon as an index beyond a certain size occurs.
-    Again, this can only be detected by sequentially going through the array,
-    and therefore a parallel computation of partial results is not efficiently
+    In the second and third examples, the computation effectively stops when an
+    index beyond a threshold size occurs.
+    This can only be accounted for by sequentially going through the array.
+    Therefore, the parallel computation of partial results is not efficiently
     possible.
-    This behaviour is demonstrated in two ways, by breaking conditions 4 and 5
-    respectively.
+    This behaviour is evoked in two different ways, by breaking the conditions
+    4 and 5, respectively.
     This shows the need to restrict both the data flow and control flow of the
     histogram kernel.
 
