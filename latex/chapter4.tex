@@ -5,9 +5,9 @@
     language based on that methodology and presents an implementation within the
     production-quality LLVM compiler infrastructure.
 
-    In the first sections, the implementation of the Compiler Analysis
-    Description Language (CAnDL) is motivated as an approach for reducing the
-    complexity of LLVM optimisations.
+    In the first sections, the design of the Compiler Analysis
+    Description Language (CAnDL) is motivated as an approach for simplifying
+    the implementation of LLVM transformation passes.
     Optimising compilers have to use elaborate program transformations to
     exploit increasingly complex hardware.
     Implementing the required analysis functionality for such optimisations to
@@ -18,15 +18,15 @@
     constraint specifications.
 
     The individual language constructs are introduced with their syntax and
-    functionality in the middle part of the chapter.
+    functionality in the central section of this chapter.
     The first introduced language features directly expose parts of the
-    underlying methodology from \Cref{chapter:theory}.
-    On top of that, CAnDL provides higher-level constructs that allow for
-    program modularity and the reduction of repetitive code structures.
-    With these higher-level constructs, a collection of CAnDL specifications
-    for standard compiler concepts is introduced as the CAnDL standard library.
-    This collection of common building blocks includes Single Entry Single Exit
-    (SESE) regions and loops.
+    underlying SSA model from \Cref{chapter:theory}.
+    Building on that, CAnDL provides higher-level constructs that allow for
+    modularity in specifications and the reduction of repetitive constraints.
+    Using these higher-level constructs, a collection of CAnDL specifications
+    of standard compiler concepts is introduced as the CAnDL standard library.
+    This collection of common building blocks includes single-entry single-exit
+    regions, loops, and array-based memory accesses.
 
     Finally, several case studies are presented for the experimental evaluation
     of CAnDL.
@@ -682,7 +682,7 @@ End
  basicstyle=\linespread{0.910}\ttfamily
 }
 \begin{lstlisting}[language=CAnDL, label=CAnDLSESE, caption=
-   {Single entry single exit region in CAnDL:
+   {Single-entry single-exit region in CAnDL:
     The region spans from {\tt begin} to {\tt end}, with the entry as control
     flow {\tt precursor} to {\tt begin}, and the exit as control flow {\tt end}
     to {\tt successor}.}]
@@ -701,9 +701,9 @@ Constraint SESE
          passes through {begin}) End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL, label=CAnDLLoop, caption=
-   {Loops are defined in CAnDL as single entry single exit regions with a back
+   {Loops are defined in CAnDL as single-entry single-exit regions with a back
     edge.
-    The back edge does not break the ``single exit'' condition, because it does
+    The back edge does not break the ``single-exit'' condition, because it does
     not exit the region.}]
 Constraint Loop
 ( include SESE
@@ -746,9 +746,9 @@ Constraint LoopWithOnlyArrayAccesses
 
     The modularity of CAnDL allows for the creation of building blocks that are
     used by multiple CAnDL specifications.
-    This includes classic control flow structures, such as single entry single
-    exit (SESE) regions and different classes of loops, as well as memory access
-    patterns.
+    This includes classic control flow structures, such as single-entry
+    single-exit (SESE) regions and different classes of loops, as well as memory
+    access patterns.
     They form a standard library that enables higher-level programming
     within CAnDL.
     This section gives an overview of how some of these standard building
