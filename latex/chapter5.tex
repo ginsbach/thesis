@@ -1,13 +1,13 @@
 
-    The Compiler Analysis Description Language makes the constraint methodology
-    introduced in \Cref{chapter:theory} directly accessible to the Clang
-    compiler within the LLVM compiler infrastructure.
-    The previous chapter showed how this enables powerful compiler analysis
-    tools to be generated from declarative specifications, replicating and
-    extending established analysis approaches.
-    This chapter goes beyond such restating of existing functionality.
-    Instead, it presents methods for the automatic parallelisation of
-    programs that were previously inaccessible to compiler reasoning.
+    The Compiler Analysis Description Language (CAnDL) makes the constraint
+    methodology from \Cref{chapter:theory} accessible to the Clang compiler
+    within the LLVM compiler infrastructure.
+    The previous chapter showed how this enables compiler analysis tools to be
+    generated from declarative specifications, replicating and extending
+    established compiler abilities.
+    This chapter goes beyond restating and improving existing functionality.
+    Instead, it implements automatic parallelisation methods for programs that
+    were previously inaccessible to compiler reasoning.
 
     Complex Reduction and Histogram Computations (CReHCs) are identified as a
     previously overlooked  {\em computational idiom}.
@@ -18,20 +18,20 @@
     indirect memory accesses and non-trivial control flow.
     Such loops have not typically been studied as a single class of
     calculations, but this chapter demonstrates that grouping them together
-    allows for automatic detection and parallelisation using the same methods.
+    allows for automatic detection and parallelisation using shared methods.
 
     After introducing CReHCs, this chapter presents the Idiom Description
     Language (IDL) as an extension of CAnDL and uses it to implement the
-    detection of this computational idiom.
+    detection of this idiom.
     The additional language features of IDL enable capturing well-behaved
     kernel functions.
     CReHCs contain reduction operators that are modelled as kernel functions,
-    but kernel functions are also necessary for the formulation of other
+    but kernel functions are also required in the formulation of other
     computational idioms, such as stencil codes.
     
     Grouping reductions and histograms together and formulating CReHCs in IDL
-    makes their automatic recognition in C/C++ program code possible.
-    The evaluation section of this chapter shows results from benchmarking
+    enables their automatic recognition in C/C++ program code.
+    The evaluation section shows results from benchmarking the outcomes of
     parallelisation routines that were implemented to complement the detection.
     Significant speedups were achieved on several programs from the
     NAS Parallel Benchmark suite, the Parboil Benchmarks, and Rodinia.
@@ -40,7 +40,7 @@
 
     Reductions occur widely in numerical applications.
     Parallelisation techniques for them were established by
-    \citet{rauchwerger1999lrpd,yu2006adaptive,Jradi2017fast} and others.
+    \citet{rauchwerger1999lrpd,yu2006adaptive,Jradi2017fast}, and others.
     Typical reductions successively apply an arithmetic operator over an
     array of numeric values in order to compute, for example, the sum of a set
     of floating-point numbers.
@@ -66,7 +66,7 @@
     exploited on their own than simple scalar reductions.
 
     Discovering and exploiting scalar reductions in programs has been
-    studied for many years, by \citet{pottenger1995idiom} among others.
+    studied for many years, by \citet{pottenger1995idiom}, among others.
     The treatment of generalisations of reduction operations has received less
     attention.
     While some work has been published on parallelising such computations,
@@ -91,10 +91,10 @@
     This chapter focuses on deriving the detection of reductions and assumes
     that later compiler stages are responsible for mapping this to dedicated
     code generation backends.
-    However, to illustrate the potential performance of the scheme, it uses
+    Nonetheless, to illustrate the potential performance of the scheme, it uses
     also introduces a complementing code generation pass.
     This transformation pass achieved significant program-wide speedups on those
-    benchmarks where reductions are performance bottlenecks.
+    benchmarks where reductions were performance bottlenecks.
 
 \section{Motivation}
 
