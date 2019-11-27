@@ -1396,11 +1396,11 @@ for( i=0; i<NUM_KEYS; i++ )
     On the ``IS'' benchmark, the IDL-based parallelisation results in
     $2.9\times$ speedup, compared to $6.3\times$ speedup of the manual parallel
     version.
-    This discrepancy comes from the fact that the original version uses
-    knowledge about the distribution of the histogram keys that is not available
-    to IDL program.
+    This discrepancy comes from the fact that the manual parallel version relies
+    on knowledge about the distribution of the histogram keys at runtime that is
+    not available to the IDL-based code transformation.
     As the keys are uniformly distributed, they can be efficiently sorted into
-    disjunct bins before executing the actual histogram.
+    even-sized bins before executing the actual histogram.
     This avoids the overhead of array privatisation.
     A smarter code generation approach for IDL could narrow this gap.
 
@@ -1412,38 +1412,38 @@ for( i=0; i<NUM_KEYS; i++ )
     This suggests that there is no significant parallelisation potential
     available in the program.
 
-    On ``tpacf'', the IDL-based reduction parallelism achieved an almost linear
-    speedup of $35.7\times$.
-    The parallel version of this program that is provided by the original
-    implementers to benchmark against is implemented poorly using a critical
-    section.
+    The IDL-based reduction parallelism achieved an almost linear speedup of
+    $35.7\times$ on the ``tpacf'' program.
+    The manual parallel version, which was provided by the original benchmark
+    implementers as a reference to evaluate against, was implemented poorly with
+    a critical section.
     This resulted in a slowdown compared to sequential execution on our highly
     parallel machine.
 
 \section{Conclusions}
 
     The chapter developed a new compiler-based approach to recognising a broad
-    generalisation of reductions automatically during compilation.
-    The automatic detection is made possible by a constraint formulation in the
+    generalisation of reductions during compilation automatically.
+    This detection was made possible by a constraint formulation in the
     Idiom Detection Language (IDL), an extension of the
-    Compiler Analysis Description Language (CAnDL) in LLVM.
-    By representing Complex Reduction and Histogram Computations (CReHCs) in
-    this declarative language, the specification was kept separate from
+    Compiler Analysis Description Language (CAnDL) from the previous chapter.
+    Representing Complex Reduction and Histogram Computations (CReHCs) in
+    this declarative language kept the specification separate from
     detection considerations, providing a modular and extendable approach to
     idiom recognition.
-    Reduction parallelism in recognised reductions was exploited by
-    privatising the reduction variables.
+    Reduction parallelism in recognised CReHC loops was exploited by
+    privatising the reduction variables and arrays.
 
-    This approach proved robust when evaluated on C versions of three well-known
-    benchmark suites: NAS, Parboil and Rodinia.
-    It detected more reductions than existing approaches and was alone in being
-    able to detect more computationally intense histogram reductions.
+    This approach proved robust during the evaluation on C/C++ versions of
+    three well-known benchmark suites: NPB, Parboil, and Rodinia.
+    It detected more scalar reductions than other approaches and was alone in
+    being able to detect computationally intense histogram reductions.
     Such reductions were shown to give significant performance improvements.
 
     \paragraph*{Outlook}
     This chapter introduced a computational idiom in detail and provided the
-    Idiom Detection Language (IDL) with the required tools to automatically
-    recognise the idiom during compilation.
-    \Cref{chapter:idioms} uses the methods to recognise a range of other common
-    algorithmic structures, together resulting in significant coverage of
+    Idiom Detection Language (IDL) with the required tools to recognise this
+    idiom during compilation.
+    \Cref{chapter:idioms} uses similar methods to recognise a range of other
+    common algorithmic structures, together resulting in significant coverage of
     benchmark bottlenecks.
