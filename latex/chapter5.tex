@@ -207,8 +207,11 @@ for(i = 0; i < NK; i++) {
 \begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{figures/nicepicture2.png}
-\caption{A subset of the Data Flow, Control Flow and Control Dependences of
-         \Cref{complex-reduction-figure}}
+\caption{Fragments of the data flow, control flow, and control dependencies in
+         the internal compiler representation of the source code in
+         \Cref{complex-reduction-figure}:
+         These interactions must be considered when searching for code that
+         implements Complex Reduction and Histogram Computations.}
 \label{nice-picture2}
 \end{figure}
 
@@ -234,7 +237,7 @@ for(i = 0; i < NK; i++) {
 \section{Approach}
 
     There are three fundamental issues to address in exploiting reductions:
-    detection, replacement and profitability.
+    detection, replacement, and profitability.
     This chapter focuses on the reliable detection of reductions.
     For evaluation purposes, a preliminary code generation phase that generates
     parallel pthread code was also implemented.
@@ -572,7 +575,7 @@ for(i = 0; i < n; i++) {
 \centering
 \begin{tabular}{|c|rl|l|}
 \hline
-\multicolumn{1}{|c}{\bf Block} &  \multicolumn{2}{|c|}{\bf Operation} & \multicolumn{1}{c|}{\bf Dependences} \\
+\multicolumn{1}{|c}{\bf Block} &  \multicolumn{2}{|c|}{\bf Operation} & \multicolumn{1}{c|}{\bf Dependencies} \\
 \hline
 \hline
 \multirow{1}{*}{\bf entry}
