@@ -59,16 +59,16 @@
     program, as otherwise the resulting binary might be corrupted.
     Transformations are then applied to the analysis results in a second step.
     This often involves heuristic cost models to gauge the effect on runtime,
-    code size and other metrics.
+    code size, and other metrics.
 
     The complexity of the necessary analysis is an impediment to
     the implementation of new compiler passes, preventing the rapid
     prototyping of new ideas.
-    For example, simple peephole optimisations in the LLVM {\tt instcombine}
-    pass contain approximately 30000 lines of complex C++ code, despite the
+    For example, simple peephole optimisations in the LLVM ``{\tt instcombine}''
+    pass require approximately 30000 lines of C++ code, despite the
     transformations being simple.
-    \citet{Menendez:2017:ADP:3062341.3062372} showed that {\tt instcombine} is
-    an important source of bugs, and bugs in the middle end of a compiler are
+    \citet{Menendez:2017:ADP:3062341.3062372} showed that ``{\tt instcombine}''
+    is an important source of bugs, and bugs in the middle end of a compiler are
     particularly pernicious \citep{Yang:2011:FUB:1993316.1993532}.
     They tamper with the user programs but can remain unnoticed and often only
     trigger in corner cases.
@@ -96,7 +96,7 @@
     and code generator.
     The system is evaluated on a range of use cases from
     different domains, including standard LLVM optimisation passes,
-    custom optimisations for graphics shader programs and the detection of
+    custom optimisations for graphics shader programs, and the detection of
     Static Control Parts (SCoPs) \citep{Lengauer2012Polly} for polyhedral
     program transformations \citep{Karp:1967:OCU:321406.321418}.
 
@@ -135,19 +135,19 @@ End
     \forall a\in \mathbb{R}\colon\ \sqrt{a*a}=|a|
     \end{align}
 
-    The compiler should use the equation left to right:
+    The compiler should use the equation left-to-right.
     It should analyse the user code in order to find segments that correspond to
     the left side of the equation and then transform all those occurrences
     analogous to the right side of the equation.
     The compiler, therefore, must detect $\sqrt{a*a}$ in the LLVM IR code and
-    replace it with calls to the \texttt{abs} function.
+    replace it with calls to the ``\texttt{abs}'' function.
     The generation of the new function call is trivial, but the detection of
     even this simple pattern requires some care when implemented manually in
     a sophisticated codebase such as LLVM.
 
     The traditional approach in the Clang compiler is to integrate such
-    optimisations into the previously mentioned \texttt{instcombine} pass, which
-    already applies an extensive collection of peephole optimisations.
+    optimisations into the previously mentioned ``\texttt{instcombine}'' pass.
+    which already applies an extensive collection of peephole optimisations.
     However, this code makes heavy use of raw pointers and dynamic type casts,
     spans ${\sim}30000$ lines, and has been identified as a frequent source of
     bugs in
@@ -158,10 +158,11 @@ End
     It is easier to follow, has no interaction with other optimisations and
     is concise, as presented in \Cref{fig:candlspec}.
     The first line of the program assigns a name to the specification, which is
-    then defined by the interaction of seven so-called {\em atomic constraint}s.
-    These individual statements have to hold simultaneously on the values of
-    \texttt{sqrt\_call}, \texttt{sqrt\_fn}, \texttt{square} and \texttt{a}.
-    The lines 2--8 each stipulate one of these constraints, and they are joined
+    then defined by the interaction of seven {\em atomic constraint}s.
+    These individual statements must simultaneously hold on the values of
+    ``\texttt{sqrt\_call}'', ``\texttt{sqrt\_fn}'', ``\texttt{square}'' and
+    ``\texttt{a}''.
+    Lines 2--8 each stipulate one of these constraints, and they are joined
     together with logical conjunctions ``$\land$''.
 
     The CAnDL compiler translates the declarative program into a C++ function,
