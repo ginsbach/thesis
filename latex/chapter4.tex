@@ -683,9 +683,9 @@ End
 }
 \begin{lstlisting}[language=CAnDL, label=CAnDLSESE, caption=
    {Single-entry single-exit region in CAnDL:
-    The region spans from {\tt begin} to {\tt end}, with the entry as control
-    flow {\tt precursor} to {\tt begin}, and the exit as control flow {\tt end}
-    to {\tt successor}.}]
+    The region spans ``{\tt begin}'' to ``{\tt end}'', with control flow
+    ``{\tt precursor}'' to ``{\tt begin}'' as the entry, control flow
+    ``{\tt end}'' to ``{\tt successor}'' as the exit.}]
 Constraint SESE
 ( opcode{precursor} = branch
 ∧ {begin} ∈ {precursor}.successors
@@ -703,18 +703,18 @@ Constraint SESE
 \begin{lstlisting}[language=CAnDL, label=CAnDLLoop, caption=
    {Loops are defined in CAnDL as single-entry single-exit regions with a back
     edge.
-    The back edge does not break the ``single-exit'' condition, because it does
+    The back edge does not break the ``single-exit'' condition because it does
     not exit the region.}]
 Constraint Loop
 ( include SESE
 ∧  {begin} ∈ {end}.successors) End
 \end{lstlisting}
 \begin{lstlisting}[language=CAnDL, label=localconstant, caption=
-   {This specification restricts {\tt value} to remain constant during the
-    execution of a loop.
-    It is underspecified on its own, and should be included in larger CAnDL
-    programs that also include {\tt Loop}, renaming {\tt value} to the specific
-    variable that needs to be constrained in this way.}]
+   {This specification restricts ``{\tt value}'' to remain constant during loop
+    execution.
+    It is underspecified on its own and should be included in larger CAnDL
+    programs that also include ``{\tt Loop}'', renaming ``{\tt value}'' to the
+    specific variable that needs to be constrained in this way.}]
 Constraint LocalConst
 ( ir_type{value} = literal
 ∨ ir_type{value} = argument
@@ -826,9 +826,9 @@ Constraint LoopWithOnlyArrayAccesses
     For reliable detection of code structures, the normalisation of LLVM IR via
     optimisation passes is critical.
     The promotion of memory to registers, loop-independent code motion,
-    constant folding, loop normalisations, and many other standard
-    tools, result in predictable code structures that simplify the formulation
-    of CAnDL specifications.
+    constant folding, loop normalisations, and other standard transformations
+    result in predictable code structures that simplify the formulation of CAnDL
+    specifications.
     The CAnDL-enabled Clang compiler invokes the detection functionality
     directly after optimisations and expects the flags
     {\tt -Os -fno-unroll-loops -fno-vectorize -fno-slp-vectorize -ffast-math}.
@@ -841,17 +841,17 @@ Constraint LoopWithOnlyArrayAccesses
               {\tt add}$\mapsto${\tt or} and {\tt mul}$\mapsto${\tt shift}.
               Such instruction specialisations run counter to the goal of
               normalising the IR.
-        \item Some interactions between {\tt select} and {\tt getelementptr}
-              instructions are transformed as
+        \item Some interactions between ``{\tt select}'' and
+              ``{\tt getelementptr}'' instructions are transformed
               {\tt (c?a[i]:a[j])}$\mapsto${\tt a[c?i:j]} to minimise the number
-              of {\tt getelementptr} instructions.
-        \item Complex {\tt getelementptr} instructions are simplified to adding
-              an offset to a raw pointer.
+              of ``{\tt getelementptr}'' instructions.
+        \item Complex ``{\tt getelementptr}'' instructions are simplified to
+              add an offset to a raw pointer.
               The index calculations are then performed entirely as integer
               arithmetic on the indices.
-              This also applies to multi-dimensional array accesses, effectively
+              This also applies to multi-dimensional arrays, effectively
               flattening them.
-              Chains of {\tt getelementptr} instructions are merged, again
+              Chains of ``{\tt getelementptr}'' instructions are merged, again
               resulting in integer arithmetic instead.
     \end{itemize}
     Finally, some structures in the LLVM IR are not modified by normalising
