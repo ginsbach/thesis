@@ -1397,20 +1397,20 @@ End
 
 \subsubsection{Experimental Setup}
 
-    The reliable detection of SCoPs was evaluated on the PolyBench suite by
-    \citet{polybench}, a collection of 31 benchmarks containing SCoPs of
-    differing complexity from several application domains.
+    The reliable detection of SCoPs was evaluated on the PolyBench suite
+    \citep{polybench}, a collection of 31 benchmark programs that contain SCoPs
+    of differing complexity from several application domains.
     For both the CAnDL-based approach and for the evaluation of Polly, it was
     counted how many of the computational kernels contained in the benchmark
     suite were captured in their entirety by the respective analysis.
 
     Some post-processing of the generated constraint solutions was required to
     compare the results of CAnDL and Polly.
-    This is because the CAnDL results are not in the JSCoP format that Polly
-    generates, but contain instead the raw constraint solution represented
-    as a JSON file.
-    Additionally, the CAnDL implementation does not merge consecutive
-    outer level loops into a single SCoP of maximum size.
+    This was needed because the output of CAnDL was not in the JSCoP format
+    that Polly generates, but contained the raw constraint solution
+    encoded as a JSON file.
+    Furthermore, the CAnDL implementation did not merge consecutive outer level
+    loops into a single SCoP of maximum size.
     Therefore, the detected loops from the CAnDL solver were extracted and
     grouped together.
     A Python script was then used to verify that they precisely covered the
@@ -1432,7 +1432,7 @@ End
     considered as part of the CAnDL standard library.
     In the same way, the line count for Polly does not account for additional
     code that Polly relies on when detecting SCoPS, e.g.\ the expansive
-    ScalarEvolution pass.
+    ``ScalarEvolution'' pass.
 
     With a high-level representation of SCoPs, CAnDL allows polyhedral
     compiler researchers to explore the impact of relaxing or tightening the
@@ -1443,7 +1443,7 @@ End
 
 \begin{table}[ht]
     \input{latex/figure_candlvspolly}
-    \caption{SCoPs detected Polly vs CAnDL}
+    \caption{Polly and CAnDL detected all SCoPs.}
     \label{fig:candlvspolly}
 \end{table}
 
@@ -1453,17 +1453,17 @@ End
     generate performant code.
     The state-of-the-art approach for implementing this functionality manually
     in C++ is not satisfactory, as exemplified by the complicated and
-    error-prone {\tt instcombine} pass in the LLVM compiler infrastructure.
+    error-prone ``{\tt instcombine}'' pass in the LLVM compiler infrastructure.
 
     The domain-specific Compiler Analysis Description Language (CAnDL) provides
     a more efficient approach.
     CAnDL specifications can automatically generate compiler analysis
     passes from a declarative description.
-    They are easier to program, and significantly reduce the code size and
+    They are easier to program and significantly reduce the code size and
     complexity when comparing against manual C++ implementations.
     Although CAnDL is based on a constraint programming paradigm and uses a
-    backtracking solver to analyse LLVM IR code, it results in only moderate
-    compile time increases.
+    backtracking solver to analyse the LLVM IR code, it only moderately impacted
+    compile times.
 
     Many compiler analysis tasks are suitable for implementation with CAnDL.
     It can be used for the detection of standard peephole optimisation
@@ -1473,12 +1473,12 @@ End
     polyhedral transformations.
 
     \paragraph*{Outlook}
-    The third case study showed that CAnDL can express the algorithmic structure
-    of complex loop nests, not just peephole optimisation opportunities.
+    The final case study showed that CAnDL can express the algorithmic structure
+    of complex loop nests, not just peephole optimisation
+    opportunities.
     This enables the capturing of entire loops at a time.
     The following chapters expand on this observation by investigating how the
-    recognition of computational idioms in loops can be leveraged for
-    performance.
-    Where SCoPs were reported without informing additional compiler
+    recognition of computational idioms can be leveraged for performance.
+    While SCoPs were reported without informing additional compiler
     transformations, \Cref{chapter:reductions} applies auto-parallelisation
     techniques to a broad generalisation of reduction computations.
