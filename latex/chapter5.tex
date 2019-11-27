@@ -437,7 +437,7 @@ for(i = 0; i < n; i++) {
 \begin{lstlisting}[language=MyCpp,label={counterexamples2},caption=
    {Counterexamples to the last three conditions:
     None of these computations can be parallelised as histograms.
-    The final two example loops implement the same functionality.}]
+    The final two example loops implement equivalent functionality.}]
 active = true;
 for(i = 0; i < n; i++) {
     if(a[i] > 9)
@@ -447,15 +447,14 @@ for(i = 0; i < n; i++) {
 \end{lstlisting}
 \end{figure}
 
-\section{The Idiom Detection Language}
+\subsection{The Idiom Detection Language}
 
     For automatic detection during compilation, the conditions from
     \Cref{section:histocond,section:scalarcond} are specified formally in
     a constraint language.
     CAnDL from \Cref{chapter:candl} is taken as the basis for this formulation.
     However, additional language constructs are required in order to capture
-    the kernel computations that are part of complex reduction and histogram
-    computations.
+    the kernel computations.
 
     This extension of CAnDL leads to the definition of the
     Idiom Detection Language (IDL).
@@ -465,7 +464,7 @@ for(i = 0; i < n; i++) {
     convenient for large-scale specifications, replacing uncommon Unicode
     characters.
     \Cref{CanDLtoIDL} shows syntax differences.\footnote{The complete grammar
-    file that is used to generate the parser of the IDL compiler is in
+    file that was used to generate the parser of the IDL compiler is in
     Appendix~\ref{appendix:IDLgrammar}.}
 
 \begin{table}[H]
@@ -496,7 +495,7 @@ for(i = 0; i < n; i++) {
     \end{tabular}
     \caption{The Idiom Detection Language (IDL) is derived from CAnDL.
              However, it uses a more descriptive syntax, without uncommon
-             unicode characters such as ``$\land$'', ``$\lor$'', ``$\in$'',
+             Unicode characters such as ``$\land$'', ``$\lor$'', ``$\in$'',
              and ``$\neq$''.}
     \label{CanDLtoIDL}
 \end{table}
