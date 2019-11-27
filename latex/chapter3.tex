@@ -718,8 +718,8 @@
     systems.
     Instead, the focus is on  Field Programmable Gate Arrays (FPGAs) and
     Coarse Grain Reconfigurable Architectures (CGRAs).
-    This makes it unsuitable for comparative evaluation with the methods
-    proposed in this thesis.
+    This makes it unfit for comparative evaluation with the methods proposed in
+    this thesis.
 
     There have been multiple domain-specific libraries proposed specifically
     for linear algebra computations.
@@ -744,27 +744,29 @@
 
 \section{Computational Idioms}
 
-    The ideas behind the concept of {\it computational idioms} have been
-    observed in different contexts.
-    The basic observation is that software programs do not cover the
-    space of possible programs evenly.
-    Instead, they tend to be structured among certain design principles.
-    This is true in particular for performance intensive programs and the
-    core bottlenecks of large applications.
+    Notions that recognise the existence of {\it computational idioms} are
+    known in several disciplines.
+    The core observation is that existing software is not distributed evenly in
+    the space of possible programs.
+    Instead, programs tend to be clustered around design principles.
+    Interestingly, this appears true in particular for performance-intensive
+    programs and bottleneck computations.
 
-    The concrete concepts are partially overlapping and can be vague.
-    Software design patterns are a way of understanding program code
-    strucutres as specialised implementation of a class of standard approaches
-    in the discipline of software engineering.
+    The concrete concepts are partially overlapping and sometimes vague.
+    In the discipline of software engineering, software design patterns
+    describe program components as specialising implementations of
+    a class of standard approaches.
+
     Terms such as {\em map and reduce}, {\em stencil code}, and
     {\em linear algebra} are commonly used when designing libraries and
     domain-specific languages.
     Scientific computing is mostly concerned with the architectural
-    implications of specific memory access patterns that are instrinsic to
+    implications of specific memory access patterns that are intrinsic to
     the choice of certain algorithmic approaches.
-    This section apptempts to demarcate a meaningful conception of
-    {\it computational idioms} by comparison with the existing literature of
-    these different domains with related concepts.
+
+    This section attempts to demarcate a meaningful conception of the term
+    {\it computational idiom} by comparison with the existing literature of
+    different domains with related concepts.
 
 \subsection{Higher-Order Functions}
 
@@ -776,13 +778,13 @@
     to each element in a data structure, and {\it fold} / {\it reduce}, which
     accumulates the elements in a data structure with a reduction operator.
 
-    Common computational workloads can be expressed as instances of
+    Many computational workloads can be expressed as instances of
     higher-order functions.
     For example, the popularity of the MapReduce framework
     \citep{Dean2008MapReduce} stems from the observation that many big data
     workloads exhibit characteristics that can be expressed efficiently with
     combinations of {\it map} and {\it reduce}.
-    The framework provides an idiomatic approach to the development of big
+    The framework provides an {\em idiomatic} approach to the development of big
     data applications, enabling shorter development times and more predictable
     performance.
 
@@ -793,13 +795,13 @@
     the insertion sort algorithm, as well as a simple sum over an array of
     floating-point values.
     These two algorithms do not share parallelisation opportunities.
-    Therefore, the detection of {\it reduce} instances is insufficient for
+    Therefore, the detection of {\it reduce}-instances is insufficient for
     enabling compiler parallelisation approaches.
     However, more restrictive versions of {\it reduce} are suitable for
     compiler detection.
-    \Cref{chapter:reductions} studies in detail the class of Complex Reduction
-    and Histogram Computations, which is formulated as a computational idiom.
-    This restricted class of {\it reduce} calculations shares a common
+    \Cref{chapter:reductions} studies the class of Complex Reduction and
+    Histogram Computations, which is formulated as a computational idiom.
+    This restricted class of {\it reduce}-calculations shares a common
     parallelisation approach.
 
 \subsection{Parallel Dwarfs}
