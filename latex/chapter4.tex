@@ -841,8 +841,8 @@ Constraint LoopWithOnlyArrayAccesses
               {\tt add}$\mapsto${\tt or} and {\tt mul}$\mapsto${\tt shift}.
               Such instruction specialisations run counter to the goal of
               normalising the IR.
-        \item Some interactions between ``{\tt select}'' and
-              ``{\tt getelementptr}'' instructions are transformed
+        \item Some interactions of ``{\tt select}'' and
+              ``{\tt getelementptr}'' instructions are transformed as
               {\tt (c?a[i]:a[j])}$\mapsto${\tt a[c?i:j]} to minimise the number
               of ``{\tt getelementptr}'' instructions.
         \item Complex ``{\tt getelementptr}'' instructions are simplified to
@@ -879,23 +879,24 @@ Constraint LoopWithOnlyArrayAccesses
     generating C++ code from them.
     An overview of its  flow is shown in \Cref{fig:compilerflow}.
     The frontend reads in  CAnDL source code and builds an abstract syntax tree.
-    This syntax tree is simplified in two steps to eliminate some of the higher
-    order constructs of CAnDL.
-    The {\it inheritance} clauses are inlined and contained variables
+    This syntax tree is simplified in two steps to eliminate some of the
+    higher-order constructs of CAnDL.
+    The {\it include} clauses are inlined and contained variables
     transformed accordingly.
     Furthermore, {\it conRange} and {\it disRange} are lowered to
     conjunction and disjunction constructs by duplicating the contained
     constraint code and renaming its variables appropriately for each iteration.
-    The remaining core language now consists only of atomics, conjunctions,
+    The remaining core language consists only of atomics, conjunctions,
     disjunctions and collections.
 
-    The CAnDL compiler then applies a set of optimisations to speed up the
-    solving process using the later generated C++ code.
+    The CAnDL compiler then applies optimisations to speed up the solving
+    process using the later generated C++ code.
     For example, nested conjunctions and disjunctions are flattened wherever
     possible.
     Furthermore, if shallow equivalence of two variables is enforced in a
     conjunction, one of the two variables is chosen as having higher priority.
-    All occurrences of the other variable are then replaced with that one.
+    All other occurrences of the other variable are then replaced with that
+    one.
 
     Finally, the compiler generates C++.
     This essentially means generating a function which at runtime constructs
