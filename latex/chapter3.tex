@@ -473,7 +473,7 @@
     reductions.
 
     Privateer \citep{Johnson:2012:SSP:2254064.2254107} is a complex system
-    featuring compiler support and a runtime to enable speculative
+    featuring combined compiler and runtime support to enable speculative
     parallelisation.
     The core approach is the privatisation of memory for each thread and an
     exception mechanism with recovery routines for accesses that violate
@@ -488,32 +488,21 @@
 
 \subsection{Dynamic Analysis Approaches}
 
-    There is an extensive body of work on automated decision making for
-    selecting the appropriate hardware for a given piece of code.
-    This is often under the assumption that the functional porting is trivial,
-    for example given an OpenCL implementation.
-    These approaches are often based on dynamic monitoring of programs
-    and machine learning algorithms for the selection of backends.
-
-    \citet{Wen:2017:MSM:3038228.3038235} present a system for scheduling OpenCL
-    kernels on a system with CPU and GPU processors, extending the approach
-    presented in \citet{7116910}.
-    The presented machine learning-based predictive model decides at runtime
-    whether kernels are merged or executed separately on appropriate devices.
-    However, such a system can only be applied when the functional translation
-    to accelerators is available.
-    This is not the case for the sequential C code that this thesis is evaluated
-    on.
-    Furthermore, the approach optimises OpenCL scheduling, but does not consider
-    the impact of library backends, which often significantly outperform generic
-    OpenCL implementations on appropriate tasks.
+    There is an extensive body of work on complementing static analysis with
+    profiling information from test runs.
+    Other research uses runtime checks for unproven assumptions to allow unsound
+    reasoning at compile time.
+    Furthermore, functional mapping to heterogeneous systems with compilers
+    has been combined with machine learning decision making at runtime for
+    selecting the appropriate computing hardware to execute a given piece of
+    code.
 
     \citet{Tournavitis:2009:THA:1542476.1542496} characterised the significant
     weaknesses of established static data dependence analysis techniques.
-    Profile-driven parallelism detection and machine-learning based mapping
+    Profile-driven parallelism detection and machine learning-based mapping
     approaches are suggested in order to improve on the state-of-art
     parallelising compilers.
-    \citet{Wang:2014:IPP:2591460.2579561} implemented such a system that
+    \citet{Wang:2014:IPP:2591460.2579561} implemented a system that
     automatically discovers parallelism based on profile-driven parallelism
     detection.
     The approach improves significantly over purely static approaches by
@@ -525,26 +514,39 @@
     Dynamic approaches can eliminate spurious dependencies and profitability
     models based on powerful machine learning techniques greatly improve on
     simple heuristics.
-    However, such an approach cannot unlock the potential of dedicated backends
-    and requires significant manual tuning effort.
+    Nonetheless, such an approach cannot match the potential of domain-specific
+    library backends and requires significant manual tuning effort.
+
+    \citet{Manilov:2018:GPI:3178372.3179511} present a dynamic approach to
+    detecting a wide class of iterators using dynamic profiling data.
+    The recognised iterators describe the traversal of data structures that are
+    difficult to capture with traditional static techniques.
+    This is an essential prerequisite for implementing compiler parallelisation
+    approaches to pointer-based data structures.
+    However, the approach only captures a small, if crucial, part of the
+    calculations, and does not extend to full computational idioms such
+    as sparse linear algebra.
+
+    \citet{Wen:2017:MSM:3038228.3038235} implemented a runtime framework for
+    scheduling OpenCL kernels on a heterogeneous CPU/GPU system, improving on
+    a previous approach by \citet{7116910}.
+    The presented machine learning-based predictive model decides at runtime
+    whether kernels are merged or executed separately on appropriate devices.
+    However, such a system can only be applied when the functional translation
+    to accelerators is available.
+    This is not the case for the sequential C code that this thesis is evaluated
+    on.
+    Furthermore, the approach optimises OpenCL performance but does not consider
+    the impact of library backends, which often significantly outperform generic
+    OpenCL implementations on appropriate tasks.
 
     \citet{Ogilvie:2014:ALA:2628071.2628128} propose a system for performance
     prediction on heterogeneous systems that is based on active learning.
     This significantly reduces the tuning that is required for
     machine learning-based scheduling algorithms on CPU/GPU systems.
-    However, this approach still requires the availability of functional mapping
-    to heterogeneous devices, and cannot work on unchanged sequencial C/C++
+    This approach still requires the availability of functional mapping
+    to heterogeneous devices, and cannot work on unchanged sequential C/C++
     inputs.
-
-    \citet{Manilov:2018:GPI:3178372.3179511} propose a dynamic approach to
-    detecting a wide class of iterators using dynamic profiling data.
-    Such iterators describe the traversal of data structures that are difficult
-    to capture with tranditional static techniques.
-    This is an important prerequisite for implementing compiler parallelisation
-    approaches to pointer-based data structures.
-    However, the approach only captures a small, if crucial, part of the
-    calculations, and does not capture full computational idioms such
-    as sparse linear algebra.
 
 \section{Heterogeneous Computing}
 
