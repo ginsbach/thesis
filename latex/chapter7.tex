@@ -11,7 +11,7 @@
     The well-studied kernels among these idioms were stencils and varied
     forms of sparse and dense linear algebra.
     Complementing these established kernels, Complex Reduction and Histogram
-    Computations (CReHCs) were introduced as a new grouping of computations.
+    Computations (CReHCs) were introduced as a new grouping of calculations.
     The evaluation on the established benchmark suites NPB and Parboil demonstrated
     that all of these computational idioms covered significant performance
     bottlenecks.
@@ -33,25 +33,25 @@
     sequential baseline versions.
 
     In summary, this thesis demonstrated that computational idioms are a
-    suitable interface to heterogeneous acceleration and developed the
-    methodology for automatically recognising such idioms.
-    The main contributions are the method of constraint programming on SSA
+    suitable interface to heterogeneous acceleration, and developed approaches
+    for automatically recognising them.
+    The main contributions are the methodology of constraint programming on SSA
     intermediate representation, the design and implementation of CAnDL and IDL,
     and the identification of generalised reductions as a significant class of
     benchmark bottlenecks.
 
 \section{Contributions}
 
-    \paragraph*{Constraint Programming on SSA Code}
+    \paragraph*{Constraint Programming on Compiler Intermediate Representation}
     \Cref{chapter:theory} introduced constraint programming on
-    SSA compiler intermediate representation.
+    SSA form intermediate code.
     Using a characterisation of the static structure of SSA programs,
     {\it SSA constraint problems} were defined.
     These are formulas that impose restrictions on compiler intermediate code,
     turning the detection of adhering program parts into a constraint
     satisfiability problem.
     This thesis derived efficient algorithms for solving SSA constraint problems
-    and discussed several significant types of constraint formulas, reflecting
+    and discussed significant classes of constraint formulas, reflecting
     compiler analysis methods such as data flow and dominance relationships.
 
     The constraint programming methodology was derived starting from algebraic
@@ -71,13 +71,13 @@
     \paragraph*{Complex Reduction and Histogram Computations}
     Complex Reduction and Histogram Computations (CReHCs) were introduced in
     \Cref{chapter:reductions} as a computational idiom.
-    CReHCs are a generalisation of the well-understood scalar reduction that
-    covers the indirect array accesses typically found in histogram
+    CReHCs are a generalisation of the well-understood scalar reduction, that
+    additionally covers the indirect array accesses typically found in histogram
     calculations.
     This type of loop was not previously studied, but this thesis showed that
     shared parallelisation opportunities exist.
-    Furthermore, an evaluation of established benchmark suites demonstrated
-    that several of the performance bottlenecks in each of NPB, Parboil, and
+    Moreover, an evaluation on established benchmark suites demonstrated
+    that several performance bottlenecks in each of NPB, Parboil, and
     Rodinia are, in fact,  CReHCs.
 
     \paragraph*{Specification of Computational Idioms}
@@ -100,7 +100,7 @@
 \section{Critical Analysis}
 
     The approaches of this thesis were built on the derivation of
-    \Cref{chapter:theory} and evaluated in seveal scenarios on C/C++ program
+    \Cref{chapter:theory} and evaluated in several scenarios on C/C++ program
     code.
     Despite the effort of bridging between the algebraic formulation and the
     application in real-world scenarios, the work remains a prototype, and
@@ -110,9 +110,9 @@
     the affordability of significant compile time overhead, and the ability to
     compensate for limitations of the underlying solver technology.
 
-\paragraph*{Generality of Computational Idioms}  
+\paragraph*{Universality of Computational Idioms}  
 
-    Computational idioms were defined in
+    Computational idioms were specified in
     \Cref{chapter:reductions,chapter:idioms} and
     evaluated successfully on a range of established benchmark collections.
     However, the NPB and Parboil collections are both from areas of scientific
@@ -123,8 +123,7 @@
     polyhedral model.
 
     More generally, it is unclear how much code in large-scale applications
-    could be captured as ``idiomatic'' even with a very range and diverse set of
-    idioms.
+    could be captured as ``idiomatic'' even with a more extensive set of idioms.
     Even some benchmark programs within NPB and Parboil contain idiosyncratic
     computations that are unlikely to reoccur in other contexts.
     An example is the ``sad'' program that computes the
@@ -147,25 +146,26 @@
 
     \paragraph*{Bounded Number of Solver Variables}
     The specification languages were restricted by the solver to a finite number
-    of variables in the underlying constraint problem.
+    of variables in the underlying constraint problems.
     Moreover, each additional variable incurred a slight overhead, introducing
-    a tradeoff between solver speed and the generality of the specification.
+    a tradeoff between solver speed and the generality of the specifications.
     This caused upper bounds for the number of features within many idiom
     specifications:
     The definition of CReHCs only allowed a maximum of two histograms, stencils
     only allowed a neighbourhood of up to 32 elements, and so on.
 
-    Similar shortcomings are well-known in other disciplines that use constraint
+    Similar shortcomings are well-known in other research disciplines using
     solvers, and some techniques for resolving them have been suggested by
     \citet{Krings2016Constraint} in the context of constraint logic programming.
 
 \section{Future Work}
 
-    Future work could focus on extending the approach to new idioms,
-    improving the usability of specification languages, and applying dynamic
-    analysis and machine learning techniques to complement the static analysis.
+    Directions for future work include the specification of more computational
+    idioms, usability improvements of the specification languages, and the
+    application of dynamic analysis and machine learning to complement the
+    static analysis.
     Moreover, constraint specifications could eventually be generated from
-    source code examples, eliminating the difficulty of writing them manually.
+    examples, eliminating the difficulty of writing them manually.
 
 \paragraph*{Complementing Dynamic and Machine Learning Approaches}
 
@@ -174,8 +174,8 @@
     Such methods would naturally complement the entirely static reasoning of
     constraint programming, but were outside the scope of this work.
 
-    Dynamic profiling could be used to preselect candidate hot loops,
-    drastically reducing the compile time overhead.
+    Dynamic profiling could preselect candidate hot loops, drastically reducing
+    the compile time overhead.
     More advanced dynamic analysis could collect program features to be fed into
     machine learning algorithms.
     The use of neural networks to guide compiler optimisations has been
@@ -207,7 +207,7 @@
     entirely.
     No upper limits for collect statements would be required with this scheme.
 
-\paragraph*{Pointer-chasing Idioms}
+\paragraph*{Pointer-Chasing Idioms}
 
     The ability to recognise sparse linear algebra sets the methods of this
     work apart from previous approaches.
