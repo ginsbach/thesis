@@ -227,36 +227,77 @@
     \paragraph*{Higher-level Specification Languages}
     Compared to previous approaches, the specification languages CAnDL and IDL
     simplify the implementation of compiler analysis functionality and enable
-    the detection of more complex idiomatic structures.
+    the detection of more sophisticated idiomatic structures.
     Nonetheless, knowledge of the compiler internals is still required to write
     correct specifications.
-    Furthermore, the precise extent to which the dependence of CAnDL and IDL on
-    LLVM IR is necessary has not been explored thoroughly.
+    Furthermore, the precise extent to which the customisation of the
+    specification languages to LLVM IR was necessary has not been explored
+    thoroughly.
 
     Future work could investigate languages that abstract away the
     compiler-specific nature of CAnDL and IDL, providing an improved programming
     experience.
-    The pseudocode and matching specifications in
-    \Cref{csr_lilacwhat_fig,jds_lilacwhat_fig} in \Cref{chapter:idioms} suggest
-    how to achieve this:
-    For restricted domains (e.g.\ SPMV), generating IDL from high-level
-    expressions is straightforward.
+    The pseudocode and the corresponding specifications in
+    \Cref{csr_lilacwhat_fig,jds_lilacwhat_fig} suggest how this could be
+    achieved.
+    They show that for restricted domains (e.g.\ SPMV), generating IDL
+    from high-level expressions is straightforward.
+
+    \paragraph*{Phase-Ordering for Normalisation}
+    The presented methods for constraint programming on LLVM IR relied on
+    preceding optimisation passes for the normalisation of the intermediate
+    code generated from user programs.
+    The relationship between normalisation and optimisation in compiler
+    transformation passes poses interesting research questions.
+
+    To allow the specification of idioms on predictable intermediate code
+    structures, the solver was invoked after the Clang optimisation pipeline.
+    Optimisations such as loop-independent code motion helped eliminate the
+    artefacts of superficial implementation decisions by mapping many different
+    input programs onto the same optimised intermediate code.
+
+    While this approach was effective in practice, the existing LLVM
+    optimisation passes were not designed for this purpose.
+    Instead, they aim to maximise runtime performance and minimise code size.
+    Incidentally, these two goals often coincide with normalising behaviour.
+
+    However, there are clear exceptions to this rule.
+    The outcome of loop unrolling introduces unpredictability, as the decision
+    to unroll is based on opaque heuristics and threshold values that depend
+    on command-line options.
+    Similarly, threshold values for loop unswitching interact with the loop
+    inversion transformation in obfuscating ways.
+    The surrounding conditionals of inverted loops within loop nests are
+    sometimes -- but now always -- propagated out.
+    Finally, strength reduction changes the opcodes of instructions in special
+    cases.
+
+    These challenges were resolved pragmatically in this research.
+    High threshold values were set, some optimisations were disabled
+    (loop unrolling, vectorisation), and others were partially reversed
+    (strength reduction).
+
+    Instead of pruning the ``-Os'' or ``-O2'' presets, future work could
+    establish special-purpose normalisation compilers by re-evaluating the
+    phase-ordering from scratch.
+    According to a new metric, individual compiler optimisations could be
+    evaluated on a spectrum from ``distorting'' to ``normalising''.
+    The highly-scoring passes would then selected for a dedicated
+    phase-ordering for intermediate code normalisation.
 
     \paragraph*{Generating Specifications from Examples}
     The automatic generation of specifications from examples is another
-    promising idea for follow-up research.
-    Initial attempts have shown promise \citep{DBLP:conf/IEEEpact/CollieGO19}.
-    Using a graph-matching algorithm that operates on SSA code, codes that
-    implement variations of the same idiom would be matched together optimising
-    a quality metric.
-    This matching would automatically identify code structures that are shared
-    between the examples and discard those features that were unique to
-    specific samples.
-    The common structures would then be separated and turned into constraint
-    conditions.
+    direction for follow-up research.
+    Initial attempts were promising \citep{DBLP:conf/IEEEpact/CollieGO19}.
+    Using a graph-matching algorithm that operates on SSA code, implementation
+    variations of the same idiom were overlayed, exposing the common structure.
+    This was guided by a quality metric for the matching.
+    Code structures that were shared between the examples were turned into
+    constraints, and features that were unique to specific samples were
+    discarded.
 
-    Suitable quality metrics for graph matching would be critical to the success
-    of this approach and could be eventually be tuned with machine learning
+    Suitable quality metrics for graph matching are critical to the success
+    of this approach and could eventually be tuned with machine learning
     approaches, such as neural networks.
     The manually implemented idioms from this thesis would provide suitable
     training data.
@@ -270,45 +311,6 @@
     based on a success score for the previously discussed graph matching
     approach.
 
-    \paragraph*{Phase-Ordering for Normalisation}
-    Constraint programming on LLVM IR relied on several preceding optimisation
-    passes for normalising the intermediate generated from user programs.
-    The relationship between normalisation and optimisation in compiler
-    transformation passes poses interesting research questions.
-
-    To allow the specification of idioms on predictable intermediate code
-    structures, the solver is invoked after the Clang optimisation pipeline.
-    Optimisations such as loop-independent code motion help eliminate the
-    artifacts of superficial implementation decisions by mapping many different
-    input programs onto the same optimised code.
-
-    While this approach is effective in practice, LLVM optimisation passes were
-    not designed for this purpose.
-    Instead, they aim to maximise runtime performance and minimise code size.
-    Incidentally, these two goals often coincide with normalising behaviour.
-
-    However, there are clear exceptions to this rule.
-    The outcome of loop unrolling introduces unpredicatbility, as the decision
-    to unroll is based on opaque heuristics.
-    Similarly, threshold parameters for loop unswitching interact with loop
-    inversion in obfuscating ways.
-    Conditionals from inverted loops in loop nests are sometimes -- but
-    now always -- propagated out.
-    Strength reduction changes the opcodes of instructions in special cases.
-
-    These challenges were resolved pragmatically in this research.
-    High threshold values were set, some optimisations were disabled
-    (loop unrolling, vectorisation), and others were partially reversed
-    (strength reduction).
-
-    Instead of pruning the ``-Os'' or ``-O2'' presets, future work could
-    establish special-purpose normalisation compilers by re-evaluating the
-    phase-ordering from scratch.
-    According to a new metric, individual compiler optimisations could be
-    evaluated on a spectrum from ``perturbing'' to ``normalising''.
-    The most highly-scoring passes would then selected for normalisation before
-    IDL and CAnDL.
-    
 \section{Summary}
 
     This chapter first gave a short summary, outlining the development of the
