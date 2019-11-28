@@ -301,11 +301,11 @@
 \label{sec:idioms}
 
     The specification of computational idioms in IDL requires careful
-    handling of the arising complexity, using the modularity functionality that
-    IDL provides.
-    Control flow constructs, memory access patterns, as well as basic data flow
-    patterns are specified independently and then combined in order to define
-    the complete constraint specifications.
+    handling of the arising complexity, using the modularity features that
+    the language provides.
+    Control flow constructs, memory access patterns, and additional data flow
+    constraints are defined independently and then combined to form the complete
+    specifications.
     This section extends upon the previously defined building blocks from
     \Cref{chapter:candl,chapter:reductions}.
 
@@ -319,18 +319,19 @@
     On the other hand, the control flow is very rigid.
 
     \Cref{spmvbase} shows the basic skeleton of the SPMV idiom:
-    There are two for-loops, the {\tt outer\_loop} and the {\tt inner\_loop}.
-    Naturally, {\tt outer\_loop} has to contain {\tt inner\_loop} fully
+    there are two for-loops, the ``{\tt outer\_loop}'' and the
+    ``{\tt inner\_loop}''.
+    Naturally, ``{\tt outer\_loop}'' contains ``{\tt inner\_loop}''
     (lines 4--7).
     The outer loop is a standard for-loop (line 2), while the inner loop is a
-    for-loop that also contains a generalised dot product (line 3).
-    Specifically, the {\tt DotProductFor} specification requires that the
+    for-loop contains a generalised dot product (line 3).
+    Specifically, the ``{\tt DotProductFor}'' specification requires that the
     loop contains a scalar reduction variable that is incremented by the result
-    of a floating-point multiplication of two values {\tt src1} and {\tt src2}
-    in every iteration.
+    of a floating-point multiplication of two values ``{\tt src1}'' and
+    ``{\tt src2}'' in every iteration.
     This skeleton is completed depending on the sparse matrix format, defining
-    the specific computations and data flow that yields {\tt src1} and
-    {\tt src2}.
+    the specific computations and data flow that yields ``{\tt src1}'' and
+    ``{\tt src2}''.
 
 \begin{figure}[p]
 \lstset {
@@ -418,24 +419,25 @@ End
     formats for sparse matrices \cite{doi:10.1137/1.9780898718003}.
     An example matrix stored in CSR format is shown at the top of
     \autoref{csr_lilacwhat_fig}.
-    The 5x5 matrix on the left is stored in the three separate arrays on the
-    right: \textbf{val}, \textbf{col\_ind}, and \textbf{row\_ptr}.
+    The 5$\times$5 matrix at the top left is stored in the three separate arrays
+    at the top right: ``\textbf{val}'', ``\textbf{col\_ind}'', and
+    ``\textbf{row\_ptr}''.
 
-    All non-zero entries of the matrix are stored in a flat array \textbf{val}
-    in a row-by-row order.
-    The \textbf{col\_ind} array stores the column position for each value.
-    Finally, the \textbf{row\_ptr} array stores the beginning of each row of the
-    matrix as an offset into the other two arrays.
+    All non-zero entries of the matrix are stored in a flat array
+    ``\textbf{val}'' in a row-by-row order.
+    The ``\textbf{col\_ind}'' array stores the column position for each value.
+    Finally, the ``\textbf{row\_ptr}'' array stores the beginning of each row of
+    the matrix as an offset into the other two arrays.
     The number of rows in the matrix is given directly by the length of the
-    \textbf{row\_ptr} array minus one.
+    ``\textbf{row\_ptr}'' array minus one.
     However, the number of columns is not explicitly stored.
 
     The middle row of \autoref{csr_lilacwhat_fig} shows the corresponding
     SPMV computation in pseudocode.
-    Finally, the bottom of the figure shows the continuation of the {\tt SPMV}
-    IDL specification for CSR matrices.
+    Finally, the bottom of the figure shows the continuation of the
+    ``{\tt SPMV}'' specification for CSR matrices in IDL.
     This continuation is immediately derived by walking through the pseudocode
-    expressions and emitting {\tt inherits} directives to the corresponding
+    expressions and emitting ``{\tt inherits}'' directives to the corresponding
     IDL subprograms.
 
 \subsubsection{Jagged Diagonal Storage}
