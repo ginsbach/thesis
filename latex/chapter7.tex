@@ -42,8 +42,7 @@
 
 \section{Contributions}
 
-\subsection*{Constraint Programming on SSA Code}
-
+    \paragraph*{Constraint Programming on SSA Code}
     \Cref{chapter:theory} introduced constraint programming on
     SSA compiler intermediate representation.
     Using a characterisation of the static structure of SSA programs,
@@ -60,19 +59,16 @@
     It applies to any SSA compiler intermediate representation and is suitable
     for a wide range of analysis problems.
 
-\subsection*{CAnDL and IDL}
-
-    \Cref{chapter:candl,chapter:reductions} designed and implemented two
-    related declarative programming languages: the Compiler Analysis
-    Description Language (CAnDL) and the extended Idiom Detection Langauge
-    (IDL).
-    These languages make the constraint programming methodology available in the
+    \paragraph*{Specification Languages}
+    \Cref{chapter:candl,chapter:reductions} designed and implemented two novel
+    declarative specification languages: CAnDL (Compiler Analysis
+    Description Language) and its extension IDL (Idiom Detection Langauge).
+    These languages make the constraint programming method available in the
     LLVM framework.
-    This enables constraint programming on the SSA intermediate code of user
+    This enables constraint programming on the intermediate code of user
     programs during compilation with the Clang C/C++ compiler.
 
-\subsection*{Complex Reduction and Histogram Computations}
-
+    \paragraph*{Complex Reduction and Histogram Computations}
     Complex Reduction and Histogram Computations (CReHCs) were introduced in
     \Cref{chapter:reductions} as a computational idiom.
     CReHCs are a generalisation of the well-understood scalar reduction that
@@ -84,24 +80,22 @@
     that several of the performance bottlenecks in each of NPB, Parboil, and
     Rodinia are, in fact,  CReHCs.
 
-\subsection*{Formulation of Computational Idioms}
+    \paragraph*{Specification of Computational Idioms}
+    \Cref{chapter:candl,chapter:reductions,chapter:idioms} specified a range of
+    computational idioms in CAnDL and IDL.
+    These included stencils, different forms of sparse and dense linear algebra,
+    polyhedral Static Control Parts (SCoPs), and CReHCs.
+    The constraint formulations enabled the automatic recognition of high-level
+    algorithmic structure during compilation.
+    This enabled generic compilers to apply domain-specific reasoning.
 
-    \Cref{chapter:candl,chapter:reductions,chapter:idioms} formulated a range of
-    different computational idioms in CAnDL and IDL.
-    These idioms included stencils, different forms of sparse and dense linear
-    algebra, polyhedral Static Control Parts, and CReHCs.
-    The formulations enabled the automatic recognition of high-level algorithmic
-    structure during compilation, making it possible for generic compilers to
-    apply domain-specific reasoning.
+\paragraph*{Heterogeneous Acceleration Pipeline}
 
-\subsection*{Idiomatic Heterogeneous Acceleration Pipeline}
-
-    \Cref{chapter:idioms} implemented an IDL-based integrated heterogeneous
-    acceleration pipeline.
-    The code sections recognised by IDL specifications were redirected to
+    \Cref{chapter:idioms} implemented a heterogeneous acceleration pipeline.
+    The user code sections recognised by IDL specifications were redirected to
     domain-specific code generators for heterogeneous accelerator hardware.
-    This resulted in significant parallelisation speedups on benchmark
-    programs.
+    The evaluation demonstrated significant heterogeneous parallelisation
+    speedups on established benchmark programs.
 
 \section{Critical Analysis}
 
@@ -116,7 +110,7 @@
     the affordability of significant compile time overhead, and the ability to
     compensate fundamental limitations of the underlying solver technology.
 
-\subsection*{Generality of Computational Idioms}  
+\paragraph*{Generality of Computational Idioms}  
 
     Computational idioms were defined in
     \Cref{chapter:reductions,chapter:idioms} and
@@ -137,7 +131,7 @@
     ``Sum of Absolute Differences'' algorithm used by the reference H.264 video
     encoder.
 
-\subsection*{Compile Time Cost}
+\paragraph*{Compile Time Cost}
 
     The compile-time cost of idiom detection was evaluated in
     \Cref{chapter:idioms}, showing that overheads between 35$\%$ and 115$\%$
@@ -151,30 +145,34 @@
     disproportionately longer solver times on large functions and especially on
     code sections that are near misses to satisfying the specifications.
 
-\subsection*{Bounded Number of Solver Variables}
+    \paragraph*{Bounded Number of Solver Variables}
+    The specification languages were restricted by the solver to a finite number
+    of variables in the underlying constraint problem.
+    Moreover, each additional variable incurred a slight overhead, introducing
+    a tradeoff between solver speed and the generality of the specification.
+    This caused upper bounds for the number of features within many idiom
+    specifications:
+    The definition of CReHCs only allowed a maximum of two histograms, stencils
+    only allowed a neighbourhood of up to 32 elements, and so on.
 
-    CAnDL and IDL are restricted by the solver to a finite number of variables
-    in the underlying constraint problem.
-    This causes upper bounds for the number of features within many idioms:
-    CReHCs can only contain up to two histograms, stencils can only use a
-    neighbourhood of up to 32 elements, and so on.
-    This introduces a tradeoff between performance and the generality of the
-    specification, as each additional variable introduces a slight overhead.
+    Similar shortcomings are well-known in other disciplines that use constraint
+    solvers, and some techniques for resolving them have been suggested by
+    \citet{Krings2016Constraint} in the context of constraint logic programming.
 
 \section{Future Work}
 
-    Future work will focus on extending the approach to new idioms,
+    Future work could focus on extending the approach to new idioms,
     improving the usability of specification languages, and applying dynamic
     analysis and machine learning techniques to complement the static analysis.
     Moreover, constraint specifications could eventually be generated from
     source code examples, eliminating the difficulty of writing them manually.
 
-\subsection*{Complementing with Dynamic and Machine Learning Approaches}
+\paragraph*{Complementing Dynamic and Machine Learning Approaches}
 
-    The static methods presented in this thesis can be complemented with dynamic
-    approaches and machine learning.
-    Such methods extend the entirely static reasoning of constraint programming
-    naturally but were outside the scope of this work.
+    The static methods in this thesis could be enhanced with dynamic approaches
+    and machine learning.
+    Such methods would naturally complement the entirely static reasoning of
+    constraint programming, but were outside the scope of this work.
 
     Dynamic profiling could be used to preselect candidate hot loops,
     drastically reducing the compile-time overhead.
@@ -188,7 +186,7 @@
     transfers required between cooperating hardware in heterogeneous
     computing, and to rule out pointer aliasing.
 
-\subsection*{Unbounded Number of Variables}
+\paragraph*{Unbounded Number of Variables}
 
     Related research disciplines found ways around some limitation of their
     underlying solvers.
@@ -196,8 +194,8 @@
     uses SAT solvers and involves the unrolling of loops to generate formulas.
     In order to fit the underlying solver, this requires the introduction of a
     certain finite iteration limit $k$.
-    Nevertheless, the entire checking process can be repeated with increasing
-    values for $k$, successively ruling out possible violations.
+    However, the checking process can be repeated with increasing values for
+    $k$, successively ruling out possible violations.
 
     The same approach could be applied to constraint solving on SSA:
     The solver is invoked repeatedly with a gradually increasing number of
@@ -208,10 +206,10 @@
     overhead, yet solutions requiring many variables are not discarded entirely.
     No upper limits for collect statements would be required with this scheme.
 
-\subsection*{Pointer-chasing Idioms}
+\paragraph*{Pointer-chasing Idioms}
 
-    The ability to recognise sparse linear algebra sets constraint programming
-    on SSA immediate representation apart from previous approaches.
+    The ability to recognise sparse linear algebra sets the methods of this
+    work apart from previous approaches.
     Going beyond a single data access indirection, IDL could be used to capture
     data access patterns that involve pointer chases.
     This would allow it to analyse graph operations, such as depth-first graph
@@ -225,8 +223,7 @@
     Such patterns are not usually performance-critical, but this would be
     another step toward an understanding of dynamic data structures in compilers.
 
-\subsection*{Simpler Specification Languages}
-
+    \paragraph*{Higher-level Specification Languages}
     Compared to previous approaches, the specification languages CAnDL and IDL
     simplify the implementation of compiler analysis functionality and enable
     the detection of more complex idiomatic structures.
@@ -244,11 +241,10 @@
     For restricted domains (e.g.\ SPMV), generating IDL from high-level
     expressions is straightforward.
 
-\subsection*{Generating Specifications by Example}
-
-    Future work will also expand on the automatic generation of idiom
-    specifications from example code fragments.
-    Initial work has shown promise \citep{DBLP:conf/IEEEpact/CollieGO19}.
+    \paragraph*{Generating Specifications from Examples}
+    The automatic generation of specifications from examples is another
+    promising idea for follow-up research.
+    Initial attempts have shown promise \citep{DBLP:conf/IEEEpact/CollieGO19}.
     Using a graph-matching algorithm that operates on SSA code, codes that
     implement variations of the same idiom will be matched together optimising
     a quality metric.
@@ -273,13 +269,11 @@
     based on a success score for the previously discussed graph matching
     approach.
 
-
-\subsection*{Phase-Ordering for Normalisation}
-
-    Constraint programming on LLVM IR relies preceding optimisation passes
-    for normalisation.
-    This relationship between normalisation and optimisation in compiler
-    transformations poses interesting research questions.
+    \paragraph*{Phase-Ordering for Normalisation}
+    Constraint programming on LLVM IR relied on several preceding optimisation
+    passes for normalising the intermediate generated from user programs.
+    The relationship between normalisation and optimisation in compiler
+    transformation passes poses interesting research questions.
 
     To allow the specification of idioms on predictable intermediate code
     structures, the solver is invoked after the Clang optimisation pipeline.
@@ -310,9 +304,9 @@
     establish special-purpose normalisation compilers by re-evaluating the
     phase-ordering from scratch.
     According to a new metric, individual compiler optimisations could be
-    evaluated on the spectrum from ``perturbing'' to ``normalising''.
-    The most highly-scoring passes could then be selected for normalisation
-    before IDL and CAnDL.
+    evaluated on a spectrum from ``perturbing'' to ``normalising''.
+    The most highly-scoring passes would then selected for normalisation before
+    IDL and CAnDL.
     
 \section{Summary}
 
