@@ -161,28 +161,6 @@
     This introduces a tradeoff between performance and the generality of the
     specification, as each additional variable introduces a slight overhead.
 
-\subsection*{Interaction with LLVM Optimisations}
-
-    CAnDL and IDL rely on standard optimisation passes to normalise the LLVM IR
-    code.
-    While many LLVM transformation passes help this goal, they are fundamentally
-    designed for a different purpose.
-
-    In many cases, optimisation and normalisation of code are, in fact,
-    opposing.
-
-    In many cases, optimisation and normalisation of code are, in fact,
-    opposing.
-
-    In many cases, optimisation and normalisation of code are, in fact,
-    opposing.
-
-    In many cases, optimisation and normalisation of code are, in fact,
-    opposing.
-
-    In many cases, optimisation and normalisation of code are, in fact,
-    opposing.
-
 \section{Future Work}
 
     Future work will focus on extending the approach to new idioms,
@@ -295,4 +273,56 @@
     based on a success score for the previously discussed graph matching
     approach.
 
-\subsection*{Final Summary}
+
+\subsection*{Phase-Ordering for Normalisation}
+
+    Constraint programming on LLVM IR relies preceding optimisation passes
+    for normalisation.
+    This relationship between normalisation and optimisation in compiler
+    transformations poses interesting research questions.
+
+    To allow the specification of idioms on predictable intermediate code
+    structures, the solver is invoked after the Clang optimisation pipeline.
+    Optimisations such as loop-independent code motion help eliminate the
+    artifacts of superficial implementation decisions by mapping many different
+    input programs onto the same optimised code.
+
+    While this approach is effective in practice, LLVM optimisation passes were
+    not designed for this purpose.
+    Instead, they aim to maximise runtime performance and minimise code size.
+    Incidentally, these two goals often coincide with normalising behaviour.
+
+    However, there are clear exceptions to this rule.
+    The outcome of loop unrolling introduces unpredicatbility, as the decision
+    to unroll is based on opaque heuristics.
+    Similarly, threshold parameters for loop unswitching interact with loop
+    inversion in obfuscating ways.
+    Conditionals from inverted loops in loop nests are sometimes -- but
+    now always -- propagated out.
+    Strength reduction changes the opcodes of instructions in special cases.
+
+    These challenges were resolved pragmatically in this research.
+    High threshold values were set, some optimisations were disabled
+    (loop unrolling, vectorisation), and others were partially reversed
+    (strength reduction).
+
+    Instead of pruning the ``-Os'' or ``-O2'' presets, future work could
+    establish special-purpose normalisation compilers by re-evaluating the
+    phase-ordering from scratch.
+    According to a new metric, individual compiler optimisations could be
+    evaluated on the spectrum from ``perturbing'' to ``normalising''.
+    The most highly-scoring passes could then be selected for normalisation
+    before IDL and CAnDL.
+    
+\subsection*{Summary}
+
+    This chapter first gave a short summary, outlining the development of the
+    approaches and putting the achieved results into context.
+    The core contributions of the work were then listed individually in a
+    separate section.
+    The succeeding critical analysis discussed implementation issues and
+    brought attention to details that would profit from further evaluation.
+
+    Many interesting challenges remain for future work, improving the approach
+    of constraint programming on the SSA compiler intermediate representation
+    code and applying it to novel domains.
