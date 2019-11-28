@@ -585,7 +585,7 @@ Constraint Stencil
   inherits PermMultidStore
       with {iterator} as {input}
        and {begin}    as {begin} at {write} and
-  collect i M
+  collect i 32
   ( inherits StencilRead
         with {write.input_index} as {input}
          and {kernel.inputs[i]}  as {value}
