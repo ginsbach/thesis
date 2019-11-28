@@ -96,32 +96,33 @@
     pointing to gaps in the accelerator landscape.
     Nonetheless, at least one backend existed per idiom.
     The Idiom Detection Language (IDL) then enabled the automatic detection of
-    idioms.
-    Once detected, the idioms are translated into the appropriate DSL or
+    idioms.\linebreak
+    Once detected, the idioms were translated into the matching DSL or
     replaced with an available library call.
-    The optimised DSL output code, or the pre-built optimised library, is then
+    The optimised DSL output code, or the pre-built optimised library, was then
     linked into the original program.
 
-    The libraries cuSparse, clSparse, cuBLAS, clBLAS for sparse and dense linear
+    The libraries cuSPARSE, clSPARSE, cuBLAS, clBLAS for sparse and dense linear
     algebra and the DSLs Halide \cite{Ragan-Kelley2013Halide} and Lift
     \cite{SteuwerRD17} were used as backends in the evaluation.
     The Lift language is a data-parallel functional language that supports
     generalised reductions as well as stencils and linear algebra.
-    The wide range of backends allows the freedom to target many APIs per idiom
-    and pick the implementation that best suits the target platform.
+    The wide range of backends allowed the freedom to target many APIs per idiom
+    and pick the implementation that best suited the target platform.
 
-    New computational idioms can be easily added thanks to the flexibility of IDL.
+    New computational idioms could easily be added thanks to the flexibility of
+    IDL.
     This also provides a powerful means of determining whether a proposed
     heterogeneous interface matches existing code, without touching the core
     compiler.
-    The idioms addressed in this paper can be expressed in less than 500 lines
+    The idioms addressed in this paper were expressed in less than 500 lines
     of IDL code.
-    The approach is also highly robust, has been applied to the entire NPB
+    The approach was also highly robust, was applied to the entire NPB
     and Parboil benchmark suites and was evaluated on three platforms.
 
-    The chapter presents a novel approach that
+    This chapter presents a novel approach that
     \begin{itemize}
-    \item proposes the Idiom Detection Language (IDL) for detecting idiomatic
+    \item uses the Idiom Detection Language (IDL) for detecting idiomatic
           code sections that can be accelerated by domain-specific backends;
     \item implements several common computational idioms in IDL to automatically
           discover opportunities for accelerator exploitation;
@@ -133,13 +134,13 @@
     them to the Halide DSL for acceleration.
     The Helium tool \citep{Mendis2015Helium} recovers stencils from
     image-processing binaries.
-    This requires large scale dynamic analysis of binary traces and replacing
+    This requires large-scale dynamic analysis of binary traces and replacing
     them with Halide calls. 
-    This is significantly extended by \citet{Kamil2016Verified}, detecting
+    This was significantly extended by \citet{Kamil2016Verified}, detecting
     stencils in Fortran code.
-    The focus of that work is on inferring post invariants based on
+    The focus of that work was on inferring post invariants based on
     syntax-guided synthesis in translation to Halide.
-    However, it uses a narrow approach to code snippet selection and relies on
+    However, it used a narrow approach to code snippet selection and relied on
     well-structured Fortran with occasional user annotations.
     The IDL approach is distinct in its use of an external programming language
     for the flexibility of describing arbitrary idioms.
