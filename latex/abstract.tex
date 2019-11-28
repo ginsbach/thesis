@@ -17,19 +17,19 @@
 
     This thesis presents a compiler method for automatically targeting
     heterogeneous hardware from existing sequential C/C++ source code.
-    A novel constraint programming methodology enables the declarative
+    A new constraint programming method enables the declarative
     specification and automatic detection of {\em computational idioms} within
-    compiler intermediate representation.
+    compiler intermediate representation code.
+    Examples of computational idioms are stencil codes, linear algebra,
+    reductions and histogram computations.
     Computational idioms denote algorithmic structures that commonly occur in
     performance-critical loops.
     Consequently, well-designed accelerator DSLs and libraries support
     computational idioms with their programming models and function interfaces.
-    Examples of computational idioms are stencil codes, linear algebra,
-    reductions and histogram computations.
-    The detection of computational idioms in the middle end allows the
-    compiler to incorporate dedicated DSL and library backends for code
-    generation, which leverage domain knowledge for the efficient
-    utilisation of heterogeneous accelerators.
+    The detection of computational idioms in the compiler middle end allows the
+    compiler to incorporate DSL and library backends for code generation.
+    These backends leverage domain knowledge for the efficient utilisation of
+    heterogeneous accelerators.
 
     The constraint programming methodology is first derived on an abstract
     model and then implemented as an extension of LLVM.
@@ -42,13 +42,14 @@
     with the Clang C/C++ compiler.
     This pipeline was evaluated on the established benchmark collections NPB
     and Parboil.
-    The approach was effective on 10 of the benchmark programs, resulting in
+    The approach was applicable to 10 of the benchmark programs, resulting in
     significant speedups from 1.26$\times$ on ``histo'' to 275$\times$ on
     ``sgemm'' when starting from sequential baseline versions.
 
-    In summary, the thesis shows that the automatic recognition of
+    In summary, this thesis shows that the automatic recognition of
     computational idioms during compilation enables the heterogeneous
     acceleration of sequential C/C++ programs.
-    Constraint programming on compiler intermediate representation is a suitable
-    method for formulating computational idioms for automatic detection
-    with a constraint solver.
+    Moreover, the declarative specification of computational idioms is derived
+    in novel declarative programming languages, and it is demonstrated that
+    constraint programming on Single Static Assignment intermediate
+    code is a suitable method for their automatic detection.
