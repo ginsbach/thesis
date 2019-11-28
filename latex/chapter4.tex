@@ -124,7 +124,7 @@ End
     This basic algebraic equation can be interpreted as a recipe for a compiler
     optimisation:
     Assuming an environment without the particularities of floating-point
-    arithmetic (i.e.\ assuming the \texttt{-ffast-math} flag is active), the
+    arithmetic (i.e.\ assuming the ``\texttt{-ffast-math}'' flag is active), the
     compiler could use this equality to eliminate some square root invocations
     in user code.
     This is desirable, as the square root has to be approximated with relatively
@@ -210,7 +210,7 @@ End
     ({\bf g}) applies the transformation.
     This function is easy to implement:
     The solutions to the constraint problem are internally provided as C++
-    dictionaries of the form \texttt{map<std::string,llvm::Value*>},
+    dictionaries of the form ``\texttt{map<std::string,llvm::Value*>}'',
     containing all the information required to apply code transformations.
     A new function call to ``\texttt{abs}'' is generated, with the solution for
     ``\texttt{a}'' in \Cref{fig:candlspec} as the only argument (line 6).
@@ -367,7 +367,7 @@ End
     instruction opcodes ($I_\mathcal{F}$), or 
     restrict variables to constant literals ($C_\mathcal{F}^*$), function
     parameters ($P_\mathcal{F}^*$), and instructions ($I_\mathcal{F}^*$).
-    At the bottom of the list is the {\bf function\_name} constraint.
+    Ending the list is the ``{\bf function\_name}'' constraint.
     Function names can be statically determined only for direct function calls.
     In that case, the called object is necessarily a global value, and the
     function name can be identified in the global model $G_\mathcal F$.
@@ -437,7 +437,7 @@ End
     \noindent
     For both these constraints, the values are implicitly limited to
     instructions.
-    The expression {\bf domination}(\{A\},\{B\}) means that $A$ is a
+    The expression ``{\bf domination}(\{A\},\{B\})'' means that $A$ is a
     dominator of $B$, i.e.\ any path through the control flow graph from the
     entry node to $B$ must go through $A$.
     Strict domination additionally requires that $A$ and $B$ are distinct.
@@ -561,7 +561,7 @@ End
     structures, is simple.
     It copies the formula that corresponds to the identifier verbatim into
     the current specification.
-    If $[\text{\bf @}\ \text{\it variable}]$ is specified, then all the
+    If ``$[\text{\bf @}\text{\it variable}]$'' is specified, then all the
     variable names of the inserted constraint formula are prefixed with the
     given variable name, separated by a dot.
     This namespaces the inserted formula and prevents unwanted
@@ -830,7 +830,7 @@ Constraint LoopWithOnlyArrayAccesses
     specifications.
     The CAnDL-enabled Clang compiler invokes the detection functionality
     directly after optimisations and expects the flags
-    {\tt -Os -fno-unroll-loops -fno-vectorize -fno-slp-vectorize -ffast-math}.
+    ``{\tt -Os -fno-unroll-loops -fno-vectorize -fno-slp-vectorize -ffast-math}''.
 
     In addition to standard optimisations, the CAnDL-enabled compiler applies
     some custom transformations in order to pass on predictable LLVM IR code
