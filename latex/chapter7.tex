@@ -1,90 +1,88 @@
 
-    The thesis developed a constraint programming methodology that operates on
+    This thesis introduced a constraint programming methodology that operates on
     SSA compiler intermediate representation.
     The Compiler Analysis Description Language (CAnDL) and the extended Idiom
-    Detection Language (IDL) were designed and implemented in the LLVM
-    framework, making the constraint programming methodology available for
-    program analysis.
+    Detection Language (IDL) were developed, and implemented in the LLVM
+    framework.
+    This made the constraint programming method available for program analysis.
 
-    Several computational idioms were implemented in these languages, which
-    enabled the automatic recognition of adhering user code sections during
-    compilation.
-    Among these idioms, stencils and different forms of both sparse and
-    dense linear algebra are well-understood kernels.
-    Complementing these established computational idioms, Complex Reduction and
-    Histogram Computations (CReHCs) were introduced as a new grouping of
-    computations.
-    Evaluation of established benchmark suites NPB and Parboil demonstrated that
-    each of these idioms covers significant performance bottlenecks.
+    Several computational idioms were specified using CAnDL and IDL, enabling
+    automatic recognition of adhering user code sections during compilation.
+    The well-studied kernels among these idioms were stencils and varied
+    forms of sparse and dense linear algebra.
+    Complementing these established kernels, Complex Reduction and Histogram
+    Computations (CReHCs) were introduced as a new grouping of computations.
+    The evaluation on the established benchmark suites NPB and Parboil demonstrated
+    that all of these computational idioms covered significant performance
+    bottlenecks.
 
     Recognising these computational idioms enabled generic compilers to apply
     idiom-specific optimising transformations, which are traditionally available
     only within domain-specific tools.
     Such transformations included the automatic parallelisation of programs that
-    were inaccessible for previous analysis approaches.
+    were inaccessible to previous analysis approaches.
 
-    With all the required groundwork completed, the idiom detection
-    functionality was applied to achieve the automatic heterogeneous
-    parallelisation of sequential C/C++ code.
-    Idiomatic loops in user code were automatically redirected to
-    domain-specific code generators, which leverage the domain knowledge that
-    is available for code that is available for restrictive idioms.
-    This approach was practical on 10 of the 21 benchmark programs from NPB and
-    Parboil, resulting in significant speedups from 1.26$\times$  to 275$\times$
-    against the sequential baseline versions.
+    Given this background, the idiom detection was performed on sequential C/C++
+    programs, achieving automatic heterogeneous parallelisation.
+    Idiomatic loops in the code were redirected to domain-specific code
+    generators.
+    These specialised tools leveraged the domain knowledge that is available for
+    code in restrictive idioms.
+    This approach was applicable to 10 of the 21 benchmark programs from NPB and
+    Parboil, resulting in speedups between 1.26$\times$ and 275$\times$ over the
+    sequential baseline versions.
 
     In summary, the thesis demonstrated that computational idioms are a
-    suitable interface to heterogeneous acceleration and derived the
-    methodology for automatically recognising such idioms via constraint
-    programming.
-    Main contributions are the methodology of constraint programming on SSA
+    suitable interface to heterogeneous acceleration and developed the
+    methodology for automatically recognising such idioms.
+    The main contributions are the method of constraint programming on SSA
     intermediate representation, the design and implementation of CAnDL and IDL,
-    and the identification of CReHCs as a significant class of benchmark
-    bottlenecks.
+    and the identification of generalised reductions as a significant class of
+    benchmark bottlenecks.
 
 \section{Contributions}
 
 \subsection*{Constraint Programming on SSA Code}
 
-    \Cref{chapter:theory} introduced an approach for applying constraint
-    programming to SSA intermediate representation code.
-    Based on a model of the static structure of SSA programs, SSA constraint
-    problems were defined.
+    \Cref{chapter:theory} introduced constraint programming on
+    SSA compiler intermediate representation.
+    Using a characterisation of the static structure of SSA programs,
+    {\it SSA constraint problems} were defined.
     These are formulas that impose restrictions on compiler intermediate code,
     turning the detection of adhering program parts into a constraint
     satisfiability problem.
-    The chapter derived efficient algorithms for solving SSA constraint problems
+    This thesis derived efficient algorithms for solving SSA constraint problems
     and discussed several significant types of constraint formulas, reflecting
-    compiler analysis methods like data flow and dominance relationships.
+    compiler analysis methods such as data flow and dominance relationships.
 
-    The constraint programming methodology was derived from an algebraic
-    formulation all the way to implementation considerations.
-    It applies to any SSA intermediate representation and is suitable for a
-    wide range of compiler analysis problems.
+    The constraint programming methodology was derived starting from algebraic
+    formulation through to developing the implementation in C++.
+    It applies to any SSA compiler intermediate representation and is suitable
+    for a wide range of analysis problems.
 
 \subsection*{CAnDL and IDL}
 
     \Cref{chapter:candl,chapter:reductions} designed and implemented two
-    custom declarative programming languages: the Compiler Analysis
+    related declarative programming languages: the Compiler Analysis
     Description Language (CAnDL) and the extended Idiom Detection Langauge
     (IDL).
-    These languages make the constraint programming methodology directly
-    available in the LLVM framework.
-    This enables the previously derived approach to operate or real user code,
-    directly from within the state-of-the-art Clang C/C++ compiler.
+    These languages make the constraint programming methodology available in the
+    LLVM framework.
+    This enables constraint programming on the SSA intermediate code of user
+    programs during compilation with the Clang C/C++ compiler.
 
 \subsection*{Complex Reduction and Histogram Computations}
 
     Complex Reduction and Histogram Computations (CReHCs) were introduced in
     \Cref{chapter:reductions} as a computational idiom.
-    CReHCs are a generalisation of well-understood scalar reductions that
-    encompasses indirect array accesses as typical in calculations of
-    histograms.
-    This class of loops was not previously studied as one unit, but the
-    chapter showed that shared parallelisation opportunities exist.
+    CReHCs are a generalisation of the well-understood scalar reduction that
+    covers the indirect array accesses typically found in histogram
+    calculations.
+    This type of loop was not previously studied, but this thesis showed that
+    shared parallelisation opportunities exist.
     Furthermore, an evaluation of established benchmark suites demonstrated
-    that significant performance bottlenecks in each of NPB, Parboil, and
-    Rodinia are CReHCs.
+    that several of the performance bottlenecks in each of NPB, Parboil, and
+    Rodinia are, in fact,  CReHCs.
 
 \subsection*{Formulation of Computational Idioms}
 
@@ -96,30 +94,27 @@
     structure during compilation, making it possible for generic compilers to
     apply domain-specific reasoning.
 
-\subsection*{Heterogeneous Acceleration Pipeline}
+\subsection*{Idiomatic Heterogeneous Acceleration Pipeline}
 
-    \Cref{chapter:idioms} implemented an integrated heterogeneous acceleration
-    pipeline that is based on the formulation of computational idioms in IDL.
-    The detection results during compilation were used to redirect relevant
-    program parts to domain-specific code generators for heterogeneous
-    acceleration.
+    \Cref{chapter:idioms} implemented an IDL-based integrated heterogeneous
+    acceleration pipeline.
+    The code sections recognised by IDL specifications were redirected to
+    domain-specific code generators for heterogeneous accelerator hardware.
     This resulted in significant parallelisation speedups on benchmark
-    programs that previously were mostly inaccessible to automatic compiler
-    reasoning.
+    programs.
 
 \section{Critical Analysis}
 
-    The methods of this paper were built on a thorough derivation in
-    \Cref{chapter:theory} and then evaluated in different scenarios on real
-    C/C++ program code using the LLVM compiler framework.
-    Despite this effort of bridging between the algebraic derivations and the
-    subsequent application in real-world scenarios, the work remained a
-    prototype and several issues need to be addressed before it becomes viable
-    for productive use.
-    Most importantly, this includes questions about the prevalence of idiomatic
-    code, the affordability of significant compile-time overhead, and the
-    ability to compensate fundamental limitations of the underlying solver
-    technology.
+    The approaches of this thesis were built on the derivation of
+    \Cref{chapter:theory} and then evaluated in diverse scenarios on C/C++
+    program code.
+    Despite the effort of bridging between the algebraic formulation and the
+    application in real-world scenarios, the work remains a prototype, and
+    several issues need to be addressed before it becomes viable for productive
+    use.
+    Importantly, this includes questions about the prevalence of idiomatic code,
+    the affordability of significant compile time overhead, and the ability to
+    compensate fundamental limitations of the underlying solver technology.
 
 \subsection*{Generality of Computational Idioms}  
 
@@ -128,31 +123,33 @@
     evaluated successfully on a range of established benchmark collections.
     However, the NPB and Parboil collections both are from areas of scientific
     computing.
-    It remains unclear how generally applicable these idioms are on more
-    various codebases from other domains.
-    Similar concerns are faced by competing approaches, particularly the
+    It remains unclear how generally applicable these idioms are on codebases
+    from other domains.
+    Similar concerns are faced by competing approaches, including the
     polyhedral model.
 
     More generally, it is unclear how much code in large-scale applications
     could be captured as ``idiomatic'' with even a very range and diverse set of
     idioms.
-    Some benchmark programs even within NPB and Parboil, e.g.\ the ``sad''
-    program, contain idiosyncratic computations that are unlikely to reoccur
-    frequently in other contexts.
+    Even some benchmark programs within NPB and Parboil contain idiosyncratic
+    computations that are unlikely to reoccur in other contexts.
+    An example is the ``sad'' program that computes the
+    ``Sum of Absolute Differences'' algorithm used by the reference H.264 video
+    encoder.
 
 \subsection*{Compile Time Cost}
 
     The compile-time cost of idiom detection was evaluated in
-    \Cref{chapter:idioms}, showing that overheads between 35 and 115 per cent
+    \Cref{chapter:idioms}, showing that overheads between 35$\%$ and 115$\%$
     occurred across the benchmark programs.
-    Considering that the approach is built on constraint satisfiability
-    methods, this is a reassuring result, as the compile times remain within the
-    same order of magnitude.
-    However, from the perspective of compiler optimisations, this might be
-    considered an unacceptable cost.
-    Furthermore, the compile-time overhead is unevenly distributed, with
-    disproportionately higher cost on large functions and especially on code
-    sections that are near misses to satisfying the specifications.
+    Given that the approach is built on constraint satisfiability methods, this
+    is a reassuring result, as the compile times remain within one order of
+    magnitude.
+    Nonetheless, from the perspective of compiler optimisations, this might be
+    a prohibitive cost.
+    Moreover, the compile-time overhead is unevenly distributed, with
+    disproportionately longer solver times on large functions and especially on
+    code sections that are near misses to satisfying the specifications.
 
 \subsection*{Finite Number of Variables}
 
