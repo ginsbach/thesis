@@ -1,38 +1,38 @@
 
     The previous chapter introduced a computational idiom --
     Complex Reduction and Histogram Computations (CReHCs) -- and showed how the
-    Idiom Detection Language (IDL) enables its discovery and automatic
+    Idiom Detection Language (IDL) enabled its discovery and automatic
     parallelisation.
-    This chapter takes a broader view of automatic idiom detection, and also
+    This chapter takes a broader view of automatic idiom recognition and also
     includes common linear algebra computations and stencil codes.
     Instead of implementing bespoke parallelisation passes, this chapter
     follows the vision laid out in the introduction:
-    The detected idioms are translated into stronger models, and external
+    the detected idioms are translated into stronger models, and external
     code generators are then used to leverage the implied domain knowledge.
 
-    The goal of this chapter is to take abstract algorithmic concepts that are
+    To facilitate this, the chapter takes abstract algorithmic concepts that are
     conventionally explored outside the context of compiler analysis --
-    computational idioms -- and formalise them as IDL specifications,
-    enabling detection and manipulation in optimising compilers.
-    Heterogeneous acceleration will serve as the motivation for this effort.
+    computational idioms -- and formalises them as IDL specifications.
+    This enables detection and manipulation in optimising compilers.
+    Heterogeneous acceleration serves as the motivation for this effort.
     As many scientific codes are structured around idiomatic performance
     bottlenecks, efforts that focus on computational idioms can greatly
-    improve performance, especially with accelerators that were designed
-    with similar computations in mind.
-    The focus is therefore on calculations that are well supported by
+    improve performance, especially on accelerators that were designed
+    with such computations in mind.
+    The focus is therefore on calculations that are well-supported by
     accelerators and their software ecosystems: linear algebra,
     stencil codes and CReHCs.
 
-    The IDL specifications are used to build a prototype compiler that
-    automatically detects the idioms and uses them to circumvent the code
-    generator with libraries and domain-specific languages:
-    BLAS implementations, cuSPARSE, clSPARSE, Halide and Lift.
-    The funcionality is directly accessible in a modified version of the widely
-    used Clang C/C++ compilers.
-    The evaluation can therefore be performed on the well established benchmark
-    suites NAS and Parboil, where 60 idiom instances are detected.
-    In those cases where idioms are a significant part of the sequential
-    execution time, the generated heterogeneous code achieves 1.26$\times$ to
+    The IDL specifications were used for a prototype compiler that
+    automatically detects the idioms and uses them to circumvent standard
+    code generation via libraries and domain-specific languages:
+    BLAS implementations, cuSPARSE, clSPARSE, Halide, Lift.
+    This functionality is directly accessible from a modified version of the
+    widely used Clang C/C++ compiler.
+    The evaluation could, therefore, be performed on the well-established
+    benchmark suites NAS and Parboil, where 60 idiom instances were detected.
+    In those cases where idioms were a significant part of the sequential
+    execution time, the generated heterogeneous code achieved 1.26$\times$ to
     over 20$\times$ speedup on integrated and external GPUs.
 
 \section{Introduction}
@@ -51,8 +51,10 @@
     are more specialised and often provided by hardware vendors without
     portability in mind \citep{clblas,cublas,cusparse,clsparse}.
     More narrow domain-specific languages (DSLs) have been proposed by
-    \citet{Ragan-Kelley2013Halide,Franchetti09OL,Rompf:2012:LMS:2184319.2184345}
-    among others in attempts to deliver both portability and performance.
+    \citet{Ragan-Kelley2013Halide,
+           Franchetti09OL,
+           Rompf:2012:LMS:2184319.2184345}, among others in attempts to deliver
+    both portability and performance.
 
     Hardware is becoming increasingly heterogeneous, most recently with the
     development of deep neural network accelerators such as the Google TPU
@@ -90,9 +92,9 @@
     sparse and dense linear algebra, as well as stencils.
     The covered idioms are a reflection of both the most relevant program
     bottlenecks and the available interfaces.
-    Some computational idioms are more widely supported than others, potentially
-    pointing to gaps in the accelerator landscape, but some backend was
-    available for each of them.
+    Some computational idioms were more widely supported than others, potentially
+    pointing to gaps in the accelerator landscape.
+    Nonetheless, at least one backend existed per idiom.
     The Idiom Detection Language (IDL) then enabled the automatic detection of
     idioms.
     Once detected, the idioms are translated into the appropriate DSL or
