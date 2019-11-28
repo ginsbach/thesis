@@ -50,23 +50,23 @@
     For a set $A$, any $a\in A$, and $S\subset A\times\mathbb N^k$ for some
     $k>0$, the following are defined:
     \begin{align*}
-        heads(S)={}&\{a\in A\hspace{1.8mm}\mid(a,b_1,\dots,b_k)\in S\text{ for some }b_1,\dots,b_k\in\mathbb N\}\\
-        tails(S)={}&\{b\in\mathbb N^k\mid(a,b_1,\dots,b_k)\in S\text{ for some }a\in A\}\\
-        select(a,S)={}&\{b\in\mathbb N^k\mid(a,b_1,\dots,b_k)\in S\}.
+        \textit{heads}(S)={}&\{a\in A\hspace{1.8mm}\mid(a,b_1,\dots,b_k)\in S\text{ for some }b_1,\dots,b_k\in\mathbb N\}\\
+        \textit{tails}(S)={}&\{b\in\mathbb N^k\mid(a,b_1,\dots,b_k)\in S\text{ for some }a\in A\}\\
+        \textit{select}(a,S)={}&\{b\in\mathbb N^k\mid(a,b_1,\dots,b_k)\in S\}.
     \end{align*}
 
     Note that the case $A=\mathbb N$ is common.
-    Furthermore, for $S'\subset\mathbb N^k$, the set $rev(S')$ is defined as
-    $rev(S')=\{(a,b)\mid(b,a)\in S'\}$.
-    Finally, the following shorthand is used
+
+    In addition, $\textit{rev}(S')=\{(a,b)\mid(b,a)\in S'\}$ is
+    defined for $S'\subset\mathbb N^k$ and the following used:
     \begin{align*}
         \begin{aligned}
-        DFG_\mathcal F^*={}&tails(DFG_\mathcal F)\\
-        CFG_\mathcal F^*={}&tails(CFG_\mathcal F)
+        DFG_\mathcal F^*={}&\textit{tails}(DFG_\mathcal F)\\
+        CFG_\mathcal F^*={}&\textit{tails}(CFG_\mathcal F)
         \end{aligned}&&
         \begin{aligned}
-        I_\mathcal F^*={}&tails(I_\mathcal F)\\
-        C_\mathcal F^*={}&tails(C_\mathcal F)
+        I_\mathcal F^*={}&\textit{tails}(I_\mathcal F)\\
+        C_\mathcal F^*={}&\textit{tails}(C_\mathcal F)
         \end{aligned}
     \end{align*}
 \end{definition}

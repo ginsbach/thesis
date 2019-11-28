@@ -4,9 +4,9 @@
     $B_k[E_S]\colon\mathcal M\times\mathbb N^{k-1}\rightarrow\mathcal P(\mathbb N)$
     is a backtracking solution of $(V,E_S)$ when defined by
     \begin{align*}
-        B_k[E_S](M,x)={}&heads(R_k(M,x))\\
+        B_k[E_S](M,x)={}&\textit{heads}(R_k(M,x))\\
         R_1(M)={}&\{p_n(s)\mid s\in S(M)\}\subset\mathbb N^{n}\\
-        R_{k+1}(M,x)={}&select(x_k,R_k(M,(x_1,\dots,x_{k-1})))\subset\mathbb N^{n-k}.
+        R_{k+1}(M,x)={}&\textit{select}(x_k,R_k(M,(x_1,\dots,x_{k-1})))\subset\mathbb N^{n-k}.
     \end{align*}
     \tcblower
     \paragraph*{Proof:} By definition,
