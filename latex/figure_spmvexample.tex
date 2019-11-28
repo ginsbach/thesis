@@ -1,19 +1,28 @@
-\begin{lstlisting}[language=MyCpp, basicstyle=\linespread{0.75}\small\ttfamily]
+\centering
+
+\lstset{
+ basicstyle       = \linespread{0.826}\footnotesize\ttfamily,
+ xleftmargin      = 2em,
+ framexleftmargin = 2em
+}
+
+\begin{lstlisting}[language=MyCpp]
 for (j = 0; j < ([{\bf m}]); j++) {
   d = 0.0;
   for (k = ([{\bf rowstr }])[j]; k < ([{\bf rowstr}])[j+1]; k++)
     d = d + ([{\bf a}])[k]*([{\bf z}])[([{\bf colidx}])[k]];
   ([{\bf r}])[j] = d; }
 \end{lstlisting}
-\vspace{-4.4mm}
-\begin{lstlisting}[language={LLVM}, basicstyle=\linespread{0.75}\tiny\ttfamily,
-                   label={fig:spmvexample1}, caption={Sparse linear algebra in C and LLVM IR}]
+\vspace{-3.5mm}
+\begin{lstlisting}[language={LLVM}, label={fig:spmvexample1}, caption=
+   {Sparse matrix-vector product shown in C at the top, and in LLVM IR at the
+    bottom\leftskip=0pt\rightskip=0pt}]
 ; <label>:2:
   %j = phi i64 [ %j_next, %12 ], [ 0, %1 ]
   %j_cond = icmp slt i64 %j, ([{\bf \%m}])
   br i1 %j_cond, label %3, label %13([\vspace{1mm}])
 ; <label>:3:
-%4 = getelementptr i32, i32* ([{\bf \%rowstr}]), i64 %j
+  %4 = getelementptr i32, i32* ([{\bf \%rowstr}]), i64 %j
   %5 = load i32, i32* %4
   %j_next = add nuw nsw i64 %j, 1
   %6 = getelementptr i32, i32* ([{\bf \%rowstr}]), i64 %j_next
@@ -43,97 +52,83 @@ for (j = 0; j < ([{\bf m}]); j++) {
   store double %d, double* %r_addr
   br label %2
 \end{lstlisting}
-\vspace{-0.287cm}
-%\end{figure}
 
-\centering
-\vspace{0.0em}
-{\centering
-\begin{minipage}{0.05\linewidth}
-\vspace{0pt}
-\centering
-\begin{tikzpicture}[ultra thick]
- \draw [black,   -latex      ] (0,0.5) -- (0,0) node [] {};
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}{\linewidth}
-% \vspace{-5pt}
-\centering
-\textbf{Idiom detection with IDL program in \Cref{csr_lilacwhat_fig}}
-\end{minipage}
-\begin{minipage}{0.05\linewidth}
-\vspace{0pt}
-\centering
-\begin{tikzpicture}[ultra thick]
- \draw [black,   -latex      ] (0,0.5) -- (0,0) node [] {};
-\end{tikzpicture}
-\end{minipage}
-}
+\vspace{0.05mm}
+{{\Huge$\Downarrow$}
+\hspace{-2.73mm}\phantom{\bf~~~Idiom Detection with IDL~~}\hspace{-3.69mm}
+{\Huge$\Downarrow$}
+\hspace{-2.73mm}\phantom{\bf~~Program in \Cref{csr_lilacwhat_fig}~~~}\hspace{-3.69mm}
+{\Huge$\Downarrow$}}
+\hspace{5.1mm}
 
-%\begin{figure}
-{\centering
-\footnotesize 
-\begin{tabular}{l|l}
-\textbf{Variable Name} & \textbf{Assigned IR Value}\\
-\hline
-iterator                    & {\tt\%j}\\
-inner.iter\_begin           & {\tt\%k\_begin}\\
-inner.iter\_end             & {\tt\%k\_end}\\
-inner.iterator              & {\tt\%k}\\
-idx\_read.value             & {\tt\%cix\_load}\\
-indir\_read.value           & {\tt\%a\_load}\\
-seq\_read.value             & {\tt\%z}\\
+\vspace{-10.5mm}
+{\phantom{\Huge$\Downarrow$}
+\hspace{-2.73mm}{\bf~~~Idiom Detection with IDL~~}\hspace{-3.69mm}
+\phantom{\Huge$\Downarrow$}
+\hspace{-2.73mm}{\bf~~Program in \Cref{csr_lilacwhat_fig}~~~}\hspace{-3.69mm}
+\phantom{\Huge$\Downarrow$}}
+\hspace{5.1mm}
+\vspace{4mm}
+
+{\footnotesize\renewcommand{\arraystretch}{0.8}
+\definecolor{tableShade}{gray}{0.8}
+\rowcolors{1}{}{tableShade}
+\begin{tabular}{p{4.1cm}l}
+    \toprule
+    \textbf{IDL Variable Name} & \textbf{Assigned Value}\\
+    \midrule
+    outer\_loop.iterator                      & {\tt\%j}\\
+    inner\_loop.iter\_begin                   & {\tt\%k\_begin}\\
+    inner\_loop.iter\_end                     & {\tt\%k\_end}\\
+    inner\_loop.iterator                      & {\tt\%k}\\
+    inner\_loop.src1 ($\approx$ val.value)    & {\tt\%z}\\
+    col\_ind.value                            & {\tt\%cix\_load}\\
+    inner\_loop.src2 ($\approx$ vector.value) & {\tt\%a\_load}\\
+    \bottomrule
 \end{tabular}
-\hspace{0.5cm}
-\begin{tabular}{l|l}
-\textbf{Variable Name} & \textbf{Assigned IR Value}\\
-\hline
-output.address              & {\tt\%r\_addr}\\
-iter\_begin                 & {\tt0}\\
-iter\_end                   & {\tt\%\bf m}\\
-idx\_read.base\_pointer     & {\tt\%\bf colidx}\\
-seq\_read.base\_pointer     & {\tt\%\bf a}\\
-indir\_read.base\_pointer   & {\tt\%\bf z}\\
-\dots                       & \dots\vspace{-0.5mm}\\
-\end{tabular}
+\hfill
+\rowcolors{1}{}{tableShade}
+\begin{tabular}{p{4.1cm}l}
+    \toprule
+    \textbf{IDL Variable Name} & \textbf{Assigned Value}\\
+    \midrule
+    output.address          & {\tt\%r\_addr}\\
+    outer\_loop.iter\_begin & {\tt0}\\
+    outer\_loop.iter\_end   & {\tt\%\bf m}\\
+    val.base\_pointer       & {\tt\%\bf a}\\
+    col\_ind.base\_pointer  & {\tt\%\bf colidx}\\
+    vector.base\_pointer    & {\tt\%\bf z}\\
+    \dots                   & \dots\\
+    \bottomrule
+\end{tabular}}
 
-}
-
-\caption{Constraint solution for sparse mv}
+\vspace{-1.8mm}
+\caption{Solution to ``{\tt SPMV\_CSR}'': Fitting LLVM IR values were assigned
+         to all IDL variables.\leftskip=0pt\rightskip=0pt}
 \label{fig:spmvexample2}
-%\end{figure}
 
-\centering
-\vspace{0.0em}
-{\centering
-\begin{minipage}{0.05\linewidth}
-\vspace{0pt}
-\centering
-\begin{tikzpicture}[ultra thick]
- \draw [black,   -latex      ] (0,0.5) -- (0,0) node [] {};
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}{\linewidth}
-% \vspace{-5pt}
-\centering
-\textbf{Code generation: insert arguments, replace code}
-\end{minipage}
-\begin{minipage}{0.05\linewidth}
-\vspace{0pt}
-\centering
-\begin{tikzpicture}[ultra thick]
- \draw [black,   -latex      ] (0,0.5) -- (0,0) node [] {};
-\end{tikzpicture}
-\end{minipage}
-}
+\vspace{3.25mm}
+{{\Huge$\Downarrow$}
+\hspace{-2.73mm}\phantom{\bf~~~Code Generation: Insert~~}\hspace{-3.69mm}
+{\Huge$\Downarrow$}
+\hspace{-2.73mm}\phantom{\bf~~Arguments, Replace Code~~~}\hspace{-3.69mm}
+{\Huge$\Downarrow$}}
+\hspace{-3.4mm}
 
+\vspace{-10.5mm}
+{\phantom{\Huge$\Downarrow$}
+\hspace{-2.73mm}{\bf~~~Code Generation: Insert~~}\hspace{-3.69mm}
+\phantom{\Huge$\Downarrow$}
+\hspace{-2.73mm}{\bf~~Arguments, Replace Code~~~}\hspace{-3.69mm}
+\phantom{\Huge$\Downarrow$}}
+\hspace{-3.4mm}
+\vspace{-2.75mm}
 
-%\begin{figure}
-\begin{lstlisting}[language=C, basicstyle=\linespread{0.75}\small\ttfamily,
-                   label={fig:spmvexample3}, caption={Generated function call to cuSPARSE}]
+\begin{lstlisting}[language=MyCpp, label={fig:spmvexample3}, caption=
+   {GPU acceleration: Solution values are used to call ``{\tt cusparseDcsrmv}''
+    backend.\leftskip=0pt\rightskip=0pt}]
 cusparseDcsrmv(context,
     CUSPARSE_OPERATION_NON_TRANSPOSE, ([{\bf m}]), n,
     ([{\bf rowstr}])[([{\bf m}])+1]-([{\bf rowstr}])[0], &gpu_1, descr, gpu_([{\bf a}]),
     gpu_([{\bf rowstr}]), gpu_([{\bf colidx}]), gpu_([{\bf z}]), &gpu_0, gpu_([{\bf r}]));
 \end{lstlisting}
-\vspace{-0.287cm}
