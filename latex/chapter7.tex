@@ -288,7 +288,7 @@
     \paragraph*{Generating Specifications from Examples}
     The automatic generation of specifications from examples is another
     direction for follow-up research.
-    Initial attempts were promising \citep{DBLP:conf/IEEEpact/CollieGO19}.
+    Initial attempts were successful \citep{DBLP:conf/IEEEpact/CollieGO19}.
     Using a graph-matching algorithm that operates on SSA code, implementation
     variations of the same idiom were overlayed, exposing the common structure.
     This was guided by a quality metric for the matching.
@@ -296,7 +296,7 @@
     constraints, and features that were unique to specific samples were
     discarded.
 
-    Suitable quality metrics for graph matching are critical to the success
+    Suitable quality metrics for graph-matching are critical to the success
     of this approach and could eventually be tuned with machine learning
     approaches, such as neural networks.
     The manually implemented idioms from this thesis would provide suitable
@@ -304,23 +304,24 @@
 
     Eventually, the manual curation of example codes that group together into
     computational idioms could become redundant.
-    Automatic profiling of large quantities of code would allow the automatic
-    identification of all the relevant hot loops.
-    The hot loops could then be grouped into computational idioms using
-    automatic clustering algorithms that use a distance metric between SSA code
-    based on a success score for the previously discussed graph matching
-    approach.
+    Automatic profiling of large quantities of code would allow for the
+    automatic identification of all the relevant hot loops.
+    These loops could then be grouped into computational idioms by an
+    automatic clustering algorithm using a distance metric.
+    The success score for the previously discussed graph-matching approach
+    would be a suitable basis for deriving such a metric for the distance
+    between different candidate loops.
 
 \section{Summary}
 
-    This chapter first gave a short summary, outlining the development of the
-    approaches in this thesis and putting the achievements into context.
-    The core contributions of the work were then listed individually in a
-    separate section.
-    The critical analysis discussed implementation issues and brought attention
-    to details that could profit from further evaluation.
+    This chapter gave a brief overview of the thesis, outlining the development
+    of the approaches and putting the achieved results into context.
+    The core contributions of this work were listed individually in a dedicated
+    section.
+    Furthermore, the critical analysis discussed implementation issues and
+    brought attention to details that could profit from further evaluation.
 
     Interesting challenges remain for future work.
-    The suggestions included improvements of the basic approach for constraint
-    programming on SSA compiler intermediate representation code, enhanced
-    usability of the specification languages, and the application to novel domains.
+    The suggested topics include improvements of the basic methodology for
+    constraint programming, enhanced usability of the specification languages,
+    and the application to novel domains.
