@@ -124,7 +124,7 @@ End
     This basic algebraic equation can be interpreted as a recipe for a compiler
     optimisation:
     Assuming an environment without the particularities of floating-point
-    arithmetic (i.e.\ assuming the ``\texttt{-ffast-math}'' flag is active), the
+    arithmetic (i.e.\ assuming the ``{\tt-ffast-math}'' flag is active), the
     compiler could use this equality to eliminate some square root invocations
     in user code.
     This is desirable, as the square root has to be approximated with relatively
@@ -140,13 +140,13 @@ End
     the left side of the equation and then transform all those occurrences
     analogous to the right side of the equation.
     The compiler, therefore, must detect $\sqrt{a*a}$ in the LLVM IR code and
-    replace it with calls to the ``\texttt{abs}'' function.
+    replace it with calls to the ``{\tt abs}'' function.
     The generation of the new function call is trivial, but the detection of
     even this simple pattern requires some care when implemented manually in
     a sophisticated codebase such as LLVM.
 
     The traditional approach in the Clang compiler is to integrate such
-    optimisations into the previously mentioned ``\texttt{instcombine}'' pass.
+    optimisations into the previously mentioned ``{\tt instcombine}'' pass.
     which already applies an extensive collection of peephole optimisations.
     However, this code makes heavy use of raw pointers and dynamic type casts,
     spans ${\sim}30000$ lines, and has been identified as a frequent source of
@@ -160,8 +160,7 @@ End
     The first line of the program assigns a name to the specification, which is
     then defined by the interaction of seven {\em atomic constraint}s.
     These individual statements must simultaneously hold on the values of
-    ``\texttt{sqrt\_call}'', ``\texttt{sqrt\_fn}'', ``\texttt{square}'' and
-    ``\texttt{a}''.
+    ``{\tt sqrt\_call}'', ``{\tt sqrt\_fn}'', ``{\tt square}'' and ``{\tt a}''.
     Lines 2--8 each stipulate one of these constraints, and they are joined
     together with logical conjunctions ``$\land$''.
 
@@ -171,14 +170,14 @@ End
     of the analysis function generated from the CAnDL specification in
     \Cref{fig:candlspec} to a user program.
     The input program ({\bf a}) is a simple C function that calls the
-    ``\texttt{sqrt}'' function twice with squares of floating-point values.
+    ``{\tt sqrt}'' function twice with squares of floating-point values.
     This is translated using the Clang compiler into LLVM IR code ({\bf b}),
     using standard optimisation passes during the compilation.
     The expression from the user program is here represented as a list of
     individual instructions and register assignments, with the occurrences
-    of ``\texttt{SqrtOfSquare}'' clearly visible: the two ``\texttt{fmul}''
+    of ``{\tt SqrtOfSquare}'' clearly visible: the two ``{\tt fmul}''
     instructions (lines 4 and 6) compute squares via a floating-point
-    multiplication, and these are then used as arguments to ``\texttt{sqrt}''
+    multiplication, and these are then used as arguments to ``{\tt sqrt}''
     function invocations (lines 5 and 7).
 
     The optimised LLVM IR ({\bf b}) is used as the input to the generated
@@ -194,28 +193,28 @@ End
     from the solutions, the individual atomic constraints can be checked
     individually:
     \begin{itemize}
-    \item \texttt{\%4} and \texttt{\%6} are function calls, and their first
-          argument (the function to be called) is \texttt{@sqrt}.
-    \item \texttt{@sqrt} is the square root function.
+    \item {\tt \%4} and {\tt \%6} are function calls, and their first argument
+          (the function to be called) is {\tt @sqrt}.
+    \item {\tt @sqrt} is the square root function.
           Note that it is identified by name.
     \item The second arguments of the function call instructions (the first
-          function arguments) are \texttt{\%3} and \texttt{\%5},
-          respectively.
-    \item \texttt{\%3} and \texttt{\%5} are square values, i.e.\ 
-          floating-point multiplications of a value with itself.
+          function arguments) are {\tt \%3} and {\tt \%5}, respectively.
+    \item {\tt \%3} and {\tt \%5} are square values, i.e.\ floating-point
+          multiplications of a value with itself.
     \end{itemize}
 
-    
     Using the solutions identified by the CAnDL system, a separate C++ function
     ({\bf g}) applies the transformation.
-    This function is easy to implement:
+    This function is easy to implement.
     The solutions to the constraint problem are internally provided as C++
-    dictionaries of the form ``\texttt{map<std::string,llvm::Value*>}'',
-    containing all the information required to apply code transformations.
-    A new function call to ``\texttt{abs}'' is generated, with the solution for
-    ``\texttt{a}'' in \Cref{fig:candlspec} as the only argument (line 6).
+    dictionaries of type
+    ``\lstinline[language=MyCpp]!map<std::string,llvm::Value*>!'', containing
+    the information needed to apply code transformations.
+    A new function call to ``{\tt abs}'' is generated, with the value
+    determined for ``{\tt a}'' from \Cref{fig:candlspec} as the only argument
+    (line 6).
     This instruction replaces (line 4) the call instruction that was captured
-    in ``\texttt{sqrt\_call}'' (line 5).
+    in ``{\tt sqrt\_call}'' (line 5).
     Conveniently, the LLVM infrastructure already provides all the necessary
     functions to create and replace instructions in the intermediate
     representation.
@@ -557,7 +556,7 @@ End
     \noindent
     Note that the syntax in square brackets  is optional and the syntax in curly
     brackets may be repeated.
-    The basic version of \texttt{\it include}, using neither of the two optional
+    The basic version of {\it include}, using neither of the two optional
     structures, is simple.
     It copies the formula that corresponds to the identifier verbatim into
     the current specification.
@@ -603,17 +602,18 @@ End
 \end{figure}
 
     \noindent
-    In \Cref{fig:simplecollect}, the variables ``\texttt{arg[0]}'',\dots,``\texttt{arg[N-1]}''
+    In \Cref{fig:simplecollect}, the variables
+    ``{\tt arg[0]}'',\dots,``{\tt arg[N-1]}''
     are specified to contain all of the direct data dependencies of
-    ``\texttt{ins}''.
-    The first argument of \text{\it collect} specifies the name of an index
+    ``{\tt ins}''.
+    The first argument of {\it collect} specifies the name of an index
     variable that is used to detect which variables belong to the collected set.
-    In this example, solutions of ``\texttt{arg[i]}'' for a given value
-    of ``\texttt{ins}'' are identified.
+    In this example, solutions of ``{\tt arg[i]}'' for a given value
+    of ``{\tt ins}'' are identified.
     The second argument gives an upper limit to the number of collected
     variables.
     This upper bound is left unspecified in this case by using the symbol
-    ``\texttt{N}''.
+    ``{\tt N}''.
 
 \begin{figure}[t]
 \begin{lstlisting}[language=CAnDL,label={fig:simplecollect},caption=
@@ -639,7 +639,7 @@ End
     \end{align}
     This can be rewritten to an equivalent formulation on sets:
     \begin{align*}
-        S_1= select(\texttt{ins},rev(DFG_\mathcal F^*))\subset select(\textit{float},T_\mathcal F)= S_2.
+        S_1= \textit{select}(\texttt{ins},\textit{rev}(DFG_\mathcal F^*))\subset\textit{select}(\textit{float},T_\mathcal F)= S_2.
     \end{align*}
     
     Elementary set theory gives  $S_1\subset S_2\iff S_1 = S_1\cap S_2$.
@@ -648,7 +648,7 @@ End
     and only if ``{\tt ins}'' has only floating-point arguments.
     This condition can be expressed in CAnDL, as is shown in
     \Cref{fig:collectexample}.
-    With the first {\it collect} statement at line 3, the set ``\texttt{arg}''
+    With the first {\it collect} statement at line 3, the set ``{\tt arg}''
     is constrained to be equal to $S_1$ and with the second one at lines 4-5, it
     is constrained to be equal to $S_1\cap S_2$ as well.
 
@@ -670,9 +670,9 @@ End
     {\it collect} statements to restrict all array accesses within a
     loop to be affine in the loop iterators.
     First, {\it collect} all memory accesses in the loop
-    (i.e.\ all ``\texttt{load}'' and ``\texttt{store}'' instructions), and then
-    use a second {\it collect} statement to enforce affine calculations of the
-    access indices that are used for these instructions.
+    (i.e.\ all ``{\tt load}'' and ``{\tt store}'' instructions), and then use a
+    second {\it collect} statement to enforce affine calculations of the access
+    indices that are used for these instructions.
 
 \subsection{Expressing Larger Structures}
 
@@ -938,27 +938,27 @@ result[2] = make_pair("right",    select<1>(constr2));
     Every atomic constraint in CAnDL results in a line of C++ code that
     constructs an object of a corresponding class:
     In this case, the involved atomic constraints are implemented by
-    ``\texttt{AddInstruction}'', ``\texttt{FirstArgument}'' and
-    \texttt{SecondArgument}''.
+    ``{\tt AddInstruction}'', ``{\tt FirstArgument}'' and
+    ``{\tt SecondArgument}''.
     These objects are instantiated as shared pointers.
 
     The compiler then generates analogous objects for the conjunction,
     disjunction and collect structures.
-    In our example, this only affects the ``\texttt{addition}'', which is part
+    In our example, this only affects the ``{\tt addition}'', which is part
     of a conjunction clause.
     This results in an additional object construction that instantiates the
-    ``\texttt{Conjunction}'' class corresponding to the ``$\land$'' operator
+    ``{\tt Conjunction}'' class corresponding to the ``$\land$'' operator
     in CAnDL.
 
     Constraint classes that implement constraints operating on a single
-    variable directly expose the ``\texttt{BacktrackingPart}'' interface
+    variable directly expose the ``{\tt BacktrackingPart}'' interface
     introduced in \Cref{cppsolver}.
-    In the example, this applies to ``\texttt{AddInstruction}'' and
-    ``\texttt{Conjunction}''.
-    For more complex constraints, the ``\texttt{select<>}'' template is used to
+    In the example, this applies to ``{\tt AddInstruction}'' and
+    ``{\tt Conjunction}''.
+    For more complex constraints, the ``{\tt select<>}'' template is used to
     specify which variable of a constraint is being considered.
     At lines 8--9, this is used to extract the parts of backtracking solutions
-    referring to the ``\texttt{addition}'' variable, and to then pass them as
+    referring to the ``{\tt addition}'' variable, and to then pass them as
     arguments to the conjunction.
 
     Finally, the generated objects are inserted into a vector, together with the
@@ -1048,7 +1048,7 @@ Constraint ComplexFactorisation
 \end{figure}
 
     Arithmetic simplifications in LLVM are implemented in the
-    ``\texttt{instcombine}'' pass.
+    ``{\tt instcombine}'' pass.
     An example of this is the standard factorisation optimisation that uses the
     law of distributivity to simplify integer calculations, as shown in
     \Cref{fig:factorization1}.
@@ -1063,14 +1063,13 @@ Constraint ComplexFactorisation
     This analysis problem can be formulated in CAnDL, as shown in
     \Cref{fig:facopport}.
     Crucially, at lines 5,7,9,11, the specification makes use of
-    ``\texttt{SumChain}'' and ``\texttt{MulChain}'', which allows the CAnDL
-    program to capture a large, generalised class of opportunities for
-    factorisation.
-    The ``\texttt{instcombine}'' pass has limited support for this, and first
-    requires the application of associative and commutative laws to
-    reorder the values.
+    ``{\tt SumChain}'' and ``{\tt MulChain}'', which allows the CAnDL program to
+    capture a large, generalised class of opportunities for factorisation.
+    The ``{\tt instcombine}'' pass has limited support for this, and first
+    requires the application of associative and commutative laws to reorder the
+    values.
     For example, this is needed for \Cref{fig:factorization2}, and only
-    partially supported by LLVM with the additional ``\texttt{reassociate}''
+    partially supported by LLVM with the additional ``{\tt reassociate}''
     pass.
     \begin{align}
         a*b+c+d*a*e->a*(b+d*e)+c
@@ -1080,16 +1079,16 @@ Constraint ComplexFactorisation
 \subsubsection{Experimental Setup}
 
     The specification in \Cref{fig:facopport} was evaluated against the default
-    factorisation optimisation in ``\texttt{instcombine}'' on three different
+    factorisation optimisation in ``{\tt instcombine}'' on three different
     benchmark collections:
     the sequential C versions of the NAS Parallel Benchmarks
     \citep{Bailey1991NPB}, as provided by \citet{seo2011performance};
     the C/C++ Parboil programs by \citet{stratton2012parboil};
     and the OpenMP C/C++ programs of the Rodinia benchmark suite
     \citep{Che2009Rodinia}.
-    The existing LLVM ``\texttt{instcombine}'' pass was extended, so that it
+    The existing LLVM ``{\tt instcombine}'' pass was extended, so that it
     automatically logs every time that it successfully applied the
-    ``\texttt{tryFactorization}'' function.  
+    ``{\tt tryFactorization}'' function.  
 
     % NPB:     29047 loc
     % Parboil:  7358 loc
@@ -1136,7 +1135,7 @@ Constraint ComplexFactorisation
     ``particlefilter'' and ``mummergpu'' programs.
 
     In all three benchmarks suites, the CAnDL system found all factorisation
-    opportunities that the ``\texttt{instcombine}'' pass identified.
+    opportunities that the ``{\tt instcombine}'' pass identified.
     In addition, it detected an additional 7 cases across all programs.
     Just 12 lines of CAnDL code were able to capture more factorisation
     opportunities than 200 lines of C++ code in LLVM.
@@ -1193,8 +1192,8 @@ End
 
     The required analysis functionality for this optimisation was implemented
     with CAnDL, as shown in \Cref{fig:Lewis}.
-    Firstly, the specification uses ``\texttt{VectorMulChain}'' to detect 
-    chains of floating-point vector multiplications.
+    Firstly, the specification uses ``{\tt VectorMulChain}'' to detect chains of
+    floating-point vector multiplications.
     At lines 4--6, all the factors that are hoisted from some scalar are
     collected into the array ``{\tt hoisted}''.
     Correspondingly, all the other factors are collected into the array
@@ -1210,7 +1209,7 @@ End
     two factors is a multiplication itself and that the last factor is not used
     in any multiplication.
 
-    ``\texttt{ScalarHoist}'' operates on ``{\tt in}'' and ``{\tt out}'', as well
+    ``{\tt ScalarHoist}'' operates on ``{\tt in}'' and ``{\tt out}'', as well
     as some hidden internal variables.
     It specifies that ``{\tt out}'' is a vector generated from ``{\tt in}'' by
     setting all vector dimensions equal to ``{\tt in}''.
@@ -1295,8 +1294,8 @@ End
     conditionals.
     This is ensured with the {\it collect} constraints, as in
     \Cref{fig:collectexample}.
-    The construct is used with the CAnDL specifications ``\texttt{For}''
-    (lines 21--25) and ``\texttt{IfBlock}'' (lines 26--30) that describe the
+    The construct is used with the CAnDL specifications ``{\tt For}''
+    (lines 21--25) and ``{\tt IfBlock}'' (lines 26--30) that describe the
     control flow of for-loops and conditionals.
     All the involved conditional jump instructions are extracted, and it is
     checked that verify that these are indeed all conditional jumps within the
@@ -1316,13 +1315,13 @@ End
     and ``{\tt store}'' instruction, the base pointer is loop-invariant, and the
     index is calculated affinely.
     The loop-invariant base pointer is easily checked in ``{\tt MemoryAccess}
-    with the ``\texttt{LocalConst}'' program from \Cref{localconstant}.
+    with the ``{\tt LocalConst}'' program from \Cref{localconstant}.
 
     Checking the index calculations is more involved and is again based on the
     method that was demonstrated in \Cref{fig:collectexample}.
     The {\it collect} construct is used to find all of the affine memory
     accesses in all the loop nests (lines 43--54).
-    Another {\it collect} gathers all ``\texttt{load}'' and ``\texttt{store}''
+    Another {\it collect} gathers all ``{\tt load}'' and ``{\tt store}''
     instructions (36--42), guaranteeing that both collections are identical.
 
 \begin{figure}[p]
@@ -1420,7 +1419,7 @@ End
     \Cref{fig:candlvspolly} shows that the CAnDL specification captured all the
     SCoPs that Polly detected.
     To measure the lines of code required, the CAnDL version was compared with
-    the amount of code in \texttt{ScopDetection.cpp} of Polly.
+    the amount of code in {\tt ScopDetection.cpp} of Polly.
     The same detection results were achieved with much fewer lines of code in
     CAnDL.
     Detecting SCoPs with CAnDL took under one second for each program in

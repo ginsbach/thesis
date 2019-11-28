@@ -99,20 +99,20 @@
 \section{Motivation}
 
     \Cref{sum-figure} shows a standard scalar reduction.
-    Inside a single loop, the elements of the array ``\texttt{a}'' are
-    successively accumulated in the variable ``\texttt{sum}'' using the
-    ``\texttt{+=}'' operator.
+    Inside a single loop, the elements of the array ``{\tt a}'' are
+    successively accumulated in the variable ``{\tt sum}'' using the
+    ``{\tt +=}'' operator.
     This accumulation creates dependencies between successive loop iterations.
     However, those are easy to break.
     Rather than sequentially accumulating ``{\tt a}'' into ``{\tt sum}'', it is
     possible to accumulate partial sums into thread-private copies of
-    ``\texttt{sum}'' in parallel, which are then added to form the final value.
+    ``{\tt sum}'' in parallel, which are then added to form the final value.
 
 \begin{figure}[h]
 \begin{lstlisting}[language=MyCpp, label={sum-figure}, caption=
     {The most conventional example of a reduction is the adding up of values
      in an array:
-     The reduction operator ``{\tt+}'' {\it reduces} the array ``\texttt{a}'' to
+     The reduction operator ``{\tt+}'' {\it reduces} the array ``{\tt a}'' to
      a single value -- the reduction variable ``{\tt sum}''.}]
 sum = 0;
 for(i = 0; i < n; i++)
@@ -143,8 +143,7 @@ for(i = 0; i < n; i++)
 \begin{lstlisting}[language=MyCpp, label={complex-reduction-figure}, caption=
    {Example of a Complex Reduction and Histogram Computation:
     The bottleneck from the NAS Parallel Benchmarks can be parallelised as a
-    reduction by privatising ``\texttt{sx}'', ``\texttt{sy}'',
-    ``\texttt{q[]}''.}]
+    reduction by privatising ``{\tt sx}'', ``{\tt sy}'', ``{\tt q[]}''.}]
 for(i = 0; i < NK; i++) {
   x1 = 2.0 * x[2*i] - 1.0;
   x2 = 2.0 * x[2*i+1] - 1.0;
@@ -164,17 +163,16 @@ for(i = 0; i < NK; i++) {
 
     The loop in \Cref{complex-reduction-figure} is considered a CReHC for the
     following reasons:
-    Firstly, there is an input array ``\texttt{x[]}'', from which values are
-    read successively in each iteration.
-    Secondly, the values ``\texttt{sx}'' and ``\texttt{sy}'' are scalar
-    reduction variables, as is evident from lines 11--12.
+    Firstly, there is an input array ``{\tt x[]}'', from which values are read
+    successively in each iteration.
+    Secondly, the values ``{\tt sx}'' and ``{\tt sy}'' are scalar reduction
+    variables, as is evident from lines 11--12.
     They are incremented conditionally, and the added value is not merely
-    ``\texttt{x[i]}'' but the result of a complex calculation with control flow.
+    ``{\tt x[i]}'' but the result of a complex calculation with control flow.
     Nonetheless, the calculation and the branching condition only depend on the
-    input values ``\texttt{x[2*i]}'' and ``\texttt{x[2*i+1]}''.
-    Thirdly, the array ``\texttt{q[]}'' is updated as a histogram array at
-    line 10.
-    The index ``\texttt{l}'' is not directly read from an input array, as in a
+    input values ``{\tt x[2*i]}'' and ``{\tt x[2*i+1]}''.
+    Thirdly, the array ``{\tt q[]}'' is updated as a histogram array at line 10.
+    The index ``{\tt l}'' is not directly read from an input array, as in a
     conventional histogram, but again the calculation only depends on the input
     values.
 
@@ -184,22 +182,20 @@ for(i = 0; i < NK; i++) {
     The whole process is illustrated in Figure \ref{nice-picture}, with
     different colours on the right showing the distribution of the program
     over two threads.
-    The scalar variables ``\texttt{sx}'', ``\texttt{sy}'' and the array
-    ``\texttt{q[]}'' are privatised.
+    The scalar variables ``{\tt sx}'', ``{\tt sy}'' and the array ``{\tt q[]}''
+    are privatised.
     Partial results are then accumulated in the local copies by partitioning the
     input array equally across the two threads. 
     Finally, the threads are synchronised, and partial results merged.
-    This is done by adding the local copies of ``\texttt{sx}'', ``\texttt{sy}''
-    and performing an element-wise addition of the local copies of
-    ``\texttt{q[]}''. 
+    This is done by adding the local copies of ``{\tt sx}'', ``{\tt sy}'' and
+    performing an element-wise addition of the local copies of ``{\tt q[]}''. 
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/parallelisereduction.pdf}
 \caption{Parallelisation of \Cref{complex-reduction-figure}:
-         The input ``\texttt{x[]}'' is split over two threads (red/blue)
-         that operate on private copies of ``\texttt{sx}'', ``\texttt{sy}'',
-         ``\texttt{q[]}''.
+         The input ``{\tt x[]}'' is split over two threads (red/blue) that
+         operate on private copies of ``{\tt sx}'', ``{\tt sy}'', ``{\tt q[]}''.
          These are merged after a synchronisation barrier.}
 \label{nice-picture}
 \end{figure}
@@ -291,21 +287,21 @@ for(i = 0; i < NK; i++) {
     Instead, it also captures intrinsically sequential scalar reductions.
 
     \paragraph*{Example}
-    Both ``\texttt{sx}'' and ``\texttt{sy}'' in
-    \Cref{complex-reduction-figure} satisfy the conditions.
-    Firstly, the iteration space of the loop is bounded by ``\texttt{NK}'',
-    which is constant.
-    Secondly, within the SSA representation, both ``\texttt{sx}'' and
-    ``\texttt{sy}'' are unconditionally updated via $\Phi$-instructions, shown
+    Both ``{\tt sx}'' and ``{\tt sy}'' in \Cref{complex-reduction-figure}
+    satisfy the conditions.
+    Firstly, the iteration space of the loop is bounded by ``{\tt NK}'', which
+    is constant.
+    Secondly, within the SSA representation, both ``{\tt sx}'' and ``{\tt sy}''
+    are unconditionally updated via $\Phi$-instructions, shown
     in \Cref{nice-picture2}.
     This is despite the conditional statement in the original C representation
     of the program.
-    Thirdly, two values are read from the single input array ``\texttt{x[]}''
-    in every iteration, and the indices ``\texttt{2*i}'' and
-    ``\texttt{2*i+1}'' are affine in ``\texttt{i}''.
+    Thirdly, two values are read from the single input array ``{\tt x[]}'' in
+    every iteration, and the indices ``{\tt 2*i}'' and ``{\tt 2*i+1}'' are
+    affine in ``{\tt i}''.
     Finally, the updated values depend only on their respective old values,
-    the two values read from ``\texttt{x[]}'', and the constants
-    ``\texttt{1.0}'' and ``\texttt{2.0}''.
+    the two values read from ``{\tt x[]}'', and the constants
+    ``{\tt 1.0}'' and ``{\tt 2.0}''.
     This also relies on the fact that all functions used in the computation are
     pure functions.
 
@@ -351,11 +347,11 @@ for(i = 0; i < n; i++) {
     The loop could still be computed in parallel -- but not as a scalar
     reduction.
     The third example uses index calculations that are not affine in
-    ``\texttt{i}''.
+    ``{\tt i}''.
     This prevents a straightforward distribution of the input array across
     threads.
     In this particular case, the index calculation also involves values other
-    than ``\texttt{i}'', preventing the computation of partial results entirely.
+    than ``{\tt i}'', preventing the computation of partial results entirely.
     The final example is equivalent to the first but breaks the fourth condition
     instead of the first.
 
@@ -393,11 +389,11 @@ for(i = 0; i < n; i++) {
     The first two conditions are the same as those in the previous discussion of
     scalar reductions and were shown to hold for the loop in
     \Cref{complex-reduction-figure}.
-    The array ``\texttt{q[]}'' also satisfies the remaining conditions.
-    Firstly, the variable ``\texttt{l}'' corresponds to the index $k$.
-    Secondly, the element ``\texttt{q[l]}'' is read, modified and written.
+    The array ``{\tt q[]}'' also satisfies the remaining conditions.
+    Firstly, the variable ``{\tt l}'' corresponds to the index $k$.
+    Secondly, the element ``{\tt q[l]}'' is read, modified and written.
     Lastly, the updated value is computed in an allowed fashion, as it is
-    obtained by merely adding a constant ``\texttt{1.0}'' to the previous value.
+    obtained by merely adding a constant ``{\tt 1.0}'' to the previous value.
 
     \paragraph*{Counterexamples}
     Again, counterexamples are given in \Cref{counterexamples2} to develop an
@@ -559,10 +555,10 @@ for(i = 0; i < n; i++) {
     \noindent
     This use of the new atomic constraint requires several additional
     conditions:
-    ``\texttt{precursor}'' and ``\texttt{backedge}'' should be determined
-    and ``\texttt{outside[0..N]}'' should contain all origins that lie outside
+    ``{\tt precursor}'' and ``{\tt backedge}'' should be determined and
+    ``{\tt outside[0..N]}'' should contain all origins that lie outside
     the SESE region within which the kernel functions is considered.
-    Furthermore, the array ``\texttt{loop\_carried}'' needs to be constrained to
+    Furthermore, the array ``{\tt loop\_carried}'' needs to be constrained to
     contain all loop-carried $\Phi$-instructions.
 
     With this setup, it is straightforward to check that the constraint is
@@ -685,9 +681,9 @@ End
    {IDL specifications of a kernel function and a scalar reduction within a
     CReHC:
     In ``{\tt ScalarPart}'', the kernel function operates in a loop.
-    Its input ``\texttt{kernel.inputs}'' is composed of
-    ``\texttt{read\_values}'' and the reduction value of the previous iteration,
-    concatenated with ``\texttt{Concat}''.}]
+    Its input ``{\tt kernel.inputs}'' is composed of ``{\tt read\_values}'' and
+    the reduction value of the previous iteration, concatenated with
+    ``{\tt Concat}''.}]
 Constraint ScalarPart
 ( {kernel.result} reaches phi node
       {old_value} from {loop.end} and
@@ -862,7 +858,7 @@ End
     decides whether to bisect its workload recursively.
     If not, the loop is executed as before, using the arguments in the
     structure.
-    Otherwise, the function uses ``\texttt{pthread\_create}'' to offload half of
+    Otherwise, the function uses ``{\tt pthread\_create}'' to offload half of
     its workload onto another thread.
     For this, it copies its parameter array, replacing histogram arrays with
     newly allocated copies.
@@ -929,7 +925,7 @@ End
     The sequential benchmark programs were compiled by version 3.9 of the
     Clang compiler, built with the Polly-enabled LLVM.
     The SCoPs that Polly detected with the compiler options
-    ``\texttt{-O3 -mllvm -polly -mllvm -polly-export}'' were considered.
+    ``{\tt-O3 -mllvm -polly -mllvm -polly-export}'' were considered.
     Any Polly-based method only works within these SCoPs.
     Therefore, this gives an upper bound for the ``Polly-Reduction'' method.
     Reductions within the SCoPS were then manually identified.
@@ -1003,7 +999,7 @@ End
     However, it is a very mature product with industry support.
 
     For this evaluation, the benchmarks were compiled with the
-    ``\texttt{-parallel -qopt-report}'' options.
+    ``{\tt-parallel -qopt-report}'' options.
     This generated optimisation reports.
     ICC does not explicitly report reductions, but any reduction that was
     within a loop that ICC considered to be parallelisable was counted.
@@ -1054,7 +1050,7 @@ End
    {Some reductions were missed by all detection approaches.
     In this loop from ``SP'', the outer loops are reduction loops, accumulating
     into scalar variables
-    ``\texttt{rms[0]}'',\dots,``\texttt{rms[4]}'',
+    ``{\tt rms[0]}'',\dots,``{\tt rms[4]}'',
     but the innermost loop is not a reduction, and it is therefore not captured
     by the IDL specification.}]
 for (k = 1; k <= nz2; k++) {
@@ -1256,8 +1252,8 @@ for( i=0; i<NUM_KEYS; i++ )
 
     On the less well-structured Parboil benchmarks, ICC failed to detect many of
     the scalar reductions in ``cutcp''.
-    This was because these reductions use the functions ``\texttt{fmin}'' and
-    ``\texttt{fmax}'', which our system recognised as pure, but ICC did not.
+    This was because these reductions use the functions ``{\tt fmin}'' and
+    ``{\tt fmax}'', which our system recognised as pure, but ICC did not.
     Finally, ICC recognised many of the scalar reductions in Rodinia but was
     outperformed on six of the programs, with IDL finding one additional
     reduction in each of them.

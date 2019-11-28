@@ -685,7 +685,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     The first argument of $C$ is the SSA model of a function.
     The second argument of $C$ is a solution candidate.
     $\mathbb N^V$ can be understood as abstractly rendering
-    \lstinline[language=MyCpp]{map<string,unsigned>}, with elements assigning
+    \lstinline[language=MyCpp]!map<string,unsigned>!, with elements assigning
     an integer to each constraint variable.
     These integers represent values in the SSA function by indexing into the
     list of used values.
@@ -764,7 +764,7 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \Cref{fig:derivemaths} identifies the integer values $9$ and $17$ with the
     instructions at lines 14 and 22 of the LLVM IR code from
     \Cref{llvmirexample} {\bf(b)}.
-    These two instructions correspond to the simple loop iterator ``\texttt{i}''
+    These two instructions correspond to the simple loop iterator ``{\tt i}''
     of the for-loop at lines 4--5 of the C source code in
     \Cref{llvmirexample} {\bf(a)}, correctly identifying the only simple loop
     iterator in the program.
@@ -1051,37 +1051,37 @@ define double @dot(double* %0, double* %1, i64 %2) {
     \Cref{theo:theo1,theo:theo3}.
     \Cref{cppsolver} shows how the backtracking algorithm with those hooks is
     implemented as a C++ function.
-    Most of the ``\texttt{solver}'' function at lines 12--43 maps directly onto
+    Most of the ``{\tt solver}'' function at lines 12--43 maps directly onto
     \Cref{backtrackalg} and needs no further explanation.
     However, some crucial details need elaboration, mostly relating to the
     iteration over the backtracking solution at line 4 of \Cref{backtrackalg}.
 
-    The ``\texttt{BacktrackingPart}'' class provides a C++ interface
+    The ``{\tt BacktrackingPart}'' class provides a C++ interface
     for the individual functions $B_k$ in backtracking solutions as in
     \Cref{def:backtracking}.
     Four member functions must be implemented.
-    The most important of them, ``\texttt{skip\_invalid}'',
+    The most important of them, ``{\tt skip\_invalid}'',
     gives $x_k\gets min\{y\in B_k(M,p_{k-1}(x))\mid y\geq x_k\}$
     from line 4 of \Cref{backtrackalg} via
-    ``\texttt{B[k]->skip\_invalid(x[k])}''.
+    ``\lstinline[language={}]!B[k]->skip_invalid(x[k])!''.
 
     The other three member functions of
-    ``\texttt{BacktrackingPart}'' manipulate shared state
-    of ``\texttt{BacktrackingPart}'' objects that together
+    ``{\tt BacktrackingPart}'' manipulate shared state
+    of ``{\tt BacktrackingPart}'' objects that together
     comprise a backtracking solution.
     This allows computations that would otherwise have to be performed
-    repeatedly by ``\texttt{skip\_invalid}'', to be done ahead of time.
+    repeatedly by ``{\tt skip\_invalid}'', to be done ahead of time.
     More specifically, this corresponds to $R_k$ in
     \Cref{theo:theo1,theo:theo4}.
     Crucially, this distribution of the computations allows all previously
     discussed types of SSA constraint problems to be implemented efficiently
-    with the ``\texttt{BacktrackingPart}'' interface.
+    with the ``{\tt BacktrackingPart}'' interface.
 
 \subsubsection{Data Structures for Constraint Classes}
 
     \paragraph*{Element-of constraint problems} require the structures $R_k$.
     These can be implemented with a tree, built around a sorted array of pairs,
-    as shown with the definition of ``\texttt{Tree}'' on the first line of the
+    as shown with the definition of ``{\tt Tree}'' on the first line of the
     top section of \Cref{partimplementations}.
     Each subtree in the array corresponds to a potential $R_{k+1}$.
     The instances of ``{\tt BacktrackingPart}'' for this constraint keep an
@@ -1098,19 +1098,19 @@ define double @dot(double* %0, double* %1, i64 %2) {
     shown in the lower section of \Cref{partimplementations}.
     The methods ``{\tt begin}'', ``{\tt fixate}'', and ``{\tt resume}'' call the
     corresponding member functions of the underlying {\tt BacktrackingPart}
-    objects (line 20), and ``\texttt{skip\_invalid}'' checks both of them with
+    objects (line 20), and ``{\tt skip\_invalid}'' checks both of them with
     short-circuit evaluation in case of a ``{\tt FAIL}'' result.
 
     \paragraph*{Disjunction constraints} again require the structures $R_k$,
     consisting of an array of booleans, with each element corresponding to an
     underlying constraint option.
-    Calls to ``\texttt{skip\_invalid}'' are passed on to those underlying
-    ``\texttt{BacktrackingPart}'' objects that are not disabled via $R_k$.
+    Calls to ``{\tt skip\_invalid}'' are passed on to those underlying
+    ``{\tt BacktrackingPart}'' objects that are not disabled via $R_k$.
     If any succeed, then the smallest resulting value among them is selected.
     The ``{\tt fixate}'' function determines $R_{k+1}$ with
-    ``\texttt{skip\_invalid}'', disabling all of the underlying constraint
+    ``{\tt skip\_invalid}'', disabling all of the underlying constraint
     options that do not return ``{\tt PASS}''.
-    The ``\texttt{begin}'', ``\texttt{fixate}'' and ``\texttt{resume}'' member
+    The ``{\tt begin}'', ``{\tt fixate}'' and ``{\tt resume}'' member
     calls are additionally passed on to all ``{\tt BacktrackingPart}'' instances
     that are enabled in $R_k$.
 

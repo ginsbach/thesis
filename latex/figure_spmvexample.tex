@@ -76,24 +76,24 @@ for (j = 0; j < ([{\bf m}]); j++) {
 \begin{tabular}{l|l}
 \textbf{Variable Name} & \textbf{Assigned IR Value}\\
 \hline
-iterator                    & \texttt{\%j}\\
-inner.iter\_begin           & \texttt{\%k\_begin}\\
-inner.iter\_end             & \texttt{\%k\_end}\\
-inner.iterator              & \texttt{\%k}\\
-idx\_read.value             & \texttt{\%cix\_load}\\
-indir\_read.value           & \texttt{\%a\_load}\\
-seq\_read.value             & \texttt{\%z}\\
+iterator                    & {\tt\%j}\\
+inner.iter\_begin           & {\tt\%k\_begin}\\
+inner.iter\_end             & {\tt\%k\_end}\\
+inner.iterator              & {\tt\%k}\\
+idx\_read.value             & {\tt\%cix\_load}\\
+indir\_read.value           & {\tt\%a\_load}\\
+seq\_read.value             & {\tt\%z}\\
 \end{tabular}
 \hspace{0.5cm}
 \begin{tabular}{l|l}
 \textbf{Variable Name} & \textbf{Assigned IR Value}\\
 \hline
-output.address              & \texttt{\%r\_addr}\\
-iter\_begin                 & \texttt{0}\\
-iter\_end                   & \texttt{\%\bf m}\\
-idx\_read.base\_pointer     & \texttt{\%\bf colidx}\\
-seq\_read.base\_pointer     & \texttt{\%\bf a}\\
-indir\_read.base\_pointer   & \texttt{\%\bf z}\\
+output.address              & {\tt\%r\_addr}\\
+iter\_begin                 & {\tt0}\\
+iter\_end                   & {\tt\%\bf m}\\
+idx\_read.base\_pointer     & {\tt\%\bf colidx}\\
+seq\_read.base\_pointer     & {\tt\%\bf a}\\
+indir\_read.base\_pointer   & {\tt\%\bf z}\\
 \dots                       & \dots\vspace{-0.5mm}\\
 \end{tabular}
 

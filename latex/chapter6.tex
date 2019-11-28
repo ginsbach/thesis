@@ -529,11 +529,11 @@ End
     The control flow is captured by three nested for-loops.
     Inside these loops, the memory access is characterised by three matrix
     accesses, each with a different subset of the loop iterators.
-    The corresponding \texttt{MatrixRead} and \texttt{MatrixWrite} idioms model
-    generic access to matrices allowing strides, transposed matrices etc.
+    The corresponding ``{\tt MatrixRead}'' and ``{\tt MatrixWrite}'' idioms
+    model generic access to matrices allowing strides, transposed matrices etc.
     The actual computation is encapsulated by the
-    \texttt{DotProductForAlphaBeta} idiom.
-    This extends the \texttt{DotProductFor} specification with the linear
+    ``{\tt DotProductForAlphaBeta}'' idiom.
+    This extends the ``{\tt DotProductFor}'' specification with the linear
     combination that is part of the generalised matrix multiplication idiom
     ($C\gets\alpha AB+\beta C$).
 
@@ -573,7 +573,7 @@ End
     Stencils consist of a loop nest with multi-dimensional memory access
     (lines 3--5) to store the updated cell value.
     The updated value is computed by a kernel function (lines 12--13) using
-    several values that are constrained by \texttt{StencilRead} (lines 6--10),
+    several values that are constrained by ``{\tt StencilRead}'' (lines 6--10),
     which specifies multi-dimensional array access with only constant offsets in
     all dimensions.
 
@@ -798,9 +798,8 @@ for(int i = 0; i < 1000; i++)
 \begin{figure}[H]
 \begin{lstlisting}[language=LIFT,escapechar=|,
                    label={fig:liftmxm},caption=
-   {GEMM in Lift:
-    The idiom is composed of functional components
-    \texttt{zip}, \texttt{map}, \texttt{reduce}.\leftskip=0pt\rightskip=0pt}]
+   {GEMM in Lift is expressed with the higher-order functions
+    ``{\tt zip}'', ``{\tt map}'', ``{\tt reduce}''.\leftskip=0pt\rightskip=0pt}]
 float mult(float x, float y) { return x*y; }
 float add(float x, float y) { return x+y; }
 
@@ -819,10 +818,10 @@ gemm_in_lift(A, B, C, alpha, beta) {
     After code for the DSLs was generated, it is passed to the DSL code
     generator.
     \Cref{fig:liftmxm} shows an example of the Lift code generated for GEMM
-    (\texttt{gemm\_in\_lift}).
+    ({\tt gemm\_in\_lift}).
     It performs a dot product (expressed in line~\ref{line:dot} using the Lift
-    skeletons \texttt{zip}, \texttt{map}, and \texttt{reduce}) for each row of
-    matrix A (\texttt{a\_row}) and column of matrix B (\texttt{b\_col}).
+    skeletons {\tt zip}, {\tt map}, and {\tt reduce}) for each row of
+    matrix A ({\tt a\_row}) and column of matrix B ({\tt b\_col}).
     This code is compiled by Lift into optimised OpenCL code.
 
 \subsection{Aliasing}
@@ -913,7 +912,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
 
     Polly is an LLVM-based polyhedral compiler.
     The SCoPs that Polly detected with the options
-    \texttt{-O3 -mllvm -polly -mllvm -polly-export} were gathered.
+    {\tt -O3 -mllvm -polly -mllvm -polly-export} were gathered.
     When Polly captured a SCoP containing an idiom, it was counted as an
     idiom detection.
     This gives an optimistic estimate as to what idiom coverage a polyhedral
@@ -921,8 +920,8 @@ gemm_in_lift(A, B, C, alpha, beta) {
 
     The Intel C++ Compiler (ICC) is a mature industry strength compiler that
     performs auto-parallelisation.
-    All loops that were emitted as parallelisable using
-    \texttt{-parallel -qopt-report} and that contained idioms were counted as
+    All loops that were emitted as parallelisable by
+    ``{\tt-parallel -qopt-report}'' and that contained idioms were counted as
     idiom detections.
 
 \section{Results}
