@@ -100,22 +100,22 @@
 \section{Critical Analysis}
 
     The approaches of this thesis were built on the derivation of
-    \Cref{chapter:theory} and then evaluated in diverse scenarios on C/C++
-    program code.
+    \Cref{chapter:theory} and evaluated in seveal scenarios on C/C++ program
+    code.
     Despite the effort of bridging between the algebraic formulation and the
     application in real-world scenarios, the work remains a prototype, and
     several issues need to be addressed before it becomes viable for productive
     use.
     Importantly, this includes questions about the prevalence of idiomatic code,
     the affordability of significant compile time overhead, and the ability to
-    compensate fundamental limitations of the underlying solver technology.
+    compensate for limitations of the underlying solver technology.
 
 \paragraph*{Generality of Computational Idioms}  
 
     Computational idioms were defined in
     \Cref{chapter:reductions,chapter:idioms} and
     evaluated successfully on a range of established benchmark collections.
-    However, the NPB and Parboil collections both are from areas of scientific
+    However, the NPB and Parboil collections are both from areas of scientific
     computing.
     It remains unclear how generally applicable these idioms are on codebases
     from other domains.
@@ -123,7 +123,7 @@
     polyhedral model.
 
     More generally, it is unclear how much code in large-scale applications
-    could be captured as ``idiomatic'' with even a very range and diverse set of
+    could be captured as ``idiomatic'' even with a very range and diverse set of
     idioms.
     Even some benchmark programs within NPB and Parboil contain idiosyncratic
     computations that are unlikely to reoccur in other contexts.
@@ -133,7 +133,7 @@
 
 \paragraph*{Compile Time Cost}
 
-    The compile-time cost of idiom detection was evaluated in
+    The compile time cost of idiom detection was evaluated in
     \Cref{chapter:idioms}, showing that overheads between 35$\%$ and 115$\%$
     occurred across the benchmark programs.
     Given that the approach is built on constraint satisfiability methods, this
@@ -141,7 +141,7 @@
     magnitude.
     Nonetheless, from the perspective of compiler optimisations, this might be
     a prohibitive cost.
-    Moreover, the compile-time overhead is unevenly distributed, with
+    Moreover, the compile time overhead is unevenly distributed, with
     disproportionately longer solver times on large functions and especially on
     code sections that are near misses to satisfying the specifications.
 
@@ -175,9 +175,9 @@
     constraint programming, but were outside the scope of this work.
 
     Dynamic profiling could be used to preselect candidate hot loops,
-    drastically reducing the compile-time overhead.
-    More advanced dynamic analysis could collect program features that are
-    then fed into machine learning algorithms.
+    drastically reducing the compile time overhead.
+    More advanced dynamic analysis could collect program features to be fed into
+    machine learning algorithms.
     The use of neural networks to guide compiler optimisations has been
     successfully studied in the relevant literature
     \citep{DBLP:journals/pieee/WangO18}.
@@ -188,7 +188,7 @@
 
 \paragraph*{Unbounded Number of Variables}
 
-    Related research disciplines found ways around some limitation of their
+    Related research disciplines found ways around some limitations of their
     underlying solvers.
     For example, Bounded Model Checking \cite{Clarke:2001:BMC:510986.510987}
     uses SAT solvers and involves the unrolling of loops to generate formulas.
@@ -197,13 +197,14 @@
     However, the checking process can be repeated with increasing values for
     $k$, successively ruling out possible violations.
 
-    The same approach could be applied to constraint solving on SSA:
-    The solver is invoked repeatedly with a gradually increasing number of
+    The same approach could be applied to constraint solving on SSA.
+    The solver would be invoked repeatedly with a gradually increasing number of
     variables.
     When no collect constraint exceeds variable capacity anymore, the
-    process is terminated.
-    This ensures that small solutions are found without unnecessary
-    overhead, yet solutions requiring many variables are not discarded entirely.
+    process would be terminated.
+    This would ensure that small solutions are found without unnecessary
+    overhead, yet solutions requiring many variables would not be discarded
+    entirely.
     No upper limits for collect statements would be required with this scheme.
 
 \paragraph*{Pointer-chasing Idioms}
@@ -246,23 +247,23 @@
     promising idea for follow-up research.
     Initial attempts have shown promise \citep{DBLP:conf/IEEEpact/CollieGO19}.
     Using a graph-matching algorithm that operates on SSA code, codes that
-    implement variations of the same idiom will be matched together optimising
+    implement variations of the same idiom would be matched together optimising
     a quality metric.
-    This matching will automatically identify code structures that are shared
+    This matching would automatically identify code structures that are shared
     between the examples and discard those features that were unique to
     specific samples.
-    The common structures will then be separated and turned into constraint
+    The common structures would then be separated and turned into constraint
     conditions.
 
-    Suitable quality metrics for graph matching will be critical to the success
+    Suitable quality metrics for graph matching would be critical to the success
     of this approach and could be eventually be tuned with machine learning
     approaches, such as neural networks.
-    The manually implemented idioms from this thesis will provide suitable
+    The manually implemented idioms from this thesis would provide suitable
     training data.
 
     Eventually, the manual curation of example codes that group together into
     computational idioms could become redundant.
-    Automatic profiling of large quantities of code will allow the automatic
+    Automatic profiling of large quantities of code would allow the automatic
     identification of all the relevant hot loops.
     The hot loops could then be grouped into computational idioms using
     automatic clustering algorithms that use a distance metric between SSA code
