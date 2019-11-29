@@ -701,7 +701,7 @@ for(int i = 0; i < 1000; i++)
     For sparse linear algebra, the vendor-provided cuSPARSE, clSPARSE, and
     Intel MKL libraries were used.
     For dense BLAS routines, the available backends were cuBLAS, clBLAS,
-    CLBlast, and Intel MKL.
+    CLBlast, and MKL.
 
 \subsection{Domain-Specific Code Generators}
 
@@ -712,7 +712,7 @@ for(int i = 0; i < 1000; i++)
     The domain-specific optimising compiler then specialises the program for the
     target hardware.
 
-    The eventual result is a library object, which can then be treated
+    The end result is a library object, which can then be treated
     identically to pre-generated vendor libraries.
     For this research,  domain-specific code generators are, therefore,
     effectively used as on-demand library generators.
@@ -727,13 +727,13 @@ for(int i = 0; i < 1000; i++)
     This separation allows retargeting of Halide programs to different platforms
     without touching the core program.
     Some of the stencil and linear algebra idioms were translated into Halide.
-    However, stencils involving control flow in their computations are not
-    easily expressible in Halide and were excluded for this backend.
+    However, stencils involving control flow in their kernel were not
+    expressible in Halide and excluded for this backend.
 
     \paragraph*{Lift}~\citet{steuwer15rewrite} introduced an optimising code
     generator based on rewrite rules \citep{SteuwerRD17, HagedornSSGD18}.
     The Lift language consists of functional parallel patterns such as
-    ``\emph{map}'' and ``\emph{reduce}'', which  express a range of parallel
+    ``{\tt map}'' and ``{\tt reduce}'' that  express a range of parallel
     applications.
     Stencil idioms, complex reductions and linear algebra idioms were translated
     to Lift.
