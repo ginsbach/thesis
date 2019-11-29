@@ -1154,10 +1154,10 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 \begin{table}[p]
   \centering
   \small
-  \begin{tabular}{l|cccccc|ccccc|cccc}
+  \begin{tabular}{lccccccccccccccc}
   \toprule
-  & \multicolumn{6}{c|}{\bfseries\large CPU} & \multicolumn{5}{c|}{\bfseries\large iGPU} & \multicolumn{4}{c}{\bfseries\large GPU} \\
-  & MKL & libSPMV & Halide & clBLAS & CLBlast & Lift & clSPARSE & libSPMV & clBLAS & CLBlast & Lift & cuSPARSE & libSPMV & cuBLAS & Lift \\
+  & \multicolumn{6}{|c|}{\bfseries\large CPU} & \multicolumn{5}{c|}{\bfseries\large iGPU} & \multicolumn{4}{c}{\bfseries\large GPU} \\
+  & \multicolumn{1}{|c}{MKL} & libSPMV & Halide & clBLAS & CLBlast & \multicolumn{1}{c|}{Lift} & clSPARSE & libSPMV & clBLAS & CLBlast & \multicolumn{1}{c|}{Lift} & cuSPARSE & libSPMV & cuBLAS & Lift \\
   \midrule
    CG      & \msb{1504.21} & --- & --- & --- & --- & --- & \msb{644.02} & --- & --- & --- & --- &  \msb{113.51} & --- & --- & --- \\[3mm]
    EP      & --- & --- & --- & --- & --- &  \msb{32762.50}  & --- & --- & --- & --- & \msb{30983.40}  & --- & --- & --- & \msb{24680.70} \\[3mm]
