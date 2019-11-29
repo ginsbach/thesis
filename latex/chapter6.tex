@@ -924,8 +924,9 @@ gemm_in_lift(A, B, C, alpha, beta) {
 
     Polly is an LLVM-based polyhedral compiler.
     The SCoPs that Polly detected with the options
-    {\tt -O3 -mllvm -polly -mllvm -polly-export} were gathered.
-    When Polly captured a SCoP containing an idiom, it was counted as an
+    ``{\tt -O3 -mllvm -polly -mllvm -polly-export}'' were collected during
+    compilation.
+    When Polly captured a SCoP with an idiom, it was counted as an
     idiom detection.
     This gives an optimistic estimate as to what idiom coverage a polyhedral
     based approach can achieve.
