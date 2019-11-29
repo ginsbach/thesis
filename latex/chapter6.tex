@@ -608,7 +608,7 @@ End
     The idiom descriptions may at first appear to be shallow syntactic pattern
     matching, but the approach is intrinsically more powerful.
     Because it operates on the IR level, the solver can detect idioms that are
-    written in superficially distinct style, but are semantically equivalent.
+    written in a superficially distinct style but are semantically equivalent.
 
     For example, \Cref{fig:gemmexamples} shows two syntactically distinct
     programs, which nevertheless are both implementations of general matrix
@@ -616,9 +616,8 @@ End
     The solver -- using \Cref{fig:gemm} -- discovers that both of these
     loop nests are instances of GEMM and can be replaced with the same API call.
 
-    The reverse is also true:
-    Syntactically identical but semantically distinct programs are weeded out by
-    the solver.
+    The reverse is also true: the solver distinguishes syntactically identical
+    but semantically distinct programs.
     \Cref{fig:gemmcounterexamples} shows such an example.
     The loop nest in lines 5--9 appears to compute a standard GEMM, but in fact,
     the matrices are not stored contiguously, and acceleration with standard
