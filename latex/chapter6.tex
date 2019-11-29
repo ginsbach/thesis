@@ -753,15 +753,15 @@ for(int i = 0; i < 1000; i++)
     both the IR instructions to remove as well as the arguments that are to be
     used for the function call.
 
-    For example, in the case of the {\tt GEMM} program that was shown in
+    For example, in the case of the ``{\tt GEMM}'' program that was shown in
     \Cref{fig:gemm}, the original code is removed by deleting the IR
-    instruction at {\tt output.store\_instr} explicitly, which captures the
-    store instruction of the {\tt MatrixStore} subprogram.
-    The remaining cleanup is left to the standard {\em dead code elimination}
+    instruction at ``{\tt output.store\_instr}'' explicitly, which captures the
+    store instruction of the ``{\tt MatrixStore}'' subprogram.
+    The remaining cleanup is left to the standard dead code elimination
     pass.
     The arguments that specify the matrix dimensions are taken from
-    {\tt ForNest} in combination with the stride and offset determined by
-    {\tt MatrixRead} and {\tt MatrixWrite}.
+    ``{\tt ForNest}'' in combination with the stride and offset determined by
+    ``{\tt MatrixRead}'' and ``{\tt MatrixWrite}''.
 
     The mapping of solution variables to the arguments of the generated function
     call needs to be implemented individually for each backend, as it cannot be
