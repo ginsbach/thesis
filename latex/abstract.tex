@@ -20,19 +20,19 @@
     A new constraint programming method enables the declarative
     specification and automatic detection of {\em computational idioms} within
     compiler intermediate representation code.
-    Examples of computational idioms are stencil codes, linear algebra,
-    reductions and histogram computations.
+    Examples of computational idioms are stencils, reductions, and
+    linear algebra.
     Computational idioms denote algorithmic structures that commonly occur in
     performance-critical loops.
     Consequently, well-designed accelerator DSLs and libraries support
     computational idioms with their programming models and function interfaces.
-    The detection of computational idioms in the compiler middle end allows the
-    compiler to incorporate DSL and library backends for code generation.
+    The detection of computational idioms in their middle end enables
+    compilers to incorporate DSL and library backends for code generation.
     These backends leverage domain knowledge for the efficient utilisation of
-    heterogeneous accelerators.
+    heterogeneous hardware.
 
     The constraint programming methodology is first derived on an abstract
-    model and then implemented as an extension of LLVM.
+    model and then implemented as an extension to LLVM.
     Two constraint programming languages are designed to target this
     implementation:
     the Compiler Analysis Description Language (CAnDL), and the extended

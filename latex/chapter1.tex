@@ -6,8 +6,8 @@
     The density of integrated circuits doubled every two years,
     and this allowed increased clock frequencies while maintaining
     steady power consumption.
-    These conditions enabled continual processor improvements that were driven
-    primarily by rising clock frequencies and microarchitectural refinements,
+    These conditions enabled continual processor improvements
+    primarily via rising clock frequencies and microarchitectural refinements,
     enabling ever faster computations.
 
     The physics-driven nature \citep{Hutcheson2018Moore} of these advances in
@@ -22,7 +22,7 @@
     which still retains backward compatibility with its initial version from
     1978, and dominates desktop processors to this day.
     Therefore, software developers and users could rely on ever-increasing
-    performance from hardware progress alone without any intervention.
+    performance from hardware progress alone, without any intervention.
 
 \subsection{Via Multi-Processing to Heterogeneity}
 
@@ -38,6 +38,7 @@
     interfaces, libraries and compiler techniques are still being developed to
     address the challenges of parallel computing.
 
+    \pagebreak
     In recent years, transistor scaling has slowed significantly.
     In response to the breakdown of both Dennard Scaling and Moore's Law, the
     hardware industry has turned toward architectural innovation
@@ -87,7 +88,7 @@
     They succeed in utilising heterogeneous hardware in situations where
     traditional compilers fail.
 
-    Two examples display the diversity of these approaches.
+    Two examples show the diversity of these approaches.
     Firstly, \citet{Ragan-Kelley2013Halide} developed the domain-specific
     language Halide for image processing.
     The Halide toolchain is able to generate fast code for heterogeneous
@@ -98,17 +99,18 @@
     optimisation under circumstances of constrained semantics.
 
     Secondly, Basic Linear Algebra Subprograms (BLAS)
-    \citep{2002:USB:567806.567807}, a standard for library function interfaces
-    going back to \citet{Lawson:1979:BLA:355841.355847} in the 1970s, has been
+    \citep{2002:USB:567806.567807}, a specification of function interfaces
+    going back to the 1970s \citep{Lawson:1979:BLA:355841.355847},
+    remains the standard encapsulation for linear algebra and has been
     implemented for most accelerators.
     These implementations are widely used and offer unrivalled performance.
     Some versions are provided directly by hardware vendors to support
-    accelerators \citep{mkl,cublas,clblas,apl,qml}, while others originate as
+    accelerators \citep{mkl,cublas,clblas,apl,qml}, while others originated as
     academic projects \citep{Wang:2013:AAG:2503210.2503219}.
     These competing implementations use a plethora of approaches to achieve as
     close to peak performance as possible.
     These methods include manually written assembly code but also highly
-    advanced code generation techniques, custom program representations and
+    advanced code generation techniques, custom program representations, and
     many more.
 
 \subsection{The Consequences of the Decline of Compilers}
@@ -149,7 +151,7 @@
     \citep{jouppi2017datacenter}.
     Nevertheless, this should not prevent a {\it partial compiler}.
     Such a partial compiler would compile fitting program parts for accelerators
-    and utilise a fallback system for the remainder of the program.
+    and utilise a fallback system for the remainder of the code.
     After all, that is precisely the result achieved with libraries and
     domain-specific languages, and likely the desirable outcome.
     Despite the apparent convenience of such an approach, the next section gives
@@ -200,7 +202,7 @@
     unsurprising that they have lagged behind these developments.
     Because they cannot rely on such a restricted environment, host compilers
     are unable to match the optimisation capabilities of kernel compilers, even
-    when the functional translation is possible.
+    when a functional translation is possible.
     Straightforward approaches to targeting heterogeneous accelerators from host
     compilers, therefore, have intrinsic disadvantages when compared to
     domain-specific compilers.
@@ -221,7 +223,7 @@
 
 \subsection{The Spectrum of Specialisation}
 
-    General-purpose programming languages, domain-specific languages and
+    General-purpose programming languages, domain-specific languages, and
     accelerator libraries exist on a spectrum of specialisation.
     \Cref{specialgradient} provides some intuition about this spectrum by
     estimating the positions of popular languages and libraries in it.
@@ -267,6 +269,7 @@
     to make stronger assumptions, use more powerful reasoning and generate
     better code.
 
+    \vfill
     {\bf Hypothesis:}\quad
     Restrictive program models expose additional optimisation
     opportunities and lead to increased portability.
@@ -278,13 +281,13 @@
 
 \section{Moving on the Spectrum of Specialisation}
 
-    Host compilers need methods to automatically recognise restrictive program
-    models within general-purpose code.
+    Host compilers need methods to recognise restrictive program models within
+    general-purpose code automatically. 
     The term {\it program model} in this context means an internal
-    representation of program logic with corresponding reasoning and
-    assumptions about the program semantics.
+    representation of the program logic with associated assumptions and ways of
+    reasoning about the behaviour.
     Reformulating program sections in restrictive models would make the
-    superior domain-specific reasoning from kernel compilers applicable in
+    superior domain-specific capabilities of kernel compilers applicable in
     host compilers.
     This would result in a compiler that can combine the positive aspects of
     both sides of the spectrum of specialisation.
@@ -310,7 +313,7 @@
     The approach emerges from the analysis of a standard program model for
     host compilers: Static Single Assignment (SSA) form.
     Intermediate representations based on SSA are accessible to mathematical
-    reasoning, with their most relevant features based on graph and list
+    reasoning, with their most relevant features built on graph and list
     structures.
     With this in mind, structural restrictions on intermediate representation
     code -- corresponding to restricted domain-specific models -- can be
@@ -326,11 +329,10 @@
     automatically recognise code sections that satisfy them.
     This system captures the spectrum from \Cref{specialgradient}.
     On one extreme, sections of code are recognised as implementing
-    specific algorithms, like matrix multiplications, that are parametrised with
+    specific algorithms, like matrix multiplication, that are parametrised with
     numeric values.
     Algorithms that allow parametrisation with an operator are next.
-    Stencil kernels, reduction operations or generalised histogram computations
-    fall into this category.
+    Stencil kernels and reduction operations fall into this category.
     More generic again are programs that merely follow certain structural
     restrictions, such as code adhering to the polyhedral model.
     \Cref{chapter:candl,chapter:reductions,chapter:idioms} cover each of these
@@ -369,14 +371,15 @@
     are each based on a published research article and elaborate on different
     applications of constraint programming in compilers.
 
-    {\bf\Cref{chapter:candl}} develops a constraint programming language called
-    CAnDL and presents an implementation in the LLVM compiler infrastructure.
-    CAnDL specifications generate compiler analysis
-    passes from declarative descriptions automatically via the CAnDL compiler.
-    This chapter explores several compiler analysis tasks with CAnDL,
+    {\bf\Cref{chapter:candl}} develops the Compiler Analysis Description
+    Language (CAnDL) and presents its implementation in the LLVM compiler
+    infrastructure.
+    CAnDL is a specification language that generates compiler analysis
+    passes from declarative descriptions via the CAnDL compiler.
+    The chapter explores several compiler use cases with CAnDL,
     including the implementation of peephole optimisations and the
     prototyping of graphics shader optimisations.
-    This chapter is based on published research
+    The chapter is based on published research
     \citep{Ginsbach:2018:CDS:3178372.3179515}.
 
     {\bf\Cref{chapter:reductions}} extends CAnDL into the Idiom Detection
@@ -388,17 +391,16 @@
     analysis.
     The flexibility of constraint programming allows it to capture such
     irregular computations.
-    This chapter is based on published research
+    The chapter is based on published research
     \citep{ginsbach2017discovery}.
 
     {\bf\Cref{chapter:idioms}} applies IDL to the detection of algorithmic
-    structures that go beyond the scope of traditional compiler analysis:
-    stencils, complex reductions and histograms, as well as sparse and dense
-    forms of linear algebra.
-    The detection in LLVM enables the automatic heterogeneous
-    acceleration of sequential code, resulting in significant speedups on the
-    established benchmark suites NPB and Parboil.
-    This chapter is based on published research
+    structures that go beyond the scope of traditional compiler analysis,
+    including stencils, histograms, and sparse linear algebra.
+    The recognition in LLVM enables automatic heterogeneous parallelisation of
+    sequential code with domain-specific backends, resulting in significant
+    speedups on benchmark programs from the established NPB and Parboil suites.
+    The chapter is based on published research
     \citep{Ginsbach:2018:AML:3173162.3173182}.
 
     Finally, {\bf\Cref{chapter:conclusion}} concludes this thesis with a summary
@@ -414,8 +416,8 @@
     established compiler toolchains, which often only access the increasingly
     marginal homogeneous fraction of processing power.
     Therefore, application programmers depend on domain-specific languages and
-    libraries that leverage domain knowledge from their restricted operating
-    domains to generate efficient code for the modern hardware landscape.
+    libraries that leverage knowledge from their restricted operating domains to
+    generate efficient code for the modern hardware landscape.
 
     This domain knowledge can be made available to host compilers with
     approaches that automatically specialise general-purpose code and
