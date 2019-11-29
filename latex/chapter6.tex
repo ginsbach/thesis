@@ -941,32 +941,33 @@ gemm_in_lift(A, B, C, alpha, beta) {
 \label{sec:idiomresults}
 
     The approach was evaluated in several steps.
-    Firstly, the number of detected idioms and their distribution over the
+    First, the number of detected idioms and their distribution over the
     benchmark programs was established.
     During this analysis, the runtime of the IDL-enabled Clang compiler was
     measured, and the compile time overhead of the solver over standard
     compilation evaluated.
     Next, the runtime coverage of the idioms was determined for each
-    benchmark program, to see where exploitation might be beneficial.
+    benchmark program to see where exploitation might be beneficial.
 
     Where runtime coverage was substantial, speedups over the sequential C code
     are reported.
     Detailed results are given for the performance of each targeted backend
     interface.
-    Finally, the evaluation includes comparisons to the handwritten OpenMP and
-    OpenCL implementations that are provided with the benchmark suites as
-    reference implementations, providing a suitable estimate for the upper
-    bound of available performance.
+    Finally, the evaluation included comparisons to the handwritten OpenMP and
+    OpenCL implementations that were provided with the benchmark suites as
+    reference implementations.
+    These versions provide suitable estimates for the upper bound of available
+    performance.
 
 \subsection{Idiom Detection}
 
     \Cref{detection-figure} shows the different idioms detected across
     all the individual benchmark programs.
-    IDL detected both scalar and histogram reductions as well as stencils, dense
-    matrix operations and sparse matrix-vector multiplication.
+    IDL detected both scalar and histogram reductions, as well as stencils,
+    dense matrix operations and sparse matrix-vector multiplication.
     16 of the 21 programs contained computational idioms that IDL was able to
     identify.
-    The most frequently occurring idiom was scalar reduction, present in 10
+    The most frequently occurring idiom was the scalar reduction, present in 10
     of the programs.
     Five of the benchmarks contained histograms; three contained stencils;
     two contained SPMV; and only a single program calculated GEMM.
@@ -977,15 +978,16 @@ gemm_in_lift(A, B, C, alpha, beta) {
     GEMM operation as a generic SCoP.
     This was counted as a detected idiom, although Polly was unable to apply any
     domain-specific knowledge from linear algebra.
-    ICC only recognised scalar reduction, but was much more successful at it
+    ICC only recognised scalar reductions, but was much more successful at it
     than Polly, detecting a total of 28 instances.
 
     Other approaches than IDL did not detect any histogram loops or sparse
     matrix operations.
-    In total, IDL detected 60 idioms overall with the increase in compilation
-    time shown in figure \Cref{tab:compiletimecost}.
-    On average, the compilation time was increased by 82\%. 
-    The overhead could be reduced further by optimising the solver.
+    IDL detected 60 idioms overall with the impact on the compilation times
+    shown in \Cref{tab:compiletimecost}.
+    On average, the compilation times were increased by 82\%.
+    This compilation overhead was due to the solver and could be reduced further
+    by optimising its implementation.
 
 \begin{figure}[p]
   \centering
