@@ -1092,10 +1092,10 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
     an external GPU, respectively.
     All of the results include data transfer overhead to and from the GPUs,
     where required.
-    This overhead is intrinsic to the external GPU, which operates on distinct
+    This overhead was intrinsic to the external GPU, which operates on distinct
     physical memory.
-    The integrated GPU, on the other hand, only incurs this cost when APIs
-    enforce additional data copies.
+    The integrated GPU, on the other hand, only incurred this cost when APIs
+    enforced additional data copies.
     Each bar shows the best-performing API for the given platform;
     \Cref{tab:detailed-results} provides detailed results also for the other
     API backends.
@@ -1121,28 +1121,28 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 \end{figure}
 
     Moderate speedups were obtained for five of the benchmarks, from
-    1.26$\times$ for ``\emph{histo}'' up to 4.5$\times$ for `\emph{IS}''.
-    Besides ``\emph{MG}'', all of these benchmarks have a scalar or histogram
+    1.26$\times$ for ``histo'' up to 4.5$\times$ for `IS''.
+    Besides ``MG'', all of these benchmarks had a scalar or histogram
     reduction as their performance bottleneck.
     Interestingly, it emerges that for different benchmarks, different hardware
-    is beneficial.
-    For ``\emph{tpcaf}'', the CPU is the best platform, beating the GPU,
-    for which the data transfer time dominates;
-    for ``\emph{MG}'' and ``\emph{histo}'', the integrated GPU strikes the right
+    was beneficial.
+    For ``tpcaf'', the CPU was the best platform, beating the GPU,
+    for which the data transfer time dominated;
+    for ``MG'' and ``histo'', the integrated GPU struck the right
     balance between computational power and avoiding data movement to the
     external GPU;
-    and for ``\emph{EP}'' and ``\emph{IS}'', the data transfer to the GPU is
+    and for ``EP'' and ``IS'', the data transfer to the GPU was
     amortised by its superior raw performance.
     The results emphasise the significance of flexible heterogeneous
     code generation.
     Committing to any one of the three hardware platforms in the source code
-    would have necessarily resulted in less-than-optimal performance for at
+    would have always resulted in less-than-optimal performance for at
     least some of the programs.
 
     For five of the benchmarks, IDL enabled significantly higher performance
-    gains, from 17$\times$ for ``\emph{CG}'' and up to over 275$\times$ for
-    ``\emph{sgemm}''.
-    These benchmarks are computationally expensive, and the external GPU is
+    gains, from 17$\times$ for ``CG'' and up to over 275$\times$ for
+    ``sgemm''.
+    These benchmarks were computationally expensive, and the external GPU was
     always the fastest architecture by a considerable margin.
 
 \begin{landscape}
@@ -1181,8 +1181,8 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
 
     The red highlighting in \Cref{fig:speedup-figure} indicates an important
     runtime optimisation:
-    Redundant data transfers for the iterative ``\emph{CG}'', ``\emph{lbm}'',
-    ``\emph{spmv}'' and ``\emph{stencil}'' benchmarks were manually eliminated.
+    Redundant data transfers for the iterative ``CG'', ``lbm'',
+    ``spmv'' and ``stencil'' benchmarks were manually eliminated.
     All of these benchmarks execute computations inside a for-loop and do not
     require access to the data on the CPU between iterations.
     A straightforward lazy copying technique was manually applied by flagging
