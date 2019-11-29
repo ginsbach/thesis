@@ -910,7 +910,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
     GPU (driver version 375.66).
     Execution times were measured as the median over ten runs.
 
-    \paragraph*{Alternative detection approaches}
+    \paragraph*{Alternative Detection Approaches}
     There were no readily available compilers performing idiom detection to
     compare against.
     Instead, two parallelising compilers were considered.
@@ -1183,55 +1183,52 @@ overhead in \% &  35 &  87 & 100 &  52 &  58 &  24 & 115 &  36 &  54 \\
     runtime optimisation:
     Redundant data transfers for the iterative ``CG'', ``lbm'',
     ``spmv'' and ``stencil'' benchmarks were manually eliminated.
-    All of these benchmarks execute computations inside a for-loop and do not
+    All of these benchmarks executed computations inside a for-loop, and did not
     require access to the data on the CPU between iterations.
     A straightforward lazy copying technique was manually applied by flagging
     memory objects to avoid redundant transfers, similar
     to work by \citet{jablin11automatic}.
-    This runtime optimisation is crucial for achieving high performance on some
+    This runtime optimisation was crucial for achieving high performance on some
     of the benchmark programs.
 
-\paragraph*{API performance comparison}
-
+    \paragraph*{API Performance Comparison}
     \Cref{tab:detailed-results} shows a breakdown of the performance of each API
     on each program and platform.
-    Not all APIs target all platforms, {\emph{e.g.} cuSPARSE only targets NVIDIA
-    GPUs.
+    Not all APIs target all platforms, e.g.\ cuSPARSE only targets NVIDIA GPUs.
     The version of Halide that was used for this evaluation failed to generate
     valid GPU code for any of the benchmarks.
     Therefore, only the CPU platform was evaluated with Halide.
     The best-performing backend is highlighted in bold in the table entries.
-    None of the previously existing backends supported SPMV-JDS, which was used
-    by the ``\emph{spmv}'' benchmark.
+    None of the previously existing backends supported ``{\tt SPMV-JDS}, which
+    was detected in the ``spmv'' benchmark.
     The libSPMV library was implemented as an ad-hoc solution to this,
     providing straightforward parallelisation of the idiom.
 
     On the multi-core CPU, Intel MKL gave the best linear algebra performance,
     outperforming the other libraries and Lift.
-    Halide achieved good performance for the NPB ``\emph{IS}'' and Parboil
-    ``\emph{stencil}'' benchmarks on the CPU, outperforming Lift due to its more
+    Halide achieved good performance for the NPB ``IS'' and Parboil
+    ``stencil'' benchmarks on the CPU, outperforming Lift due to its more
     advanced vectorisation capabilities.
     In programs that were dominated by scalar reductions, Lift performed well.
-    On the internal GPU, clBLAS provides a better matrix-multiplication
-    implementation than either CLBlast or Lift.
+    On the internal GPU, clBLAS provided a better matrix multiplication
+    implementation than CLBlast and Lift.
     On the external GPUs, library backends provided the best linear algebra
     implementations, while Lift performed well on stencils and reductions.
 
-\paragraph*{Speedup vs Handwritten Parallel Implementations}
-
+    \paragraph*{Speedup vs Handwritten Parallel Implementations}
     \Cref{fig:speedup-figure-2} shows the performance of the IDL approach
     compared to handwritten reference OpenMP and OpenCL implementations.
-    For some of the benchmarks, the parallel versions are significantly modified
-    and use different algorithms beyond the reach of automation.
-    For benchmarks where the parallel reference implementation does not make
-    profound algorithmic changes (``\emph{CG}'', ``\emph{histo}'',
-    ``\emph{lbm}'', ``\emph{sgemm}'', ``\emph{spmv}'', ``\emph{stencil}''),
-    IDL enabled comparable -- or better -- performance.
-    For four benchmarks (``\emph{EP}'', ``\emph{IS}'', ``\emph{MG}'',
-   ``\emph{tpacf}'') it is beneficial to parallelise the entire application,
-    which is beyond the scope of this work.
+    For some of the benchmarks, the parallel versions were significantly
+    modified beyond the reach of automation and used entirely different
+    algorithms.
+    For benchmarks where the parallel reference implementation did not make
+    profound algorithmic changes (``CG'', ``histo'', ``lbm'', ``sgemm'',
+    ``spmv'', ``stencil''), IDL enabled comparable -- or better -- performance.
+    On four of the benchmarks (``EP'', ``IS'', ``MG'', ``tpacf'') it was more
+    beneficial to parallelise the entire application, which is beyond the scope
+    of this work.
 
-    The handwritten versions of ``\emph{sgemm}'' and ``\emph{stencil}' were
+    The handwritten versions of ``sgemm'' and ``stencil' were
     outperformed by IDL.
     This was due to implementation flaws; a loop interchange already improved
     performance by almost 20$\times$.
