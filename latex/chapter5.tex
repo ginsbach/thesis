@@ -1226,14 +1226,14 @@ for( i=0; i<NUM_KEYS; i++ )
     Detecting such SCoPs is the first part of any polyhedral analysis.
     As program code outside of SCoPs is left untouched by Polly, this provides
     an upper bound for the detection of reductions.
-    In 23 of the 40 benchmarks, Polly found no
-    SCoPs at all.  This corresponded to $40\%$ of NPB, $63.6\%$ of the
-    Parboil Benchmarks and $63.2\%$ of Rodinia.
+    In 23 of the 40 benchmarks, Polly found no SCoPs at all.
+    This corresponded to 40\% of NPB, 63.6\% of the Parboil Benchmarks and
+    63.2\% of Rodinia.
 
     The majority of the SCoPs that Polly detected were in stencil computations.
     The stencil-based programs ``LU'', ``BT'', ``SP'' and ``MG'' in the NAS
     Parallel Benchmarks alone accounted for 37 of the 62 SCoPs that were found
-    across all benchmarks ($59.6\%$). 
+    across all benchmarks (59.6\%).
 
     \paragraph*{ICC}
     The Intel C/C++ compiler was more successful than Polly at recognising
@@ -1351,7 +1351,7 @@ for( i=0; i<NUM_KEYS; i++ )
     total, histogram reductions were much more likely to constitute performance
     bottlenecks.
     In the benchmark programs that contained histogram reductions,
-    they accounted for an average of $68\%$ of the runtime.
+    they accounted for an average of 68\% of the runtime.
 
     Scalar reductions, on the other hand, were generally irrelevant to program
     runtime, with the one exception of the ``sgemm'' benchmark.
@@ -1379,7 +1379,7 @@ for( i=0; i<NUM_KEYS; i++ )
     were shipped by the original implementors.
     The baseline is the sequential version of the respective benchmark program.
 
-    The IDL-based approach achieved $62\%$ speedup on ``EP'' over the whole
+    The IDL-based approach achieved 62\% speedup on ``EP'' over the whole
     program.
     This was limited by the runtime coverage of the histogram.
     Following Amdahl's Law
@@ -1390,7 +1390,7 @@ for( i=0; i<NUM_KEYS; i++ )
     outer-loop parallelism and outperforms the reduction-based method.
 
     On the ``IS'' benchmark, the IDL-based parallelisation results in
-    $2.9\times$ speedup, compared to $6.3\times$ speedup of the manual parallel
+    2.9$\times$ speedup, compared to 6.3$\times$ speedup of the manual parallel
     version.
     This discrepancy comes from the fact that the manual parallel version relies
     on knowledge about the distribution of the histogram keys at runtime that is
@@ -1409,7 +1409,7 @@ for( i=0; i<NUM_KEYS; i++ )
     available in the program.
 
     The IDL-based reduction parallelism achieved an almost linear speedup of
-    $35.7\times$ on the ``tpacf'' program.
+    35.7$\times$ on the ``tpacf'' program.
     The manual parallel version, which was provided by the original benchmark
     implementers as a reference to evaluate against, was implemented poorly with
     a critical section.
