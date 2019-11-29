@@ -481,7 +481,7 @@ for(i = 0; i < n; i++) {
         {\phantom{\lstinline[language=IDL]!inherits Spec!}\hspace{4.4mm}\lstinline[language=IDL]!and {C} as {D} at {E}!}\\
         {\lstinline[language=CAnDL]!{A}={B}!},
         {\lstinline[language=CAnDL]!{A}≠{B}!} &
-        {\lstinline[language=IDL]!{A} is [not] equal to {B}!} \\
+        {\lstinline[language=IDL]!{A} is [ !\ttfamily{not}\lstinline[language=IDL]! ] equal to {B}!} \\
         {\lstinline[language=CAnDL]!domination({A},{B})!} &
         {\lstinline[language=IDL]!{A} control flow dominates {B}!} \\
         {\lstinline[language=CAnDL]!opcode{A} = store!} &
@@ -797,7 +797,7 @@ End
     Lines 25--26 enforce that the loop contains at least one reduction or
     histogram computation.
     This is guaranteed indirectly because the two compared variables can only be
-    the same if they are both {\tt unused}.
+    the same if they are both {\it unused}.
 
 \begin{figure}[p]
 \lstset{
