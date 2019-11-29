@@ -803,7 +803,7 @@ for(int i = 0; i < 1000; i++)
     a specific function interface, which it requires for generating valid
     OpenCL code.
     As the kernel functions are only directly available as LLVM IR code from the
-    constraint solution, the implementation of a rudimentary LLVM IR to C
+    constraint solution, the implementation of a rudimentary LLVM IR-to-C
     backend was necessary to generate input for the Lift compiler.
 
 \begin{figure}[H]
@@ -829,13 +829,14 @@ gemm_in_lift(A, B, C, alpha, beta) {
     After code for the DSLs was generated, it is passed to the DSL code
     generator.
     \Cref{fig:liftmxm} shows an example of the Lift code generated for GEMM
-    ({\tt gemm\_in\_lift}).
+    (``{\tt gemm\_in\_lift}'').
     It performs a dot product (expressed in line~\ref{line:dot} using the Lift
-    skeletons {\tt zip}, {\tt map}, and {\tt reduce}) for each row of
-    matrix A ({\tt a\_row}) and column of matrix B ({\tt b\_col}).
+    skeletons ``{\tt zip}'', ``{\tt map}'', and ``{\tt reduce}'') for each row
+    of the first matrix (``{\tt a\_row}'') and column of the second
+    (``{\tt b\_col}'').
     This code is compiled by Lift into optimised OpenCL code.
 
-\subsection{Aliasing}
+\subsection{Pointer Aliasing}
 
     Since idiom detection works statically, pointer aliasing cannot be ruled out
     conclusively, which can make transformations unsound.
@@ -852,7 +853,7 @@ gemm_in_lift(A, B, C, alpha, beta) {
     remains unchanged, which was the case for the programs involved in the
     evaluation.
 
-    Such techniques to rule out aliasing are important but orthogonal to the
+    Such techniques to rule out aliasing are important, but orthogonal to the
     detection and transformation methods that are the focus of this chapter.
     In practice, aliasing did not cause problems on any of the benchmark
     programs.
