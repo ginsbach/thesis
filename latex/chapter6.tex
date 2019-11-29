@@ -444,18 +444,18 @@ End
 
     For Jagged Diagonal Storage (JDS) \cite{doi:10.1137/0910073}, the rows of
     the matrix are permuted such that the number of nonzeros per row  decreases.
-    The permutation is stored in a vector \textbf{perm}, the number of nonzeros
-    in \textbf{nzcnt}.
-    The nonzero entries are then stored in an array \textbf{val} in the
-    following order:
-    The first nonzero entry in each row, then the second nonzero entry in
-    each row and so on.
-    The array \textbf{col\_ind} stores the column for each of the values and
-    \textbf{jd\_ptr} stores offsets into \textbf{val} and \textbf{col\_idx}.
+    The permutation is stored in a vector ``\textbf{perm}'', the number of
+    nonzeros per row in ``\textbf{nzcnt}''.
+    The nonzero entries are then stored in an array ``\textbf{val}'' in the
+    following order: the first nonzero entry in each row, then the second
+    nonzero entry in each row and so on.
+    The array ``\textbf{col\_ind}'' stores the column for each of the values and
+    ``\textbf{jd\_ptr}'' stores offsets into ``\textbf{val}'' and
+    ``\textbf{col\_idx}''.
 
     \autoref{jds_lilacwhat_fig} demonstrates this format on the example sparse
     matrix from \autoref{csr_lilacwhat_fig}, and derives the corresponding IDL
-    code for the {\tt SPMV\_JDS} idiom underneath.
+    code for the ``{\tt SPMV\_JDS}'' idiom underneath.
     Note that the sparse matrix in this example is shown after the permutation
     operation that JDS requires.
 
@@ -518,8 +518,8 @@ End
 \end{lstlisting}
 \caption{Jagged Diagonal Storage in IDL:
          The top section of the figure shows the different arrays involved.
-         The pseudocode in the middle row of the
-         figure then directly gives a completion of \Cref{spmvbase}.
+         The pseudocode in the middle of the figure informs the completion of
+         \Cref{spmvbase} at the bottom.
          Walking through the expressions and emitting IDL code one-by-one is
          sufficient.}
 \label{jds_lilacwhat_fig}
@@ -535,9 +535,9 @@ End
     Inside these loops, the memory access is characterised by three matrix
     accesses, each with a different subset of the loop iterators.
     The corresponding ``{\tt MatrixRead}'' and ``{\tt MatrixWrite}'' idioms
-    model generic access to matrices allowing strides, transposed matrices etc.
-    The actual computation is encapsulated by the
-    ``{\tt DotProductForAlphaBeta}'' idiom.
+    model generic access to matrices, allowing strides and transpositions.
+    The floating-point calculations in the inner loop are encapsulated by
+    the ``{\tt DotProductForAlphaBeta}'' idiom.
     This extends the ``{\tt DotProductFor}'' specification with the linear
     combination that is part of the generalised matrix multiplication idiom
     ($C\gets\alpha AB+\beta C$).
