@@ -17,11 +17,11 @@
     representation.
     Some mathematical notation is used in this section to build a reliable
     foundation for later parts of this thesis.
-    The List of Symbols and Notation contains some of the presumed notational
+    The List of Symbols and Notation contains some of the notational
     conventions.
 
-    After the derivation of the SSA model, the concept of SSA constraint
-    problems is defined.
+    After the derivation of the SSA model, the concept of
+    {\it SSA constraint problems} is defined.
     These are formulas that impose restrictions on parts of SSA code,
     formulated as constraints on the SSA model.
     SSA constraint problems can define code structures such as loops.
@@ -40,9 +40,10 @@
     composable building blocks for the solver.
     After deriving the algorithms, implementation considerations are
     discussed.
-    Suitable data structures are selected, and runtime complexity is analysed.
+    Suitable data structures are selected, and the runtime complexity is
+    analysed.
     To conclude the chapter, constraint programming on SSA intermediate
-    representation is compared with Satisfiability Modulo Theory (SMT) problems.
+    representation is compared with Satisfiability Modulo Theory (SMT).
 
 \section{Background}
 
@@ -521,9 +522,9 @@
 
     LLVM is a comprehensive compiler infrastructure project, using LLVM IR as
     its central abstraction.
-    The LLVM project was formerly named ``Low Level Virtual Machine'', as the
-    intermediate representation was conceptualised as a typed assembly-style
-    language for a virtual machine.
+    The LLVM project was formerly named ``Low Level Virtual Machine'',
+    alluding to a hypothetical machine that uses LLVM IR as its native assembly
+    language.
     The instruction set of LLVM IR is roughly aligned to the semantics of
     C-style programming languages, but the project has matured beyond this
     background.
@@ -1387,7 +1388,7 @@ private:
     \Cref{chapter:candl,chapter:reductions} refer back to the definitions in
     this chapter for designing and implementing the languages CAnDL and IDL,
     which integrate constraint programming on SSA code into LLVM.
-    Preceding that, \Cref{chapter:literature} provides a review of related
+    Preceding that, the following chapter provides a review of related
     literature, putting the work into a broader context. 
 
 
