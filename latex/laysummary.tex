@@ -1,0 +1,30 @@
+
+    New computer processors used to be faster than the previous versions simply
+    because the transistors got smaller and more efficient.
+    In recent years, the engineers have been unable to continue this process.
+    Because the speed of processors is stagnating, companies try to improve
+    other metrics.
+    Specialised processors are now widespread, which cooperate with the central
+    processor and complement its abilities.
+    However, many software programs were not designed for this and ignore the
+    specialised abilities.
+
+    This thesis presents an approach to make existing programs use such
+    specialised hardware efficiently.
+    This approach was implemented in a software prototype.
+    The prototype detects particular mathematical methods in other programs.
+    Other researchers have already found the best ways to compute these
+    methods on new hardware, and stored them in ``libraries''.
+    By detecting that programs rely on the methods, the prototype can make the
+    program use these efficient ``libraries'' instead.
+    However, detecting the methods is hard.
+    This thesis introduces new specification languages to express them.
+    With precise formulations, it is possible to recognise the mathematical
+    methods automatically with algorithms.
+
+    The prototype software was evaluated by using it on standard test programs.
+    Some of these programs are from NASA and imitate the calculations on their
+    supercomputers.
+    The prototype understood the important parts of many programs.
+    This allowed executing them on specialised processors and made five of them
+    more than ten times faster.
