@@ -383,19 +383,19 @@ Constraint SPMV
  basicstyle=\linespread{1.069}\small\ttfamily
 }
 \begin{lstlisting}[language=IDL,firstnumber=7]
-([\dots])
-  inherits VectorStore
+([\dots])([\ttfamily\small\color{color_comment}{\hspace{1.6mm}\# Set top-level expression:~output[<1>] = <2> * <3>~~~~~~~~~~~stack=(1,2,3)}])
+  inherits VectorStore([\tt\color{color_comment}{~\#~1:~output[i]~~~~~~~~~~~~~~~~~~~~~~~~stack=(2,3)}])
       with {outer_loop}          as {scope}
        and {outer_loop.iterator} as {input_index} at {output} and
-  inherits VectorRead
+  inherits VectorRead ([\tt\color{color_comment}{~\#~2:~val[j]~~~~~~~~~~~~~~~~~~~~~~~~~~~stack=(3)}])
       with {outer_loop}          as {scope}
-       and {inner_loop.src1}     as {value}
+       and {inner_loop.src1}     as {value}([{\tt\color{color_comment}\#<-case <2>])
        and {inner_loop.iterator} as {input_index} at {val} and
-  inherits VectorRead
+  inherits VectorRead ([\tt\color{color_comment}{~\#~3:~vector[col\_ind[<4>]]~~~~~~~~~~~~~stack=(4)}])
       with {outer_loop}      as {scope}
-       and {inner_loop.src2} as {value}
+       and {inner_loop.src2} as {value}([{\tt\color{color_comment}\#<-case <3>])
        and {col_ind.value}   as {input_index} at {vector} and
-  inherits VectorRead
+  inherits VectorRead ([\tt\color{color_comment}{~\#~4:~col\_ind[j]~~~~~~~~~~~~~~~~~~~~~~~stack=()}])
       with {outer_loop}          as {scope}
        and {inner_loop.iterator} as {input_index} at {col_ind} and
   inherits ReadForLoopRanges
@@ -406,8 +406,8 @@ End
 \end{lstlisting}
 \caption{Compressed Sparse Row in IDL:
          The top section of the figure shows the different arrays involved.
-         The pseudocode in the middle row of the
-         figure then directly gives a completion of \Cref{spmvbase}.
+         The pseudocode in the middle of the figure informs the completion of
+        \Cref{spmvbase} at the bottom.
          Walking through the expressions and emitting IDL code one-by-one is
          sufficient.}
 \label{csr_lilacwhat_fig}
@@ -487,28 +487,28 @@ End
  basicstyle=\linespread{1.271}\small\ttfamily
 }
 \begin{lstlisting}[language=IDL,firstnumber=7]
-([\dots])
-  inherits VectorStore
+([\dots])([{\ttfamily\small\color{color_comment}\hspace{1.6mm}\#~Set top-level expression:~output[<1>]~=~<2>~*~<3>~~~~~~~~~~stack=(1,2,3)}])
+  inherits VectorStore([{\tt\color{color_comment}~\#~1:~output[perm[<4>]]~~~~~~~~~~~~~~~~stack=(4,2,3)}])
       with {outer_loop} as {scope}
        and {perm.value} as {input_index} at {output} and
-  inherits VectorRead
+  inherits VectorRead ([{\tt\color{color_comment}~\#~4:~perm[i]~~~~~~~~~~~~~~~~~~~~~~~~~~stack=(2,3)}])
       with {outer_loop}          as {scope}
        and {outer_loop.iterator} as {input_index} at {perm} and
-  inherits VectorRead
+  inherits VectorRead ([{\tt\color{color_comment}~\#~2:~val[(tmp1)=<5>]~~~~~~~~~~~~~~~~~~stack=(5,3)}])
       with {outer_loop}      as {scope}
-       and {inner_loop.src1} as {value}
+       and {inner_loop.src1} as {value}([{\tt\color{color_comment}\#<-case <2>])
        and {tmp1.value}      as {input_index} at {val} and
-  inherits Addition
+  inherits Addition   ([{\tt\color{color_comment}~\# 5:~(tmp1)=jd\_ptr[<6>]+i~~~~~~~~~~~~~stack=(6,3)}])
       with {jd_ptr.value}        as {input}
        and {outer_loop.iterator} as {addend} at {tmp1} and
-  inherits VectorRead
+  inherits VectorRead ([{\tt\color{color_comment}~\#~6:~jd\_ptr[i]~~~~~~~~~~~~~~~~~~~~~~~~stack=(3)}])
       with {outer_loop}          as {scope}
        and {inner_loop.iterator} as {input_index} at {jd_ptr} and
-  inherits VectorRead
+  inherits VectorRead ([{\tt\color{color_comment}~\#~3:~vector[<7>]~~~~~~~~~~~~~~~~~~~~~~stack=(7)}])
       with {outer_loop}      as {scope}
-       and {inner_loop.src2} as {value}
+       and {inner_loop.src2} as {value}([{\tt\color{color_comment}\#<-case <3>])
        and {col_ind.value}   as {input_index} at {vector} and
-  inherits VectorRead
+  inherits VectorRead ([{\tt\color{color_comment}~\#~7:~col\_ind[(tmp1)=<5>]~~~~~~~~~~~~~~stack=()}])
       with {outer_loop} as {scope}
        and {tmp1.value} as {input_index} at {col_ind} and
   inherits ReadForLoopIterations
