@@ -619,11 +619,14 @@ End
     The reverse is also true: the solver distinguishes syntactically identical
     but semantically distinct programs.
     \Cref{fig:gemmcounterexamples} shows such an example.
-    The loop nest in lines 5--9 appears to compute a standard GEMM, but in fact,
+    The loop nest in lines 7--11 appears to compute a standard GEMM, but in fact,
     the matrices are not stored contiguously, and acceleration with standard
     libraries is impossible.
 
 \begin{figure}[p]
+\lstset{
+ basicstyle = \linespread{1.168}\ttfamily
+}
 \begin{lstlisting}[language=MyCpp]
 for (int mm = 0; mm < m; ++mm) {
   for (int nn = 0; nn < n; ++nn) {
@@ -639,13 +642,15 @@ for (int mm = 0; mm < m; ++mm) {
 }
 \end{lstlisting}
 \begin{lstlisting}[language=MyCpp,label={fig:gemmexamples},caption=
-   {Two matching instances of GEMM:
+   {Two matching instances of ``{\tt GEMM}'':
     Although both loop nests are implemented very differently, they both match
     the same IDL specification and can be accelerated identically.}]
 double M1[1000][1000];
 double M2[1000][1000];
 double M2[1000][1000];
+
 //...
+
 for(int i = 0; i < 1000; i++)
     for(int j = 0; j < 1000; j++) {
         M3[i][j] = 0.0f;
@@ -653,7 +658,7 @@ for(int i = 0; i < 1000; i++)
            M3[i][j]+=M1[i][k]*M2[k][j]; }
 \end{lstlisting}
 \begin{lstlisting}[language=MyCpp,label={fig:gemmcounterexamples},caption=
-   {This C program that does not match {\tt GEMM}.
+   {This C program that does not match ``{\tt GEMM}''.
     Although the loop syntax is identical to the matching example from
     \Cref{fig:gemmexamples}, the different types of the matrices prevent
     detection.
@@ -663,7 +668,9 @@ for(int i = 0; i < 1000; i++)
 double *M1[1000];
 double *M2[1000];
 double *M2[1000];
+
 //...
+
 for(int i = 0; i < 1000; i++)
     for(int j = 0; j < 1000; j++) {
         M3[i][j] = 0.0f;
