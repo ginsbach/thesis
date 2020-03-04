@@ -768,6 +768,18 @@ Constraint LoopWithOnlyArrayAccesses
     Finally, regions are restricted to align with basic block boundaries in
     lines 2 and 4.
 
+    Note that the use of variables ``{\tt precursor}'' and ``{\tt successor}''
+    prevents the detection of SESE regions without a precursor or successor.
+    As LLVM inserts an additional basic block at the beginning of each function
+    that immediately jumps to the first basic block of the function body, the
+    first of these two corner cases is irrelevant.
+    The second case could easily be captured with additional constraints that
+    account for the possibility of an {\it unused} successor.
+    However, this is only relevant in the case of basic blocks that end on a
+    return statement.
+    In the context of the loop-based algorithmic structures that this
+    thesis focuses on, basic blocks can be assumed to always have a successor.
+
     Natural loops are easily defined in CAnDL, as shown in \Cref{CAnDLLoop}.
     The specification includes ``{\tt SESE}'' and adds only a single additional
     constraint for the back edge of the loop at line 3.
@@ -811,8 +823,6 @@ Constraint LoopWithOnlyArrayAccesses
     The Clang compiler, which is built on LLVM, then automatically invokes this
     solver during the compilation of user programs, after the optimisation
     passes.
-    The evaluation shows that this solver adds little compile time overhead in
-    practice.
 
     The resulting Clang binary, built on the modified version LLVM, uses the
     solver to search for the specified computational structures and outputs the
@@ -822,14 +832,13 @@ Constraint LoopWithOnlyArrayAccesses
 
 \subsection{Normalisation of LLVM IR}
 
-    For reliable detection of code structures, the normalisation of LLVM IR via
-    optimisation passes is critical.
     The promotion of memory to registers, loop-independent code motion,
     constant folding, loop normalisations, and other standard transformations
     result in predictable code structures that simplify the formulation of CAnDL
     specifications.
-    The CAnDL-enabled Clang compiler invokes the detection functionality
-    directly after optimisations and expects the flags
+    The CAnDL-enabled compiler invokes the detection functionality
+    directly after optimisations and expects the pipeline to be configured
+    with
     ``{\tt -Os -fno-unroll-loops -fno-vectorize -fno-slp-vectorize -ffast-math}''.
 
     In addition to standard optimisations, the CAnDL-enabled compiler applies
@@ -840,10 +849,6 @@ Constraint LoopWithOnlyArrayAccesses
               {\tt add}$\mapsto${\tt or} and {\tt mul}$\mapsto${\tt shift}.
               Such instruction specialisations run counter to the goal of
               normalising the IR.
-        \item Some interactions of ``{\tt select}'' and
-              ``{\tt getelementptr}'' instructions are transformed as
-              {\tt (c?a[i]:a[j])}$\mapsto${\tt a[c?i:j]} to minimise the number
-              of ``{\tt getelementptr}'' instructions.
         \item Complex ``{\tt getelementptr}'' instructions are simplified to
               add an offset to a raw pointer.
               The index calculations are then performed entirely as integer
@@ -852,6 +857,10 @@ Constraint LoopWithOnlyArrayAccesses
               flattening them.
               Chains of ``{\tt getelementptr}'' instructions are merged, again
               resulting in integer arithmetic instead.
+        \item Some interactions of ``{\tt select}'' and
+              ``{\tt getelementptr}'' instructions are transformed as
+              {\tt (c?a[i]:a[j])}$\mapsto${\tt a[c?i:j]} to minimise the number
+              of ``{\tt getelementptr}'' instructions.
     \end{itemize}
     Finally, some structures in the LLVM IR are not modified by normalising
     transformations, but they are omitted in the SSA model that underpins the
@@ -866,7 +875,7 @@ Constraint LoopWithOnlyArrayAccesses
 \centering
 \begin{minipage}{0.7\textwidth}
 \centering
-\includegraphics[width=0.85\textwidth]{figures/candlstages.pdf}
+\includegraphics[width=0.53\textwidth]{figures/candlstages.pdf}
 \caption{Flow within the CAnDL compiler:
          The CAnDL source code gets lowered in several steps to generated C++
          source code.}
