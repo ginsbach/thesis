@@ -91,8 +91,8 @@
     This chapter focuses on deriving the detection of reductions and assumes
     that later compiler stages are responsible for mapping this to dedicated
     code generation backends.
-    Nevertheless, to illustrate the potential performance of the scheme, it uses
-    also introduces a complementing code generation pass.
+    Nevertheless, to illustrate the potential performance of the scheme, it also
+    introduces a complementing code generation pass.
     This transformation pass achieved significant program-wide speedups on those
     benchmarks where reductions were performance bottlenecks.
 
@@ -222,8 +222,8 @@ for(i = 0; i < NK; i++) {
     condition on line 5 was changed to ``{\tt t1 <= sx}'', this would be no
     longer be a sound reduction, as there would now be a control dependence on
     an intermediate result.
-    This, in turn, would itself as an additional data dependence edge from
-    block 3 to block 2 in \Cref{nice-picture2}.
+    This, in turn, would manifest itself as an additional data dependence edge
+    from block 3 to block 2 in \Cref{nice-picture2}.
     Moreover, the code segment can only be classified as a reduction because
     all the function calls that are present are pure.
     Such details have to be checked to ensure correctness.
@@ -548,7 +548,7 @@ for(i = 0; i < n; i++) {
     \begin{lstlisting}[language=IDL]
 ([all]) flow from {loop_carried[0..3]} ([or]) any origin
     to any of {sx''} passes through ([at]) least one of
-    {sx,t2,t5,precursor,backedge,ouside[0..N]}}
+    {sx,t2,t5,precursor,backedge,outside[0..N]}}
     \end{lstlisting}
 \end{figure}
 

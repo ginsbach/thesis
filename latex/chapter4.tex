@@ -642,7 +642,7 @@ End
         S_1= \textit{select}(\texttt{ins},\textit{rev}(DFG_\mathcal F^*))\subset\textit{select}(\textit{float},T_\mathcal F)= S_2.
     \end{align*}
     
-    Elementary set theory gives  $S_1\subset S_2\iff S_1 = S_1\cap S_2$.
+    Elementary set theory gives  $S_1\subseteq S_2\iff S_1 = S_1\cap S_2$.
     Therefore, if a set $S$ is constrained to be equal to both $S_1$ and
     $S_1\cap S_2$, then \Cref{fig:implication} gives that this is satisfiable if
     and only if ``{\tt ins}'' has only floating-point arguments.
@@ -1299,8 +1299,8 @@ End
     (lines 21--25) and ``{\tt IfBlock}'' (lines 26--30) that describe the
     control flow of for-loops and conditionals.
     All the involved conditional jump instructions are extracted, and it is
-    checked that verify that these are indeed all conditional jumps within the
-    potential SCoP (lines 14--24 and lines 31-33).
+    checked that these are indeed all conditional jumps within the potential
+    SCoP (lines 14--24 and lines 31-33).
 
     Once the control flow has been established, the iterators of the loops
     (lines 4--5) are used to define affine integer computations in the loop
