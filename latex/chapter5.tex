@@ -799,9 +799,46 @@ End
     This is guaranteed indirectly because the two compared variables can only be
     the same if they are both {\it unused}.
 
-\begin{figure}[p]
+\section{Code Generation for CReHCs}
+
+    Parallel code generation immediately follows the CAnDL-generated detection
+    pass.
+    It uses the detected constraint solutions to reimplement the corresponding
+    loops with divide-and-conquer parallelism based on POSIX Threads.
+
+    For each Complex Reduction and Histogram Computation loop that is found, the
+    relevant input arrays and closure variables are taken from the solution.
+    They are packed into a data structure together with any histogram arrays
+    and the iteration space boundaries.
+
+    A new function is generated that takes this data structure as its only
+    parameter.
+    Depending on the number of processors and recursion depth, the function
+    decides whether to bisect its workload recursively.
+    If not, the loop is executed as before, using the arguments in the
+    structure.
+    Otherwise, the function uses ``{\tt pthread\_create}'' to offload half of
+    its workload onto another thread.
+    For this, it copies its parameter array, replacing histogram arrays with
+    newly allocated copies.
+    After both threads finished their work, the copy is merged with the original
+    histogram element-wise and then deallocated.
+
+   {In general, determining the size of the histogram at compile time is not
+    possible with static methods.
+    All the branched-off threads, therefore, use dynamic boundary checking and
+    reallocate the histogram array when necessary.
+    This on-demand enlargement introduces some overhead but proved acceptable
+    for many benchmark programs.
+    The exceptions to this were ``IS'' and ``histo'', where the reduction arrays
+    were large and the algorithmic intensity of the reduction operators low.
+    For these two programs, the reduction array sizes had to be predefined
+    \unskip\parfillskip 0pt\par}
+    \newpage
+
+\begin{figure}[H]
 \lstset{
- basicstyle = \linespread{1.25}\ttfamily
+ basicstyle = \linespread{1.26}\ttfamily
 }
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
    {Complex Reduction and Histogram Computations (CReHCs) as IDL specification:
@@ -840,37 +877,12 @@ End
 \end{lstlisting}
 \end{figure}
 
-\section{Code Generation for CReHCs}
-
-    Parallel code generation immediately follows the CAnDL-generated detection
-    pass.
-    It uses the detected constraint solutions to reimplement the corresponding
-    loops with divide-and-conquer parallelism based on POSIX Threads.
-
-    For each Complex Reduction and Histogram Computation loop that is found, the
-    relevant input arrays and closure variables are taken from the solution.
-    They are packed into a data structure together with any histogram arrays
-    and the iteration space boundaries.
-
-    A new function is generated that takes this data structure as its only
-    parameter.
-    Depending on the number of processors and recursion depth, the function
-    decides whether to bisect its workload recursively.
-    If not, the loop is executed as before, using the arguments in the
-    structure.
-    Otherwise, the function uses ``{\tt pthread\_create}'' to offload half of
-    its workload onto another thread.
-    For this, it copies its parameter array, replacing histogram arrays with
-    newly allocated copies.
-    After both threads finished their work, the copy is merged with the original
-    histogram element-wise and then deallocated.
-
-    In general, determining the size of the histogram at compile time is not
-    possible with static methods.
-    All the branched-off threads, therefore, use dynamic boundary checking and
-    reallocate the histogram array when necessary.
-    This on-demand enlargement introduces some overhead but proved acceptable
-    for many benchmark programs.
+    \noindent
+    manually.
+    As shown in the results section, this approach was sufficient to achieve
+    significant speedups on the ``IS'' benchmark.
+    However, the ``histo'' program achieved no parallel speedup despite
+    this improvement.
 
     Optimal code generation was not the main focus of this research, and more
     sophisticated methods for the parallelisation of reductions could be
