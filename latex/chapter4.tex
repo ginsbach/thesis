@@ -605,17 +605,19 @@ End
 
     \noindent
     In \Cref{fig:simplecollect}, the variables
-    ``{\tt arg[0]}'',\dots,``{\tt arg[N-1]}''
+    ``{\tt arg[0]}'',\dots,``{\tt arg[7]}''
     are specified to contain all of the direct data dependencies of
     ``{\tt ins}''.
-    The first argument of {\it collect} specifies the name of an index
-    variable that is used to detect which variables belong to the collected set.
     In this example, solutions of ``{\tt arg[i]}'' for a given value
     of ``{\tt ins}'' are identified.
     The second argument gives an upper limit to the number of collected
     variables.
-    This upper bound is left unspecified in this case by using the symbol
-    ``{\tt N}''.
+    The constant upper bound ``\texttt{8}'' is required here to keep the
+    dimensionality of the search space finite.
+    If ``\texttt{ins}'' has less than 8 arguments, the remaining
+    ``\texttt{arg[]}'' are constrainted to \textit{unused}.
+    The first argument of {\it collect} specifies the name of an index
+    variable that is used to detect which variables belong to the collected set.
 
 \begin{figure}[t]
 \vspace{3.6mm}
@@ -624,7 +626,7 @@ End
     ``{\tt ins}'' are collected.\leftskip=0pt\rightskip=0pt}]
 Constraint CollectArguments
 ( ir_type{ins} = instruction
-∧ collect i N ({arg[i]} ∈ {ins}.args))
+∧ collect i 8 ({arg[i]} ∈ {ins}.args))
 End
 \end{lstlisting}
 \end{figure}
@@ -653,17 +655,17 @@ End
     \Cref{fig:collectexample}.
     With the first {\it collect} statement at line 3, the set ``{\tt arg}''
     is constrained to be equal to $S_1$ and with the second one at lines 4-5, it
-    is constrained to be equal to $S_1\cap S_2$ as well.
+    is constrained to be equal to $S_1\cap S_2$.
 
 \begin{figure}[H]
 \vspace{3.6mm}
 \begin{lstlisting}[language=CAnDL,label={fig:collectexample},caption=
-   {{\it Collect} restricts ``{\tt ins}'' to be an instruction with only
-    from floating-point operands.\leftskip=0pt\rightskip=0pt}]
+   {{\it Collect} restricts ``{\tt ins}'' to instructions with only
+    (up to 8) floating-point operands.\leftskip=0pt\rightskip=0pt}]
 Constraint FloatingPointInstruction
 ( ir_type{ins} = instruction
-∧ collect i N ( {ins} ∈ {arg[i]}.args)
-∧ collect i N ( {ins} ∈ {arg[i]}.args
+∧ collect i 8 ( {ins} ∈ {arg[i]}.args)
+∧ collect i 8 ( {ins} ∈ {arg[i]}.args
               ∧ data_type{arg[i]} = float))
 End
 \end{lstlisting}
@@ -1425,8 +1427,13 @@ End
     However, it can be broken into several components, with some of them shown
     in \Cref{polyhedralCAnDL}.\footnote{The complete CAnDL code for this section
     is in Appendix~\ref{appendix:CAnDLpoly}.}
+    The integer constants ``10'' and ``20'' in the \textit{collect}
+    statements are required for the solver to restrict the search space to a
+    finite set of variables.
 
-    \paragraph*{Structured Control Flow}
+    \vspace{2mm}
+    \noindent
+    \textbf{Structured Control Flow}
     SCoPs require well-structured control flow.
     This means that each conditional jump within the
     corresponding piece of LLVM IR is accounted for by for-loops and
@@ -1448,7 +1455,9 @@ End
     It is checked that the iteration domain of all the for-loops is
     well-behaved, i.e.\ the boundaries are affine in the loop iterators.
 
-    \paragraph*{Affine Memory Access}
+    \vspace{2mm}
+    \noindent
+    \textbf{Affine Memory Access}
     All memory accesses in the SCoP must be affine.
     For this to be true, it needs to be verified that for each ``{\tt load}''
     and ``{\tt store}'' instruction, the base pointer is loop-invariant, and the
