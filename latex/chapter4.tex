@@ -1189,8 +1189,9 @@ Constraint ComplexFactorisation
     An example of this is the standard factorisation optimisation that uses the
     law of distributivity to simplify integer calculations, as shown in
     \Cref{fig:factorization1}.
-    Within ``{\tt instcombine}'', this is implemented in 203 lines of code, and
-    furthermore uses supporting functionality that is shared with other peephole
+    Within ``{\tt instcombine}'', this is implemented in 203 lines of code
+    (commit 7de5f26d, InstructionCombining.cpp lines 549-756 excluding lines 637-641),
+    and additionally uses supporting functionality shared with other
     optimisations.
     \begin{align}
         a*b+a*c\rightarrow a*(b+c)
