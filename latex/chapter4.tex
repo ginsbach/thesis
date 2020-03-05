@@ -1167,7 +1167,7 @@ Constraint ComplexFactorisation
 Constraint FloatingPointAssociativeReorder
 ( include VectorMulChain
 ∧ collect j N
-∧ ( {hoisted[k]} = {factors[i]} forany i=0..N
+  ( {hoisted[k]} = {factors[i]} forany i=0..N
   ∧ include ScalarHoist({hoisted[j]}->{out},
                        {scalar[j]}->{in})@{hoist[j]})
 ∧ collect j N
