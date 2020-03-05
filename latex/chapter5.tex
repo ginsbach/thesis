@@ -536,8 +536,11 @@ for(i = 0; i < n; i++) {
     In addition to the data flow edges, it has an edge from each branch
     instruction to every instruction within all its targeted basic blocks.
     This is an overapproximation of the control dependence graph that guarantees
-    that all relevant control flow is retained when flushing the graph backward
-    from the result of a computation.
+    all relevant control flow is retained when flushing the graph in
+    reverse direction from the result of a computation.
+    This information is required for isolating the kernel to implement it as a
+    separate function.
+
     Secondly, as opposed to the control flow graph that is typically considered
     for dominance relationships, the resulting graph has no single ``origin''.
     Aside from the control entry, all non-pure function calls and reads from
@@ -553,11 +556,13 @@ for(i = 0; i < n; i++) {
 \begin{figure}[h]
     \centering
     \vspace{3.6mm}
+    \vspace{-3mm}
     \begin{lstlisting}[language=IDL]
 ([all]) flow from {loop_carried[0..3]} ([or]) any origin
     to any of {sx''} passes through ([at]) least one of
     {sx,t2,t5,precursor,backedge,outside[0..N]}}
     \end{lstlisting}
+    \vspace{-4mm}
 \end{figure}
 
     \noindent
