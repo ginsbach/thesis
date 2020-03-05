@@ -511,18 +511,19 @@ for(i = 0; i < n; i++) {
     To enable the capture of such higher-order functions in IDL, additional
     constraint expressions are required that go beyond what CAnDL
     provided.
-
     Specifically, IDL adds another atomic constraint based on generalised graph
     domination, as previously described in \Cref{def:domconstr}, using the
     following syntax:
 \begin{figure}[h]
     \centering
+    \vspace{-1mm}
     \begin{tabular}{|c|}
         \hline
         $\textbf{all flow from }\text{\it variable\_tuple}\textbf{ or any origin to any of }\text{\it variable\_tuple}$\\
         $\textbf{ passes through at least one of }\text{\it variable\_tuple}$\\
         \hline
     \end{tabular}
+    \vspace{-2mm}
 \end{figure}
 
     \noindent
@@ -534,9 +535,11 @@ for(i = 0; i < n; i++) {
     of the data flow graph $DFG_\mathcal F^*$.
     In addition to the data flow edges, it has an edge from each branch
     instruction to every instruction within all its targeted basic blocks.
+    This is an overapproximation of the control dependence graph that guarantees
+    that all relevant control flow is retained when flushing the graph backward
+    from the result of a computation.
     Secondly, as opposed to the control flow graph that is typically considered
-    for dominance relationships, the resulting graph has no distinguished single
-    ``origin''.
+    for dominance relationships, the resulting graph has no single ``origin''.
     Aside from the control entry, all non-pure function calls and reads from
     memory are considered graph origins.
 
