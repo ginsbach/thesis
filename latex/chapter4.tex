@@ -837,29 +837,142 @@ Constraint LoopWithOnlyArrayAccesses
 
 \subsection{Normalisation of LLVM IR}
 
+    For reliable detection of code structures, the normalisation of LLVM IR via
+    optimisation passes is critical.
     The promotion of memory to registers, loop-independent code motion,
-    constant folding, loop normalisations, and other standard transformations
-    result in predictable code structures that simplify the formulation of CAnDL
-    specifications.
+    constant folding, loop normalisations, inlining, and other standard
+    transformations result in predictable code structures that simplify the
+    formulation of CAnDL specifications.
+
+    For example, elements of C++ \texttt{vector}s are accessed via the
+    overloaded \texttt{operator[]}.
+    Such operators appear in LLVM IR as opaque function calls and potentially
+    hinder analysis with CAnDL specifications.
+    However, these operators are inlined during optimisation, and parts of the
+    resulting code are propagated out of loops by loop-independent code motion.
+    The remaining array access can easily be captured by CAnDL using the same
+    specifications that treat C code.
+    \autoref{LLVMnormalisation} demonstrates this normalising effect of
+    optimisations.
+    The top of the figure shows the C++ implementation of a function that
+    computes a reduction over two sequences of integers.
+    The first sequence is stored in a plain C array, whereas the second is in
+    an instance of the \texttt{vector} class.
+    In the optimised LLVM IR code, the difference between these implementations
+    has disappeared from the reduction loops at lines 24--32 and 39--47.
+
+\begin{figure}[p]
+\lstset{
+ basicstyle=\linespread{0.739}\ttfamily
+}
+\begin{lstlisting}[language=MyCpp]
+int reduce(int* input1, size_t input1_size,
+           std::vector<int> input2) {
+    int result1 = 0, result2 = 0;
+    for(size_t i = 0; i != input1_size; i++)
+        result1 += input1[i];
+    for(size_t i = 0; i != input2.size(); i++)
+        result2 += input2[i];
+    return result1 + result2;
+}
+\end{lstlisting}
+\begin{lstlisting}[language=LLVM,label={LLVMnormalisation},caption={
+    Standard LLVM optimisations as normalising passes: The same computation is
+    expressed with a plain C array and a C++ \texttt{std::vector} respectively.
+    During compilation, the interaction of function inlining and loop-independent
+    code motion results in equivalent intermediate representation code for the
+    reduction loops at lines 24--32 and at lines 39--47.}]
+define i32 @_Z23reducePimSt6vectorIiSaIiEE(i32*, i64,
+                %"class.std::vector"* ) {
+  %4 = icmp eq i64 %1, 0
+  br i1 %4, label %5, label %17
+
+; <label>:5:
+  %6 = phi i32 [ 0, %3 ], [ %22, %17 ]
+  %7 = getelementptr inbounds %"class.std::vector",
+                %"class.std::vector"* %2,
+                i64 0, i32 0, i32 0, i32 0, i32 1
+  %8 = bitcast i32** %7 to i64*
+  %9 = load i64, i64* %8, align 8
+  %10 = bitcast %"class.std::vector"* %2 to i64*
+  %11 = load i64, i64* %1
+  %12 = icmp eq i64 %9, %11
+  %13 = inttoptr i64 %11 to i32*
+  br i1 %12, label %25, label %14
+
+; <label>:14:
+  %15 = sub i64 %9, %11
+  %16 = ashr exact i64 %15, 2
+  br label %28
+
+; <label>:17:
+  %18 = phi i64 [ %23, %17 ], [ 0, %3 ]
+  %19 = phi i32 [ %22, %17 ], [ 0, %3 ]
+  %20 = getelementptr inbounds i32, i32* %0, i64 %18
+  %21 = load i32, i32* %20
+  %22 = add nsw i32 %21, %19
+  %23 = add nuw i64 %18, 1
+  %24 = icmp eq i64 %23, %1
+  br i1 %24, label %5, label %17
+
+; <label>:25:
+  %26 = phi i32 [ 0, %5 ], [ %33, %28 ]
+  %27 = add nsw i32 %26, %6
+  ret i32 %27
+
+; <label>:28:
+  %29 = phi i64 [ 0, %14 ], [ %34, %28 ]
+  %30 = phi i32 [ 0, %14 ], [ %33, %28 ]
+  %31 = getelementptr inbounds i32, i32* %13, i64 %29
+  %32 = load i32, i32* %31
+  %33 = add nsw i32 %32, %30
+  %34 = add i64 %29, 1
+  %35 = icmp eq i64 %34, %16
+  br i1 %35, label %25, label %28
+}
+\end{lstlisting}
+\end{figure}
+
+    Most standard optimisations that LLVM provides have this implicit
+    effect of normalising the code, but there are some notable exceptions.
+    Most importantly, this involves optimisations that are not reliably applied
+    uniformly on all code but utilise opaque cost heuristics or that require
+    complex preconditions.
+    Notably, this includes loop unrolling and vectorization, which are hence
+    disabled.
     The CAnDL-enabled compiler invokes the detection functionality
-    directly after optimisations and expects the pipeline to be configured
-    with
+    directly after optimisations and expects the pipeline to be
+    configured with the command-line options
     ``{\tt -Os -fno-unroll-loops -fno-vectorize -fno-slp-vectorize -ffast-math}''.
 
-    In addition to standard optimisations, the CAnDL-enabled compiler applies
-    some custom transformations in order to pass on predictable LLVM IR code
-    to the solver:
+    Some other LLVM optimisations also obfuscate the resulting LLVM IR but cannot
+    be disabled via command-line options.
+    Furthermore, there is some semantic information about multidimensional arrays
+    that LLVM retains from the input language that effectively results in
+    multiple distinct ways to express array accesses that are equivalent.
+    To alleviate this, in addition to standard optimisations, the CAnDL-enabled
+    compiler applies some custom transformations in order to pass on predictable
+    LLVM IR code to the solver:
     \begin{itemize}
-        \item Two strength reduction optimisations are reversed:
+        \item Strength reductions result in special cases that would have to be
+              covered explicitly by CAnDL specifications.
+              To remove the requirement of considering these special cases, two
+              strength reduction optimisations are reversed:
               {\tt add}$\mapsto${\tt or} and {\tt mul}$\mapsto${\tt shift}.
               Such instruction specialisations run counter to the goal of
               normalising the IR.
-        \item Complex ``{\tt getelementptr}'' instructions are simplified to
+        \item Multi-dimensional array access can be expressed directly in
+              LLVM IR.
+              However, this only works for statically allocated arrays.
+              As CAnDL should work on dynamically-sized arrays as well, this
+              representation cannot be relied on and, in effect, introduces
+              additional complexity.
+              In order to remove this complication, complex
+              ``{\tt getelementptr}'' instructions are simplified to
               add an offset to a raw pointer.
               The index calculations are then performed entirely as integer
               arithmetic on the indices.
-              This also applies to multi-dimensional arrays, effectively
-              flattening them.
+              This process effectively flattens multi-dimensional arrays.
               Chains of ``{\tt getelementptr}'' instructions are merged, again
               resulting in integer arithmetic instead.
         \item Some interactions of ``{\tt select}'' and
@@ -871,8 +984,15 @@ Constraint LoopWithOnlyArrayAccesses
     transformations, but they are omitted in the SSA model that underpins the
     CAnDL specifications.
     This applies to all integer extension instructions and pointer conversions.
+    These constructs are represented in LLVM IR as instructions with a single
+    argument.
+    In the SSA model, data flow edges skip these instructions, pointing from the
+    argument of the instruction to any use of it.
     The conventional use of 32-bit integers on 64-bit systems obfuscates the
-    SSA model without these omissions.
+    SSA model without these omissions, particularly in the context of 32-bit
+    loop interators that are automatically elevated to 64-bit integers during
+    optimisation but then have to be downcast in every iteration before applying
+    a comparison operator.
 
 \subsection{The CAnDL Compiler}
 
@@ -880,7 +1000,7 @@ Constraint LoopWithOnlyArrayAccesses
 \centering
 \begin{minipage}{0.7\textwidth}
 \centering
-\includegraphics[width=0.53\textwidth]{figures/candlstages.pdf}
+\includegraphics[width=0.85\textwidth]{figures/candlstages.pdf}
 \caption{Flow within the CAnDL compiler:
          The CAnDL source code gets lowered in several steps to generated C++
          source code.}
