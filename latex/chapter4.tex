@@ -104,6 +104,7 @@
 
 \begin{figure}[b]
 \centering
+\vspace{3.6mm}
 \begin{minipage}[t]{0.68\textwidth}
 \begin{lstlisting}[language=CAnDL,label={fig:candlspec},caption=
    {The left side of \Cref{fig:root} as specified in CAnDL}]
@@ -468,6 +469,7 @@ End
 \subsection{Range Constraints}
 
 \begin{figure}[t]
+\vspace{3.6mm}
 \begin{lstlisting}[language=CAnDL]
 Constraint ValueChain
  {element[i] ∈ {element[i+1]}.args foreach i=0..4
@@ -616,6 +618,7 @@ End
     ``{\tt N}''.
 
 \begin{figure}[t]
+\vspace{3.6mm}
 \begin{lstlisting}[language=CAnDL,label={fig:simplecollect},caption=
    {Simple {\it collect} example in CAnDL: Direct data dependencies of
     ``{\tt ins}'' are collected.\leftskip=0pt\rightskip=0pt}]
@@ -653,6 +656,7 @@ End
     is constrained to be equal to $S_1\cap S_2$ as well.
 
 \begin{figure}[H]
+\vspace{3.6mm}
 \begin{lstlisting}[language=CAnDL,label={fig:collectexample},caption=
    {{\it Collect} restricts ``{\tt ins}'' to be an instruction with only
     from floating-point operands.\leftskip=0pt\rightskip=0pt}]
@@ -680,6 +684,7 @@ End
 \lstset {
  basicstyle=\linespread{0.910}\ttfamily
 }
+\vspace{3mm}
 \begin{lstlisting}[language=CAnDL, label=CAnDLSESE, caption=
    {Single-entry single-exit region in CAnDL:
     The region spans ``{\tt begin}'' to ``{\tt end}'', with control flow
@@ -915,6 +920,7 @@ Constraint LoopWithOnlyArrayAccesses
 
 \begin{figure}[t]
 \centering
+\vspace{3.6mm}
 \begin{lstlisting}[language=CAnDL]
 Constraint SimpleAddition
 ( opcode{addition} = add
@@ -1039,6 +1045,7 @@ result[2] = make_pair("right",    select<1>(constr2));
 \subsection{Case Study 1: Simple Optimisations}
 
 \begin{figure}[t]
+\vspace{3.6mm}
 \begin{lstlisting}[language=CAnDL,label={fig:facopport},caption=
    {Factorisation opportunities in CAnDL: This captures some opportunities that
     LLVM ``{\tt instcombine}'' misses. ``{\tt SumChain}'', ``{\tt MulChain}''
@@ -1150,15 +1157,16 @@ Constraint ComplexFactorisation
     Just 12 lines of CAnDL code were able to capture more factorisation
     opportunities than 200 lines of C++ code in LLVM.
 
-    Using CAnDL on large benchmark suites only increased total compilation time
+    Using CAnDL on large benchmark suites increased total compilation time
     by $\sim$5\%.
-    Given the generally small impact of individual peephole optimisations, an
+    Given the small impact of individual peephole optimisations, an
     evaluation of the performance or code size impact vs ``{\tt instcombine}''
     is unlikely to yield significant results.
 
 \subsection{Case Study 2: Graphics Shader Optimisations}
 
 \begin{figure}[t]
+\vspace{3.6mm}
 \begin{lstlisting}[language=CAnDL,label={fig:Lewis},caption=
    {CAnDL defines multiplication chains with genuine vectors and hoisted
     scalars:
@@ -1338,6 +1346,7 @@ End
 \lstset {
  basicstyle=\linespread{0.915}\small\ttfamily
 }
+\vspace{2.7mm}
 \begin{lstlisting}[language=CAnDL, label=polyhedralCAnDL, caption=
    {Fragments of the specification of Scalar Control Parts (SCoPs) using CAnDL:
     SCoPs are defined at lines 1--11 by applying multiple restrictions to the

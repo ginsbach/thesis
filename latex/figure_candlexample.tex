@@ -12,6 +12,7 @@
  xleftmargin      = 0pt,
 }
 \centering
+\vspace{3mm}
 \vspace{-0.08cm}
 \begin{lstlisting}[language=MyCpp, title={{\bf(a)} {} C program code:}]
  double example(double a, double b) {return sqrt(a*a) + sqrt(b*b); }
@@ -20,6 +21,7 @@
 
 \begin{minipage}[t]{7.1cm}
 \centering
+\vspace{3mm}
 \vspace{-0.08cm}
 \begin{lstlisting}[language={LLVM}, title={{\bf(b)} {} Resulting LLVM IR:}]
 define double @example(
@@ -42,6 +44,7 @@ declare double @sqrt(double)
  xleftmargin      = 0pt
 }
 \centering
+\vspace{3mm}
 \vspace{-0.08cm}
 \begin{lstlisting}[language=LLVM, title={{\bf(c)} {} First solution:}]
 
@@ -64,6 +67,7 @@ sqrt_fn = @sqrt
  xleftmargin      = 0pt
 }
 \centering
+\vspace{3mm}
 \vspace{-0.08cm}
 \begin{lstlisting}[language=LLVM, title={{\bf(d)} {} Second solution:}]
 
@@ -88,6 +92,7 @@ sqrt_fn = @sqrt
  xleftmargin      = 0pt
 }
 \centering
+\vspace{3mm}
 \vspace{-0.08cm}
 \begin{lstlisting}[language=CAnDL,
                    title={{\bf(e)} {} Validating the first solution:}]
@@ -108,6 +113,7 @@ sqrt_fn = @sqrt
  xleftmargin      = 0pt
 }
 \centering
+\vspace{3mm}
 \vspace{-0.08cm}
 \begin{lstlisting}[language=CAnDL,
                    title={{\bf(f)} {} Validating the second solution:}]
@@ -124,6 +130,7 @@ sqrt_fn = @sqrt
 
 \begin{minipage}[t]{\textwidth}
 \centering
+\vspace{3mm}
 \vspace{-0.08cm}
 \begin{lstlisting}[language=MyCpp,
                    title={{\bf(g)} {} Complementing C++ transformation code:}]
@@ -139,6 +146,7 @@ void transform(map<string,Value*> solution, Function* abs) {
 
 \begin{minipage}[t]{\textwidth}
 \centering
+\vspace{3mm}
 \vspace{-0.08cm}
 \begin{lstlisting}[language=LLVM, title=
    {{\bf(h)} {} Transformed LLVM IR after dead code elimination:}]

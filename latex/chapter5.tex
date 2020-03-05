@@ -109,6 +109,7 @@
     ``{\tt sum}'' in parallel, which are then added to form the final value.
 
 \begin{figure}[h]
+\vspace{3.6mm}
 \begin{lstlisting}[language=MyCpp, label={sum-figure}, caption=
     {The most conventional example of a reduction is the adding up of values
      in an array:
@@ -140,6 +141,7 @@ for(i = 0; i < n; i++)
     critical step.
 
 \begin{figure}[h]
+\vspace{3.6mm}
 \begin{lstlisting}[language=MyCpp, label={complex-reduction-figure}, caption=
    {Example of a Complex Reduction and Histogram Computation:
     The bottleneck from the NAS Parallel Benchmarks can be parallelised as a
@@ -306,6 +308,7 @@ for(i = 0; i < NK; i++) {
     pure functions.
 
 \begin{figure}[t]
+\vspace{3.6mm}
 \begin{lstlisting}[language=MyCpp]
 sum = 0;
 for(i = 0; i < n && sum < 10; i++)
@@ -417,6 +420,7 @@ for(i = 0; i < n; i++) {
 \lstset{
  basicstyle = \linespread{0.883}\ttfamily
 }
+\vspace{3mm}
 \begin{lstlisting}[language=MyCpp]
 for(i = 0; i < n; i++)
     hist[getchar()] += 1;
@@ -545,6 +549,7 @@ for(i = 0; i < n; i++) {
     
 \begin{figure}[h]
     \centering
+    \vspace{3.6mm}
     \begin{lstlisting}[language=IDL]
 ([all]) flow from {loop_carried[0..3]} ([or]) any origin
     to any of {sx''} passes through ([at]) least one of
@@ -654,6 +659,7 @@ for(i = 0; i < n; i++) {
 \lstset{
  basicstyle = \linespread{1.173}\ttfamily
 }
+\vspace{4.4mm}
 \begin{lstlisting}[language=IDL]
 Constraint KernelFunction
 ( collect i  4 ( {entries[i]} has control
@@ -744,6 +750,7 @@ End
 \lstset{
  basicstyle = \linespread{1.062}\ttfamily
 }
+\vspace{3.6mm}
 \begin{lstlisting}[language=IDL,label={IDLhistoPart},caption=
    {IDL specification of a histogram reduction in a Complex Reduction and
     Histogram Computation:
@@ -838,8 +845,9 @@ End
 
 \begin{figure}[H]
 \lstset{
- basicstyle = \linespread{1.26}\ttfamily
+ basicstyle = \linespread{1.24}\ttfamily
 }
+\vspace{3.6mm}
 \begin{lstlisting}[language=IDL,label={IDLcomplexred},caption=
    {Complex Reduction and Histogram Computations (CReHCs) as IDL specification:
     The idiom comprises histogram (lines 8--13) and scalar (lines 14--18) reductions contained in a for-loop (line 2).
@@ -1058,6 +1066,7 @@ End
     None of the competing approaches were able to detect this reduction either.
 
 \begin{figure}[H]
+\vspace{3.6mm}
 \begin{lstlisting}[language=MyCpp, label={missedscalar}, caption=
    {Some reductions were missed by all detection approaches.
     In this loop from ``SP'', the outer loops are reduction loops, accumulating
