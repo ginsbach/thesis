@@ -777,15 +777,13 @@ Constraint LoopWithOnlyArrayAccesses
 
     Note that the use of variables ``{\tt precursor}'' and ``{\tt successor}''
     prevents the detection of SESE regions without a precursor or successor.
-    As LLVM inserts an additional basic block at the beginning of each function
-    that immediately jumps to the first basic block of the function body, the
-    first of these two corner cases is irrelevant.
-    The second case could easily be captured with additional constraints that
-    account for the possibility of an {\it unused} successor.
-    However, this is only relevant in the case of basic blocks that end on a
-    return statement.
+    These two special cases could easily be captured with additional constraints
+    that account for the possibility of an {\it unused} successor or precursor.
+    However, this situation is only relevant in the case of basic blocks that end
+    with a return statement or that are the entry point of a function.
     In the context of the loop-based algorithmic structures that this
-    thesis focuses on, basic blocks can be assumed to always have a successor.
+    thesis focuses on, basic blocks can be assumed to have a precursor and
+    successor.
 
     Natural loops are easily defined in CAnDL, as shown in \Cref{CAnDLLoop}.
     The specification includes ``{\tt SESE}'' and adds only a single additional
@@ -800,8 +798,8 @@ Constraint LoopWithOnlyArrayAccesses
     either a function argument, a constant, or an instruction that strictly
     dominates the loop entry.
     Note that this formula is underspecified on its own.
-    It is to be included into larger CAnDL programs that also include
-    ``{\tt Loop}''.
+    In order to get a useful constraint specification, it has to be included in
+    larger CAnDL programs that also include ``{\tt Loop}''.
 
     Another class of important building blocks is different categories of
     memory access.
