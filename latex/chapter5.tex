@@ -535,11 +535,11 @@ for(i = 0; i < n; i++) {
     of the data flow graph $DFG_\mathcal F^*$.
     In addition to the data flow edges, it has an edge from each branch
     instruction to every instruction within all its targeted basic blocks.
-    This is an overapproximation of the control dependence graph that guarantees
-    all relevant control flow is retained when flushing the graph in
+    This encodes control dependence information and also guarantees
+    that all relevant control flow is retained when flushing the graph in
     reverse direction from the result of a computation.
-    This information is required for isolating the kernel to implement it as a
-    separate function.
+    This is needed for identifying the required instructions to implement a
+    kernel as a separate function.
 
     Secondly, as opposed to the control flow graph that is typically considered
     for dominance relationships, the resulting graph has no single ``origin''.

@@ -1563,7 +1563,60 @@ End
     A Python script was then used to verify that they precisely covered the
     SCoPs detected by Polly.
 
+\begin{table}[t]
+    \input{latex/figure_candlvspolly}
+    \caption{Polly and CAnDL detected all SCoPs.}
+    \label{fig:candlvspolly}
+\end{table}
+
 \subsubsection{Results}
+
+\begin{table}
+    \centering
+    \definecolor{tableShade}{gray}{0.8}
+    \rowcolors{1}{}{tableShade}
+    \begin{tabular}{lll}
+        \toprule
+        & Clang compile times& Clang+CAnDL compile times\\
+        \midrule
+        datamining/correlation     & 59 & 427 \\
+        datamining/covariance      & 48 & 344 \\
+        linear-algebra/2mm         & 53 & 599 \\
+        linear-algebra/3mm         & 52 & 844 \\
+        linear-algebra/atax        & 48 & 241 \\
+        linear-algebra/bicg        & 51 & 246 \\
+        linear-algebra/cholesky    & 52 & 245 \\
+        linear-algebra/doitgen     & 46 & 424 \\
+        linear-algebra/gemm        & 50 & 330 \\
+        linear-algebra/gemver      & 53 & 329 \\
+        linear-algebra/gesummv     & 46 & 170 \\
+        linear-algebra/mvt         & 50 & 224 \\
+        linear-algebra/symm        & 54 & 293 \\
+        linear-algebra/syr2k       & 51 & 341 \\
+        linear-algebra/syrk        & 49 & 327 \\
+        linear-algebra/trisolv     & 49 & 187 \\
+        linear-algebra/trmm        & 46 & 223 \\
+        linear-algebra/durbin      & 54 & 309 \\
+        linear-algebra/dynprog     & 47 & 291 \\
+        linear-algebra/gramschmidt & 54 & 704 \\
+        linear-algebra/lu          & 48 & 245 \\
+        linear-algebra/ludcmp      & 52 & 521 \\
+        medley/floyd-warshall      & 47 & 204 \\
+        medley/reg\_detect         & 54 & 566 \\
+        stencils/adi               & 54 & 753 \\
+        stencils/fdtd-2d           & 52 & 500 \\
+        stencils/fdtd-apml         & 61 & 977 \\
+        stencils/jacobi-1d-imper   & 76 & 163 \\
+        stencils/jacobi-2d-imper   & 56 & 299 \\
+        stencils/seidel-2d         & 58 & 229 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Overhead of SCoP detection with CAnDL:
+             Compile times are listed in milliseconds.
+             The geomean increase in compile times due to SCoP detection
+             with CAnDL was $556\%$.}
+    \label{fig:PolyBenchCompileTimes}
+\end{table}
 
     \Cref{fig:candlvspolly} shows that the CAnDL specification captured all the
     SCoPs that Polly detected.
@@ -1571,8 +1624,6 @@ End
     the amount of code in {\tt ScopDetection.cpp} of Polly.
     The same detection results were achieved with much fewer lines of code in
     CAnDL.
-    Detecting SCoPs with CAnDL took under one second for each program in
-    PolyBench.
     Note that the line count that is given for the CAnDL program does not
     include all the CAnDL code involved in the detection of polyhedral regions.
     Code that is not specific to this idiom (such as loop structures) is
@@ -1581,18 +1632,28 @@ End
     code that Polly relies on when detecting SCoPS, e.g.\ the expansive
     ``ScalarEvolution'' pass.
 
+    Detecting SCoPs with CAnDL incurred a significant overhead, but compile
+    times remained below one second for each PolyBench program
+    on an Intel i7-8665U processor.
+    Detailed compile time results are presented in
+    \autoref{fig:PolyBenchCompileTimes}.
+    The geomean overhead of enabling the CAnDL detection of SCoPS during
+    compilation was $556\%$, mostly due to the large number of variables
+    that are required for expressing affine calculations.
+    The compile time impact of all other idioms discussed in this thesis is
+    much more moderate (compare \autoref{tab:compiletimecost}).
+    This overhead can be prohibitive during software development when frequent
+    recompilation is required.
+    However, it pales in comparison to autotuners, superoptimisation, and many
+    other compiler techniques that involve constraint solvers and should be
+    unproblematic in many contexts.
+
     With a high-level representation of SCoPs, CAnDL allows polyhedral
     compiler researchers to explore the impact of relaxing or tightening the
     exact definition of SCoPs in a straightforward manner, enabling rapid
     prototyping.
     Simple commenting out of constraint statements in the CAnDL specification
     relaxes the conditions.
-
-\begin{table}[ht]
-    \input{latex/figure_candlvspolly}
-    \caption{Polly and CAnDL detected all SCoPs.}
-    \label{fig:candlvspolly}
-\end{table}
 
 \section{Conclusions}
 
@@ -1609,8 +1670,8 @@ End
     They are easier to program and significantly reduce the code size and
     complexity when comparing against manual C++ implementations.
     Although CAnDL is based on a constraint programming paradigm and uses a
-    backtracking solver to analyse the LLVM IR code, it only moderately impacted
-    compile times.
+    backtracking solver to analyse the LLVM IR code, compile times never
+    exceeded one second.
 
     Many compiler analysis tasks are suitable for implementation with CAnDL.
     It can be used for the detection of standard peephole optimisation
